@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="250px"
+    android:layout_height="120px"
+    android:layout_gravity="center_vertical"
+    android:background="@drawable/bac_list_normal"
+     >
+     
+    <ImageView
+        android:id="@+id/radio_grid_item_select"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true"
+        android:src="@drawable/radio_selected_nomal"
+        android:visibility="invisible"
+        />
+    <LinearLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:gravity="center_horizontal"
+	    android:orientation="vertical"
+	    android:layout_toRightOf="@id/radio_grid_item_select"
+	    android:layout_marginLeft="5dp"
+	    android:layout_centerHorizontal="true"
+	    >
+	    
+	    <TextView 
+	        android:id="@+id/radio_favorite_item_tv_hz"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:textColor="@android:color/white"
+	        android:textSize="40px"
+	        android:layout_marginTop="6px"
+	        android:layout_gravity="center_horizontal"
+	        android:text=""
+	        />
+	    
+	    <TextView 
+	        android:id="@+id/radio_favorite_item_name"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:layout_marginTop="6px"
+	        android:layout_gravity="center_horizontal"
+	        android:textColor="@android:color/darker_gray"
+	        android:textSize="24px"
+	        android:text=""
+	        />
+	</LinearLayout>
+</RelativeLayout>
+

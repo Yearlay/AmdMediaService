@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+    
+    <LinearLayout
+        android:id="@+id/input_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="88px"
+        android:gravity="center"
+        android:orientation="horizontal">
+        <RelativeLayout 
+            android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+            
+        <EditText
+	        android:id="@+id/search_input"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:paddingLeft="75dip"
+	        android:background="@drawable/search_input_bg"
+	        android:textColor="@android:color/white"
+	        android:textSize="30px" />
+        
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/search_input"
+            android:layout_marginLeft="30dip"
+            android:background="@drawable/search_icon" />
+
+        <ImageButton
+            android:id="@+id/search_num_clear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@id/search_input"
+            android:background="@drawable/search_num_clear" />
+        
+        </RelativeLayout>
+    
+	    <Button
+	        android:id="@+id/search_cancel"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginLeft="10px"
+	        android:background="@drawable/search_cancel_bg"
+	        android:text="取消"
+	        android:textColor="@drawable/textcolor_selector"
+	        android:textSize="30px" />
+    </LinearLayout>
+    
+    <RelativeLayout
+        android:id="@+id/search_num_group"
+        android:layout_marginLeft="5px"
+        android:layout_marginBottom="5px"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
+        <Button
+            android:id="@+id/search_num_1"
+            style="@style/search_num_style"
+            android:text="1"/>
+
+        <Button
+            android:id="@+id/search_num_2"
+            android:layout_toRightOf="@+id/search_num_1"
+            style="@style/search_num_style"
+            android:text="2" />
+        
+        <Button
+            android:id="@+id/search_num_3"
+            android:layout_toRightOf="@+id/search_num_2"
+            style="@style/search_num_style"
+            android:text="3" />
+        
+        <Button
+            android:id="@+id/search_num_point"
+            android:layout_toRightOf="@+id/search_num_3"
+            style="@style/search_num_style"
+            android:text="." />
+        
+        <ImageButton
+            android:id="@+id/search_num_back"
+            android:layout_width="248px"
+            android:layout_height="128px"
+            android:layout_marginLeft="5px"
+            android:layout_marginTop="5px"
+            android:layout_toRightOf="@+id/search_num_point"
+            android:background="@drawable/search_num_bg"
+            android:src="@drawable/search_num_back" />
+        
+        <Button
+            android:id="@+id/search_num_4"
+            android:layout_below="@id/search_num_1"
+            style="@style/search_num_style"
+            android:text="4" />
+        <Button
+            android:id="@+id/search_num_5"
+            android:layout_toRightOf="@id/search_num_4"
+            android:layout_below="@id/search_num_2"
+            style="@style/search_num_style"
+            android:text="5" />
+        <Button
+            android:id="@+id/search_num_6"
+            android:layout_toRightOf="@id/search_num_5"
+            android:layout_below="@id/search_num_3"
+            style="@style/search_num_style"
+            android:text="6" />
+        <Button
+            android:id="@+id/search_num_0"
+            android:layout_toRightOf="@id/search_num_6"
+            android:layout_below="@id/search_num_point"
+            style="@style/search_num_style"
+            android:text="0" />
+        
+        <Button
+            android:id="@+id/search_num_7"
+            android:layout_below="@id/search_num_4"
+            style="@style/search_num_style"
+            android:text="7" />
+        <Button
+            android:id="@+id/search_num_8"
+            android:layout_toRightOf="@id/search_num_7"
+            android:layout_below="@id/search_num_5"
+            style="@style/search_num_style"
+            android:text="8" />
+        <Button
+            android:id="@+id/search_num_9"
+            android:layout_toRightOf="@id/search_num_8"
+            android:layout_below="@id/search_num_6"
+            style="@style/search_num_style"
+            android:text="9" />
+        <ImageButton
+            android:id="@+id/search_num_hide"
+            android:layout_width="248px"
+            android:layout_height="128px"
+            android:layout_marginLeft="5px"
+            android:layout_marginTop="5px"
+            android:layout_toRightOf="@id/search_num_9"
+            android:layout_below="@id/search_num_0"
+            android:background="@drawable/search_num_bg"
+            android:src="@drawable/search_num_hide" />
+        
+        <Button
+            android:id="@+id/search_num_ok"
+            android:layout_width="248px"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5px"
+            android:layout_marginTop="5px"
+            android:layout_toRightOf="@id/search_num_0"
+            android:layout_below="@id/search_num_back"
+            android:background="@drawable/search_num_ok"
+            android:textColor="@android:color/white"
+            android:textSize="40px"
+            android:text="确认" />
+    </RelativeLayout>
+    
+    <ListView 
+        android:id="@+id/search_result_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5px"
+        android:layout_below="@id/input_layout"
+        android:layout_above="@id/search_num_group" />
+</RelativeLayout>

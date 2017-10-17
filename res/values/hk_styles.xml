@@ -1,0 +1,59 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    
+    <!-- 控制栏（ctrlbar）样式 -->  
+    <style name="media_ctrlbar_btn">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">19px</item>
+        <item name="android:layout_marginRight">19px</item>
+    </style>
+    
+    <style name="media_image_ctrlbar_btn">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    
+    <!-- id3文本（ctrlbar）样式 -->  
+    <style name="media_music_id3">
+        <item name="android:layout_width">550px</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:textColor">@color/hk_custom_text</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:text">123456789123456789</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">marquee</item>
+        <item name="android:marqueeRepeatLimit">marquee_forever</item>
+        <item name="android:scrollHorizontally">true</item>
+    </style>
+
+    <style name="image_item_stytle">
+        <item name="android:background">@drawable/image_item_selector</item>
+    </style>
+    
+    <!-- 图片详情文本样式 -->  
+    <style name="image_details_stytle">
+        <item name="android:layout_width">550px</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerVertical">true</item>
+        <item name="android:layout_alignParentLeft">true</item>
+        <item name="android:textColor">@color/hk_custom_text</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">marquee</item>
+        <item name="android:marqueeRepeatLimit">marquee_forever</item>
+        <item name="android:scrollHorizontally">true</item>
+    </style>
+    
+    <!-- 收音机搜索界面的键盘的数字的样式 -->
+    <style name="search_num_style">
+        <item name="android:layout_width">248px</item>
+        <item name="android:layout_height">128px</item>
+        <item name="android:layout_marginTop">5px</item>
+        <item name="android:layout_marginLeft">5px</item>
+        <item name="android:background">@drawable/search_num_bg</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">50px</item>
+    </style>  
+</resources>

@@ -1,0 +1,80 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:hkui="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/black" >
+    
+    <haoke.ui.util.HKViewPager
+        android:id="@+id/image_play_viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+    
+    <LinearLayout
+        android:id="@+id/image_play_ctrlbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#60000000"
+        android:gravity="center_vertical"
+        android:layout_alignParentBottom="true">
+        <ImageView
+            android:id="@+id/image_ctrlbar_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/image_back_icon_selector" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/media_ctrlbar_line_" />
+        <ImageView
+            android:id="@+id/image_ctrlbar_pre"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/image_pre_icon_selector" />
+        <ImageView
+            android:id="@+id/image_ctrlbar_pp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_weight="1"
+            android:src="@drawable/image_play_icon_selector" />
+        <ImageView
+            android:id="@+id/image_ctrlbar_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/image_next_icon_selector" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/media_ctrlbar_line_" />
+        <ImageView
+            android:id="@+id/image_ctrlbar_turnr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:src="@drawable/image_turn_icon_selector" />
+    </LinearLayout>
+    
+    <ImageView
+        android:id="@+id/collect_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="70px"
+        android:layout_marginRight="40px"
+        android:padding="20px"
+        android:src="@drawable/media_uncollect"/>
+    
+    <TextView 
+        android:id="@+id/title_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:textColor="@android:color/white"
+        android:padding="10dp"
+        android:textSize="20dp"/>
+
+</RelativeLayout>

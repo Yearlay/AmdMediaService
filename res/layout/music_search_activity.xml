@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+    
+    <LinearLayout
+        android:id="@+id/input_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="88px"
+        android:gravity="center"
+        android:orientation="horizontal">
+        <RelativeLayout 
+            android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+            
+        <EditText
+	        android:id="@+id/search_input"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:imeOptions="actionSend"
+	        android:singleLine="true"
+	        android:paddingLeft="75dip"
+	        android:background="@drawable/search_input_bg"
+	        android:textColor="@android:color/white"
+	        android:textSize="30px"
+	        android:hint="@string/search_media_input_empty" />
+        
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/search_input"
+            android:layout_marginLeft="30dip"
+            android:background="@drawable/search_icon" />
+
+        <ImageButton
+            android:id="@+id/search_num_clear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@id/search_input"
+            android:background="@drawable/search_num_clear" />
+        
+        </RelativeLayout>
+    
+	    <Button
+	        android:id="@+id/search_cancel"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginLeft="10px"
+	        android:background="@drawable/search_cancel_bg"
+	        android:text="取消"
+            android:textColor="@drawable/textcolor_selector"
+	        android:textSize="30px" />
+    </LinearLayout>
+    
+    <ListView 
+        android:id="@+id/search_result_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5px"
+        android:layout_below="@id/input_layout" 
+        android:fadeScrollbars="false"
+        android:listSelector="@android:color/transparent"/>
+    
+    <TextView 
+        android:id="@+id/search_notify_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="invisible"
+        android:textSize="30px" />
+</RelativeLayout>

@@ -1,0 +1,48 @@
+<resources>
+
+    <string name="music_device_usb1">USB1设备</string>
+    <string name="music_device_usb2">USB2设备</string>
+    <string name="image_not_support_text">不支持格式！</string>
+
+    <string name="search_media_input_empty">请输入关键字</string>
+    <string name="search_media_list_empty">未找到相关的媒体信息。</string>
+    <string name="search_media_waiting_msg">"      正在搜索，请稍等...      "</string>
+    <string name="media_collect_tab">我的收藏</string>
+    <string name="media_appwidget_title_show">未知 - 未知 </string>
+    <string name="music_usb1_label">USB1音乐</string>
+    <string name="music_usb2_label">USB2音乐</string>
+    <string name="media_copy_to_local">拷贝到本地</string>
+    <string name="audio_collect_from_local">来源:本地</string>
+    <string name="audio_collect_from_usb1">来源:USB1</string>
+    <string name="audio_collect_from_usb2">来源:USB2</string>
+    
+    <string name="radio_null">空</string>
+    <string name="collect_limit_dialog_title">收藏提示</string>
+    <string name="collect_limit_dialog_message">收藏的数量已经超过最大值1000，执行收藏将会覆盖不存在的文件记录或较旧的记录。是否执行？</string>
+    <string name="collect_limit_dialog_ok">继续</string>
+    <string name="collect_limit_dialog_cancel">取消</string>
+    <string name="cover_dialog_title">覆盖提示</string>
+    <string name="cover_dialog_ok">确认</string>
+    <string name="cover_dialog_cancel">取消</string>
+    <string name="no_select_media_file_message">没有可操作的文件，请先选择至少一个文件！</string>
+    <string name="video_fastnext_to_end_message">已经接近视频的结尾！</string>
+    <string name="music_copy_empty">请选择想要拷贝的歌曲</string>
+    <string name="image_copy_empty">请选择想要拷贝的图片</string>
+    <string name="video_copy_empty">请选择想要拷贝的视频</string>
+    <string name="image_delete_empty">请选择想要删除的图片</string>
+    <string name="video_delete_empty">请选择想要删除的视频</string>
+    <string name="image_delect_ok">确认删除已选图片？</string>
+    <string name="video_delect_ok">确认删除已选视频？</string>
+    <string name="failed_check_available_size">内置存储空间不足，不支持拷贝，请先清理。</string>
+    <string name="file_operate_cancel">文件操作已取消！</string>
+    <string name="delete_image_progress_title">正在删除图片文件</string>
+    <string name="delete_video_progress_title">正在删除视频文件</string>
+    <string name="delete_audio_progress_title">正在删除音乐文件</string>
+    <string name="copy_image_progress_title">正在拷贝图片文件</string>
+    <string name="copy_video_progress_title">正在拷贝视频文件</string>
+    <string name="copy_audio_progress_title">正在拷贝音乐文件</string>
+    <string name="radio_delect_ok">确认删除已选择的收藏的频道？</string>
+    <string name="radio_delete_empty">请选择想要删除的收藏的收音机频道</string>
+    <string name="no_media_can_play">没有媒体文件可以播放，请插入U盘！</string>
+    <string name="media_scanning_try_a_late">媒体扫描中，请稍后再试！</string>
+</resources>

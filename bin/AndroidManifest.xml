@@ -1,0 +1,192 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.haoke.mediaservice"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="17"
+        android:targetSdkVersion="21" />
+
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    
+    <application
+        android:name="com.haoke.application.MediaApplication"
+        android:allowBackup="true"
+        android:label="@string/app_name"
+        android:theme="@android:style/Theme.Wallpaper.NoTitleBar" >
+        
+        <uses-library
+            android:name="define"
+            android:required="false" />
+        
+        <uses-library
+            android:name="btjar"
+            android:required="false" />
+        
+       <service
+            android:name="com.haoke.service.MediaService"
+            android:exported="true" >
+            <intent-filter android:priority="1000">
+                <action android:name="action.haoke.MEDIASERVICE" />
+            </intent-filter>
+        </service>
+        
+        <service
+            android:name="com.haoke.service.RadioService"
+            android:exported="true" >
+            <intent-filter android:priority="1000">
+                <action android:name="action.haoke.RADIOSERVICE" />
+            </intent-filter>
+        </service>
+        
+        <service
+            android:name="com.haoke.service.BTMusicService"
+            android:exported="true" >
+            <intent-filter android:priority="1000" >
+                <action android:name="action.haoke.BTMUSICSERVICE" />
+            </intent-filter>
+        </service>
+        
+        <activity
+            android:name="com.haoke.ui.media.Media_Activity_Main"
+            android:launchMode="singleInstance"
+            android:label="@string/pub_media"
+            android:icon="@drawable/ic_music"
+        	android:theme="@android:style/Theme.Wallpaper.NoTitleBar" >
+			<intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+                
+        <activity
+            android:name="com.haoke.ui.video.Video_Activity_Main"  
+            android:launchMode="singleInstance"
+            android:label="@string/pub_video"
+            android:icon="@drawable/ic_video"
+        	android:theme="@android:style/Theme.Wallpaper.NoTitleBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="com.haoke.ui.VIDEO_ACTIVITY" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        
+        <activity android:name="com.haoke.ui.music.Music_Activity_List"
+            android:launchMode="singleInstance"
+        	android:theme="@android:style/Theme.Wallpaper.NoTitleBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <activity
+            android:name="com.haoke.ui.image.Image_Activity_Main"  
+            android:launchMode="singleInstance"
+            android:label="@string/pub_image"
+            android:icon="@drawable/ic_image"
+        	android:theme="@android:style/Theme.Wallpaper.NoTitleBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="com.haoke.ui.IMAGE_ACTIVITY" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        
+        <!-- Add the AppWidgetProvider -->
+        <receiver android:name="com.haoke.ui.widget.MediaWidgetProvider" >
+            <intent-filter>
+				<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+				<action android:name="main_activity_update_ui" />
+			</intent-filter>
+			<meta-data android:name="android.appwidget.provider"
+				android:resource="@xml/media_widget_provider_config" />
+        </receiver>
+        
+        <activity android:name="com.amd.radio.Radio_To_Favorite"
+            android:theme="@android:style/Theme.Wallpaper.NoTitleBar"
+            android:launchMode="singleTask">
+        </activity>
+	
+        <activity android:name="com.amd.radio.SearchRadioActivity"
+            android:theme="@android:style/Theme.Wallpaper.NoTitleBar"
+            android:windowSoftInputMode="stateHidden">
+        </activity>
+        
+        <activity android:name="com.haoke.ui.media.MediaSearchActivity"
+            android:theme="@android:style/Theme.Wallpaper.NoTitleBar"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" >
+        </activity>
+        
+        <receiver android:name="com.haoke.receiver.MediaReceiver">
+            <intent-filter android:priority="1000">
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+            <intent-filter android:priority="1000">
+                <action android:name="android.intent.action.MEDIA_MOUNTED" />
+                <action android:name="android.intent.action.MEDIA_EJECT" />
+                <data android:scheme="file" />
+            </intent-filter>
+        </receiver>
+        
+        <receiver android:name="com.haoke.receiver.CarServiceReceiver" >
+            <intent-filter >
+                <action android:name="action.haoke.carservice.REBOOT" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name="com.haoke.receiver.VROperatorReceiver" >
+            <intent-filter >
+                <action android:name="com.jsbd.vr.app.action" />
+                <action android:name="com.jsbd.vr.music.operation.action" />
+                <action android:name="com.jsbd.vr.radio.operation.action" />
+                <action android:name="com.jsbd.vr.picture.operation.action" />
+                <action android:name="com.jsbd.vr.video.operation.action" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name="com.amd.radio.BDBroadcastReceiver">
+            <intent-filter >
+                <action android:name="AUTONAVI_STANDARD_BROADCAST_SEND"/>
+            </intent-filter>
+        </receiver>
+ 
+        <provider android:name="com.haoke.scanner.MediaContentProvider"
+            android:exported="true"
+            android:authorities="com.haoke.media.contentprovider" />
+        
+        <receiver android:name="com.amd.media.AmdMediaButtonReceiver">
+            <intent-filter >
+                <action android:name="android.intent.action.MEDIA_BUTTON"/>
+            </intent-filter>
+        </receiver>
+        
+        <receiver android:name="com.amd.bt.BTMediaButtonReceiver">
+            <intent-filter >
+                <action android:name="android.intent.action.MEDIA_BUTTON"/>
+            </intent-filter>
+        </receiver>
+        
+        <receiver android:name="com.amd.media.FirstPowerReceiver">
+            <intent-filter >
+                <action android:name="com.haoke.action.firstpower"/>
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>

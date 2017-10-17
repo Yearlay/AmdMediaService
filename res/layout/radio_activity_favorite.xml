@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+    
+    <Button
+        android:id="@+id/radio_return" 
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:background="@drawable/all_faverite"
+        android:layout_marginTop="75px"
+        android:layout_marginLeft="20px"
+        />
+    
+    <TextView 
+     	android:layout_height="wrap_content"   
+        android:layout_width="wrap_content"
+        android:textSize="30px"
+        android:textColor="@android:color/white"
+        android:text="收藏频道列表"
+        android:layout_toRightOf="@id/radio_return"
+        android:layout_marginTop="95px"
+        />
+    
+    <Button
+        android:id="@+id/radio_edit" 
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:drawableLeft="@drawable/radio_edit"
+        android:layout_alignParentRight="true"
+        android:background="@android:color/transparent"
+        android:layout_marginTop="80px"
+        android:text="编辑"
+        android:textSize="30px"
+        android:textColor="@drawable/textcolor_selector"
+        android:layout_marginRight="36px"
+        android:drawablePadding="10px"
+        android:visibility="invisible"
+        />
+    
+    <LinearLayout 
+        android:id="@+id/radio_edit_layout"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="80px"
+        android:layout_marginRight="36px"
+        android:orientation="horizontal"
+        android:visibility="invisible"
+        >
+        <TextView
+	        android:id="@+id/radio_edit_select_all" 
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:textSize="30px"
+	        android:textColor="@drawable/textcolor_selector"
+	        android:text="全选"
+	        />
+        <TextView
+	        android:id="@+id/radio_edit_select_cancel" 
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:layout_marginLeft="10dp"
+	        android:textSize="30px"
+	        android:textColor="@drawable/textcolor_selector"
+	        android:text="取消"
+	        />
+        <TextView
+	        android:id="@+id/radio_edit_select_del" 
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:layout_marginLeft="10dp"
+	        android:textSize="30px"
+	        android:textColor="@drawable/textcolor_selector"
+	        android:text="删除"
+	        />
+    </LinearLayout>
+        
+    <View
+        android:id="@+id/radio_all_view" 
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_below="@id/radio_return"
+        android:background="@color/cl_ffff"
+        />
+    
+    <GridView
+        android:id="@+id/radio_all_gridview" 
+        android:layout_height="457px"
+        android:layout_width="match_parent"
+        android:layout_below="@id/radio_all_view"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:scrollbarStyle="outsideInset"
+        android:scrollbarThumbVertical="@drawable/radio_thumb"
+        android:numColumns="3"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="55px"
+        android:paddingTop="30px"
+        android:listSelector="@drawable/radio_listselector"
+        android:visibility="invisible"/>
+    
+    <TextView
+        android:id="@+id/radio_favorite_loading" 
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:textSize="30px"
+        android:textColor="@android:color/white"
+        android:text="正在加载列表信息..."
+        android:layout_centerInParent="true"
+        />
+    
+</RelativeLayout>

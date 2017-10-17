@@ -1,0 +1,157 @@
+<com.haoke.ui.music.Music_List_Tab
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:hkui="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="45dp"
+    android:layout_marginTop="10dp"
+    android:background="@drawable/pub_list_short_n"
+    android:gravity="center_vertical"
+    >
+
+    <RelativeLayout
+        android:id="@+id/music_tab_left"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="33dp"
+        android:layout_centerVertical="true"
+        android:gravity="center_vertical"
+        >
+            
+        <ImageView
+            android:id="@+id/music_device_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:src="@drawable/music_icon_usb" />
+
+        <TextView
+            android:id="@+id/music_device_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:gravity="center_vertical"
+            android:layout_marginLeft="10px"
+            android:textColor="@color/hk_custom_text"
+            android:textSize="18sp"
+            android:layout_toRightOf="@+id/music_device_image"
+            android:text="@string/music_device_usb" />
+        
+    </RelativeLayout>
+
+    <!-- 编辑 -->
+    <RelativeLayout
+        android:id="@+id/music_tab_list_id"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="30dp"
+        android:visibility="visible"
+        android:gravity="center_vertical" >
+
+        <ImageView
+            android:id="@+id/image_view_edit_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/music_date_edit" />
+        
+        <TextView
+            android:id="@+id/music_list_edit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/image_view_edit_id"
+            android:textColor="@drawable/text_color_selector"
+            android:textSize="22sp"
+            android:text="@string/music_edit" />
+
+        
+    </RelativeLayout>
+    
+    <!-- 加载中 -->
+    <RelativeLayout
+        android:id="@+id/music_tab_loading_id"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="30dp"
+        android:visibility="gone"
+        android:gravity="center_vertical" >
+
+        <TextView
+            android:id="@+id/music_list_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:textColor="@color/hk_custom_text"
+            android:textSize="22sp"
+            android:layout_marginRight="10px"
+            android:text="@string/music_edit_load" />
+
+        <ImageView
+            android:id="@+id/image_view_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10px"
+            android:layout_toLeftOf="@+id/music_list_loading"
+            android:clickable="true"
+            android:src="@drawable/ico_loading_small" />
+    </RelativeLayout>
+    
+    <!-- 全选、取消、删除  -->
+    <RelativeLayout
+        android:id="@+id/music_tab_edit_id"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="30dp"
+        android:visibility="gone" >
+
+        <TextView
+            android:id="@+id/music_edit_delect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:textSize="22sp"
+            android:text="@string/music_delect"
+            android:textColor="@drawable/text_color_selector" />
+
+        <TextView
+            android:id="@+id/music_edit_cancle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/music_edit_delect"
+            android:layout_marginRight="20dp"
+            android:text="@string/music_cancle"
+            android:textSize="22sp"
+            android:textColor="@drawable/text_color_selector" />
+
+        <TextView
+            android:id="@+id/music_edit_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/music_edit_cancle"
+            android:layout_marginRight="20dp"
+            android:textSize="22sp"
+            android:text="@string/music_choose_all"
+            android:textColor="@drawable/text_color_selector" />
+        
+        <TextView
+            android:id="@+id/copy_to_local"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/music_edit_all"
+            android:layout_marginRight="20dp"
+            android:textSize="22sp"
+            android:text="@string/media_copy_to_local"
+            android:textColor="@drawable/text_color_selector" />
+
+    </RelativeLayout>
+</com.haoke.ui.music.Music_List_Tab>

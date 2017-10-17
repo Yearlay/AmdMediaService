@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/home1_rl_left"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
+
+    <!-- widget 音乐 UI -->
+    <ImageView
+        android:id="@+id/widget_media_image_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8px"
+        android:layout_marginTop="6px"
+        android:src="@drawable/icon_launcher_media" />
+
+    <TextView
+        android:id="@+id/widget_media_style"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8px"
+        android:layout_marginTop="4px"
+        android:layout_toRightOf="@id/widget_media_image_view"
+        android:text="@string/launcher_card_media"
+        android:textColor="@color/hk_custom_text_d"
+        android:textSize="15sp" />
+
+    <ImageView
+        android:id="@+id/widget_media_icon_background"
+        android:layout_width="179px"
+        android:layout_height="135px"
+        android:layout_below="@id/widget_media_style"
+        android:layout_marginLeft="18px"
+        android:layout_marginTop="28px"
+        android:src="@drawable/home1_card_media_background" />
+    
+    <ImageView
+        android:id="@+id/widget_media_icon"
+        android:layout_width="100px"
+        android:layout_height="100px"
+        android:layout_below="@id/widget_media_style"
+        android:layout_marginLeft="30px"
+        android:layout_marginTop="46px"
+        android:src="@drawable/home1_card_media_default" />
+
+    <TextView
+        android:id="@+id/widget_music_name"
+        android:layout_width="330px"
+        android:layout_height="45px"
+        android:layout_marginLeft="15px"
+        android:layout_marginTop="80px"
+        android:layout_toRightOf="@id/widget_media_icon_background"
+        android:ellipsize="marquee"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:singleLine="true"
+        android:text="@string/media_appwidget_title_show"
+        android:textColor="@color/hk_custom_text"
+        android:textSize="20sp" />
+
+    <ImageView
+        android:id="@+id/widget_music_btn_pre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/widget_music_name"
+        android:paddingLeft="10px"
+        android:paddingTop="10px"
+        android:paddingRight="50px"
+        android:paddingBottom="10px"
+        android:layout_toRightOf="@id/widget_media_icon_background"
+        android:src="@drawable/main_home1_card_music_pre_selector" />
+
+    <ImageView
+        android:id="@+id/widget_music_btn_play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/widget_music_name"
+        android:paddingLeft="30px"
+        android:paddingRight="30px"
+        android:layout_toRightOf="@id/widget_music_btn_pre"
+        android:background="@android:color/transparent"
+        android:src="@drawable/main_home1_card_music_play_selector" />
+
+    <ImageView
+        android:id="@+id/widget_music_btn_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/widget_music_name"
+        android:paddingTop="10px"
+        android:paddingLeft="50px"
+        android:paddingRight="10px"
+        android:paddingBottom="10px"
+        android:layout_toRightOf="@id/widget_music_btn_play"
+        android:src="@drawable/main_home1_card_music_next_selector" />
+    
+    <!-- widget 收音 UI -->
+    <TextView
+        android:id="@+id/widget_radio_am"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/widget_music_btn_pre"
+        android:layout_marginLeft="30px"
+        android:layout_marginTop="57px"
+        android:gravity="center"
+        android:text="FM"
+        android:textColor="@color/hk_custom_text"
+        android:textSize="38sp" />
+
+    <TextView
+        android:id="@+id/widget_radio_num"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/widget_music_btn_pre"
+        android:layout_marginLeft="35px"
+        android:layout_marginTop="57px"
+        android:layout_toRightOf="@id/widget_radio_am"
+        android:ellipsize="marquee"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:singleLine="true"
+        android:text="87.5"
+        android:textColor="@color/hk_custom_text"
+        android:textSize="38sp" />
+
+    <TextView
+        android:id="@+id/widget_radio__st"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/widget_music_btn_play"
+        android:layout_marginLeft="2px"
+        android:layout_marginTop="59px"
+        android:layout_toRightOf="@id/widget_radio_num"
+        android:text="@string/launcher_card_am_st"
+        android:textColor="@color/hk_custom_text"
+        android:textSize="13sp"
+        android:visibility="invisible" />
+
+    <TextView
+        android:id="@+id/widget_radio__mhz"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/widget_radio__st"
+        android:layout_marginLeft="2px"
+        android:singleLine="true"
+        android:layout_toRightOf="@id/widget_radio_num"
+        android:text="MHZ"
+        android:textColor="@color/hk_custom_text"
+        android:textSize="13sp" />
+    
+    <RelativeLayout
+        android:id="@+id/radio_enter_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/widget_music_btn_play" >
+        
+        <ImageButton
+            android:id="@+id/widget_radio_btn_play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="62px"
+            android:layout_marginBottom="45px"
+            android:layout_marginRight="17px"
+            android:background="@android:color/transparent"
+            android:src="@drawable/main_home1_card_radio_play_selector" />
+        
+    </RelativeLayout>
+
+    
+
+</RelativeLayout>

@@ -1,0 +1,50 @@
+<resources>
+
+    <string name="app_name">MediaService</string>
+
+    <string name="music_device_usb1">USB1 device</string>
+    <string name="music_device_usb2">USB2 device</string>
+    <string name="image_not_support_text">Unsupported format!</string>
+    
+    <string name="search_media_input_empty">Please input characters</string>
+    <string name="search_media_list_empty">No media records found.</string>
+    <string name="search_media_waiting_msg">"Searching, Please waiting!"</string>
+    <string name="media_collect_tab">Favorite</string>
+    <string name="media_appwidget_title_show">Unkown - Unkown</string>
+    <string name="music_usb1_label">USB1 Music</string>
+    <string name="music_usb2_label">USB2 Music</string>
+    <string name="media_copy_to_local">To-Local</string>
+    <string name="audio_collect_from_local">From:Local</string>
+    <string name="audio_collect_from_usb1">From:USB1</string>
+    <string name="audio_collect_from_usb2">From:USB2</string>
+    
+    <string name="radio_null">null</string>
+    <string name="collect_limit_dialog_title">Collection tips</string>
+    <string name="collect_limit_dialog_message">The number of collections has exceeded the maximum value of 1000, and the execution collection will overwrite nonexistent files, records, or older records. Is it implemented?</string>
+    <string name="collect_limit_dialog_ok">Continue</string>
+    <string name="collect_limit_dialog_cancel">Cancel</string>
+    <string name="cover_dialog_title">Cover tips</string>
+    <string name="cover_dialog_ok">OK</string>
+    <string name="cover_dialog_cancel">Cancel</string>
+    <string name="no_select_media_file_message">No file selected, Please select first!</string>
+    <string name="video_fastnext_to_end_message">Close to the end of the video!</string>
+    <string name="music_copy_empty">Please choose the songs</string>
+    <string name="image_copy_empty">Please choose the images</string>
+    <string name="video_copy_empty">Please choose the videos</string>
+    <string name="image_delete_empty">Please choose the images</string>
+    <string name="video_delete_empty">Please choose the videos</string>
+    <string name="image_delect_ok">Delete the Selected images now?</string>
+    <string name="video_delect_ok">Delete the Selected videos now?</string>
+    <string name="failed_check_available_size">The built-in storage space is insufficient, and the copy is not supported. Please clean it first.</string>
+    <string name="file_operate_cancel">File-operate cancel!</string>
+    <string name="delete_image_progress_title">Deleting images</string>
+    <string name="delete_video_progress_title">Deleting videos</string>
+    <string name="delete_audio_progress_title">Deleting musics</string>
+    <string name="copy_image_progress_title">Coping images</string>
+    <string name="copy_video_progress_title">Coping videos</string>
+    <string name="copy_audio_progress_title">Coping audios</string>
+    <string name="radio_delect_ok">Delete the Selectd-Radio now?</string>
+    <string name="radio_delete_empty">Please choose the radios</string>
+    <string name="no_media_can_play">No media. Please insert USB!</string>
+    <string name="media_scanning_try_a_late">Media scanning. Please try a late!</string>
+</resources>

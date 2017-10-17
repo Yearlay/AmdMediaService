@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<com.haoke.ui.music.MusicHomeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:hkui="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/music_layout_main_id_more"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:orientation="horizontal" >
+<!-- 我的收藏 -->
+    <LinearLayout
+        android:id="@+id/music_layout_enshrine"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="5dp"
+        android:layout_weight="1"
+        android:background="@drawable/music_back_ground"
+        android:orientation="vertical" >
+
+        <ImageView
+            android:id="@+id/image_view_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/music_save" />
+
+        <haoke.ui.util.HKTextView
+            android:id="@+id/text_name_save"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingTop="10dp"
+            android:textSize="24sp"
+            android:text="@string/music_my_save"
+            android:textColor="@color/hk_custom_text" />
+
+        <haoke.ui.util.HKTextView
+            android:id="@+id/music_save_count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingTop="10dp"
+            android:textSize="20sp"
+            android:textColor="@color/hk_custom_text" />
+    </LinearLayout>
+<!-- 伴听 -->
+    <LinearLayout
+        android:id="@+id/music_layout_local"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_weight="1"
+        android:background="@drawable/music_back_ground"
+        android:orientation="vertical" >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/music_local" />
+
+        <haoke.ui.util.HKTextView
+            android:id="@+id/text_name_local"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingTop="10dp"
+            android:textSize="24sp"
+            android:text="@string/music_local"
+            android:textColor="@color/hk_custom_text" />
+
+        <haoke.ui.util.HKTextView
+            android:id="@+id/music_local_count"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingTop="10dp"
+            android:textSize="20sp"
+            android:textColor="@color/hk_custom_text" />
+    </LinearLayout>
+<!-- BT 音乐 -->
+    <LinearLayout
+        android:id="@+id/music_layout_scan_bt"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_weight="1"
+        android:background="@drawable/music_back_ground"
+        android:orientation="vertical" >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/music_scan_bt" />
+
+        <haoke.ui.util.HKTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingTop="20dp"
+            android:textSize="24sp"
+            android:text="@string/music_scan_bt"
+            android:textColor="@color/hk_custom_text" />
+
+        <haoke.ui.util.HKTextView
+            android:id="@+id/music_bt_device_connect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingTop="10dp"
+            android:textSize="20sp"
+            android:text="@string/music_scan_bt_free"
+            android:textColor="@color/hk_custom_text" />
+    </LinearLayout>
+<!-- USB1 音乐 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="10dp"
+        android:layout_weight="1"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:id="@+id/music_layout_scan_usb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/music_back_ground"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:id="@+id/fra_image_usb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/music_scan_usb" />
+
+            <haoke.ui.util.HKTextView
+                android:id="@+id/fra_button_usb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingTop="4dp"
+                android:textSize="20dp"
+                android:text="@string/music_scan_usb1"
+                android:textColor="@color/hk_custom_text" />
+        </LinearLayout>
+<!-- USB2 音乐 -->
+        <LinearLayout
+            android:id="@+id/music_layout_scan_usb2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/music_back_ground"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:id="@+id/fra_image_bt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:src="@drawable/music_scan_usb" />
+
+            <haoke.ui.util.HKTextView
+                android:id="@+id/fra_button_bt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingTop="4dp"
+                android:textSize="20dp"
+                android:text="@string/music_scan_usb2"
+                android:textColor="@color/hk_custom_text" />
+        </LinearLayout>
+    </LinearLayout>
+
+</com.haoke.ui.music.MusicHomeLayout>

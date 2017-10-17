@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="538px"
+    android:layout_marginTop="@dimen/pub_statusbar_height"
+    android:orientation="vertical" >
+
+    <include
+        android:id="@+id/music_activity_list"
+        layout="@layout/music_list_fragment"/>
+
+    <include 
+        android:id="@+id/music_list_layout_nodevice"
+        android:visibility="gone"
+        layout="@layout/media_nodevice_fragment"/>
+
+    <include 
+        android:id="@+id/music_list_layout_loading"
+        android:visibility="gone"
+        layout="@layout/media_loading_fragment"/>
+    
+</RelativeLayout>

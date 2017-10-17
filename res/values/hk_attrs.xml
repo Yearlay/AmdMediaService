@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <declare-styleable name="MEDIA">
+        <attr name="media_spectrum_min_value" format="integer"/>  
+        <attr name="media_spectrum_max_value" format="integer"/>
+        <attr name="media_spectrum_bg" format="reference"/>
+        <attr name="media_spectrum_color" format="reference"/>
+        <attr name="media_spectrum_shadow" format="reference"/>
+    </declare-styleable>
+    
+</resources>

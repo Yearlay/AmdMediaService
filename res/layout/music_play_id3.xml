@@ -1,0 +1,59 @@
+<com.haoke.ui.music.Music_Play_Id3
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:hkui="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+	android:orientation="horizontal" >
+	<RelativeLayout 
+        android:layout_width="167px"
+        android:layout_height="167px"
+         >
+        
+	    <com.haoke.ui.widget.RoundImageViewByXfermode
+	        android:id="@+id/music_play_img_cycle"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:layout_centerHorizontal="true"
+	        android:scaleType="fitXY"
+	        android:src="@drawable/music_play_icon_def" />
+	    
+	    <TextView
+	        android:id="@+id/music_device_type"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentBottom="true"
+	        android:layout_centerHorizontal="true"
+	        android:layout_marginBottom="4dp"
+	        android:gravity="center"
+	        android:textSize="12dp" />
+	</RelativeLayout>
+    
+    <!-- id3信息 -->
+    <LinearLayout 
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content" 
+	        android:layout_marginLeft="30dp"
+	        android:orientation="vertical" >
+        
+		    <haoke.ui.util.HKTextView
+        		android:id="@+id/media_id3_track"
+        		android:gravity="center_horizontal"
+        		style="@style/media_music_id3"
+        		android:textSize="28sp" />
+	        <haoke.ui.util.HKTextView
+	            android:id="@+id/media_id3_album"
+	            android:gravity="center_horizontal"
+	            style="@style/media_music_id3"
+	            android:layout_marginTop="10dp"/>
+    </LinearLayout>
+	
+    <ImageView 
+        android:id="@+id/music_save_status"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:src="@drawable/media_uncollect"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="-20dp"
+        />
+</com.haoke.ui.music.Music_Play_Id3>
