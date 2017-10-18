@@ -132,17 +132,19 @@ public class Music_Play_Id3 extends LinearLayout implements OnClickListener, ID3
     
     private void updateAudioInfo() {
         FileNode fileNode = Media_IF.getInstance().getPlayItem();
-        String track = fileNode.getTitleEx();
+        if (fileNode == null) {
+            return;
+        }
         String artist = fileNode.getArtist();
         String album = fileNode.getAlbum();
-        if (album == null || album == "") {
+        if (TextUtils.isEmpty(album)) {
             album = unknown;
         }
-        if (artist == null || artist == "") {
+        if (TextUtils.isEmpty(artist)) {
             artist = unknown;
         }
         mAlbum.setText(artist + " - " + album);
-        mTrack.setText(track);
+        mTrack.setText(fileNode.getTitleEx());
         
         if (fileNode.getParseId3() == 1 && fileNode.getThumbnailPath() != null) {
             if (mBitmap != null && !mBitmap.isRecycled()) {

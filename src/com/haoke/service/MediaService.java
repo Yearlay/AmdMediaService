@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.amd.bt.BT_IF;
 import com.amd.bt.BT_Listener;
+import com.haoke.bean.FileNode;
 import com.haoke.btjar.main.BTDef.BTCallState;
 import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.btjar.main.BTDef.BTFunc;
@@ -371,7 +372,8 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         if (!TextUtils.isEmpty(filePath)) {
             // 指定歌曲（path）播放。
             int playState = mMediaIF.getPlayState();
-            if (filePath.equals(mMediaIF.getPlayItem().getFilePath())) {
+            FileNode fileNode = mMediaIF.getPlayItem();
+            if (fileNode != null && filePath.equals(fileNode.getFilePath())) {
                 if (playState != PlayState.PLAY) {
                     mMediaIF.setPlayState(PlayState.PLAY);
                 }
