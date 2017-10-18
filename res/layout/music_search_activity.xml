@@ -19,7 +19,7 @@
 	        android:id="@+id/search_input"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:imeOptions="actionSend"
+	        android:imeOptions="actionSearch"
 	        android:singleLine="true"
 	        android:paddingLeft="75dip"
 	        android:background="@drawable/search_input_bg"
