@@ -19,7 +19,6 @@ import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.constant.VRConstant;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.ModeSwitch;
-import com.haoke.define.GlobalDef;
 import com.haoke.define.ModeDef;
 import com.haoke.mediaservice.R;
 import com.haoke.ui.music.MusicHomeFragment;
@@ -79,24 +78,39 @@ public class Media_Activity_Main extends FragmentActivity implements OnClickList
     }
     
     private void initCurSource() {
-        String musicMode = null;
         Intent intent = getIntent();
+        int source = Media_IF.getCurSource();
         if (intent != null) {
-            musicMode = intent.getStringExtra("Mode_To_Music");
+            boolean fromIntent = false;
+            String musicMode = intent.getStringExtra("Mode_To_Music");
             Log.d(TAG, "initCurSource musicMode="+musicMode);
             if ("radio_intent".equals(musicMode)) {
-                GlobalDef.currentsource = 3;
-                setCurSource(ModeDef.RADIO, false);
+            	source = ModeDef.RADIO;
+            	fromIntent = true;
             } else if ("btMusic_intent".equals(musicMode)) {
-                setCurSource(ModeDef.BT, false);
+            	source = ModeDef.BT;
+            	fromIntent = true;
             } else if ("music_play_intent".equals(musicMode)) {
-                setCurSource(ModeDef.AUDIO, false);
-            } else {
-                setCurSource(mMediaIF.getCurSource(), false);
+            	source = ModeDef.AUDIO;
+            	fromIntent = true;
             }
-        } else {
-            setCurSource(mMediaIF.getCurSource(), false);
+            if (fromIntent) {
+            	setIntent(null);
+            	updateSystemUILabel(source, true);
+            	if (source == ModeDef.BT) {
+            		replaceBtMusicFragment();
+            	} else if (source == ModeDef.AUDIO) {
+            		goPlay(false, true);
+            	}
+            } else {
+            	if (source == ModeDef.AUDIO || source == ModeDef.BT) {
+            		if (true || mViewPager.getCurrentItem() == VIEWPAGER_ID_MUSIC) {
+                		goPlay(false, true);
+            		}
+            	}
+            }
         }
+        setCurSource(source, false);
     }
     
     private void setCurSource(int curSource) {
@@ -104,8 +118,6 @@ public class Media_Activity_Main extends FragmentActivity implements OnClickList
     }
 
     private void setCurSource(int curSource, boolean smoothScroll) {
-        updateLabel(curSource);
-        
         int tabSource = ModeDef.AUDIO;
         int tabItem = VIEWPAGER_ID_MUSIC;
         if (curSource == ModeDef.RADIO) {//3 收音
@@ -132,27 +144,34 @@ public class Media_Activity_Main extends FragmentActivity implements OnClickList
         }
     }
     
-    private void updateLabel(int curLabel) {
+    public void updateSystemUILabel(int curLabel, boolean force) {
+    	if (!force && mCurLabel == curLabel) {
+        	Log.d(TAG, "updateLabel return! curLabel=mCurLabel="+curLabel+"; force="+force);
+    		return;
+    	}
         mCurLabel = curLabel;
-        int labelRes = R.string.pub_media;
+        int labelRes = -1;
         if (curLabel == ModeDef.RADIO) {
             labelRes = R.string.pub_radio;
         } else if (curLabel == ModeDef.BT) {
             labelRes = R.string.pub_btmusic;
-        } else {
+        } else if (curLabel == ModeDef.AUDIO) {
             labelRes = R.string.pub_music;
         }
-        AllMediaList.notifyAllLabelChange(getApplicationContext(), labelRes);
+        if (labelRes != -1) {
+            AllMediaList.notifyAllLabelChange(getApplicationContext(), labelRes);
+        }
     }
     
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume mCurLabel="+mCurLabel);
+        Log.d(TAG, "onResume ");
         if (getIntent() != null && "com.haoke.data.ModeSwitch".equals(getIntent().getAction())) {
             ModeSwitch.instance().setGoingFlag(false);
         }
-        updateLabel(mCurLabel);
+        //解决：U盘歌曲播放界面，点击返回，点击蓝牙界面，进入蓝牙界面后，按HOME，然后再按导航的媒体键，会闪一下蓝牙音乐。
+//      updateSystemUILabel(mCurLabel, true);
         if (mViewPager.getCurrentItem() == VIEWPAGER_ID_RADIO) {
         	ModeSwitch.instance().setCurrentMode(this, true, ModeSwitch.RADIO_MODE);
         }
@@ -164,6 +183,14 @@ public class Media_Activity_Main extends FragmentActivity implements OnClickList
         mFragList.clear();
         unregisterReceiver(mReceiver);
         Log.d(TAG, "onDestroy");
+    }
+    
+    private void goHome() {
+    	mHomeFragment.goHome();
+    }
+    
+    private void goPlay(boolean toast, boolean noPlayGoHome) {
+    	mHomeFragment.goPlay(toast, noPlayGoHome);
     }
     
     public void replaceBtMusicFragment() {
@@ -255,17 +282,14 @@ public class Media_Activity_Main extends FragmentActivity implements OnClickList
         }
     }
 
-    private int source =  ModeDef.NULL;
     @Override
     public void onClick(View view) {
         int id = view.getId();
         Log.d(TAG, "onClick id="+id);
         if (id == R.id.media_tab_radio) {
-            source = ModeDef.RADIO;
-            setCurSource(source);
+            setCurSource(ModeDef.RADIO);
         } else if (id == R.id.media_tab_music) {
-            source = ModeDef.AUDIO;
-            setCurSource(source);
+            setCurSource(ModeDef.AUDIO);
         } else if (id == R.id.search_button) {
             if (mViewPager.getCurrentItem() == VIEWPAGER_ID_RADIO) {
                 startActivity(new Intent(this, SearchRadioActivity.class));
@@ -276,7 +300,7 @@ public class Media_Activity_Main extends FragmentActivity implements OnClickList
             }
         } else if (id == R.id.media_tab_layout) {
         	if (mViewPager.getCurrentItem() == VIEWPAGER_ID_MUSIC) {
-                mHomeFragment.goPlay();
+                goPlay(true, false);
         	}
         }
     }
@@ -288,7 +312,7 @@ public class Media_Activity_Main extends FragmentActivity implements OnClickList
             int item = mViewPager.getCurrentItem();
             if (item == VIEWPAGER_ID_MUSIC) {
                 if (mHomeFragment.isPlayFragment()) {
-                    mHomeFragment.goHome();
+                    goHome();
                     return true;
                 }
             }

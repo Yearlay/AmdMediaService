@@ -6,9 +6,11 @@ import com.haoke.define.McuDef.McuFunc;
 import com.haoke.define.RadioDef.RadioFunc;
 import com.haoke.mediaservice.R;
 import com.haoke.serviceif.CarService_Listener;
+import com.haoke.ui.media.Media_Activity_Main;
 import com.amd.radio.Radio_IF;
 import com.amd.radio.Radio_CarListener;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -137,6 +139,9 @@ public class Radio_Activity_Main extends Fragment implements Radio_CarListener, 
 //        if (isScan5S) {
 //            mIF.setScan();
 //        }
+        if (this.getUserVisibleHint()) {
+            updateSystemUILabel(ModeDef.RADIO, true);
+        }
         updateFreq(mIF.getCurFreq());
     }
     
@@ -163,6 +168,13 @@ public class Radio_Activity_Main extends Fragment implements Radio_CarListener, 
         mIF.unregisterCarCallBack(this);
         mIF.unregisterModeCallBack(this);
     }
+    
+    private void updateSystemUILabel(int curLabel, boolean force) {
+		Activity activity = getActivity();
+        if (activity != null && activity instanceof Media_Activity_Main) {
+        	((Media_Activity_Main)activity).updateSystemUILabel(curLabel, force);
+        }
+	}
     
     private void getViewPagerFragmentNum(){
         int num = Data_Common.stationList.size();
@@ -384,6 +396,7 @@ public class Radio_Activity_Main extends Fragment implements Radio_CarListener, 
         if (isVisibleToUser) {
             ModeSwitch.instance().setCurrentMode(getActivity(), true, ModeSwitch.RADIO_MODE);
             updateAll();
+            updateSystemUILabel(ModeDef.RADIO, true);
         } else {
     		ModeSwitch.instance().setCurrentMode(getActivity(), false, 0);
         }

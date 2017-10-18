@@ -14,16 +14,15 @@ import android.widget.Toast;
 import com.amd.bt.BTMusic_IF;
 import com.amd.bt.BT_IF;
 import com.amd.bt.BT_Listener;
-import com.haoke.btjar.main.BTDef.BTCallState;
 import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.btjar.main.BTDef.BTFunc;
-import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.define.GlobalDef;
 import com.haoke.define.ModeDef;
 import com.haoke.define.MediaDef.MediaFunc;
 import com.haoke.define.MediaDef.MediaState;
 import com.haoke.define.MediaDef.PlayState;
 import com.haoke.mediaservice.R;
+import com.haoke.ui.media.Media_Activity_Main;
 import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
 import com.haoke.util.Media_IF;
@@ -39,6 +38,7 @@ public class MusicHomeFragment extends Fragment implements Media_Listener, BT_Li
 	private MusicPlayLayout mPlayLayout;
 	private ViewStub mPlayLayoutStub;
 	private CustomDialog mDialog;
+	private boolean mRefreshLayout = false;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -89,13 +89,17 @@ public class MusicHomeFragment extends Fragment implements Media_Listener, BT_Li
 		AUDIO_PLAY_LAYOUT,
 		BT_PLAY_LAYOUT,
 	}
-	private ShowLayout mShowLayout;
+	private ShowLayout mShowLayout = ShowLayout.HOME_LAYOUT;
 	
 	private void changeShowLayout(ShowLayout showLayout) {
 		Log.d(TAG, "changeShowLayout showLayout="+showLayout+"; mShowLayout="+mShowLayout+"; mPlayLayout="+mPlayLayout);
 		mShowLayout = showLayout;
-		if (mShowLayout == ShowLayout.HOME_LAYOUT) {
+		mRefreshLayout = false;
+		if (mHomeLayout == null) {
+			mRefreshLayout = true;
+		} else if (mShowLayout == ShowLayout.HOME_LAYOUT) {
 			mHomeLayout.setVisibility(View.VISIBLE);
+			updateSystemUILabel(ModeDef.AUDIO, false);
 			if (mPlayLayout!=null) mPlayLayout.setVisibility(View.GONE);
 		} else {
 			mHomeLayout.setVisibility(View.GONE);
@@ -107,6 +111,7 @@ public class MusicHomeFragment extends Fragment implements Media_Listener, BT_Li
 				mPlayLayout.setBTPlayMode(mShowLayout == ShowLayout.BT_PLAY_LAYOUT);
 				mPlayLayout.setVisibility(View.VISIBLE);
 			}
+			updateSystemUILabel(mPlayLayout.isBTPlay() ? ModeDef.BT : ModeDef.AUDIO, false);
 		}
 		setCurPlayViewState();
 	}
@@ -117,7 +122,17 @@ public class MusicHomeFragment extends Fragment implements Media_Listener, BT_Li
 		Log.d(TAG, "onResume");
 		mIF.registerLocalCallBack(this);
 		mBTIF.registerModeCallBack(this);
-		setMusicModeFragment();
+		//setMusicModeFragment();
+		if (mRefreshLayout) {
+			changeShowLayout(mShowLayout);
+		}
+		if (getUserVisibleHint()) {
+			int source = ModeDef.AUDIO;
+			if (mShowLayout == ShowLayout.BT_PLAY_LAYOUT) {
+				source = ModeDef.BT;
+			}
+			updateSystemUILabel(source, true);
+		}
 		mHomeLayout.onResume();
 	}
 
@@ -138,6 +153,22 @@ public class MusicHomeFragment extends Fragment implements Media_Listener, BT_Li
 		if (mPlayLayout!=null) {
 			mPlayLayout.setUserVisibleHint(isVisibleToUser);
 		}
+		if (isVisibleToUser) {
+			int source = ModeDef.AUDIO;
+			if (mPlayLayout != null && mPlayLayout.getVisibility() == View.VISIBLE) {
+				if (mPlayLayout.isBTPlay()) {
+					source = ModeDef.BT;
+				}
+			}
+			updateSystemUILabel(source, true);
+		}
+	}
+	
+	private void updateSystemUILabel(int curLabel, boolean force) {
+		Activity activity = getActivity();
+        if (activity != null && activity instanceof Media_Activity_Main) {
+        	((Media_Activity_Main)activity).updateSystemUILabel(curLabel, force);
+        }
 	}
 
 	private void stopBtMusic() {
@@ -294,7 +325,7 @@ public class MusicHomeFragment extends Fragment implements Media_Listener, BT_Li
 	}
 	
 	// 跳转到播放界面
-	public void goPlay() {
+	public void goPlay(boolean toast, boolean noPlayGoHome) {
 		int playState = mIF.getPlayState();
 		boolean btPlaying = mBTIF.music_isPlaying();
 		int curSource = mIF.getCurSource();
@@ -305,7 +336,12 @@ public class MusicHomeFragment extends Fragment implements Media_Listener, BT_Li
 			changeShowLayout(ShowLayout.BT_PLAY_LAYOUT);
 		} else {
 			Log.e(TAG, "goPlay no song playing!");
-			Toast.makeText(mContext, "没有歌曲在播放！", Toast.LENGTH_SHORT).show();
+			if (toast) {
+				Toast.makeText(mContext, "没有歌曲在播放！", Toast.LENGTH_SHORT).show();
+			}
+			if (noPlayGoHome) {
+				goHome();
+			}
 		}
 	}
 
