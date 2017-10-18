@@ -40,16 +40,19 @@ public class MusicHomeFragment extends Fragment implements Media_Listener, BT_Li
 	private CustomDialog mDialog;
 	private boolean mRefreshLayout = false;
 	
+	public MusicHomeFragment() {
+		super();
+		mIF = Media_IF.getInstance();
+		mIF.initMedia();
+		mBTIF = BT_IF.getInstance();
+		mBTIF.bindBTService();
+		mBTMusicIF = BTMusic_IF.getInstance();
+	}
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		Log.d(TAG, "onCreateView");
 		mContext = getActivity();
-		mIF = Media_IF.getInstance();
-		mIF.initMedia();
-		
-		mBTIF = BT_IF.getInstance();
-		mBTIF.bindBTService();
-		mBTMusicIF = BTMusic_IF.getInstance();
 		
 		View rootView = inflater.inflate(R.layout.music_activity_home, container, false);
 		mDialog = new CustomDialog();
