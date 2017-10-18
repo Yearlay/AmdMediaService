@@ -350,6 +350,7 @@ public class Image_Activity_Main extends FragmentActivity implements
                     }
                     mRadioGroup.setVisibility(View.INVISIBLE);
                     mSearchButton.setVisibility(View.INVISIBLE);
+                    mSelectAllView.setText(R.string.music_choose_all);
                     mListFragment.beginEdit();
                 }
                 break;
