@@ -506,8 +506,8 @@ public class FileNode {
     
     public boolean isExist(Context context) {
         boolean existFlag = false;
-        if (deviceType != FileType.COLLECT) {
-        	StorageBean storageBean = AllMediaList.instance(context).getStoragBean(deviceType);
+        if (deviceType != DeviceType.COLLECT) {
+            StorageBean storageBean = AllMediaList.instance(context).getStoragBean(deviceType);
             existFlag = storageBean.isMounted() && getFile().exists();
         } else {
             StorageBean storageBean = AllMediaList.instance(context).getStoragBean(fromDeviceType);

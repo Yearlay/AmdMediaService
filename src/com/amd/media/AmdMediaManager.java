@@ -1023,14 +1023,11 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	}
 	
 	public FileNode getDefaultItem() {
-		boolean loadFlag = false;
-		if (mPlayMusicFileNode == null) {
-			loadFlag = true;
+		boolean loadFlag = true;
+		if (mPlayMusicFileNode != null && mPlayMusicFileNode.isExist(mContext)) {
+			return mPlayMusicFileNode;
 		} else {
-			if (!mPlayMusicFileNode.isExist(mContext)) {
-				mPlayMusicFileNode = null;
-				loadFlag = true;
-			}
+			mPlayMusicFileNode = null;
 		}
 		
 		if (loadFlag) {
@@ -1050,14 +1047,15 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 						}
 						position = position <= 0 ? 0 : position;
 						position = position >= (lists.size() - 1) ? lists.size() - 1 : position;
-						mPlayMusicFileNode = lists.get(position);
-						if (!mPlayMusicFileNode.isExist(mContext)) {
-							mPlayingFileNode = null;
+						FileNode playFileNode = lists.get(position);
+						if (playFileNode != null && playFileNode.isExist(mContext)) {
+							mPlayMusicFileNode = playFileNode;
+							return mPlayMusicFileNode;
 						}
 						for (FileNode fileNode : lists) {
-							if (fileNode.isExist(mContext)) {
-								mPlayingFileNode = fileNode;
-								break;
+							if (fileNode != null && fileNode.isExist(mContext)) {
+								mPlayMusicFileNode = fileNode;
+								return mPlayMusicFileNode;
 							}
 						}
 						break;
