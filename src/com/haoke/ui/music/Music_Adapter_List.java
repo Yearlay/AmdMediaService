@@ -153,10 +153,12 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
         if (fileNode.isFromCollectTable()) {
             int fromDeviceType = fileNode.getFromDeviceType();
             if (fromDeviceType != DeviceType.NULL) {
-                if (fromDeviceType == DeviceType.FLASH) { } else if (fromDeviceType == DeviceType.USB1) {
-                	buffer.append(mContext.getResources().getString(R.string.audio_collect_from_usb1));
+                if (fromDeviceType == DeviceType.FLASH) {
+                	buffer.append(mContext.getResources().getString(R.string.collect_from_local));
+                } else if (fromDeviceType == DeviceType.USB1) {
+                	buffer.append(mContext.getResources().getString(R.string.collect_from_usb1));
                 } else if (fromDeviceType == DeviceType.USB2) {
-                    buffer.append(mContext.getResources().getString(R.string.audio_collect_from_usb2));
+                    buffer.append(mContext.getResources().getString(R.string.collect_from_usb2));
                 }
             }
         }

@@ -14,9 +14,9 @@
     <string name="music_usb1_label">USB1 Music</string>
     <string name="music_usb2_label">USB2 Music</string>
     <string name="media_copy_to_local">To-Local</string>
-    <string name="audio_collect_from_local">From:Local</string>
-    <string name="audio_collect_from_usb1">From:USB1</string>
-    <string name="audio_collect_from_usb2">From:USB2</string>
+    <string name="collect_from_local">From:Local</string>
+    <string name="collect_from_usb1">From:USB1</string>
+    <string name="collect_from_usb2">From:USB2</string>
     
     <string name="radio_null">null</string>
     <string name="collect_limit_dialog_title">Collection tips</string>

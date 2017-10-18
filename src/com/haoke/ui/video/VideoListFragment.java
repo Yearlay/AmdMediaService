@@ -364,11 +364,29 @@ public class VideoListFragment extends Fragment implements OnHKTouchListener,
               mHolder.mPhotoImageView = (ImageView) convertView.findViewById(R.id.item_photo);
               mHolder.mItemSelectView = (ImageView) convertView.findViewById(R.id.item_select);
               mHolder.mPhotoName = (HKTextView) convertView.findViewById(R.id.item_filename);
+              mHolder.mFromTextView = (TextView) convertView.findViewById(R.id.image_from_text);
               convertView.setTag(mHolder);
            }
           
            FileNode fileNode = mVideoList.get(position);
            mHolder.mPhotoName.setText(fileNode.getFileName());
+           if (fileNode.isFromCollectTable()) {
+               int resid = R.string.collect_from_local;
+               int fromDeviceType = fileNode.getFromDeviceType();
+               if (fromDeviceType != DeviceType.NULL) {
+                   if (fromDeviceType == DeviceType.FLASH) {
+                       resid = R.string.collect_from_local;
+                   } else if (fromDeviceType == DeviceType.USB1) {
+                       resid = R.string.collect_from_usb1;
+                   } else if (fromDeviceType == DeviceType.USB2) {
+                       resid = R.string.collect_from_usb2;
+                   }
+               }
+               mHolder.mFromTextView.setText(resid);
+               mHolder.mFromTextView.setVisibility(View.VISIBLE);
+           } else {
+               mHolder.mFromTextView.setVisibility(View.GONE);
+           }
            mHolder.mItemSelectView.setVisibility(isEditMode ? View.VISIBLE : View.GONE);
            if (isEditMode) {
                mHolder.mItemSelectView.setImageResource(fileNode.isSelected() ?
@@ -402,6 +420,7 @@ public class VideoListFragment extends Fragment implements OnHKTouchListener,
             private ImageView mPhotoImageView;
             private ImageView mItemSelectView;
             private HKTextView mPhotoName;
+            private TextView mFromTextView;
         }
 
         @Override

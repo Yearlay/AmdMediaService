@@ -57,44 +57,44 @@ public class PhotoListFragment extends Fragment implements OnItemClickListener, 
     private ArrayList<FileNode> mPhotoList = new ArrayList<FileNode>();
     
     public void updataList(ArrayList<FileNode> dataList, StorageBean storageBean) {
-    	mCurrentStorageBean = storageBean;
-    	mPhotoList.clear();
+        mCurrentStorageBean = storageBean;
+        mPhotoList.clear();
         mPhotoList.addAll(dataList);
         if (rootView != null) {
             refreshView(storageBean);
         }
     }
 
-	private void refreshView(StorageBean storageBean) {
-		mPhotoAdapter.notifyDataSetChanged();
-		if (storageBean.isMounted()) {
-		    if (storageBean.isId3ParseCompleted()) {
-		        mEmptyView.setText(R.string.media_no_file);
-		        mEmptyView.setVisibility(mPhotoList.size() <= 0 ? View.VISIBLE : View.GONE);
-		        mGridView.setVisibility(mPhotoList.size() <= 0 ? View.GONE : View.VISIBLE);
-		        mLoadingView.setVisibility(View.GONE);
-		    } else {
-		        mEmptyView.setVisibility(View.GONE);
-		        mGridView.setVisibility(View.GONE);
-		        TextView showText = (TextView) mLoadingView.findViewById(R.id.media_text);
-		        int loadRes = R.string.music_loading_flash;
-		        if (storageBean.getDeviceType() == DeviceType.USB1) {
-		        	loadRes = R.string.music_loading_usb1;
-		        } else if (storageBean.getDeviceType() == DeviceType.USB2) {
-		        	loadRes = R.string.music_loading_usb2;
-		        }
-		        showText.setText(loadRes);
-		        mLoadingView.setVisibility(View.VISIBLE);
-		    }
-		} else {
-		    String noDataStr = mContext.getString(R.string.music_no_device_usb) +
-		            (storageBean.getDeviceType() == DeviceType.USB1 ? "1" : "2");
-		    mEmptyView.setText(noDataStr);
-		    mEmptyView.setVisibility(View.VISIBLE);
-		    mGridView.setVisibility(View.GONE);
-		    mLoadingView.setVisibility(View.GONE);
-		}
-	}
+    private void refreshView(StorageBean storageBean) {
+        mPhotoAdapter.notifyDataSetChanged();
+        if (storageBean.isMounted()) {
+            if (storageBean.isId3ParseCompleted()) {
+                mEmptyView.setText(R.string.media_no_file);
+                mEmptyView.setVisibility(mPhotoList.size() <= 0 ? View.VISIBLE : View.GONE);
+                mGridView.setVisibility(mPhotoList.size() <= 0 ? View.GONE : View.VISIBLE);
+                mLoadingView.setVisibility(View.GONE);
+            } else {
+                mEmptyView.setVisibility(View.GONE);
+                mGridView.setVisibility(View.GONE);
+                TextView showText = (TextView) mLoadingView.findViewById(R.id.media_text);
+                int loadRes = R.string.music_loading_flash;
+                if (storageBean.getDeviceType() == DeviceType.USB1) {
+                    loadRes = R.string.music_loading_usb1;
+                } else if (storageBean.getDeviceType() == DeviceType.USB2) {
+                    loadRes = R.string.music_loading_usb2;
+                }
+                showText.setText(loadRes);
+                mLoadingView.setVisibility(View.VISIBLE);
+            }
+        } else {
+            String noDataStr = mContext.getString(R.string.music_no_device_usb) +
+                    (storageBean.getDeviceType() == DeviceType.USB1 ? "1" : "2");
+            mEmptyView.setText(noDataStr);
+            mEmptyView.setVisibility(View.VISIBLE);
+            mGridView.setVisibility(View.GONE);
+            mLoadingView.setVisibility(View.GONE);
+        }
+    }
 
     @Override
     public void onAttach(Activity activity) {
@@ -140,9 +140,9 @@ public class PhotoListFragment extends Fragment implements OnItemClickListener, 
             mErrorDialog.CloseDialog();
         }
         if (mProgressDialog != null && mProgressDialog.getDialog() != null &&
-        		mProgressDialog.getDialog().isShowing()) {
-        	mProgressDialog.CloseDialog();
-        	Toast.makeText(mContext, R.string.file_operate_cancel, Toast.LENGTH_SHORT).show();
+                mProgressDialog.getDialog().isShowing()) {
+            mProgressDialog.CloseDialog();
+            Toast.makeText(mContext, R.string.file_operate_cancel, Toast.LENGTH_SHORT).show();
         }
         super.onPause();
     }
@@ -223,10 +223,10 @@ public class PhotoListFragment extends Fragment implements OnItemClickListener, 
             }
         }
         if (selectList.size() > 0) {
-        	if (mProgressDialog == null) {
-        		mProgressDialog = new CustomDialog();
-        	}
-        	mProgressDialog.showProgressDialog(mContext, R.string.delete_image_progress_title, this);
+            if (mProgressDialog == null) {
+                mProgressDialog = new CustomDialog();
+            }
+            mProgressDialog.showProgressDialog(mContext, R.string.delete_image_progress_title, this);
             if (isCollect) {
                 AllMediaList.instance(mContext).uncollectMediaFiles(selectList, this);
             } else {
@@ -271,10 +271,10 @@ public class PhotoListFragment extends Fragment implements OnItemClickListener, 
                 }
             }
             if (selectList.size() > 0) {
-            	if (mProgressDialog == null) {
-            		mProgressDialog = new CustomDialog();
-            	}
-            	mProgressDialog.showProgressDialog(mContext, R.string.copy_image_progress_title, this);
+                if (mProgressDialog == null) {
+                    mProgressDialog = new CustomDialog();
+                }
+                mProgressDialog.showProgressDialog(mContext, R.string.copy_image_progress_title, this);
                 AllMediaList.instance(mContext).copyToLocal(selectList, PhotoListFragment.this);
             }
         } else {
@@ -287,12 +287,12 @@ public class PhotoListFragment extends Fragment implements OnItemClickListener, 
     
     @Override
     public void onOperateCompleted(int operateValue, int progress, int resultCode) {
-    	if (mProgressDialog != null) {
-    		mProgressDialog.updateProgressValue(progress);
-    	}
+        if (mProgressDialog != null) {
+            mProgressDialog.updateProgressValue(progress);
+        }
         if (progress == 100) {
             if (mProgressDialog != null) {
-            	mProgressDialog.CloseDialog();
+                mProgressDialog.CloseDialog();
             }
             if ((operateValue == OperateListener.OPERATE_DELETE || operateValue == OperateListener.OPERATE_UNCOLLECT)
                     && resultCode == OperateListener.OPERATE_SUCEESS) {
@@ -331,10 +331,29 @@ public class PhotoListFragment extends Fragment implements OnItemClickListener, 
                 mHolder.mPhotoImageView = (ImageView) convertView.findViewById(R.id.item_photo);
                 mHolder.mItemSelectView = (ImageView) convertView.findViewById(R.id.item_select);
                 mHolder.mPhotoName = (HKTextView) convertView.findViewById(R.id.item_filename);
+                mHolder.mFromTextView = (TextView) convertView.findViewById(R.id.image_from_text);
                 convertView.setTag(mHolder);
             }
             FileNode fileNode = mPhotoList.get(position);
             mHolder.mPhotoName.setText(fileNode.getFileName());
+            
+            if (fileNode.isFromCollectTable()) {
+                int resid = R.string.collect_from_local;
+                int fromDeviceType = fileNode.getFromDeviceType();
+                if (fromDeviceType != DeviceType.NULL) {
+                    if (fromDeviceType == DeviceType.FLASH) {
+                        resid = R.string.collect_from_local;
+                    } else if (fromDeviceType == DeviceType.USB1) {
+                        resid = R.string.collect_from_usb1;
+                    } else if (fromDeviceType == DeviceType.USB2) {
+                        resid = R.string.collect_from_usb2;
+                    }
+                }
+                mHolder.mFromTextView.setText(resid);
+                mHolder.mFromTextView.setVisibility(View.VISIBLE);
+            } else {
+                mHolder.mFromTextView.setVisibility(View.GONE);
+            }
             mHolder.mItemSelectView.setVisibility(isEditMode ? View.VISIBLE : View.GONE);
             if (isEditMode) {
                 mHolder.mItemSelectView.setImageResource(fileNode.isSelected() ?
@@ -362,6 +381,7 @@ public class PhotoListFragment extends Fragment implements OnItemClickListener, 
             private ImageView mPhotoImageView;
             private ImageView mItemSelectView;
             private HKTextView mPhotoName;
+            private TextView mFromTextView;
         }
     }
 

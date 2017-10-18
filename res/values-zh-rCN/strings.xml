@@ -12,9 +12,9 @@
     <string name="music_usb1_label">USB1音乐</string>
     <string name="music_usb2_label">USB2音乐</string>
     <string name="media_copy_to_local">拷贝到本地</string>
-    <string name="audio_collect_from_local">来源:本地</string>
-    <string name="audio_collect_from_usb1">来源:USB1</string>
-    <string name="audio_collect_from_usb2">来源:USB2</string>
+    <string name="collect_from_local">来源:本地</string>
+    <string name="collect_from_usb1">来源:USB1</string>
+    <string name="collect_from_usb2">来源:USB2</string>
     
     <string name="radio_null">空</string>
     <string name="collect_limit_dialog_title">收藏提示</string>
