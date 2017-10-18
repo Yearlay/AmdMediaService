@@ -169,7 +169,7 @@ public class MediaUtil {
     public static final String[] VIDEO_EXTENSIONS = {
             "mp4", "3gp", "3gpp",
             "3g2", "3gpp2", "mpeg",
-            "mkv", "rmvb", "mov", 
+            "mkv", "mov", 
             "flv", "f4v", "avi",
             "vob", "ts", "m2ts",
             "m4v", "divx", "asx"
