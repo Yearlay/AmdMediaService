@@ -248,16 +248,29 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
         if (Media_IF.getInstance().getCurSource() == ModeDef.BT) {
             BT_IF.getInstance().music_pre();
         } else if (Media_IF.getInstance().getCurSource() == ModeDef.AUDIO) {
-            if (!Media_IF.getInstance().playPre()) {
-                Media_IF.getInstance().changePlayState();
-            }
+        	FileNode fileNode = getFileNode(context);
+        	if (fileNode != null) {
+        		boolean ret = Media_IF.getInstance().playPre();
+        		if (!ret) {
+        			DebugLog.e("Yearlay", "Error AppWidget#playPre ...");
+        		}
+        	} else {
+        		Toast.makeText(context, R.string.no_media_can_play, Toast.LENGTH_SHORT).show();
+        	}
         } else {
             if (mLastDevice == ModeDef.BT) {
                 BT_IF.getInstance().music_play();
             } else {
-                if (!Media_IF.getInstance().playPre()) {
-                    Media_IF.getInstance().changePlayState();
-                }
+            	FileNode fileNode = getFileNode(context);
+            	if (fileNode != null) {
+            		Media_IF.getInstance().setCurSource(ModeDef.AUDIO);
+            		Media_IF.getInstance().setAudioDevice(fileNode.getDeviceType());
+            		if (!Media_IF.getInstance().playPre()) {
+            			Media_IF.getInstance().changePlayState();
+            		}
+            	} else {
+            		Toast.makeText(context, R.string.no_media_can_play, Toast.LENGTH_SHORT).show();
+            	}
             }
         }
     }
@@ -266,16 +279,29 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
         if (Media_IF.getInstance().getCurSource() == ModeDef.BT) {
             BT_IF.getInstance().music_next();
         } else if (Media_IF.getInstance().getCurSource() == ModeDef.AUDIO) {
-            if (!Media_IF.getInstance().playNext()) {
-                Media_IF.getInstance().changePlayState();
-            }
+        	FileNode fileNode = getFileNode(context);
+        	if (fileNode != null) {
+        		boolean ret = Media_IF.getInstance().playNext();
+        		if (!ret) {
+        			DebugLog.e("Yearlay", "Error AppWidget#playNext ...");
+        		}
+        	} else {
+        		Toast.makeText(context, R.string.no_media_can_play, Toast.LENGTH_SHORT).show();
+        	}
         } else {
             if (mLastDevice == ModeDef.BT) {
                 BT_IF.getInstance().music_play();
             } else {
-                if (!Media_IF.getInstance().playNext()) {
-                    Media_IF.getInstance().changePlayState();
-                }
+            	FileNode fileNode = getFileNode(context);
+            	if (fileNode != null) {
+            		Media_IF.getInstance().setCurSource(ModeDef.AUDIO);
+            		Media_IF.getInstance().setAudioDevice(fileNode.getDeviceType());
+	                if (!Media_IF.getInstance().playNext()) {
+	                    Media_IF.getInstance().changePlayState();
+	                }
+            	} else {
+            		Toast.makeText(context, R.string.no_media_can_play, Toast.LENGTH_SHORT).show();
+            	}
             }
         }
     }
