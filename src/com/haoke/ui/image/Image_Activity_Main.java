@@ -333,6 +333,7 @@ public class Image_Activity_Main extends FragmentActivity implements
                         mSelectAllView.setText(R.string.music_choose_all);
                     }
                 } else {
+                    mPlayFragment.setPlayState(PlayState.PLAY);
                     onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
                     mPlayFragment.setCurrentPosition(msg.arg1);
                 }
