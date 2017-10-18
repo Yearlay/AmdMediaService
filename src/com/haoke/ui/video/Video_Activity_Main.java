@@ -52,7 +52,7 @@ public class Video_Activity_Main extends FragmentActivity implements
 
     private final String TAG = this.getClass().getSimpleName();
     private int mLayoutProps = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
-    private Media_IF mIF;
+    private Video_IF mIF;
     private FragmentManager mFragmentManager = null;
     private VideoListFragment mListFragment = null;
     private VideoPlayFragment mPlayFragment = null;
@@ -78,7 +78,7 @@ public class Video_Activity_Main extends FragmentActivity implements
         
         getWindow().getDecorView().setSystemUiVisibility(mLayoutProps);
         
-        mIF = Media_IF.getInstance();
+        mIF = Video_IF.getInstance();
         mIF.registerCarCallBack(this); // 注册服务监听
         mIF.registerLocalCallBack(this); // 注册服务监听
         mIF.bindCarService();
@@ -103,7 +103,7 @@ public class Video_Activity_Main extends FragmentActivity implements
         mCopyTextView = (TextView) mEditView.findViewById(R.id.copy_to_local);
         mCopyTextView.setOnClickListener(this);
 
-        mIF.setVideoActivity(this);
+        Media_IF.getInstance().setVideoActivity(this);
         
         registerReceiver(mOperateAppReceiver, new IntentFilter(VRIntent.ACTION_OPERATE_VIDEO));
         
@@ -194,7 +194,7 @@ public class Video_Activity_Main extends FragmentActivity implements
     public void onDestroy() {
         Log.v(TAG, "HMI------------onDestroy");
         super.onDestroy();
-        mIF.setVideoActivity(null);
+        Media_IF.getInstance().setVideoActivity(null);
         AllMediaList.instance(getApplicationContext()).unRegisterLoadListener(this);
         unregisterReceiver(mOperateAppReceiver);
     }

@@ -39,6 +39,7 @@ import com.haoke.ui.image.Image_Activity_Main;
 import com.haoke.ui.media.Media_Activity_Main;
 import com.haoke.ui.music.Music_Activity_List;
 import com.haoke.ui.video.Video_Activity_Main;
+import com.haoke.ui.video.Video_IF;
 import com.haoke.util.DebugLog;
 import com.haoke.util.Media_CarListener;
 import com.haoke.util.Media_IF;
@@ -220,7 +221,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         } else {
-            mMediaIF.setRecordPlayState(PlayState.PAUSE);
+            Video_IF.getInstance().setRecordPlayState(PlayState.PAUSE);
             Intent intent = new Intent(VRIntent.ACTION_OPERATE_VIDEO);
             intent.putExtra(VRIntent.KEY_VIDEO, VRIntent.FINISH_VIDEO);
             sendBroadcast(intent);

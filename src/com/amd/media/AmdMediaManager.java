@@ -46,8 +46,8 @@ import android.util.Log;
 
 public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListener {
 
-	private static final String TAG = "AmdMediaManager";
-	private Context mContext = null;
+	protected String TAG = "AmdMediaManager";
+	protected Context mContext = null;
 	private AmdMediaPlayer mMediaPlayer = null;
 	private boolean mScanMode = false;
 	private int mRepeatMode = RepeatMode.OFF;
@@ -83,7 +83,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	//------------------end----------------/
 	
 	private AudioManager mAudioManager;
-	private ComponentName mComponentName;
+	protected ComponentName mComponentName;
 
 	public AmdMediaManager() {
 		mContext = MediaApplication.getInstance();
