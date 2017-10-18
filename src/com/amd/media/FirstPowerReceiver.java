@@ -1,7 +1,7 @@
 package com.amd.media;
 
 import com.amd.radio.Radio_IF;
-import static com.haoke.define.MediaDef.RepeatMode.OFF;
+import static com.haoke.define.MediaDef.RepeatMode.CIRCLE;
 import com.haoke.util.Media_IF;
 
 import android.content.BroadcastReceiver;
@@ -18,7 +18,7 @@ public class FirstPowerReceiver extends BroadcastReceiver{
 		if ("com.haoke.action.firstpower".equals(action)) {
 			//断B+起来，carmanager会发送该广播，此时应用需要清除一些记忆数据。
 			Radio_IF.getInstance().clearColloctFreq(context);
-			Media_IF.getInstance().setRepeatMode(OFF);
+			Media_IF.getInstance().setRepeatMode(CIRCLE);
 		}
 	}
 }

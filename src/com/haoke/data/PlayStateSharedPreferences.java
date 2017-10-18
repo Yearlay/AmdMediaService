@@ -5,6 +5,7 @@ import com.haoke.bean.FileNode;
 import com.haoke.constant.DBConfig;
 import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.FileType;
+import com.haoke.define.MediaDef.RepeatMode;
 import com.haoke.ui.image.Image_Activity_Main;
 
 import android.content.Context;
@@ -64,7 +65,7 @@ public class PlayStateSharedPreferences {
     }
     
     public int getPlayMode() {
-        return getPreferences().getInt(PLAY_MODE_KEY, 0);
+        return getPreferences().getInt(PLAY_MODE_KEY, RepeatMode.CIRCLE);
     }
     
     class ImageInfo {

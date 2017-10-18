@@ -50,7 +50,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	protected Context mContext = null;
 	private AmdMediaPlayer mMediaPlayer = null;
 	private boolean mScanMode = false;
-	private int mRepeatMode = RepeatMode.OFF;
+	private int mRepeatMode = RepeatMode.CIRCLE;
 	private int mErrorCount = 0; // 连续播放错误的次数
 	private int mPlayState = PlayState.STOP;
 	private int mRecordPlayState = PlayState.STOP; // 用来记忆被抢焦点前的播放状态，便于恢复播放
@@ -99,6 +99,9 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		mAllMediaList.registerLoadListener(mLoadListener);
 
 		mRepeatMode = mAllMediaList.getPlayMode();
+		if(mRepeatMode == RepeatMode.OFF) {
+			mRepeatMode = RepeatMode.CIRCLE;
+		}
 		
 		mAudioManager = (AudioManager)mContext.getSystemService(Context.AUDIO_SERVICE);
 		mComponentName = new ComponentName(mContext, AmdMediaButtonReceiver.class); 
@@ -758,7 +761,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 					resetMediaPlayer();
 					resetPlayingData(true);
 					if (mRepeatMode == RepeatMode.RANDOM) {
-						setRepeatMode(RepeatMode.OFF);//插拔U盘，断随机模式记忆
+						setRepeatMode(RepeatMode.CIRCLE);//插拔U盘，断随机模式记忆
 					}
 				}
 			}

@@ -586,7 +586,7 @@ public class Media_IF extends CarService_IF {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return RepeatMode.OFF;
+		return RepeatMode.CIRCLE;
 	}
 
 	// 获取随机模式
