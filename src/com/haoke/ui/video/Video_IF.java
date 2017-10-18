@@ -1,0 +1,270 @@
+package com.haoke.ui.video;
+
+import android.content.ComponentName;
+import android.util.Log;
+
+import com.amd.media.AmdMediaManager;
+import com.haoke.bean.FileNode;
+import com.haoke.define.MediaDef.MediaState;
+import com.haoke.define.MediaDef.PlayState;
+import com.haoke.define.ModeDef;
+import com.haoke.serviceif.CarService_Listener;
+import com.haoke.util.Media_CarListener;
+import com.haoke.util.Media_IF;
+import com.haoke.util.Media_Listener;
+import com.haoke.video.VideoSurfaceView;
+
+
+class VideoManager extends AmdMediaManager {
+	public VideoManager() {
+		super();
+		TAG = "VideoManager";
+		mComponentName = new ComponentName(mContext, VideoMediaButtonReceiver.class); 
+	}
+}
+
+public class Video_IF {
+
+	private static final String TAG = "Video_IF";
+	private static Video_IF mSelf;
+	
+	private VideoManager mMediaManager = null;
+
+	private Video_IF() {
+		mMediaManager = new VideoManager();
+	}
+
+	// 获取接口实例
+	synchronized public static Video_IF getInstance() {
+		if (mSelf == null) {
+			mSelf = new Video_IF();
+		}
+		return mSelf;
+	}
+
+	// 注册车载服务回调（全局状态变化）
+	public void registerCarCallBack(CarService_Listener listener) {
+		Media_IF.getInstance().registerCarCallBack(listener);
+	}
+
+	// 注销车载服务回调（全局状态变化）
+	public void unregisterCarCallBack(CarService_Listener listener) {
+		Media_IF.getInstance().unregisterCarCallBack(listener);
+	}
+
+	// 注册车载服务回调（模块相关变化）
+	public void registerModeCallBack(Media_CarListener listener) {
+		Media_IF.getInstance().registerModeCallBack(listener);
+	}
+
+	// 注销车载服务回调（模块相关变化）
+	public void unregisterModeCallBack(Media_CarListener listener) {
+		Media_IF.getInstance().unregisterModeCallBack(listener);
+	}
+
+	// 注册本地服务回调（模块相关变化）
+	public void registerLocalCallBack(Media_Listener listener) {
+		Media_IF.getInstance().registerLocalCallBack(listener);
+	}
+
+	// 注销本地服务回调（模块相关变化）
+	public void unregisterLocalCallBack(Media_Listener listener) {
+		Media_IF.getInstance().unregisterLocalCallBack(listener);
+	}
+	
+	public int getMode() {
+		return ModeDef.MEDIA;
+	}
+	
+	public void bindCarService() {
+		Media_IF.getInstance().bindCarService();
+	}
+
+	// 设置当前源
+	public static boolean setCurSource(int source) {
+		return Media_IF.setCurSource(source);
+	}
+
+	// 获取当前源
+	public static int getCurSource() {
+		return Media_IF.getCurSource();
+	}
+	
+	public static boolean getMute() {
+		return Media_IF.getMute();
+	}
+	
+	public static void cancelMute() {
+		Media_IF.cancelMute();
+	}
+	
+	public static boolean getCallState() {
+		return Media_IF.getCallState();
+	}
+	
+	// 初始化媒体
+	public void initMedia() {
+		Media_IF.getInstance().initMedia();
+	}
+
+	// 获取当前媒体状态
+	public int getMediaState() {
+		try {
+			return mMediaManager.getCurMediaState();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return MediaState.IDLE;
+	}
+	
+	// 设置视频层
+	public void setVideoView(VideoSurfaceView view) {
+		try {
+			mMediaManager.setVideoView(view);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	// 播放(list中的postion)
+	public boolean play(int pos) {
+		try {
+			return mMediaManager.play(pos);
+		} catch (Exception e) {
+			Log.e(TAG, "play pos="+pos, e);
+		}
+		return false;
+	}
+	
+	// 播放(文件路径)
+	public boolean play(String filePath) {
+		try {
+			return mMediaManager.play(filePath);
+		} catch (Exception e) {
+			Log.e(TAG, "play filePath="+filePath, e);
+		}
+		return false;
+	}
+	
+	// 播放(FileNode)
+	public boolean play(FileNode fileNode) {
+		try {
+			return mMediaManager.play(fileNode);
+		} catch (Exception e) {
+			Log.e(TAG, "play fileNode="+fileNode, e);
+		}
+		return false;
+	}
+
+	// 上一曲
+	public boolean playPre() {
+		try {
+			return mMediaManager.pre(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	// 下一曲
+	public boolean playNext() {
+		try {
+			return mMediaManager.next(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	// 改变播放状态
+	public void changePlayState() {
+		try {
+			int state = getPlayState();
+			if (state == PlayState.PLAY) {
+				state = PlayState.PAUSE;
+			} else {
+				state = PlayState.PLAY;
+			}
+			setPlayState(state);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	// 设置播放状态
+	public void setPlayState(int state) {
+		try {
+			mMediaManager.setPlayState(state);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// 获取播放状态
+	public int getPlayState() {
+		try {
+			return mMediaManager.getPlayState();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return PlayState.STOP;
+	}
+	
+	// 获取播放总时间
+	public int getDuration() {
+		try {
+			return mMediaManager.getDuration() / 1000;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	// 设置播放当前时间
+	public void setPosition(int time) {
+		try {
+			mMediaManager.setPosition(time * 1000);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	// 获取播放当前时间
+	public int getPosition() {
+		try {
+			return mMediaManager.getPosition() / 1000;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	public void setCurScanner(int deviceType, int fileType) {
+		mMediaManager.setDeviceAndFileType(deviceType, fileType);
+	}
+
+	public FileNode getItem(int pos) {
+		return mMediaManager.getItem(pos);
+	}
+	
+	public FileNode getPlayItem() {
+		return mMediaManager.getPlayItem();
+	}
+	
+	// 设置播放状态（被抢焦点前）
+	public void setRecordPlayState(int state) {
+		mMediaManager.setRecordPlayState(state);
+	}
+
+	// 获取播放状态（被抢焦点前）
+	public int getRecordPlayState() {
+		return mMediaManager.getRecordPlayState();
+	}
+	
+	//-------------------------------仪表接口开始-----------------------------
+	public void sendToDashbroad(byte[] data){
+		Media_IF.getInstance().sendToDashbroad(data);
+	}
+	//-------------------------------仪表接口结束-----------------------------
+}

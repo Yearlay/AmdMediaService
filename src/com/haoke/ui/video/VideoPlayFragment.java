@@ -63,10 +63,10 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
         mTitleTextView.setText(mFileNode.getFileName());
         mCollectView.setImageResource(mFileNode.getCollect() == 1 ?
                 R.drawable.media_collect : R.drawable.media_uncollect);
-        if (mFileNode.isSame(Media_IF.getInstance().getPlayItem())) {
-            Media_IF.getInstance().setPlayState(PlayState.PLAY);
+        if (mFileNode.isSame(Video_IF.getInstance().getPlayItem())) {
+            Video_IF.getInstance().setPlayState(PlayState.PLAY);
         } else {
-            Media_IF.getInstance().play(mFileNode);
+            Video_IF.getInstance().play(mFileNode);
         }
     }
 
@@ -79,7 +79,7 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
     }
     
     public void updateTimeBar() {
-        FileNode fileNode = Media_IF.getInstance().getPlayItem();
+        FileNode fileNode = Video_IF.getInstance().getPlayItem();
         if (fileNode != null) {
             if (!fileNode.isSame(mFileNode)) {
                 mFileNode = fileNode;
@@ -132,7 +132,7 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
     public void onStart() {
         super.onStart();
         updateTimeBar();
-        Media_IF.getInstance().setVideoView(mVideoView);
+        Video_IF.getInstance().setVideoView(mVideoView);
         mVideoLayout.addView(mVideoView);
         if (mCtrlBar.getVisibility() == View.VISIBLE) {
             startHideTimer();
@@ -153,8 +153,8 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
         
         if (savePlayState) { // 如果在onPause的时候有保存这个状态。
             savePlayState = false;
-            if (mFileNode != null && mFileNode.isSame(Media_IF.getInstance().getPlayItem())) {
-                Media_IF.getInstance().setPlayState(PlayState.PLAY);
+            if (mFileNode != null && mFileNode.isSame(Video_IF.getInstance().getPlayItem())) {
+                Video_IF.getInstance().setPlayState(PlayState.PLAY);
             }
         }
         super.onResume();
@@ -168,9 +168,9 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
         if (mActivityHandler != null) {
             mActivityHandler.sendEmptyMessage(Video_Activity_Main.SHOW_BOTTOM);
         }
-        if (Media_IF.getInstance().getPlayState() == PlayState.PLAY) {
+        if (Video_IF.getInstance().getPlayState() == PlayState.PLAY) {
             savePlayState = true;
-            Media_IF.getInstance().setPlayState(PlayState.PAUSE);
+            Video_IF.getInstance().setPlayState(PlayState.PAUSE);
             updateCtrlBar(PlayState.PAUSE);
             
             mHandler.removeMessages(HIDE_CTRL);
@@ -219,8 +219,8 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
             showToast(true);
             break;
         case R.id.video_ctrlbar_pp:
-            Media_IF.getInstance().changePlayState();
-            updateCtrlBar(Media_IF.getInstance().getPlayState());
+            Video_IF.getInstance().changePlayState();
+            updateCtrlBar(Video_IF.getInstance().getPlayState());
             break;
         case R.id.video_ctrlbar_fastnext: // 快进
             showToast(false);
@@ -238,21 +238,21 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
     }
     
     private void showToast(boolean isFastPre) {
-        int oldPosition = Media_IF.getInstance().getPosition();
-        if (oldPosition >= Media_IF.getInstance().getDuration() - 15 && !isFastPre) {
+        int oldPosition = Video_IF.getInstance().getPosition();
+        if (oldPosition >= Video_IF.getInstance().getDuration() - 15 && !isFastPre) {
             Toast.makeText(mContext, R.string.video_fastnext_to_end_message, Toast.LENGTH_SHORT).show();
             return;
         }
         int newPosition = oldPosition + (isFastPre ? -30 : 30);
-        if (newPosition >= Media_IF.getInstance().getDuration()) {
-            newPosition = Media_IF.getInstance().getDuration() - 3;
+        if (newPosition >= Video_IF.getInstance().getDuration()) {
+            newPosition = Video_IF.getInstance().getDuration() - 3;
         }
         if (newPosition <= 0) {
             newPosition = 0;
         }
-        Media_IF.getInstance().setPosition(newPosition);
+        Video_IF.getInstance().setPosition(newPosition);
         
-        mTimeSeekBar.showTrackView(isFastPre, Media_IF.getInstance().getPosition());
+        mTimeSeekBar.showTrackView(isFastPre, Video_IF.getInstance().getPosition());
     }
     
     private void collectOrUncollect() {
@@ -313,7 +313,7 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
 
     // 启动托盘隐藏计时器
     private void startHideTimer() {
-        if (Media_IF.getInstance().getPlayState() == PlayState.PLAY) {
+        if (Video_IF.getInstance().getPlayState() == PlayState.PLAY) {
             mHandler.removeMessages(HIDE_CTRL);
             mHandler.sendEmptyMessageDelayed(HIDE_CTRL, DELAY_TIME);
         }
@@ -354,7 +354,7 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
                 slaverShow(false);
                 break;
             case UPDATE_VIEWS:
-                updateCtrlBar(Media_IF.getInstance().getPlayState());
+                updateCtrlBar(Video_IF.getInstance().getPlayState());
                 startHideTimer();
                 break;
             default:

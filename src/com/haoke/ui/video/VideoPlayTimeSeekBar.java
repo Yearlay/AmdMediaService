@@ -63,7 +63,7 @@ public class VideoPlayTimeSeekBar extends RelativeLayout implements OnSeekBarCha
 
     // 内部变量
     private static final String TAG = "VideoPlayTimeSeekBar";
-    private Media_IF mIF;
+    private Video_IF mIF;
     private SeekBar mSeekBar;
     public SeekBar getSeekBar() {
 		return mSeekBar;
@@ -85,7 +85,7 @@ public class VideoPlayTimeSeekBar extends RelativeLayout implements OnSeekBarCha
 
     public VideoPlayTimeSeekBar(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mIF = Media_IF.getInstance();
+        mIF = Video_IF.getInstance();
     }
     
     public void showTrackView(boolean isFastPre, int position) {
@@ -96,7 +96,7 @@ public class VideoPlayTimeSeekBar extends RelativeLayout implements OnSeekBarCha
             positionStr = MediaUtil.TimeFormat(position);
         }
         showText.setText(positionStr);
-        int duration = Media_IF.getInstance().getDuration();
+        int duration = Video_IF.getInstance().getDuration();
         String durationStr = null;
         if (duration > 3600) {
         	durationStr  = MediaUtil.TimeFormat_HMS(duration);
