@@ -640,7 +640,6 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
             case ScanState.COMPLETED_ALL:
                 noticeStartStatus(ScanState.COMPLETED_ALL, deviceType);
                 DebugLog.d("Yearlay", "All task is over!!!");
-                sendBroadcast(new Intent("main_activity_update_ui"));
                 break;
             default:
                 break;

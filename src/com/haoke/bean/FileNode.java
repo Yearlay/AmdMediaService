@@ -20,6 +20,7 @@ import com.file.server.scan.ScanJni;
 import com.haoke.application.MediaApplication;
 import com.haoke.constant.DBConfig;
 import com.haoke.constant.MediaUtil;
+import com.haoke.data.AllMediaList;
 import com.haoke.define.MediaDef.DeviceType;
 import com.haoke.define.MediaDef.FileType;
 import com.haoke.scanner.MediaDbHelper;
@@ -496,11 +497,23 @@ public class FileNode {
     
     private boolean unSupportFlag;
     public boolean isUnSupportFlag() {
-    	return unSupportFlag;
+        return unSupportFlag;
     }
     
     public void setUnSupportFlag(boolean unSupportFlag) {
-    	this.unSupportFlag = unSupportFlag;
+        this.unSupportFlag = unSupportFlag;
+    }
+    
+    public boolean isExist(Context context) {
+        boolean existFlag = false;
+        if (deviceType != FileType.COLLECT) {
+        	StorageBean storageBean = AllMediaList.instance(context).getStoragBean(deviceType);
+            existFlag = storageBean.isMounted() && getFile().exists();
+        } else {
+            StorageBean storageBean = AllMediaList.instance(context).getStoragBean(fromDeviceType);
+            existFlag = storageBean.isMounted() && getFile().exists();
+        }
+        return existFlag;
     }
     
     /**

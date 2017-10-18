@@ -174,19 +174,21 @@ public class AllMediaList {
             clearMediaList(deviceType, FileType.IMAGE);
             clearMediaList(deviceType, FileType.AUDIO);
             clearMediaList(deviceType, FileType.VIDEO);
-            for (LoadListener listener : mLoadListenerList) {
-                listener.onScanStateChange(storageBean);
-            }
+            callOnScanStateChange(storageBean);
         } else {
             if (storageBean.isId3ParseCompleted()) {
                 mLocalHandler.obtainMessage(BEGIN_LOAD_ALL_THREAD, deviceType, 0, storageBean).sendToTarget();
             } else if (storageBean.getState() == StorageBean.FILE_SCANNING) {
-                // 通知监听者：文件正在扫描中。 
-                for (LoadListener listener : mLoadListenerList) {
-                    listener.onScanStateChange(storageBean);
-                }
+                callOnScanStateChange(storageBean);
             }
         }
+    }
+
+    private void callOnScanStateChange(StorageBean storageBean) {
+        for (LoadListener listener : mLoadListenerList) {
+            listener.onScanStateChange(storageBean);
+        }
+        mContext.sendBroadcast(new Intent("main_activity_update_ui"));
     }
     
     private static final int BEGIN_LOAD_THREAD = 1;
@@ -271,9 +273,7 @@ public class AllMediaList {
                 }
                 break;
             case NOTIFY_SCAN_LISTENER:
-                for (LoadListener listener : mLoadListenerList) {
-                    listener.onScanStateChange((StorageBean)msg.obj);
-                }
+                callOnScanStateChange((StorageBean)msg.obj);
                 break;
             default:
                 break;
@@ -371,7 +371,7 @@ public class AllMediaList {
     public void reLoadAllMedia(int fileType) {
         for (int deviceType : DBConfig.sScan3zaDefaultList) {
             if (AllMediaList.instance(mContext).getStoragBean(deviceType).isMounted()) {
-            	DebugLog.d(TAG, "reLoadAllMedia");
+                DebugLog.d(TAG, "reLoadAllMedia");
                 mLocalHandler.obtainMessage(BEGIN_LOAD_THREAD, deviceType, fileType, null).sendToTarget();
             }
         }
@@ -469,7 +469,6 @@ public class AllMediaList {
      */
     public void stopOperateThread() {
         if (mOperateThread != null) {
-        	DebugLog.e("leon_video", "onKeyUp mOperateThread interrupt");
             mOperateThread.interrupt();
         }
     }

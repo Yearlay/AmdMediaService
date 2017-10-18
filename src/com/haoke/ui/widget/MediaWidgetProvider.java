@@ -19,10 +19,13 @@ import com.amd.bt.BT_IF;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.ID3Parse;
 import com.haoke.bean.ID3Parse.ID3ParseListener;
+import com.haoke.bean.StorageBean;
 import com.haoke.constant.MediaUtil.FileType;
+import com.haoke.data.AllMediaList;
 import com.haoke.define.MediaDef.PlayState;
 import com.haoke.define.ModeDef;
 import com.haoke.mediaservice.R;
+import com.haoke.util.DebugLog;
 import com.haoke.util.Media_IF;
 import com.amd.radio.Radio_IF;
 
@@ -89,6 +92,8 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
                     remoteViews.setImageViewResource(R.id.widget_media_icon,
                             R.drawable.home1_card_media_default);
                 }
+            } else {
+                remoteViews.setImageViewResource(R.id.widget_media_icon, R.drawable.home1_card_media_default);
             }
         } else if (Media_IF.getInstance().getCurSource() == ModeDef.BT) {
             remoteViews.setImageViewResource(R.id.widget_media_icon, R.drawable.home1_card_media_default);
@@ -298,6 +303,11 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
         FileNode fileNode = Media_IF.getInstance().getDefaultItem();
         if (fileNode != null && fileNode.getParseId3() == 0) {
             ID3Parse.instance().parseID3(context, fileNode, this);
+        }
+        if (fileNode != null) {
+        	DebugLog.e("Yearlay", "AppWidget getDefaultItem : " + fileNode.getFilePath());
+        } else {
+        	DebugLog.e("Yearlay", "AppWidget getDefaultItem : null");
         }
         return fileNode;
     }

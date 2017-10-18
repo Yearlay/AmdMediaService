@@ -33,6 +33,7 @@ import com.haoke.define.MediaDef.ScanState;
 import com.haoke.define.ModeDef;
 import com.haoke.service.MediaClient;
 import com.haoke.spectrum.Spectrum;
+import com.haoke.util.DebugLog;
 import com.haoke.util.Media_IF;
 import com.haoke.video.VideoSurfaceView;
 
@@ -1026,21 +1027,15 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		if (mPlayMusicFileNode == null) {
 			loadFlag = true;
 		} else {
-			StorageBean bean = mAllMediaList.getStoragBean(mPlayMusicFileNode.getDeviceType());
-			if (!bean.isMounted()) { // 设备没有挂载。
+			if (!mPlayMusicFileNode.isExist(mContext)) {
 				mPlayMusicFileNode = null;
 				loadFlag = true;
-			} else { // 如果设备存在.
-				if (!mPlayMusicFileNode.getFile().exists()) { // 判断文件是否存在。
-					mPlayMusicFileNode = null;
-					loadFlag = true;
-				}
 			}
 		}
 		
 		if (loadFlag) {
 			int[] deviceTypes = {getPlayingDeviceType(), mAllMediaList.getLastDeviceType(),
-					DeviceType.USB1, DeviceType.USB2, DeviceType.COLLECT, DeviceType.FLASH};
+					DeviceType.USB1, DeviceType.USB2, DeviceType.FLASH, DeviceType.COLLECT};
 			for (int deviceType : deviceTypes) {
 				if (deviceType == DeviceType.NULL) {
 					continue;
@@ -1049,18 +1044,22 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 				if (bean.isMounted() && bean.isId3ParseCompleted()) {
 					ArrayList<FileNode> lists = mAllMediaList.getMediaList(deviceType, FileType.AUDIO);
 					if (lists.size() > 0) {
-						int position = getPlayingPos();
+						int position = 0;
+						if (getPlayingDeviceType() == deviceType) {
+							position = getPlayingPos();
+						}
 						position = position <= 0 ? 0 : position;
 						position = position >= (lists.size() - 1) ? lists.size() - 1 : position;
-						do {
-							FileNode fileNode = lists.get(position);
-							if (fileNode != null) {
-								mPlayMusicFileNode = fileNode;
-							} else {
-								position++;
-								position = position >= lists.size() ? 0 : position;
+						mPlayMusicFileNode = lists.get(position);
+						if (!mPlayMusicFileNode.isExist(mContext)) {
+							mPlayingFileNode = null;
+						}
+						for (FileNode fileNode : lists) {
+							if (fileNode.isExist(mContext)) {
+								mPlayingFileNode = fileNode;
+								break;
 							}
-						} while (mPlayMusicFileNode == null);
+						}
 						break;
 					}
 				}
