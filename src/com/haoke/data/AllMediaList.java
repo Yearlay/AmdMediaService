@@ -750,7 +750,7 @@ public class AllMediaList {
         MediaApplication.getInstance().sendBroadcast(new Intent("main_activity_update_ui"));
     }
     
-    public void deleteOldCollect(int fileType) {
+    public void deleteOldCollect(final int fileType) {
         ArrayList<FileNode> mediaList = null;
         String tableName = DBConfig.getTableName(DeviceType.COLLECT, fileType);
         mediaList = mAllMediaHash.get(tableName);
@@ -769,7 +769,7 @@ public class AllMediaList {
             uncollectMediaFile(oldFileNode, new OperateListener() {
                 @Override
                 public void onOperateCompleted(int operateValue, int progress, int resultCode) {
-                    AllMediaList.instance(mContext).reLoadAllMedia(FileType.IMAGE);
+                    AllMediaList.instance(mContext).reLoadAllMedia(fileType);
                 }
             });
         }

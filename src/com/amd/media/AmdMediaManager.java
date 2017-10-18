@@ -1129,7 +1129,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
         for (FileNode fileNode : allList) {
             if (fileNode.isSelected()) {
                 selectedList.add(fileNode);
-                if (fileNode.isSame(mPlayingFileNode)) {
+                if (fileNode.isSame(mPlayingFileNode) && !fileNode.isFromCollectTable()) {
                 	setPlayState(PlayState.PAUSE);
                 	setPlayState(PlayState.STOP);
                 }
