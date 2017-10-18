@@ -269,13 +269,16 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 			return false;
 		}
 		
+		mPlayingFileNode = node;
+		if (mPlayingDeviceType == DeviceType.NULL || mPlayingFileType == FileType.NULL) {
+			setPlayingData(node.getDeviceType(), node.getFileType(), true);
+		}
 		changeSource(mPlayingFileType);
 		requestAudioFocus(true);
 		if (mPlayingFileType == FileType.AUDIO && mRepeatMode == RepeatMode.RANDOM) { // 随机开
 			mRandomListPos = changeIndexToRandomPos(mPlayingPos);
 		}
 
-		mPlayingFileNode = node;
 		if (node.getFileType() == FileType.AUDIO) {
 			mPlayMusicFileNode = node;
 		}
@@ -861,11 +864,14 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 			source = ModeDef.AUDIO;
 		} else if (fileType == FileType.VIDEO) {
 			source = ModeDef.VIDEO;
+		} else {
+			return;
 		}
-		if (mCurSource != source) {
-			mCurSource = source;
-			com.haoke.util.Media_IF.setCurSource(mCurSource);
-		}
+		Media_IF.setCurSource(source);
+//		if (mCurSource != source) {
+//			mCurSource = source;
+//			com.haoke.util.Media_IF.setCurSource(mCurSource);
+//		}
 	}
 	
 	/**
@@ -874,20 +880,20 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	 */
 	public void sourceChanged(int source) {
 		Log.v(TAG, "sourceChanged source=" + source);
-		if (source == ModeDef.IMAGE) {
-			return;
-		}
-		if (source != ModeDef.AUDIO && source != ModeDef.VIDEO) {
-			mCurSource = ModeDef.NULL;
-//			if (getPlayState() == PlayState.PLAY) {
-//				Log.v(TAG, "sourceChanged setPlayState PAUSE");
-//				setPlayState(PlayState.PAUSE); // 暂停播放
-//			}
-		}
-		if (source != ModeDef.AUDIO && source != ModeDef.VIDEO 
-				&& source != ModeDef.IMAGE ) {
-			mCurSource = source;
-		}
+//		if (source == ModeDef.IMAGE) {
+//			return;
+//		}
+//		if (source != ModeDef.AUDIO && source != ModeDef.VIDEO) {
+//			mCurSource = ModeDef.NULL;
+////			if (getPlayState() == PlayState.PLAY) {
+////				Log.v(TAG, "sourceChanged setPlayState PAUSE");
+////				setPlayState(PlayState.PAUSE); // 暂停播放
+////			}
+//		}
+//		if (source != ModeDef.AUDIO && source != ModeDef.VIDEO 
+//				&& source != ModeDef.IMAGE ) {
+//			mCurSource = source;
+//		}
 	}
 	
 	private boolean hasAudioFocus() {

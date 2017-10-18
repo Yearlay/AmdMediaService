@@ -157,8 +157,10 @@ public class Media_IF extends CarService_IF {
 	// 设置当前源
 	public static boolean setCurSource(int source) {
 		try {
-			Log.d(TAG, "setCurSource source="+source);
-			return getInstance().mServiceIF.mcu_setCurSource(source);
+			if (getCurSource() != source) {
+				Log.d(TAG, "setCurSource source="+source);
+				return getInstance().mServiceIF.mcu_setCurSource(source);
+			}
 		} catch (Exception e) {
 			Log.e(TAG, "setCurSource exception");
 			e.printStackTrace();
