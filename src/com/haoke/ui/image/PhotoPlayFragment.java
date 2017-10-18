@@ -59,6 +59,7 @@ public class PhotoPlayFragment extends Fragment implements OnClickListener,
     private PhotoPagerAdapter mAdapter;
     private Handler mActivityHandler;
     private int mDeviceType;
+    private int mLastPosition;
     private boolean mPreFlag;
     
     private ProgressDialog mProgressDialog;
@@ -67,12 +68,14 @@ public class PhotoPlayFragment extends Fragment implements OnClickListener,
     
     public void setPlayState(int playState) {
         mPlayState = playState;
+        mPreFlag = false;
         if (mRootView != null) {
             updatePlayState(mPlayState);
         }
     }
     
     public void setCurrentPosition(int position) {
+    	mLastPosition = position;
         PlayStateSharedPreferences.instance(getActivity()).saveImageCurrentPosition(position);
     }
     
@@ -134,6 +137,8 @@ public class PhotoPlayFragment extends Fragment implements OnClickListener,
                 mDialog.ShowDialog(mContext, DIALOG_TYPE.NONE_BTN, R.string.media_play_nosupport);
                 mDialog.getDialog().setOnDismissListener(PhotoPlayFragment.this);
             }
+            mPreFlag = mLastPosition > position;
+            mLastPosition = position;
         }
     };
     
@@ -249,7 +254,6 @@ public class PhotoPlayFragment extends Fragment implements OnClickListener,
             }
             break;
         case R.id.image_ctrlbar_pre:
-            mPreFlag = true;
             preImage();
             break;
         case R.id.image_ctrlbar_pp:
@@ -257,7 +261,6 @@ public class PhotoPlayFragment extends Fragment implements OnClickListener,
             updatePlayState(mPlayState);
             break;
         case R.id.image_ctrlbar_next:
-            mPreFlag = false;
             nextImage();
             break;
         case R.id.image_ctrlbar_turnr:
