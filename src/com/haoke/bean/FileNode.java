@@ -418,6 +418,14 @@ public class FileNode {
         return filePath.equals(fileNode.getFilePath());
     }
     
+    public boolean isSamePathAndFrom(FileNode fileNode) {
+        if (fileNode == null) {
+            return false;
+        }
+        return filePath.equals(fileNode.getFilePath()) &&
+                isFromCollectTable == fileNode.isFromCollectTable;
+    }
+    
     private boolean isSelected;
 
     public boolean isSelected() {
