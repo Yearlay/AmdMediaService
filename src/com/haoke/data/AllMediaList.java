@@ -411,7 +411,7 @@ public class AllMediaList {
         ArrayList<FileNode> list = getMediaList(deviceType, fileType);
         if (list.size() > 0) {
             if ("".equals(valueStr)) {
-                fileNode = getMediaList(deviceType, fileType).get(0);
+                //fileNode = getMediaList(deviceType, fileType).get(0);
             } else {
                 String splitStr = PlayStateSharedPreferences.SPLIT_STR;
                 String filePath = valueStr.substring(0, valueStr.indexOf(splitStr));
