@@ -509,17 +509,17 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		return mSpectrum.getFreqData(index);
 	}
 
-	// 获取播放总时间
+	// 获取播放总时间，毫秒
 	public int getDuration() {
 		return mMediaPlayer.getDuration();
 	}
 
-	// 设置当前播放时间
+	// 设置当前播放时间，毫秒
 	public void setPosition(int time) {
 		mMediaPlayer.seekTo(time);
 	}
 
-	// 获取当前播放时间
+	// 获取当前播放时间，毫秒
 	public int getPosition() {
 		return mMediaPlayer.getPosition();
 	}
