@@ -141,7 +141,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     private void scanOperate(Intent intent) {
         switch (intent.getIntExtra(ScanType.SCAN_TYPE_KEY, ScanType.SCAN_ALL)) {
         case ScanType.SCAN_ALL: // 扫描所有已经挂载的磁盘。
-            mScanner.beginScanningAllStorage();
+            // mScanner.beginScanningAllStorage();
             break;
         case ScanType.SCAN_STORAGE: // 指定磁盘进行扫描。
             mScanner.beginScanningStorage(intent.getStringExtra(ScanType.SCAN_FILE_PATH));
@@ -231,7 +231,9 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     private void operateImage(boolean yesOperate) {
         DebugLog.d(TAG, "operateImage");
         if (yesOperate) {
-            launchSourceActivity(ModeSwitch.MUSIC_LOCAL_MODE);
+        	Intent intent = new Intent(this, Image_Activity_Main.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
         } else {
             Intent intent = new Intent(VRIntent.ACTION_OPERATE_IMAGE);
             intent.putExtra(VRIntent.KEY_IMAGE, VRIntent.FINISH_IMAGE);
