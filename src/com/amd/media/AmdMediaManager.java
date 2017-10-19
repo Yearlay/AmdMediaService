@@ -619,6 +619,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		if (!mScanMode) {
 			next(false); // 自动播放下一曲
 		}
+		mAllMediaList.clearPlayState(mPlayingDeviceType, mPlayingFileType);
 		mIsPlayDefault = false;
 		onDataChanged(mMediaMode, MediaFunc.COMPLETION, 0, 0);
 	}
@@ -645,6 +646,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 				playOver();
 			}
 		}
+		mAllMediaList.clearPlayState(mPlayingDeviceType, mPlayingFileType);
 		mIsPlayDefault = false;
 
 		onDataChanged(mMediaMode, MediaFunc.ERROR, 0, 0);
@@ -663,6 +665,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 				playOver();
 			}
 		}
+		mAllMediaList.clearPlayState(mPlayingDeviceType, mPlayingFileType);
 		mIsPlayDefault = false;
 
 		onDataChanged(mMediaMode, MediaFunc.ERROR, 0, 0);
