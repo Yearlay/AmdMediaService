@@ -570,7 +570,11 @@ public class Radio_Activity_Main extends Fragment implements Radio_CarListener, 
 
     @Override
     public void onServiceConn() {
+    	Log.d(TAG, "onServiceConn");
         mIF.setCurBand();    
+        if (mFreqNumTextView!=null) {
+        	updateFreq(mIF.getCurFreq());
+        }
     }
     
     private void updateAll() {}
