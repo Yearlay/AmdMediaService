@@ -579,12 +579,12 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
                 mIF.setInterface(1);//回播放界面
             } else {
                 mIF.play(position);
-                Intent musicIntent = new Intent();
-                musicIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                musicIntent.setClassName("com.haoke.mediaservice", "com.haoke.ui.media.Media_Activity_Main");
-                musicIntent.putExtra("Mode_To_Music", "music_play_intent");
-                startActivity(musicIntent);
             }
+            Intent musicIntent = new Intent();
+            musicIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            musicIntent.setClassName("com.haoke.mediaservice", "com.haoke.ui.media.Media_Activity_Main");
+            musicIntent.putExtra("Mode_To_Music", "music_play_intent");
+            startActivity(musicIntent);
         } else if (mType == 1){//编辑列表
             if (mIF.isCurItemSelected(position)) {
                 mIF.selectFile(position, false);

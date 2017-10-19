@@ -90,6 +90,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         mRadioIF = Radio_IF.getInstance();
         mMediaIF.setContext(this);
         mMediaIF.bindCarService();
+        mMediaIF.initMedia();
 
         // 发广播通知服务已经启动
         Intent intent = new Intent();

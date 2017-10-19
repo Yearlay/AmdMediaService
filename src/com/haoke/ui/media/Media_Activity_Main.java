@@ -95,7 +95,7 @@ public class Media_Activity_Main extends FragmentActivity implements OnClickList
             	fromIntent = true;
             }
             if (fromIntent) {
-            	setIntent(null);
+//            	setIntent(null);
             	updateSystemUILabel(source, true);
             	if (source == ModeDef.BT) {
             		replaceBtMusicFragment();
