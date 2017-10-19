@@ -616,11 +616,11 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	@Override
 	public void onCompletion() {
 		Log.v(TAG, "onCompletion");
+		clearPlayRecord();
+		mIsPlayDefault = false;
 		if (!mScanMode) {
 			next(false); // 自动播放下一曲
 		}
-		mAllMediaList.clearPlayState(mPlayingDeviceType, mPlayingFileType);
-		mIsPlayDefault = false;
 		onDataChanged(mMediaMode, MediaFunc.COMPLETION, 0, 0);
 	}
 
@@ -635,6 +635,8 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	@Override
 	public void onError() {
 		Log.v(TAG, "onError mErrorCount:" + mErrorCount);
+		clearPlayRecord();
+		mIsPlayDefault = false;
 		if (!mScanMode) {
 			if (mErrorCount < 5) {
 				mErrorCount++;
@@ -646,8 +648,6 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 				playOver();
 			}
 		}
-		mAllMediaList.clearPlayState(mPlayingDeviceType, mPlayingFileType);
-		mIsPlayDefault = false;
 
 		onDataChanged(mMediaMode, MediaFunc.ERROR, 0, 0);
 	}
@@ -656,6 +656,8 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	@Override
 	public void onIOException() {
 		Log.v(TAG, "onIOException mErrorCount:" + mErrorCount);
+		clearPlayRecord();
+		mIsPlayDefault = false;
 		if (!mScanMode) {
 			if (mErrorCount < 5) {
 				mErrorCount++;
@@ -665,8 +667,6 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 				playOver();
 			}
 		}
-		mAllMediaList.clearPlayState(mPlayingDeviceType, mPlayingFileType);
-		mIsPlayDefault = false;
 
 		onDataChanged(mMediaMode, MediaFunc.ERROR, 0, 0);
 	}
