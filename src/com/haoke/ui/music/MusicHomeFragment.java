@@ -60,6 +60,7 @@ public class MusicHomeFragment extends Fragment implements Media_Listener, BT_Li
 		mHomeLayout = (MusicHomeLayout) rootView.findViewById(R.id.music_home_layout);
 		mPlayLayoutStub = (ViewStub) rootView.findViewById(R.id.music_play_layout_stub);
 		mPlayLayout = null;
+		mRefreshLayout = true;
 		return rootView;
 	}
 
