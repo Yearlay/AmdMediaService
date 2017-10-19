@@ -47,6 +47,7 @@ public class MusicHomeFragment extends Fragment implements Media_Listener, BT_Li
 		mBTIF = BT_IF.getInstance();
 		mBTIF.bindBTService();
 		mBTMusicIF = BTMusic_IF.getInstance();
+		Log.d(TAG, "MusicHomeFragment()");
 	}
 
 	@Override
@@ -382,11 +383,11 @@ public class MusicHomeFragment extends Fragment implements Media_Listener, BT_Li
 		Log.d(TAG, "onBTStateChange data="+data);
 		mHomeLayout.setBTConnectedState(data);
 		if (data == BTConnState.DISCONNECTED) {
-			if (mShowLayout != ShowLayout.HOME_LAYOUT) {
+			if (mShowLayout == ShowLayout.BT_PLAY_LAYOUT) {
 				changeShowLayout(ShowLayout.HOME_LAYOUT);
 			}
 			showBTDialog();
-		} else if (mIF.getCurSource() != ModeDef.BT) {
+		} else if (Media_IF.getCurSource() != ModeDef.BT) {
 			
 		} else if (data == BTConnState.CONNECTED) {
 			if (mShowLayout != ShowLayout.BT_PLAY_LAYOUT) {
