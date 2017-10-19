@@ -495,10 +495,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
                 mIF.copyStart();
             }
         } else {
-            if (mErrorDialog == null) {
-                mErrorDialog = new CustomDialog();
-            }
-            mErrorDialog.ShowDialog(this, DIALOG_TYPE.ONE_BTN, R.string.failed_check_available_size);
+            new CustomDialog().ShowDialog(this, DIALOG_TYPE.ONE_BTN, R.string.failed_check_available_size);
         }
     }
     

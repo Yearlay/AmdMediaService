@@ -278,10 +278,7 @@ public class PhotoListFragment extends Fragment implements OnItemClickListener, 
                 AllMediaList.instance(mContext).copyToLocal(selectList, PhotoListFragment.this);
             }
         } else {
-            if (mErrorDialog == null) {
-                mErrorDialog = new CustomDialog();
-            }
-            mErrorDialog.ShowDialog(mContext, DIALOG_TYPE.ONE_BTN, R.string.failed_check_available_size);
+            new CustomDialog().ShowDialog(mContext, DIALOG_TYPE.ONE_BTN, R.string.failed_check_available_size);
         }
     }
     

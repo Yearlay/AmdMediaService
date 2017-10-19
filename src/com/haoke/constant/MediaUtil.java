@@ -689,7 +689,7 @@ public class MediaUtil {
         StatFs sf = new StatFs("/mnt/media_rw/internal_sd"); 
         long blockSize = sf.getBlockSize(); 
         long blockCount = sf.getBlockCount(); 
-        long availCount = sf.getAvailableBlocks(); 
-        return availCount * blockSize - totalSize  > 5368709120L;
+        long availCount = sf.getAvailableBlocks();
+        return (availCount * blockSize - totalSize)  > 5368709120L;
     }
 }

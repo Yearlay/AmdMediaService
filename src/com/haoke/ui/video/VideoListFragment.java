@@ -311,10 +311,7 @@ public class VideoListFragment extends Fragment implements OnHKTouchListener,
                 AllMediaList.instance(mContext).copyToLocal(selectList, VideoListFragment.this);
             }
         } else {
-            if (mErrorDialog == null) {
-                mErrorDialog = new CustomDialog();
-            }
-            mErrorDialog.ShowDialog(mContext, DIALOG_TYPE.ONE_BTN, R.string.failed_check_available_size);
+            new CustomDialog().ShowDialog(mContext, DIALOG_TYPE.ONE_BTN, R.string.failed_check_available_size);
         }
     }
     
