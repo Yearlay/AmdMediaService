@@ -32,11 +32,12 @@ import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.constant.VRConstant.VRIntent;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.LoadListener;
-import com.haoke.data.ModeSwitch;
 import com.haoke.data.PlayStateSharedPreferences;
 import com.haoke.define.MediaDef.PlayState;
 import com.haoke.mediaservice.R;
 import com.haoke.ui.media.MediaSearchActivity;
+import com.haoke.ui.widget.CustomDialog;
+import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
 import com.haoke.util.DebugLog;
 
 public class Image_Activity_Main extends FragmentActivity implements
@@ -241,10 +242,16 @@ public class Image_Activity_Main extends FragmentActivity implements
 
     @Override
     public void onScanStateChange(StorageBean storageBean) {
+    	DebugLog.d("Yearlay", "onScanStateChange deviceType: " + storageBean.getDeviceType() +
+    			" && isMounted: " + storageBean.isMounted());
         // 处理磁盘状态 和 扫描状态发生改变的状态： 主要是更新UI的显示效果。
         if (storageBean.getDeviceType() == getCurrentDeviceType()) {
             updateDevice(getCurrentDeviceType());
             onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
+            if (!storageBean.isMounted()) {
+                new CustomDialog().ShowDialog(Image_Activity_Main.this, DIALOG_TYPE.NONE_BTN,
+                        R.string.music_device_pullout_usb);
+            }
         }
     }
     
