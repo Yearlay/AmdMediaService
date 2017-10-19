@@ -182,6 +182,7 @@ public class Radio_Activity_Main extends Fragment implements Radio_CarListener, 
     
     private void getViewPagerFragmentNum(){
         int num = Data_Common.stationList.size();
+        Log.d(TAG, "getViewPagerFragmentNum num="+num);
         Data_Common.pager = num/5;
         Data_Common.reminder = num%5;
         if (Data_Common.reminder != 0) {
@@ -347,7 +348,11 @@ public class Radio_Activity_Main extends Fragment implements Radio_CarListener, 
         //Data_Common.stationList.clear();
         for (int i = 0; i < FREQ_COUNT_MAX; i++) {
             int freq = mIF.getChannel(i);
-            if (freq != 0 && !haveFreq(freq)) {
+            boolean addFlag = freq != 0 && !haveFreq(freq);
+            if (freq != 0) {
+                Log.d(TAG, "updateAllStations i="+i+"; freq="+freq+"; addFlag="+addFlag);
+            }
+            if (addFlag) {
                 String freq_string = String.valueOf(freq);
                 if (freq >= 8750) {
                     freq_string = freq_string.substring(0, freq_string.length()-2)+"."+freq_string.substring(freq_string.length()-2);

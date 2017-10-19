@@ -247,7 +247,7 @@ public class MediaSearchActivity extends Activity implements OnClickListener,
                 holder.mIconView.setImageResource(R.drawable.media_list_item_music);
                 if (fileNode.getParseId3() == 1) {
                     ImageLoad.instance(MediaSearchActivity.this).loadBitmap(holder.mIconView,
-                            R.drawable.image_icon_default, fileNode);
+                            R.drawable.media_list_item_music, fileNode);
                 }
             } else if (fileNode.getFileType() == FileType.VIDEO) {
                 holder.mIconView.setImageResource(R.drawable.image_icon_default);
@@ -274,7 +274,9 @@ public class MediaSearchActivity extends Activity implements OnClickListener,
                 //3.更新ui
                 if (holder != null && fileNode.getParseId3() == 1) {
                     ImageLoad.instance(MediaSearchActivity.this).loadBitmap(holder.mIconView,
-                            R.drawable.image_icon_default, fileNode);
+                            fileNode.getFileType() == FileType.AUDIO ? 
+                                    R.drawable.media_list_item_music : R.drawable.image_icon_default,
+                                    fileNode);
                     if (mFileType == FileType.AUDIO || mFileType == FileType.VIDEO) {
                         String artist = fileNode.getArtist();
                         String album = fileNode.getAlbum();

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.RemoteException;
 import android.util.Log;
 
+import com.amd.media.MediaInterfaceUtil;
 import com.haoke.aidl.IBTCallBack;
 import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.btjar.main.BTDef.BTDeviceState;
@@ -110,6 +111,9 @@ public class BT_IF extends BTService_IF {
 	public void music_play() {
 		try {
 			Log.v(TAG, "music_play() musicOpen="+musicOpen);
+			if (MediaInterfaceUtil.mediaCannotPlay()) {
+				return;
+			}
 			if (!musicOpen) {
 				music_open();
 			}
@@ -147,6 +151,9 @@ public class BT_IF extends BTService_IF {
 	public void music_pre() {
 		try {
 			Log.v(TAG, "music_pre() musicOpen="+musicOpen);
+			if (MediaInterfaceUtil.mediaCannotPlay()) {
+				return;
+			}
 			if (!musicOpen) {
 				music_open();
 			}
@@ -162,6 +169,9 @@ public class BT_IF extends BTService_IF {
 	public void music_next() {
 		try {
 			Log.v(TAG, "music_next() musicOpen="+musicOpen);
+			if (MediaInterfaceUtil.mediaCannotPlay()) {
+				return;
+			}
 			if (!musicOpen) {
 				music_open();
 			}
