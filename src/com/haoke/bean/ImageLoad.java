@@ -1,18 +1,23 @@
 package com.haoke.bean;
 
+import java.io.File;
+
 import com.haoke.constant.MediaUtil.FileType;
+import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
+import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
+import com.nostra13.universalimageloader.utils.StorageUtils;
 
 import android.content.Context;
 import android.widget.ImageView;
 
 public class ImageLoad {
-    private static final int MAX_SIZE =  50 * 1024 * 1024;
+    private static final int MAX_SIZE =  32 * 1024 * 1024;
     private Context mContext;
     
     private static ImageLoad sInstance;
@@ -26,15 +31,25 @@ public class ImageLoad {
 
     public ImageLoad(Context context) {
         super();
-        mContext = context;
-        
-        ImageLoaderConfiguration.Builder config = new ImageLoaderConfiguration.Builder(mContext);
-        config.threadPriority(Thread.NORM_PRIORITY - 2);
-        config.denyCacheImageMultipleSizesInMemory();
-        config.diskCacheFileNameGenerator(new Md5FileNameGenerator());
-        config.diskCacheSize(MAX_SIZE); // 50 MiB
-        config.tasksProcessingOrder(QueueProcessingType.LIFO);
-        ImageLoader.getInstance().init(config.build());
+        mContext = context.getApplicationContext();
+        File cacheDir = StorageUtils.getOwnCacheDirectory(mContext, "imageloader/Cache");
+        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+                .cacheInMemory(true).cacheOnDisc(true).build();
+
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(mContext)
+                .defaultDisplayImageOptions(defaultOptions)
+                .memoryCache(new LruMemoryCache(12 * 1024 * 1024))
+                .memoryCacheSize(12 * 1024 * 1024)
+                .discCacheSize(32 * 1024 * 1024).discCacheFileCount(100)
+                .diskCache(new UnlimitedDiskCache(cacheDir))
+                .threadPriority(Thread.NORM_PRIORITY - 2)
+                .denyCacheImageMultipleSizesInMemory()
+                .diskCacheFileNameGenerator(new Md5FileNameGenerator())
+                .tasksProcessingOrder(QueueProcessingType.LIFO)
+                .writeDebugLogs()
+                .build();
+
+        ImageLoader.getInstance().init(config);
     }
     
     public ImageLoader getImageLoader() {
