@@ -25,6 +25,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amd.media.MediaInterfaceUtil;
 import com.haoke.bean.FileNode;
 import com.haoke.constant.MediaUtil;
 import com.haoke.constant.MediaUtil.FileType;
@@ -32,7 +33,6 @@ import com.haoke.data.AllMediaList;
 import com.haoke.data.OperateListener;
 import com.haoke.define.MediaDef.PlayState;
 import com.haoke.mediaservice.R;
-import com.haoke.util.Media_IF;
 import com.haoke.video.VideoSurfaceView;
 import com.haoke.window.HKWindowManager;
 
@@ -211,21 +211,36 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
             }
             break;
         case R.id.video_ctrlbar_pre:
+        	if (MediaInterfaceUtil.mediaCannotPlay()) {
+        		break;
+        	}
             if (mActivityHandler != null) {
                 mActivityHandler.sendEmptyMessage(Video_Activity_Main.PLAY_PRE);
             }
             break;
         case R.id.video_ctrlbar_fastpre:  // 快退
+        	if (MediaInterfaceUtil.mediaCannotPlay()) {
+        		break;
+        	}
             showToast(true);
             break;
         case R.id.video_ctrlbar_pp:
+        	if (MediaInterfaceUtil.mediaCannotPlay()) {
+        		break;
+        	}
             Video_IF.getInstance().changePlayState();
             updateCtrlBar(Video_IF.getInstance().getPlayState());
             break;
         case R.id.video_ctrlbar_fastnext: // 快进
+        	if (MediaInterfaceUtil.mediaCannotPlay()) {
+        		break;
+        	}
             showToast(false);
             break;
         case R.id.video_ctrlbar_next:
+        	if (MediaInterfaceUtil.mediaCannotPlay()) {
+        		break;
+        	}
             if (mActivityHandler != null) {
                 mActivityHandler.sendEmptyMessage(Video_Activity_Main.PLAY_NEXT);
             }

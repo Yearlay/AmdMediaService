@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import com.amd.bt.BTMusic_IF;
 import com.amd.bt.BT_IF;
+import com.amd.media.MediaInterfaceUtil;
 import com.haoke.constant.MediaUtil;
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.data.AllMediaList;
@@ -452,6 +453,9 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
     
     private int mScanStartPos = -1;
     private void enterScanMode() {
+        if (MediaInterfaceUtil.mediaCannotPlay()) {
+            return;
+        }
     	if (!mIF.getScanMode()) {
         	mIF.setScanMode(true);
         	mScanStartPos = mIF.getPlayPos();

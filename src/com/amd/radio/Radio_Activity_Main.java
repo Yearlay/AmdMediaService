@@ -7,6 +7,7 @@ import com.haoke.define.RadioDef.RadioFunc;
 import com.haoke.mediaservice.R;
 import com.haoke.serviceif.CarService_Listener;
 import com.haoke.ui.media.Media_Activity_Main;
+import com.amd.media.MediaInterfaceUtil;
 import com.amd.radio.Radio_IF;
 import com.amd.radio.Radio_CarListener;
 
@@ -118,14 +119,17 @@ public class Radio_Activity_Main extends Fragment implements Radio_CarListener, 
         
         if(Data_Common.tempFreq.size() > 0){
             int freq = Radio_IF.sfreqToInt(Data_Common.tempFreq.get(0));
+            Data_Common.tempFreq.clear();
             if (isRescan || isScan5S) {
             	isScan5S = false;
                 isRescan = false;
                 mIF.stopScan();
             }
+            if (MediaInterfaceUtil.mediaCannotPlay()) {
+                return;
+            }
             mIF.setCurFreq(freq);
             updateFreq(freq);
-            Data_Common.tempFreq.clear();
             if (!mIF.isEnable()) {
             	mIF.setEnable(true);
             }
@@ -282,6 +286,9 @@ public class Radio_Activity_Main extends Fragment implements Radio_CarListener, 
             int id = v.getId();
             String sfreq = ((Button)v).getText().toString();
             Log.d(TAG, "MyOnClickListener onClick sfreq="+sfreq);
+            if (MediaInterfaceUtil.mediaCannotPlay()) {
+                return;
+            }
             int freq = -1;
             if (sfreq != null) { 
                 for (int i=0; i<Data_Common.stationList.size(); i++) {
@@ -408,17 +415,36 @@ public class Radio_Activity_Main extends Fragment implements Radio_CarListener, 
         Log.d(TAG, "onClick id="+id+"; isRescan="+isRescan+"; isScan5S="+isScan5S);
         if(id == R.id.radio_fragment_all){
             startActivity(new Intent(getActivity(), Radio_To_Favorite.class));
+            return;
         } else if (id == R.id.radio_fragment_down){
             int currentPage = viewPager.getCurrentItem();
             if (currentPage != Data_Common.pager -1) {
                 viewPager.setCurrentItem((currentPage + 1));
             }
+            return;
         } else if (id == R.id.radio_fragment_up){
             int currentPage = viewPager.getCurrentItem();
             if (currentPage != 0) {
                 viewPager.setCurrentItem((currentPage - 1));
             }
-        } else if(id == R.id.radio_fragment_rescan){
+            return;
+        } else if (id == R.id.radio_fragment_ib_collect) {
+            boolean isCollected = mIF.isCollected(getActivity(), tempFreq);
+            if (isCollected) {
+                if (mIF.uncollectFreq(getActivity(), tempFreq, true)) {
+                    mCollectButton.setImageResource(R.drawable.media_uncollect);
+                }
+            } else {
+                if (mIF.collectFreq(getActivity(), tempFreq, true)) {
+                    mCollectButton.setImageResource(R.drawable.media_collect);
+                }
+            }
+            return;
+        }
+        if (MediaInterfaceUtil.mediaCannotPlay()) {
+            return;
+        }
+        if(id == R.id.radio_fragment_rescan){
             if (isRescan) {
                 isRescan = false;
                 mIF.stopScan();
@@ -444,17 +470,6 @@ public class Radio_Activity_Main extends Fragment implements Radio_CarListener, 
                 }
                 isScan5S = true;
                 mIF.setScan();
-            }
-        } else if (id == R.id.radio_fragment_ib_collect) {
-            boolean isCollected = mIF.isCollected(getActivity(), tempFreq);
-            if (isCollected) {
-                if (mIF.uncollectFreq(getActivity(), tempFreq, true)) {
-                    mCollectButton.setImageResource(R.drawable.media_uncollect);
-                }
-            } else {
-                if (mIF.collectFreq(getActivity(), tempFreq, true)) {
-                    mCollectButton.setImageResource(R.drawable.media_collect);
-                }
             }
         } else if (id == R.id.radio_fragment_add) {
             mIF.setNextStep();
@@ -485,6 +500,9 @@ public class Radio_Activity_Main extends Fragment implements Radio_CarListener, 
     public boolean onLongClick(View v) {
         int id = v.getId();
         Log.d(TAG, "onLongClick id="+id);
+        if (MediaInterfaceUtil.mediaCannotPlay()) {
+            return true;
+        }
         if (id == R.id.radio_fragment_pre) {
             mIF.setPreSearch();
         } else if (id == R.id.radio_fragment_next) {

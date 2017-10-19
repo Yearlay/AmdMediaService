@@ -2,6 +2,7 @@ package com.amd.radio;
 
 import java.util.ArrayList;
 
+import com.amd.media.MediaInterfaceUtil;
 import com.haoke.data.AllMediaList;
 import com.haoke.mediaservice.R;
 
@@ -287,6 +288,9 @@ public class SearchRadioActivity extends Activity implements OnClickListener,
 	}
 	
 	private void setCurFreq(String sfreq, String stationName) {
+		if (MediaInterfaceUtil.mediaCannotPlay()) {
+			return;
+		}
 		Data_Common.tempFreq.clear();
 		Data_Common.tempFreq.add(sfreq);
 		Data_Common.tempFreq.add(stationName);

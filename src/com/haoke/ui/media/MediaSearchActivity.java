@@ -2,13 +2,13 @@ package com.haoke.ui.media;
 
 import java.util.ArrayList;
 
+import com.amd.media.MediaInterfaceUtil;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.ID3Parse;
 import com.haoke.bean.ImageLoad;
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.SearchListener;
-import com.haoke.define.ModeDef;
 import com.haoke.define.MediaDef.DeviceType;
 import com.haoke.mediaservice.R;
 import com.haoke.ui.image.Image_Activity_Main;
@@ -140,9 +140,17 @@ public class MediaSearchActivity extends Activity implements OnClickListener,
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Log.e(TAG, "onItemClick position:" + position);
+        if (MediaInterfaceUtil.mediaCannotPlay()) {
+            return;
+        }
         FileNode fileNode = mSearchAdapter.mResultStationList.get(position);
         if (mFileType == FileType.AUDIO) {
             Media_IF.getInstance().play(fileNode);
+            Intent musicIntent = new Intent();
+            musicIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            musicIntent.setClassName("com.haoke.mediaservice", "com.haoke.ui.media.Media_Activity_Main");
+            musicIntent.putExtra("Mode_To_Music", "music_play_intent");
+            startActivity(musicIntent);
         } else if (mFileType == FileType.IMAGE) {
             Intent intent = new Intent(getApplicationContext(), Image_Activity_Main.class);
             intent.putExtra("isfrom", "MediaSearchActivity");

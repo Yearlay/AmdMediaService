@@ -24,6 +24,9 @@ public class AmdMediaButtonReceiver extends BroadcastReceiver {
     public static void onMediaButtonReceive(Context context, Intent intent) {
         String action = intent.getAction();
         Log.d(TAG, "onReceive action="+action);
+        if (MediaInterfaceUtil.mediaCannotPlay()) {
+        	return;
+        }
         if (Intent.ACTION_MEDIA_BUTTON.equals(action)) {
             KeyEvent event = (KeyEvent) intent
                     .getParcelableExtra(Intent.EXTRA_KEY_EVENT);

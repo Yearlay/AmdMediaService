@@ -112,7 +112,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         flags = Service.START_STICKY;
-        if (intent != null) {
+        if (intent != null && !MediaInterfaceUtil.mediaCannotPlay()) {
             switch (intent.getIntExtra(KEY_COMMAND_FROM, 0)) {
             case VALUE_FROM_SCAN:
                 scanOperate(intent);

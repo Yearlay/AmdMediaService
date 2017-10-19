@@ -131,4 +131,12 @@ public class MediaInterfaceUtil {
 			}
 		}
 	};
+	
+	/**
+	 * 打电话时，不能点击媒体的播放按钮，即点击无效。
+	 * @return true为媒体不能播放，false为可以播放。
+	 */
+	public static boolean mediaCannotPlay() {
+		return Media_IF.getCallState();
+	}
 }

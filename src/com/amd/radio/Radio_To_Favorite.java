@@ -2,6 +2,7 @@ package com.amd.radio;
 
 import java.util.ArrayList;
 
+import com.amd.media.MediaInterfaceUtil;
 import com.amd.radio.Radio_IF;
 import com.haoke.data.AllMediaList;
 import com.haoke.mediaservice.R;
@@ -73,6 +74,9 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    	if (MediaInterfaceUtil.mediaCannotPlay()) {
+			return;
+		}
         if (!adapter.changeSelected(position)) {
             TextView freq = (TextView) view.findViewById(R.id.radio_favorite_item_tv_hz);
             TextView name = (TextView) view.findViewById(R.id.radio_favorite_item_name);

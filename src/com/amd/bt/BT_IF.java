@@ -150,6 +150,8 @@ public class BT_IF extends BTService_IF {
 			if (!musicOpen) {
 				music_open();
 			}
+			setBTSource();
+			BTMusic_IF.getInstance().requestAudioFocus(true);
 			mServiceIF.music_pre();
 		} catch (Exception e) {
 			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
@@ -163,6 +165,8 @@ public class BT_IF extends BTService_IF {
 			if (!musicOpen) {
 				music_open();
 			}
+			setBTSource();
+			BTMusic_IF.getInstance().requestAudioFocus(true);
 			mServiceIF.music_next();
 		} catch (Exception e) {
 			Log.e(TAG, "HMI------------interface e=" + e.getMessage());

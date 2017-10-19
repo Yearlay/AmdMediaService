@@ -6,6 +6,7 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import com.amd.media.AmdMediaManager;
+import com.amd.media.MediaInterfaceUtil;
 import com.haoke.aidl.ICarCallBack;
 import com.haoke.aidl.IMediaCallBack;
 import com.haoke.audiofocus.AudioFocus;
@@ -185,7 +186,7 @@ public class Media_IF extends CarService_IF {
 			int mute = getInstance().mServiceIF.eq_getMute();
 			Log.e(TAG, "getMute mute="+mute);
 			return mute == 1 ? true : false;
-		} catch (RemoteException e) {
+		} catch (Exception e) {
 			Log.e(TAG, "getMute error e="+e);
 		}
 		return false;
@@ -197,7 +198,7 @@ public class Media_IF extends CarService_IF {
 				Log.e(TAG, "getMute cancelMute");
 				getInstance().mServiceIF.eq_setMute();
 			}
-		} catch (RemoteException e) {
+		} catch (Exception e) {
 			Log.e(TAG, "cancelMute error e="+e);
 		}
 	}
@@ -207,7 +208,7 @@ public class Media_IF extends CarService_IF {
 			int state = getInstance().mServiceIF.bt_getCallState();
 			Log.e(TAG, "getCallState state="+state);
 			return state == BTCallState.IDLE ? false : true;
-		} catch (RemoteException e) {
+		} catch (Exception e) {
 			Log.e(TAG, "getCallState error e="+e);
 		}
 		return false;
@@ -473,6 +474,10 @@ public class Media_IF extends CarService_IF {
 	// 播放(list中的postion)
 	public boolean play(int pos) {
 		try {
+			Log.d(TAG, "play pos="+pos);
+			if (MediaInterfaceUtil.mediaCannotPlay()) {
+				return false;
+			}
 			return mMediaManager.play(pos);
 		} catch (Exception e) {
 			Log.e(TAG, "play pos="+pos, e);
@@ -483,6 +488,10 @@ public class Media_IF extends CarService_IF {
 	// 播放(文件路径)
 	public boolean play(String filePath) {
 		try {
+			Log.d(TAG, "play filePath="+filePath);
+			if (MediaInterfaceUtil.mediaCannotPlay()) {
+				return false;
+			}
 			return mMediaManager.play(filePath);
 		} catch (Exception e) {
 			Log.e(TAG, "play filePath="+filePath, e);
@@ -493,6 +502,10 @@ public class Media_IF extends CarService_IF {
 	// 播放(FileNode)
 	public boolean play(FileNode fileNode) {
 		try {
+			Log.d(TAG, "play fileNode="+fileNode);
+			if (MediaInterfaceUtil.mediaCannotPlay()) {
+				return false;
+			}
 			return mMediaManager.play(fileNode);
 		} catch (Exception e) {
 			Log.e(TAG, "play fileNode="+fileNode, e);
@@ -503,6 +516,10 @@ public class Media_IF extends CarService_IF {
 	// 上一曲
 	public boolean playPre() {
 		try {
+			Log.d(TAG, "playPre");
+			if (MediaInterfaceUtil.mediaCannotPlay()) {
+				return false;
+			}
 			return mMediaManager.pre(true);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -513,6 +530,10 @@ public class Media_IF extends CarService_IF {
 	// 下一曲
 	public boolean playNext() {
 		try {
+			Log.d(TAG, "playNext");
+			if (MediaInterfaceUtil.mediaCannotPlay()) {
+				return false;
+			}
 			return mMediaManager.next(true);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -539,6 +560,10 @@ public class Media_IF extends CarService_IF {
 	// 设置播放状态
 	public void setPlayState(int state) {
 		try {
+			Log.d(TAG, "setPlayState state="+state);
+			if (state == PlayState.PLAY && MediaInterfaceUtil.mediaCannotPlay()) {
+				return;
+			}
 			mMediaManager.setPlayState(state);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -806,7 +831,6 @@ public class Media_IF extends CarService_IF {
 				mServiceIF.sendToDashbroad(data);
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
 			Log.e(TAG, Log.getStackTraceString(e));
 		}
 	}

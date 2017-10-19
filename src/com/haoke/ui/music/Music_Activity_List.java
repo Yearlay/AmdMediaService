@@ -18,6 +18,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amd.media.MediaInterfaceUtil;
 import com.haoke.bean.FileNode;
 import com.haoke.constant.MediaUtil;
 import com.haoke.constant.MediaUtil.CopyState;
@@ -564,7 +565,11 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position,
             long id) {
+    	Log.v(TAG, "onItemClick mType="+mType+"; position="+position);
         if (mType == 0) {//扫描列表
+            if (MediaInterfaceUtil.mediaCannotPlay()) {
+            	return;
+            }
             finish();
             int index = mIF.getListItemIndex(position);
             Log.v(TAG, "HMI-----------index= " + index + ", PlayIndex= " + mIF.getPlayIndex()

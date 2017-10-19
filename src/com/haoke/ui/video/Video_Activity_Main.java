@@ -25,6 +25,7 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 
+import com.amd.media.MediaInterfaceUtil;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.StorageBean;
 import com.haoke.constant.MediaUtil;
@@ -39,7 +40,6 @@ import com.haoke.define.MediaDef.MediaState;
 import com.haoke.define.MediaDef.PlayState;
 import com.haoke.mediaservice.R;
 import com.haoke.serviceif.CarService_Listener;
-import com.haoke.ui.image.Image_Activity_Main;
 import com.haoke.ui.media.MediaSearchActivity;
 import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
@@ -461,6 +461,9 @@ public class Video_Activity_Main extends FragmentActivity implements
     }
     
     private void playVideo(int position) {
+    	if (MediaInterfaceUtil.mediaCannotPlay()) {
+    		return;
+    	}
         FileNode fileNode = mVideoList.get(position);
         if (!fileNode.isSame(mIF.getPlayItem())) {
             mPreferences.saveVideoCurrentPosition(position);

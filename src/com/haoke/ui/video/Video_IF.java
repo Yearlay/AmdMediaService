@@ -5,6 +5,7 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import com.amd.media.AmdMediaManager;
+import com.amd.media.MediaInterfaceUtil;
 import com.haoke.aidl.IMediaCallBack;
 import com.haoke.bean.FileNode;
 import com.haoke.define.MediaDef.MediaState;
@@ -142,6 +143,10 @@ public class Video_IF {
 	// 播放(list中的postion)
 	public boolean play(int pos) {
 		try {
+			Log.d(TAG, "play pos="+pos);
+			if (MediaInterfaceUtil.mediaCannotPlay()) {
+				return false;
+			}
 			return mMediaManager.play(pos);
 		} catch (Exception e) {
 			Log.e(TAG, "play pos="+pos, e);
@@ -152,6 +157,10 @@ public class Video_IF {
 	// 播放(文件路径)
 	public boolean play(String filePath) {
 		try {
+			Log.d(TAG, "play filePath="+filePath);
+			if (MediaInterfaceUtil.mediaCannotPlay()) {
+				return false;
+			}
 			return mMediaManager.play(filePath);
 		} catch (Exception e) {
 			Log.e(TAG, "play filePath="+filePath, e);
@@ -162,6 +171,10 @@ public class Video_IF {
 	// 播放(FileNode)
 	public boolean play(FileNode fileNode) {
 		try {
+			Log.d(TAG, "play fileNode="+fileNode);
+			if (MediaInterfaceUtil.mediaCannotPlay()) {
+				return false;
+			}
 			return mMediaManager.play(fileNode);
 		} catch (Exception e) {
 			Log.e(TAG, "play fileNode="+fileNode, e);
@@ -172,6 +185,10 @@ public class Video_IF {
 	// 上一曲
 	public boolean playPre() {
 		try {
+			Log.d(TAG, "playPre");
+			if (MediaInterfaceUtil.mediaCannotPlay()) {
+				return false;
+			}
 			return mMediaManager.pre(true);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -182,6 +199,10 @@ public class Video_IF {
 	// 下一曲
 	public boolean playNext() {
 		try {
+			Log.d(TAG, "playNext");
+			if (MediaInterfaceUtil.mediaCannotPlay()) {
+				return false;
+			}
 			return mMediaManager.next(true);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -208,6 +229,10 @@ public class Video_IF {
 	// 设置播放状态
 	public void setPlayState(int state) {
 		try {
+			Log.d(TAG, "setPlayState state="+state);
+			if (state == PlayState.PLAY && MediaInterfaceUtil.mediaCannotPlay()) {
+				return;
+			}
 			mMediaManager.setPlayState(state);
 		} catch (Exception e) {
 			e.printStackTrace();

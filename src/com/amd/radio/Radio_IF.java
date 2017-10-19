@@ -11,6 +11,7 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.amd.media.MediaInterfaceUtil;
 import com.haoke.aidl.ICarCallBack;
 import com.haoke.define.ModeDef;
 import com.haoke.define.RadioDef.Area;
@@ -188,6 +189,9 @@ public class Radio_IF extends CarService_IF {
 	public void setEnable(boolean enable){
 		try {
 			Log.d(TAG, "setEnable enable="+enable);
+			if (MediaInterfaceUtil.mediaCannotPlay()) {
+				return;
+			}
 			if (enable) {
 				setRadioSource();
 				RadioService.getInstance().getRadioManager().requestAudioFocus(true);
