@@ -20,6 +20,9 @@
 	    android:layout_alignParentBottom="true"
 	    hkui:image_bg="@drawable/pub_transparent_bg" />
     
+    <!-- 视频警告 -->
+    <include layout="@layout/video_play_forbidden_layout" />
+    
     <LinearLayout
         android:id="@+id/video_play_ctrlbar"
         android:layout_width="match_parent"
@@ -88,7 +91,7 @@
             android:layout_weight="1"
             android:src="@drawable/image_next_icon_selector" />
     </LinearLayout>
-
+    
    	<!-- 时间进度条 -->
     <include layout="@layout/video_play_time_seekbar"
         android:id="@+id/video_play_time_seekbar"
@@ -117,31 +120,4 @@
         android:textColor="@android:color/white"
         android:padding="10dp"
         android:textSize="20dp"/>
-    
-   	<!-- 视频警告 -->
-    <RelativeLayout
-        android:id="@+id/video_play_forbidden_bg"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone"
-        android:clickable="true"
-        android:background="@android:color/black" >
-
-        <ImageView
-            android:id="@+id/video_play_forbidden_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:background="@drawable/pub_drive_warn" />
-
-        <TextView
-            android:layout_below="@id/video_play_forbidden_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/media_video_forbidden_text"
-            android:layout_centerHorizontal="true"
-            android:textColor="@android:color/holo_red_dark"
-            android:textSize="22sp" />
-    </RelativeLayout>
-    
 </RelativeLayout>

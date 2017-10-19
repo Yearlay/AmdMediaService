@@ -42,6 +42,7 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
     private View mRootView;
     private RelativeLayout mVideoLayout; // 视频布局框
     private VideoSurfaceView mVideoView;
+    private View mForbiddenView;
     private View mCtrlBar;
     private ImageView mPlayImageView;
     private ImageView mCollectView;
@@ -68,6 +69,7 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
         } else {
             Video_IF.getInstance().play(mFileNode);
         }
+        checkSpeedAndRefreshView();
     }
 
     public void updateCtrlBar(int playState) {
@@ -121,10 +123,9 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
         mCollectView = (ImageView) mRootView.findViewById(R.id.collect_video);
         mCollectView.setOnClickListener(this);
         mTitleTextView = (TextView) mRootView.findViewById(R.id.title_video);
+        mForbiddenView = mRootView.findViewById(R.id.video_play_forbidden);
+        mForbiddenView.setOnTouchListener(this);
         
-        if (mFileNode != null) {
-            refreshViewAndPlay();
-        }
         return mRootView;
     }
 
@@ -133,9 +134,11 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
         super.onStart();
         updateTimeBar();
         Video_IF.getInstance().setVideoView(mVideoView);
-        mVideoLayout.addView(mVideoView);
         if (mCtrlBar.getVisibility() == View.VISIBLE) {
             startHideTimer();
+        }
+        if (mFileNode != null) {
+            refreshViewAndPlay();
         }
     }
     
@@ -189,10 +192,7 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
     }
     
     public void updateVideoLayout() {
-        if (mVideoLayout != null) {
-            mVideoLayout.removeAllViews();
-            mVideoLayout.addView(mVideoView);
-        }
+    	checkSpeedAndRefreshView();
     }
 
     @Override
@@ -211,36 +211,36 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
             }
             break;
         case R.id.video_ctrlbar_pre:
-        	if (MediaInterfaceUtil.mediaCannotPlay()) {
-        		break;
-        	}
+            if (MediaInterfaceUtil.mediaCannotPlay()) {
+                break;
+            }
             if (mActivityHandler != null) {
                 mActivityHandler.sendEmptyMessage(Video_Activity_Main.PLAY_PRE);
             }
             break;
         case R.id.video_ctrlbar_fastpre:  // 快退
-        	if (MediaInterfaceUtil.mediaCannotPlay()) {
-        		break;
-        	}
+            if (MediaInterfaceUtil.mediaCannotPlay()) {
+                break;
+            }
             showToast(true);
             break;
         case R.id.video_ctrlbar_pp:
-        	if (MediaInterfaceUtil.mediaCannotPlay()) {
-        		break;
-        	}
+            if (MediaInterfaceUtil.mediaCannotPlay()) {
+                break;
+            }
             Video_IF.getInstance().changePlayState();
             updateCtrlBar(Video_IF.getInstance().getPlayState());
             break;
         case R.id.video_ctrlbar_fastnext: // 快进
-        	if (MediaInterfaceUtil.mediaCannotPlay()) {
-        		break;
-        	}
+            if (MediaInterfaceUtil.mediaCannotPlay()) {
+                break;
+            }
             showToast(false);
             break;
         case R.id.video_ctrlbar_next:
-        	if (MediaInterfaceUtil.mediaCannotPlay()) {
-        		break;
-        	}
+            if (MediaInterfaceUtil.mediaCannotPlay()) {
+                break;
+            }
             if (mActivityHandler != null) {
                 mActivityHandler.sendEmptyMessage(Video_Activity_Main.PLAY_NEXT);
             }
@@ -433,6 +433,17 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
         mTimeSeekBar.onStopTrackingTouch(mTimeSeekBar.getSeekBar());
         return true;
+    }
+    
+    private void checkSpeedAndRefreshView() {
+        if (mRootView == null) {
+            return;
+        }
+        mVideoLayout.removeAllViews();
+        mVideoLayout.addView(mVideoView);
+        boolean showVideoFlag = true;
+        // TODO 
+        mForbiddenView.setVisibility(showVideoFlag ? View.GONE : View.VISIBLE);
     }
 
 }
