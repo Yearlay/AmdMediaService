@@ -103,7 +103,6 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         mBTIF.registerModeCallBack(this);
         
         mScanner = new MediaScanner(this, this);
-        mScanner.beginScanningAllStorage();
         AllMediaList.instance(getApplicationContext());
         
         checkLaunchRadio(); // 开机的时候检查关机的时候，是否是Radio界面。

@@ -66,6 +66,9 @@ public class MediaScanner {
      */
     public void beginScanningStorage(String rootPath) {
         DebugLog.i(TAG, "MediaScanner#beginScanningStorage rootPath: " + rootPath);
+        if ("/storage/internal_sd".equals(rootPath)) {
+            rootPath = MediaUtil.LOCAL_COPY_DIR;
+        }
         interruptID3ParseThread();
         getScanRootPathThread().addDeviceTask(ScanTaskType.MOUNTED, rootPath);
     }

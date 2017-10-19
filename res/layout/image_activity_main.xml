@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/pub_statusbar_height"
+        android:layout_marginTop="80px"
         android:gravity="center"
         android:orientation="horizontal" > 
         
@@ -24,7 +24,7 @@
             android:button="@null"
             android:gravity="center_horizontal"
             android:textColor="@drawable/tab_textcolor_selector"
-            android:textSize="24sp"
+            android:textSize="22sp"
             android:text="@string/pub_flash" />
         
         <RadioButton
@@ -37,7 +37,7 @@
             android:button="@null"
             android:gravity="center_horizontal"
             android:textColor="@drawable/tab_textcolor_selector"
-            android:textSize="24sp"
+            android:textSize="22sp"
             android:text="@string/music_scan_usb1" />
         
         <RadioButton
@@ -50,7 +50,7 @@
             android:button="@null"
             android:gravity="center_horizontal"
             android:textColor="@drawable/tab_textcolor_selector"
-            android:textSize="24sp"
+            android:textSize="22sp"
             android:text="@string/music_scan_usb2" />
         
         <RadioButton
@@ -63,7 +63,7 @@
             android:button="@null"
             android:gravity="center_horizontal"
             android:textColor="@drawable/tab_textcolor_selector"
-            android:textSize="24sp"
+            android:textSize="22sp"
             android:text="@string/media_collect_tab" />
 	    
    	</RadioGroup>
@@ -74,7 +74,7 @@
         android:layout_width="wrap_content"
         android:background="@android:color/transparent"
         android:padding="16px"
-        android:layout_marginTop="@dimen/pub_statusbar_height"
+        android:layout_marginTop="80px"
         android:layout_marginRight="80px"
         android:layout_alignParentRight="true"
         android:visibility="visible"
@@ -85,7 +85,7 @@
         android:id="@+id/list_edit_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/pub_statusbar_height"
+        android:layout_marginTop="80px"
         android:layout_alignParentRight="true"
         android:layout_marginRight="30dp"
         android:visibility="gone" >

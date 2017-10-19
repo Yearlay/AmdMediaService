@@ -3,5 +3,5 @@
     <item android:state_checked="true" android:drawable="@drawable/top_bar_underlined_p"></item>
     <item android:state_selected="true" android:drawable="@drawable/top_bar_underlined_p"></item>
     <item android:state_pressed="true" android:drawable="@drawable/top_bar_underlined_p"></item>
-    <item android:drawable="@drawable/dialog_btn_bg_n"></item>
+    <item android:drawable="@drawable/top_bar_underlined_n"></item>
 </selector>

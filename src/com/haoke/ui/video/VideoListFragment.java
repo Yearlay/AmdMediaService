@@ -90,8 +90,8 @@ public class VideoListFragment extends Fragment implements OnHKTouchListener,
                 mLoadingView.setVisibility(View.VISIBLE);
             }
         } else {
-            String noDataStr = mContext.getString(R.string.music_no_device_usb) +
-                    (storageBean.getDeviceType() == DeviceType.USB1 ? "1" : "2");
+        	int noDataStr = (storageBean.getDeviceType() == DeviceType.USB1 ?
+                    R.string.no_device_usb_one : R.string.no_device_usb_two);
             mEmptyView.setText(noDataStr);
             mEmptyView.setVisibility(View.VISIBLE);
             mGridView.setVisibility(View.GONE);

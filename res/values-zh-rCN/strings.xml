@@ -45,4 +45,6 @@
     <string name="radio_delete_empty">请选择想要删除的收藏的收音机频道</string>
     <string name="no_media_can_play">没有媒体文件可以播放，请插入U盘！</string>
     <string name="media_scanning_try_a_late">媒体扫描中，请稍后再试！</string>
+    <string name="no_device_usb_one">请插入USB1设备</string>
+    <string name="no_device_usb_two">请插入USB2设备</string>
 </resources>

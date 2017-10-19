@@ -47,4 +47,6 @@
     <string name="radio_delete_empty">Please choose the radios</string>
     <string name="no_media_can_play">No media. Please insert USB!</string>
     <string name="media_scanning_try_a_late">Media scanning. Please try a late!</string>
+    <string name="no_device_usb_one">Please inset USB1</string>
+    <string name="no_device_usb_two">Please inset USB2</string>
 </resources>
