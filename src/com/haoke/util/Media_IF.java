@@ -46,7 +46,7 @@ public class Media_IF extends CarService_IF {
 		mMediaManager = new AmdMediaManager();
 		
 		mCarCallBack = new Media_CarCallBack();
-		mMediaCallBack = new Media_CallBack();
+		mMediaCallBack = new Media_CallBack(mMode);
 
 		// 以下处理服务回调
 		mICallBack = new ICarCallBack.Stub() {

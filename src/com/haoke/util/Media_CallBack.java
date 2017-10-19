@@ -16,8 +16,10 @@ public class Media_CallBack {
 	private final String TAG = this.getClass().getSimpleName();
 	private CallBackHandler mHandler = null; // 本地消息处理句柄
 	private ArrayList<Media_Listener> mListenerList = new ArrayList<Media_Listener>();
+	private int mMediaMode;
 
-	public Media_CallBack() {
+	public Media_CallBack(int mode) {
+		mMediaMode = mode;
 		mHandler = new CallBackHandler();
 	}
 
@@ -67,8 +69,7 @@ public class Media_CallBack {
 			return;
 		}
 
-		int curMode = Media_IF.getInstance().getMode();
-		if (mode == curMode) {
+		if (mode == mMediaMode) {
 			Log.v(TAG, "HMI------------onDataChange mode=" + mode + ", func="
 					+ func + ", data1=" + data1 + ", data2=" + data2);
 			Message message = mHandler.obtainMessage();
@@ -83,7 +84,7 @@ public class Media_CallBack {
 	@SuppressLint("HandlerLeak")
 	private class CallBackHandler extends Handler {
 		public void handleMessage(Message msg) {
-			int curMode = Media_IF.getInstance().getMode();
+			int curMode = mMediaMode;
 			int mode = msg.what;
 			int func = msg.arg1;
 			DataElement datas = (DataElement) msg.obj;

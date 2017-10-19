@@ -1,14 +1,17 @@
 package com.haoke.ui.video;
 
 import android.content.ComponentName;
+import android.os.RemoteException;
 import android.util.Log;
 
 import com.amd.media.AmdMediaManager;
+import com.haoke.aidl.IMediaCallBack;
 import com.haoke.bean.FileNode;
 import com.haoke.define.MediaDef.MediaState;
 import com.haoke.define.MediaDef.PlayState;
 import com.haoke.define.ModeDef;
 import com.haoke.serviceif.CarService_Listener;
+import com.haoke.util.Media_CallBack;
 import com.haoke.util.Media_CarListener;
 import com.haoke.util.Media_IF;
 import com.haoke.util.Media_Listener;
@@ -19,6 +22,7 @@ class VideoManager extends AmdMediaManager {
 	public VideoManager() {
 		super();
 		TAG = "VideoManager";
+		mMediaMode = ModeDef.VIDEO;
 		mComponentName = new ComponentName(mContext, VideoMediaButtonReceiver.class); 
 	}
 }
@@ -27,11 +31,20 @@ public class Video_IF {
 
 	private static final String TAG = "Video_IF";
 	private static Video_IF mSelf;
-	
+	private Media_CallBack mMediaCallBack = null; // MediaService的回调处理
+	private IMediaCallBack.Stub mIMediaCallBack = null;
 	private VideoManager mMediaManager = null;
 
 	private Video_IF() {
 		mMediaManager = new VideoManager();
+		mMediaCallBack = new Media_CallBack(getMode());
+		mIMediaCallBack = new IMediaCallBack.Stub() {
+			@Override
+			public void onDataChange(int mode, int func, int data1, int data2)
+					throws RemoteException {
+				mMediaCallBack.onDataChange(mode, func, data1, data2);
+			}
+		};
 	}
 
 	// 获取接口实例
@@ -64,16 +77,16 @@ public class Video_IF {
 
 	// 注册本地服务回调（模块相关变化）
 	public void registerLocalCallBack(Media_Listener listener) {
-		Media_IF.getInstance().registerLocalCallBack(listener);
+		mMediaCallBack.registerMediaCallBack(listener);
 	}
 
 	// 注销本地服务回调（模块相关变化）
 	public void unregisterLocalCallBack(Media_Listener listener) {
-		Media_IF.getInstance().unregisterLocalCallBack(listener);
+		mMediaCallBack.registerMediaCallBack(listener);
 	}
 	
 	public int getMode() {
-		return ModeDef.MEDIA;
+		return mMediaManager.getMediaMode();
 	}
 	
 	public void bindCarService() {
@@ -104,7 +117,7 @@ public class Video_IF {
 	
 	// 初始化媒体
 	public void initMedia() {
-		Media_IF.getInstance().initMedia();
+		mMediaManager.initMedia(mMediaManager.getMediaMode(), mIMediaCallBack);
 	}
 
 	// 获取当前媒体状态
