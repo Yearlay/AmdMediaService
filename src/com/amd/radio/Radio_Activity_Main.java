@@ -574,6 +574,8 @@ public class Radio_Activity_Main extends Fragment implements Radio_CarListener, 
         mIF.setCurBand();    
         if (mFreqNumTextView!=null) {
         	updateFreq(mIF.getCurFreq());
+        	mSTTextView.setVisibility(mIF.getST() ? View.VISIBLE : View.INVISIBLE);
+        	mPlayImageView.setImageResource(mIF.isEnable() ? R.drawable.pause : R.drawable.play);
         }
     }
     
