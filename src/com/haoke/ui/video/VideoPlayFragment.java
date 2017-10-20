@@ -442,14 +442,14 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
         }
         mVideoLayout.removeAllViews();
         mVideoLayout.addView(mVideoView);
-        boolean showVideoFlag = true;
+        boolean showForbiddenViewFlag = false;
         try {
             boolean sysLimitFlag = Video_IF.limitToPlayVideoWhenDrive();
             boolean speedLimitFlag = (AllMediaList.sCarSpeed > 20.0f);
             DebugLog.d("Yearlay", " checkSpeedAndRefreshView sysLimitFlag: " + sysLimitFlag);
             DebugLog.d("Yearlay", " checkSpeedAndRefreshView speedLimitFlag: " + speedLimitFlag);
-            showVideoFlag = (sysLimitFlag && speedLimitFlag) ? false : true;
-            mForbiddenView.setVisibility(showVideoFlag ? View.VISIBLE : View.GONE);
+            showForbiddenViewFlag = (sysLimitFlag && speedLimitFlag);
+            mForbiddenView.setVisibility(showForbiddenViewFlag ? View.VISIBLE : View.GONE);
         } catch (Exception e) {
             e.printStackTrace();
         }
