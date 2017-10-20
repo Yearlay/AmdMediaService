@@ -192,8 +192,9 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 	}
 	
 	private void showDeviceOutDialog() {
-		if (mShowLayout == ShowLayout.AUDIO_PLAY_LAYOUT || mIF.getPlayState() != PlayState.STOP) {
+		if (mShowLayout == ShowLayout.AUDIO_PLAY_LAYOUT) {
 			mDialog.ShowDialog(mContext, DIALOG_TYPE.NONE_BTN, R.string.music_device_pullout_usb);
+			changeShowLayout(ShowLayout.HOME_LAYOUT);
 		}
 	}
 	
@@ -201,7 +202,6 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 		if (mIF.getPlayingDevice() == deviceType) {
 			if (state == 0) { // 无设备
 				showDeviceOutDialog();
-				changeShowLayout(ShowLayout.HOME_LAYOUT);
 			} 
 		}
 		mHomeLayout.deviceChanged(deviceType, state == 0);
