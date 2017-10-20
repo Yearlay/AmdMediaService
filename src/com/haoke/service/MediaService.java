@@ -102,10 +102,16 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         mMediaIF.registerLocalCallBack(this);
         mBTIF.registerModeCallBack(this);
         
-        mScanner = new MediaScanner(this, this);
         AllMediaList.instance(getApplicationContext());
         
         checkLaunchRadio(); // 开机的时候检查关机的时候，是否是Radio界面。
+        
+        mScanner = new MediaScanner(this, this);
+        int pidID = android.os.Process.myPid();
+        DebugLog.i("Yearlay", "MediaService pid: " + pidID);
+        if (pidID > 2000) {
+            mScanner.beginScanningAllStorage();
+        }
     }
 
     @Override
