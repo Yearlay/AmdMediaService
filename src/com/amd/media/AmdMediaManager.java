@@ -689,6 +689,8 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	
 	// 清除播放记录
 	private void clearPlayRecord() {
+		Log.d(TAG, "clearPlayRecord mPlayingDeviceType="+mPlayingDeviceType+"; mPlayingFileType="+mPlayingFileType);
+		stopRecordTimer();
 		mAllMediaList.clearPlayState(mPlayingDeviceType, mPlayingFileType);
 	}
 	
