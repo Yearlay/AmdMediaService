@@ -140,6 +140,7 @@ public class MusicHomeFragment extends Fragment implements Media_Listener, BT_Li
 		}
 		mHomeLayout.onResume();
 		if (mPlayLayout != null && mPlayLayout.getVisibility() == View.VISIBLE) {
+			setCurPlayViewState();
 			mPlayLayout.onResume();
 		}
 	}
