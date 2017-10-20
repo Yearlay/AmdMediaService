@@ -66,11 +66,16 @@ public class Video_Activity_Main extends FragmentActivity implements
     private TextView mSelectAllView;
     private TextView mCopyTextView;
     private boolean mPreFlag;
-    
-    private int mCurPosition;
 
     public PlayStateSharedPreferences mPreferences;
     private ArrayList<FileNode> mVideoList = new ArrayList<FileNode>();
+    private int mCurPosition;
+    
+    public void updateCurPosition(int position) {
+        mCurPosition = position;
+        mCurPosition = (mCurPosition < 0) ? 0 : mCurPosition;
+        mCurPosition = (mCurPosition >= mVideoList.size()) ? mVideoList.size() - 1 : mCurPosition;
+    }
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,7 +135,7 @@ public class Video_Activity_Main extends FragmentActivity implements
             }
             mPreferences.saveVideoDeviceType(deviceType);
             mPreferences.saveVideoShowFragment(SWITCH_TO_PLAY_FRAGMENT);
-            mCurPosition = position;
+            updateCurPosition(position);
             FileNode fileNode = mVideoList.get(mCurPosition);
             mPlayFragment.setFileNode(fileNode);
         }
@@ -327,13 +332,13 @@ public class Video_Activity_Main extends FragmentActivity implements
 
     private int mErrorCount;
     private void onError() {
-    	mErrorCount++;
+        mErrorCount++;
         CustomDialog mDialog = new CustomDialog();
         mDialog.ShowDialog(this, DIALOG_TYPE.NONE_BTN, R.string.media_play_nosupport);
         if (mPlayFragment != null) {
-        	if (mErrorCount >= 5) {
-        		return;
-        	}
+            if (mErrorCount >= 5) {
+                return;
+            }
             if (mPreFlag) {
                 playPre();
             } else {
@@ -481,10 +486,10 @@ public class Video_Activity_Main extends FragmentActivity implements
     }
     
     private void playVideo(int position) {
-    	if (MediaInterfaceUtil.mediaCannotPlay()) {
-    		return;
-    	}
-    	mCurPosition = position;
+        if (MediaInterfaceUtil.mediaCannotPlay()) {
+            return;
+        }
+        updateCurPosition(position);
         FileNode fileNode = mVideoList.get(mCurPosition);
         mPlayFragment.setFileNode(fileNode);
         onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
@@ -621,48 +626,48 @@ public class Video_Activity_Main extends FragmentActivity implements
         mIF.play(fileNode);
     }
 
-	@Override
-	public void onCarDataChange(int mode, int func, int data) {}
-	@Override
-	public void onUartDataChange(int mode, int len, byte[] datas) {
-		DebugLog.d("Yearlay", "onUartDataChange mode:" + mode + " && len:" + len +
-				" && datas[]:" + bytesToHexString(datas));
-		if (datas.length > 8) {
-			int data3 = datas[3] & 0xFF;
-			int data4 = datas[4] & 0xFF;
-			int data5 = datas[5] & 0xFF;
-			if (data3 == 0x0D && data4 == 0x00 && data5 == 0x2D) {
-				int speedData = 0x0000;
-				speedData = (speedData | datas[6]) << 8;
-				speedData = speedData | datas[7];
-				float speed = (float) speedData / 100;
-				DebugLog.d("Yearlay", "onUartDataChange speed: " + speed);
-				
-				if (speed > 20.0f && AllMediaList.sCarSpeed < 20.0f && mPlayFragment != null) { // 加速超过20km/h
-					AllMediaList.sCarSpeed = speed;
-					mPlayFragment.updateVideoLayout();
-				}
-				if (speed < 20.0f && AllMediaList.sCarSpeed > 20.0f && mPlayFragment != null) { // 减速低于20km/h
-					AllMediaList.sCarSpeed = speed;
-					mPlayFragment.updateVideoLayout();
-				}
-			}
-		}
-	}
-	
-	private String bytesToHexString(byte[] src){
-		StringBuilder stringBuilder = new StringBuilder();
-		if (src == null || src.length <= 0) {
-			return null;
-		}
-		for (int i = 0; i < src.length; i++) {
-			int v = src[i] & 0xFF;
-			String hv = " " + Integer.toHexString(v);
-			if (hv.length() < 2) {
-				stringBuilder.append(0);
-			}
-			stringBuilder.append(hv);
-		}       
-		return stringBuilder.toString();
-	}
+    @Override
+    public void onCarDataChange(int mode, int func, int data) {}
+    @Override
+    public void onUartDataChange(int mode, int len, byte[] datas) {
+        DebugLog.d("Yearlay", "onUartDataChange mode:" + mode + " && len:" + len +
+                " && datas[]:" + bytesToHexString(datas));
+        if (datas.length > 8) {
+            int data3 = datas[3] & 0xFF;
+            int data4 = datas[4] & 0xFF;
+            int data5 = datas[5] & 0xFF;
+            if (data3 == 0x0D && data4 == 0x00 && data5 == 0x2D) {
+                int speedData = 0x0000;
+                speedData = (speedData | datas[6]) << 8;
+                speedData = speedData | datas[7];
+                float speed = (float) speedData / 100;
+                DebugLog.d("Yearlay", "onUartDataChange speed: " + speed);
+                
+                if (speed > 20.0f && AllMediaList.sCarSpeed < 20.0f && mPlayFragment != null) { // 加速超过20km/h
+                    AllMediaList.sCarSpeed = speed;
+                    mPlayFragment.updateVideoLayout();
+                }
+                if (speed < 20.0f && AllMediaList.sCarSpeed > 20.0f && mPlayFragment != null) { // 减速低于20km/h
+                    AllMediaList.sCarSpeed = speed;
+                    mPlayFragment.updateVideoLayout();
+                }
+            }
+        }
+    }
+    
+    private String bytesToHexString(byte[] src){
+        StringBuilder stringBuilder = new StringBuilder();
+        if (src == null || src.length <= 0) {
+            return null;
+        }
+        for (int i = 0; i < src.length; i++) {
+            int v = src[i] & 0xFF;
+            String hv = " " + Integer.toHexString(v);
+            if (hv.length() < 2) {
+                stringBuilder.append(0);
+            }
+            stringBuilder.append(hv);
+        }       
+        return stringBuilder.toString();
+    }
 }
