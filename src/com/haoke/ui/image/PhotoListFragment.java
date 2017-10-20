@@ -66,6 +66,8 @@ public class PhotoListFragment extends Fragment implements OnItemClickListener, 
     }
 
     private void refreshView(StorageBean storageBean) {
+        mGridView.requestFocusFromTouch();
+        mGridView.setSelection(0);
         mPhotoAdapter.notifyDataSetChanged();
         if (storageBean.isMounted()) {
             if (storageBean.isId3ParseCompleted()) {
@@ -136,6 +138,11 @@ public class PhotoListFragment extends Fragment implements OnItemClickListener, 
 
     @Override
     public void onPause() {
+        dismissDialog();
+        super.onPause();
+    }
+
+    public void dismissDialog() {
         if (mErrorDialog != null) {
             mErrorDialog.CloseDialog();
         }
@@ -144,7 +151,6 @@ public class PhotoListFragment extends Fragment implements OnItemClickListener, 
             mProgressDialog.CloseDialog();
             Toast.makeText(mContext, R.string.file_operate_cancel, Toast.LENGTH_SHORT).show();
         }
-        super.onPause();
     }
 
     public FileNode getFileNode(int position) {

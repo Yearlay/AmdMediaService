@@ -69,6 +69,8 @@ public class VideoListFragment extends Fragment implements OnHKTouchListener,
     }
 
     private void refreshView(StorageBean storageBean) {
+        mGridView.requestFocusFromTouch();
+        mGridView.setSelection(0);
         mVideoAdapter.notifyDataSetChanged();
         if (storageBean.isMounted()) {
             if (storageBean.isId3ParseCompleted()) {
@@ -90,7 +92,7 @@ public class VideoListFragment extends Fragment implements OnHKTouchListener,
                 mLoadingView.setVisibility(View.VISIBLE);
             }
         } else {
-        	int noDataStr = (storageBean.getDeviceType() == DeviceType.USB1 ?
+            int noDataStr = (storageBean.getDeviceType() == DeviceType.USB1 ?
                     R.string.no_device_usb_one : R.string.no_device_usb_two);
             mEmptyView.setText(noDataStr);
             mEmptyView.setVisibility(View.VISIBLE);
@@ -141,6 +143,11 @@ public class VideoListFragment extends Fragment implements OnHKTouchListener,
    
    @Override
     public void onPause() {
+        dismissDialog();
+        super.onPause();
+    }
+
+    public void dismissDialog() {
         if (mErrorDialog != null) {
             mErrorDialog.CloseDialog();
         }
@@ -149,7 +156,6 @@ public class VideoListFragment extends Fragment implements OnHKTouchListener,
             mProgressDialog.CloseDialog();
             Toast.makeText(mContext, R.string.file_operate_cancel, Toast.LENGTH_SHORT).show();
         }
-        super.onPause();
     }
 
     @Override

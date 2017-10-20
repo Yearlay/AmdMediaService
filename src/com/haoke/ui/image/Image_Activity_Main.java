@@ -249,6 +249,9 @@ public class Image_Activity_Main extends FragmentActivity implements
             updateDevice(getCurrentDeviceType());
             onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
             if (!storageBean.isMounted()) {
+                if (mListFragment != null) {
+                    mListFragment.dismissDialog();
+                }
                 new CustomDialog().ShowDialog(Image_Activity_Main.this, DIALOG_TYPE.NONE_BTN,
                         R.string.music_device_pullout_usb);
             }
