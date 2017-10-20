@@ -193,7 +193,7 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
     }
     
     public void updateVideoLayout() {
-    	checkSpeedAndRefreshView();
+        checkSpeedAndRefreshView();
     }
 
     @Override
@@ -443,10 +443,16 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
         mVideoLayout.removeAllViews();
         mVideoLayout.addView(mVideoView);
         boolean showVideoFlag = true;
-        // TODO 
-        boolean limitFlag = Video_IF.limitToPlayVideoWhenDrive();
-        DebugLog.d("Yearlay", " checkSpeedAndRefreshView limitFlag: " + limitFlag);
-        mForbiddenView.setVisibility(showVideoFlag ? View.GONE : View.VISIBLE);
+        try {
+            boolean sysLimitFlag = Video_IF.limitToPlayVideoWhenDrive();
+            boolean speedLimitFlag = (AllMediaList.sCarSpeed > 20.0f);
+            DebugLog.d("Yearlay", " checkSpeedAndRefreshView sysLimitFlag: " + sysLimitFlag);
+            DebugLog.d("Yearlay", " checkSpeedAndRefreshView speedLimitFlag: " + speedLimitFlag);
+            showVideoFlag = (sysLimitFlag && speedLimitFlag) ? false : true;
+            mForbiddenView.setVisibility(showVideoFlag ? View.VISIBLE : View.GONE);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

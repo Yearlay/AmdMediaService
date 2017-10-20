@@ -499,38 +499,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     }
     
     @Override
-	public void onUartDataChange(int mode, int len, byte[] datas) {
-		DebugLog.d("Yearlay", "onUartDataChange mode:" + mode + " && len:" + len +
-				" && datas[]:" + bytesToHexString(datas));
-		if (datas.length > 8) {
-			int data3 = datas[3] & 0xFF;
-			int data4 = datas[4] & 0xFF;
-			int data5 = datas[5] & 0xFF;
-			if (data3 == 0x0D && data4 == 0x00 && data5 == 0x2D) {
-				int speedData = 0x0000;
-				speedData = (speedData | datas[6]) << 8;
-				speedData = speedData | datas[7];
-				float speed = (float) speedData / 100;
-				DebugLog.d("Yearlay", "onUartDataChange speed: " + speed);
-			}
-		}
-	}
-    
-    private String bytesToHexString(byte[] src){
-		StringBuilder stringBuilder = new StringBuilder();
-		if (src == null || src.length <= 0) {
-			return null;
-		}
-		for (int i = 0; i < src.length; i++) {
-			int v = src[i] & 0xFF;
-			String hv = " " + Integer.toHexString(v);
-			if (hv.length() < 2) {
-				stringBuilder.append(0);
-			}
-			stringBuilder.append(hv);
-		}       
-		return stringBuilder.toString();
-	}
+	public void onUartDataChange(int mode, int len, byte[] datas) {}
     
     @Override
     public void onCarDataChange(int mode, int func, int data) {
