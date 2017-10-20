@@ -36,10 +36,11 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginLeft="20dp"
+            android:layout_marginRight="70dp"
             android:layout_toRightOf="@id/music_item_icon"
             android:gravity="center_vertical" >
 
-            <TextView
+            <com.amd.widget.FocusTextView
                 android:id="@+id/music_listitem_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -49,7 +50,7 @@
                 android:textColor="@color/hk_custom_text"
                 android:textSize="26sp" />
 
-            <TextView
+            <com.amd.widget.FocusTextView
                 android:id="@+id/music_item_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
