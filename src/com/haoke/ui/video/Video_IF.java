@@ -108,6 +108,10 @@ public class Video_IF {
 		return Media_IF.getMute();
 	}
 	
+	public static boolean limitToPlayVideoWhenDrive() {
+		return Media_IF.limitToPlayVideoWhenDrive();
+	}
+	
 	public static void cancelMute() {
 		Media_IF.cancelMute();
 	}

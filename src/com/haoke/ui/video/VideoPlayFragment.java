@@ -33,6 +33,7 @@ import com.haoke.data.AllMediaList;
 import com.haoke.data.OperateListener;
 import com.haoke.define.MediaDef.PlayState;
 import com.haoke.mediaservice.R;
+import com.haoke.util.DebugLog;
 import com.haoke.video.VideoSurfaceView;
 import com.haoke.window.HKWindowManager;
 
@@ -443,6 +444,8 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
         mVideoLayout.addView(mVideoView);
         boolean showVideoFlag = true;
         // TODO 
+        boolean limitFlag = Video_IF.limitToPlayVideoWhenDrive();
+        DebugLog.d("Yearlay", " checkSpeedAndRefreshView limitFlag: " + limitFlag);
         mForbiddenView.setVisibility(showVideoFlag ? View.GONE : View.VISIBLE);
     }
 

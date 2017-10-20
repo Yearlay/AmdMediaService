@@ -3,6 +3,7 @@ package com.haoke.util;
 import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -13,12 +14,14 @@ import com.haoke.serviceif.CarService_Listener;
 public class Media_CarCallBack {
 
 	private final String TAG = this.getClass().getSimpleName();
-	private CallBackHandler mHandler = null; // 本地消息处理句柄
+	private CallBackHandler mHandler; // 本地消息处理句柄
+	private UartCallBackHandler mUartCallBackHandler;
 	private ArrayList<Media_CarListener> mListenerList = new ArrayList<Media_CarListener>();
 	private ArrayList<CarService_Listener> mCarListenerList = new ArrayList<CarService_Listener>();
 
 	public Media_CarCallBack() {
 		mHandler = new CallBackHandler();
+		mUartCallBackHandler = new UartCallBackHandler();
 	}
 
 	protected void onServiceConn() {
@@ -102,9 +105,38 @@ public class Media_CarCallBack {
 				Media_CarListener listener = mListenerList.get(i);
 				if (listener == null)
 					continue;
-
 				listener.onCarDataChange(mode, func, data);
 			}
+		}
+	}
+	
+	public void onUartDataChange(int mode, int len, byte[] datas) {
+		if (mUartCallBackHandler == null) {
+			return;
+		}
+		if (datas.length >0 && mode == ModeDef.MCU_UART) {
+			Message message = mUartCallBackHandler.obtainMessage();
+			message.what = mode; // 模式ID
+			message.arg1 = len; // 功能ID
+			Bundle bundle = new Bundle();
+			bundle.putByteArray("uartbfer", datas);
+			message.setData(bundle);
+			mUartCallBackHandler.sendMessage(message);	
+		}
+	}
+	
+	@SuppressLint("HandlerLeak")
+	private class UartCallBackHandler extends Handler {
+		public void handleMessage(Message msg) {
+			int mode = msg.what;
+			int len = msg.arg1;
+			byte[] buffer = msg.getData().getByteArray("uartbfer");
+				for (int i = 0; i < mListenerList.size(); i++) {
+					Media_CarListener listener = mListenerList.get(i);
+					if (listener == null)
+						continue;
+					listener.onUartDataChange(mode, len, buffer);
+				}
 		}
 	}
 }
