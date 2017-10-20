@@ -315,16 +315,22 @@ public class Video_Activity_Main extends FragmentActivity implements
             mPlayFragment.updateCtrlBar(mIF.getPlayState());
             mPlayFragment.updateTimeBar();
         }
+        mErrorCount = 0;
     }
 
     private void onCompletion() {}
 
     private void onSeekCompletion() {}
 
+    private int mErrorCount;
     private void onError() {
+    	mErrorCount++;
         CustomDialog mDialog = new CustomDialog();
         mDialog.ShowDialog(this, DIALOG_TYPE.NONE_BTN, R.string.media_play_nosupport);
         if (mPlayFragment != null) {
+        	if (mErrorCount >= 5) {
+        		return;
+        	}
             if (mPreFlag) {
                 playPre();
             } else {
