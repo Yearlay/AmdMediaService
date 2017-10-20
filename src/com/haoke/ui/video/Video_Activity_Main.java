@@ -43,12 +43,14 @@ import com.haoke.serviceif.CarService_Listener;
 import com.haoke.ui.media.MediaSearchActivity;
 import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
+import com.haoke.util.DebugLog;
+import com.haoke.util.Media_CarListener;
 import com.haoke.util.Media_IF;
 import com.haoke.util.Media_Listener;
 
 public class Video_Activity_Main extends FragmentActivity implements
         CarService_Listener, Media_Listener, OnClickListener,
-        LoadListener, OnCheckedChangeListener{
+        LoadListener, OnCheckedChangeListener, Media_CarListener{
 
     private final String TAG = this.getClass().getSimpleName();
     private int mLayoutProps = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
@@ -67,6 +69,13 @@ public class Video_Activity_Main extends FragmentActivity implements
 
     public PlayStateSharedPreferences mPreferences;
     private ArrayList<FileNode> mVideoList = new ArrayList<FileNode>();
+    private int mCurPosition;
+    
+    public void updateCurPosition(int position) {
+        mCurPosition = position;
+        mCurPosition = (mCurPosition < 0) ? 0 : mCurPosition;
+        mCurPosition = (mCurPosition >= mVideoList.size()) ? mVideoList.size() - 1 : mCurPosition;
+    }
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,8 +135,9 @@ public class Video_Activity_Main extends FragmentActivity implements
             }
             mPreferences.saveVideoDeviceType(deviceType);
             mPreferences.saveVideoShowFragment(SWITCH_TO_PLAY_FRAGMENT);
-            mPreferences.saveVideoCurrentPosition(position);
-            mPlayFragment.setFileNode(mVideoList.get(position));
+            updateCurPosition(position);
+            FileNode fileNode = mVideoList.get(mCurPosition);
+            mPlayFragment.setFileNode(fileNode);
         }
     }
 
@@ -170,6 +180,7 @@ public class Video_Activity_Main extends FragmentActivity implements
     @Override
     public void onStart() {
         super.onStart();
+        mIF.registerModeCallBack(this);
         mIF.registerCarCallBack(this); // 注册服务监听
         mIF.registerLocalCallBack(this); // 注册服务监听
         mIF.setCurScanner(getCurrentDeviceType(), FileType.VIDEO);
@@ -186,6 +197,7 @@ public class Video_Activity_Main extends FragmentActivity implements
     public void onStop() {
         Log.v(TAG, "HMI------------onPause");
         super.onStop();
+        mIF.unregisterModeCallBack(this);
         mIF.unregisterCarCallBack(this); // 注销服务监听
         mIF.unregisterLocalCallBack(this); // 注销服务监听
     }
@@ -311,16 +323,22 @@ public class Video_Activity_Main extends FragmentActivity implements
             mPlayFragment.updateCtrlBar(mIF.getPlayState());
             mPlayFragment.updateTimeBar();
         }
+        mErrorCount = 0;
     }
 
     private void onCompletion() {}
 
     private void onSeekCompletion() {}
 
+    private int mErrorCount;
     private void onError() {
+        mErrorCount++;
         CustomDialog mDialog = new CustomDialog();
         mDialog.ShowDialog(this, DIALOG_TYPE.NONE_BTN, R.string.media_play_nosupport);
         if (mPlayFragment != null) {
+            if (mErrorCount >= 5) {
+                return;
+            }
             if (mPreFlag) {
                 playPre();
             } else {
@@ -427,6 +445,9 @@ public class Video_Activity_Main extends FragmentActivity implements
             updateDevice(getCurrentDeviceType());
             onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
             if (!storageBean.isMounted()) {
+                if (mListFragment != null) {
+                    mListFragment.dismissDialog();
+                }
                 new CustomDialog().ShowDialog(Video_Activity_Main.this, DIALOG_TYPE.NONE_BTN,
                         R.string.music_device_pullout_usb);
             }
@@ -465,15 +486,13 @@ public class Video_Activity_Main extends FragmentActivity implements
     }
     
     private void playVideo(int position) {
-    	if (MediaInterfaceUtil.mediaCannotPlay()) {
-    		return;
-    	}
-        FileNode fileNode = mVideoList.get(position);
-        if (!fileNode.isSame(mIF.getPlayItem())) {
-            mPreferences.saveVideoCurrentPosition(position);
+        if (MediaInterfaceUtil.mediaCannotPlay()) {
+            return;
         }
+        updateCurPosition(position);
+        FileNode fileNode = mVideoList.get(mCurPosition);
+        mPlayFragment.setFileNode(fileNode);
         onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
-        mPlayFragment.setFileNode(mVideoList.get(position));
     }
     
     private BroadcastReceiver mOperateAppReceiver = new BroadcastReceiver() {
@@ -590,22 +609,65 @@ public class Video_Activity_Main extends FragmentActivity implements
     }
 
     private void playPre() {
-        int position = mPreferences.getVideoCurrentPosition();
-        position--;
-        position = (position < 0) ? mVideoList.size() - 1 : position;
-        mPreferences.saveVideoCurrentPosition(position);
+        mCurPosition--;
+        mCurPosition = (mCurPosition < 0) ? mVideoList.size() - 1 : mCurPosition;
         mPlayFragment.updateVideoLayout();
-        mPlayFragment.setFileNode(mVideoList.get(position));
-        mIF.play(position);
+        FileNode fileNode = mVideoList.get(mCurPosition);
+        mPlayFragment.setFileNode(fileNode);
+        mIF.play(fileNode);
     }
 
     private void playNext() {
-        int position = mPreferences.getVideoCurrentPosition();
-        position++;
-        position = (position >= mVideoList.size()) ? 0 : position;
-        mPreferences.saveVideoCurrentPosition(position);
+        mCurPosition++;
+        mCurPosition = (mCurPosition >= mVideoList.size()) ? 0 : mCurPosition;
         mPlayFragment.updateVideoLayout();
-        mPlayFragment.setFileNode(mVideoList.get(position));
-        mIF.play(position);
+        FileNode fileNode = mVideoList.get(mCurPosition);
+        mPlayFragment.setFileNode(fileNode);
+        mIF.play(fileNode);
+    }
+
+    @Override
+    public void onCarDataChange(int mode, int func, int data) {}
+    @Override
+    public void onUartDataChange(int mode, int len, byte[] datas) {
+        DebugLog.d("Yearlay", "onUartDataChange mode:" + mode + " && len:" + len +
+                " && datas[]:" + bytesToHexString(datas));
+        if (datas.length > 8) {
+            int data3 = datas[3] & 0xFF;
+            int data4 = datas[4] & 0xFF;
+            int data5 = datas[5] & 0xFF;
+            if (data3 == 0x0D && data4 == 0x00 && data5 == 0x2D) {
+                int speedData = 0x0000;
+                speedData = (speedData | datas[6]) << 8;
+                speedData = speedData | datas[7];
+                float speed = (float) speedData / 100;
+                DebugLog.d("Yearlay", "onUartDataChange speed: " + speed);
+                
+                if (speed > 20.0f && AllMediaList.sCarSpeed < 20.0f && mPlayFragment != null) { // 加速超过20km/h
+                    AllMediaList.sCarSpeed = speed;
+                    mPlayFragment.updateVideoLayout();
+                }
+                if (speed < 20.0f && AllMediaList.sCarSpeed > 20.0f && mPlayFragment != null) { // 减速低于20km/h
+                    AllMediaList.sCarSpeed = speed;
+                    mPlayFragment.updateVideoLayout();
+                }
+            }
+        }
+    }
+    
+    private String bytesToHexString(byte[] src){
+        StringBuilder stringBuilder = new StringBuilder();
+        if (src == null || src.length <= 0) {
+            return null;
+        }
+        for (int i = 0; i < src.length; i++) {
+            int v = src[i] & 0xFF;
+            String hv = " " + Integer.toHexString(v);
+            if (hv.length() < 2) {
+                stringBuilder.append(0);
+            }
+            stringBuilder.append(hv);
+        }       
+        return stringBuilder.toString();
     }
 }

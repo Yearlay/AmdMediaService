@@ -11,8 +11,11 @@ import com.haoke.aidl.ICarCallBack;
 import com.haoke.aidl.IMediaCallBack;
 import com.haoke.audiofocus.AudioFocus;
 import com.haoke.bean.FileNode;
+import com.haoke.aidl.ICarUartCallBack;
 import com.haoke.constant.MediaUtil;
 import com.haoke.define.BTDef.*;
+import com.haoke.define.CMSStatusDef.CMSStatusFuc;
+import com.haoke.define.CMSStatusDef.TrafficRestriction;
 import com.haoke.define.MediaDef.DeviceType;
 import com.haoke.define.MediaDef.FileType;
 import com.haoke.define.MediaDef.MediaState;
@@ -55,6 +58,14 @@ public class Media_IF extends CarService_IF {
 			public void onDataChange(int mode, int func, int data)
 					throws RemoteException {
 				mCarCallBack.onDataChange(mode, func, data);
+			}
+		};
+		
+		mIUartCallBack = new ICarUartCallBack.Stub() {
+			@Override
+			public void onUartDataChange(int arg0, int arg1, byte[] arg2)
+					throws RemoteException {
+				mCarCallBack.onUartDataChange(arg0, arg1, arg2);
 			}
 		};
 		mIMediaCallBack = new IMediaCallBack.Stub() {
@@ -190,6 +201,17 @@ public class Media_IF extends CarService_IF {
 			Log.e(TAG, "getMute error e="+e);
 		}
 		return false;
+	}
+	
+	public static boolean limitToPlayVideoWhenDrive() {
+		boolean limitFlag = false;
+		try {
+			int status = getInstance().mServiceIF.getCMSStatus(CMSStatusFuc.TRAFFIC_RESTRICTION);
+			limitFlag = (status == TrafficRestriction.ON);
+		} catch (Exception e) {
+			Log.e(TAG, "limitToPlayVideoWhenDrive error e="+e);
+		}
+		return limitFlag;
 	}
 	
 	public static void cancelMute() {

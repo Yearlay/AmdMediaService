@@ -33,6 +33,7 @@ import com.haoke.data.AllMediaList;
 import com.haoke.data.OperateListener;
 import com.haoke.define.MediaDef.PlayState;
 import com.haoke.mediaservice.R;
+import com.haoke.util.DebugLog;
 import com.haoke.video.VideoSurfaceView;
 import com.haoke.window.HKWindowManager;
 
@@ -192,7 +193,7 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
     }
     
     public void updateVideoLayout() {
-    	checkSpeedAndRefreshView();
+        checkSpeedAndRefreshView();
     }
 
     @Override
@@ -441,9 +442,17 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
         }
         mVideoLayout.removeAllViews();
         mVideoLayout.addView(mVideoView);
-        boolean showVideoFlag = true;
-        // TODO 
-        mForbiddenView.setVisibility(showVideoFlag ? View.GONE : View.VISIBLE);
+        boolean showForbiddenViewFlag = false;
+        try {
+            boolean sysLimitFlag = Video_IF.limitToPlayVideoWhenDrive();
+            boolean speedLimitFlag = (AllMediaList.sCarSpeed > 20.0f);
+            DebugLog.d("Yearlay", " checkSpeedAndRefreshView sysLimitFlag: " + sysLimitFlag);
+            DebugLog.d("Yearlay", " checkSpeedAndRefreshView speedLimitFlag: " + speedLimitFlag);
+            showForbiddenViewFlag = (sysLimitFlag && speedLimitFlag);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        mForbiddenView.setVisibility(showForbiddenViewFlag ? View.VISIBLE : View.GONE);
     }
 
 }
