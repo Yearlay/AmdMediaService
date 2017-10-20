@@ -36,6 +36,7 @@ import com.haoke.mediaservice.R;
 import com.haoke.util.DebugLog;
 import com.haoke.video.VideoSurfaceView;
 import com.haoke.window.HKWindowManager;
+import com.nforetek.bt.res.MsgOutline;
 
 public class VideoPlayFragment extends Fragment implements OnHKTouchListener, View.OnClickListener,
         OperateListener, OnTouchListener, OnGestureListener {
@@ -49,6 +50,7 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
     private ImageView mCollectView;
     private TextView mTitleTextView;
     private VideoPlayTimeSeekBar mTimeSeekBar;
+    private View mUnsupportView;
     private Handler mActivityHandler;
     private  GestureDetector mGestureDetector;
     
@@ -58,6 +60,12 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
         mFileNode = fileNode;
         if (mRootView != null) {
             refreshViewAndPlay();
+        }
+    }
+    
+    public void setUnsupportViewShow(boolean showFlag) {
+        if (mUnsupportView != null) {
+        	mUnsupportView.setVisibility(showFlag ? View.VISIBLE : View.GONE);
         }
     }
     
@@ -126,6 +134,7 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
         mTitleTextView = (TextView) mRootView.findViewById(R.id.title_video);
         mForbiddenView = mRootView.findViewById(R.id.video_play_forbidden);
         mForbiddenView.setOnTouchListener(this);
+        mUnsupportView = mRootView.findViewById(R.id.not_support_text);
         
         return mRootView;
     }

@@ -333,9 +333,10 @@ public class Video_Activity_Main extends FragmentActivity implements
     private int mErrorCount;
     private void onError() {
         mErrorCount++;
-        CustomDialog mDialog = new CustomDialog();
-        mDialog.ShowDialog(this, DIALOG_TYPE.NONE_BTN, R.string.media_play_nosupport);
         if (mPlayFragment != null) {
+            mPlayFragment.setUnsupportViewShow(true);
+            mHandler.removeMessages(HIDE_UNSUPPORT_VIEW);
+            mHandler.sendEmptyMessageDelayed(HIDE_UNSUPPORT_VIEW, 1000);
             if (mErrorCount >= 5) {
                 return;
             }
@@ -544,6 +545,7 @@ public class Video_Activity_Main extends FragmentActivity implements
     public static final int PLAY_PRE = 4;
     public static final int PLAY_NEXT = 5;
     public static final int SHOW_BOTTOM = 6;
+    public static final int HIDE_UNSUPPORT_VIEW = 7;
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -592,6 +594,10 @@ public class Video_Activity_Main extends FragmentActivity implements
                         .setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
                 getWindow().getDecorView().setSystemUiVisibility(mLayoutProps);
                 break;
+            case HIDE_UNSUPPORT_VIEW:
+                if (mPlayFragment != null) {
+                    mPlayFragment.setUnsupportViewShow(false);
+                }
             default:
                 break;
             }
