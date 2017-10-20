@@ -449,10 +449,10 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
             DebugLog.d("Yearlay", " checkSpeedAndRefreshView sysLimitFlag: " + sysLimitFlag);
             DebugLog.d("Yearlay", " checkSpeedAndRefreshView speedLimitFlag: " + speedLimitFlag);
             showForbiddenViewFlag = (sysLimitFlag && speedLimitFlag);
-            mForbiddenView.setVisibility(showForbiddenViewFlag ? View.VISIBLE : View.GONE);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        mForbiddenView.setVisibility(showForbiddenViewFlag ? View.VISIBLE : View.GONE);
     }
 
 }
