@@ -19,9 +19,7 @@ import com.amd.bt.BT_IF;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.ID3Parse;
 import com.haoke.bean.ID3Parse.ID3ParseListener;
-import com.haoke.bean.StorageBean;
 import com.haoke.constant.MediaUtil.FileType;
-import com.haoke.data.AllMediaList;
 import com.haoke.define.MediaDef.PlayState;
 import com.haoke.define.ModeDef;
 import com.haoke.mediaservice.R;
@@ -46,9 +44,9 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
     
     private void setLabelInfo(Context context, RemoteViews remoteViews) {
         int strId = 0;
-        if (Media_IF.getInstance().getCurSource() == ModeDef.RADIO) {
+        if (Media_IF.getCurSource() == ModeDef.RADIO) {
             strId = R.string.pub_radio;
-        } else if (Media_IF.getInstance().getCurSource() == ModeDef.BT) {
+        } else if (Media_IF.getCurSource() == ModeDef.BT) {
             strId = R.string.pub_bt;
         } else {
             strId = R.string.launcher_card_media;
@@ -61,7 +59,7 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
         String unkownStr = context.getResources().getString(R.string.media_unknow);
         String musicTitle  = null;
         String artist  = null;
-        if (Media_IF.getInstance().getCurSource() == ModeDef.BT) {
+        if (Media_IF.getCurSource() == ModeDef.BT) {
             musicTitle = BT_IF.getInstance().music_getTitle();
             artist = BT_IF.getInstance().music_getArtist();
         } else {
@@ -79,7 +77,7 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
     private Bitmap mBitmap;
     
     private void setShowImage(Context context, RemoteViews remoteViews) {
-        if (Media_IF.getInstance().getCurSource() == ModeDef.AUDIO) {
+        if (Media_IF.getCurSource() == ModeDef.AUDIO) {
             FileNode fileNode = getFileNode(context);
             if (fileNode != null) {
                 if (fileNode.getParseId3() == 1 && fileNode.getThumbnailPath() != null) {
@@ -95,7 +93,7 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
             } else {
                 remoteViews.setImageViewResource(R.id.widget_media_icon, R.drawable.home1_card_media_default);
             }
-        } else if (Media_IF.getInstance().getCurSource() == ModeDef.BT) {
+        } else if (Media_IF.getCurSource() == ModeDef.BT) {
             remoteViews.setImageViewResource(R.id.widget_media_icon, R.drawable.home1_card_media_default);
         }
     }
@@ -196,6 +194,12 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
             }
         }
         if ("main_activity_update_ui".equals(intent.getAction())) {
+            if (intent.getBooleanExtra("bt_disconnect", false)) {
+                Media_IF.setCurSource(ModeDef.AUDIO);
+            }
+            if (intent.getBooleanExtra("bt_connected", false)) {
+                Media_IF.setCurSource(ModeDef.BT);
+            }
             RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.media_widget_provider);
             setLabelInfo(context, remoteViews); // 更新Label信息。
             setMusicInfo(context, remoteViews); // 更新Music（蓝牙音乐或我的音乐）的信息。
@@ -209,7 +213,7 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
     }
     
     private void onClickMusicPlayButton(Context context) {
-        int source = Media_IF.getInstance().getCurSource();
+        int source = Media_IF.getCurSource();
         if (source == ModeDef.BT) {
             if (BT_IF.getInstance().music_isPlaying()) {
                 BT_IF.getInstance().music_pause();
@@ -245,9 +249,9 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
     }
     
     private void onClickMusicPreButton(Context context) {
-        if (Media_IF.getInstance().getCurSource() == ModeDef.BT) {
+        if (Media_IF.getCurSource() == ModeDef.BT) {
             BT_IF.getInstance().music_pre();
-        } else if (Media_IF.getInstance().getCurSource() == ModeDef.AUDIO) {
+        } else if (Media_IF.getCurSource() == ModeDef.AUDIO) {
         	FileNode fileNode = getFileNode(context);
         	if (fileNode != null) {
         		boolean ret = Media_IF.getInstance().playPre();
@@ -263,7 +267,7 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
             } else {
             	FileNode fileNode = getFileNode(context);
             	if (fileNode != null) {
-            		Media_IF.getInstance().setCurSource(ModeDef.AUDIO);
+            		Media_IF.setCurSource(ModeDef.AUDIO);
             		Media_IF.getInstance().setAudioDevice(fileNode.getDeviceType());
             		if (!Media_IF.getInstance().playPre()) {
             			Media_IF.getInstance().changePlayState();
@@ -276,9 +280,9 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
     }
     
     private void onClickMusicNextButton(Context context) {
-        if (Media_IF.getInstance().getCurSource() == ModeDef.BT) {
+        if (Media_IF.getCurSource() == ModeDef.BT) {
             BT_IF.getInstance().music_next();
-        } else if (Media_IF.getInstance().getCurSource() == ModeDef.AUDIO) {
+        } else if (Media_IF.getCurSource() == ModeDef.AUDIO) {
         	FileNode fileNode = getFileNode(context);
         	if (fileNode != null) {
         		boolean ret = Media_IF.getInstance().playNext();
@@ -294,7 +298,7 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
             } else {
             	FileNode fileNode = getFileNode(context);
             	if (fileNode != null) {
-            		Media_IF.getInstance().setCurSource(ModeDef.AUDIO);
+            		Media_IF.setCurSource(ModeDef.AUDIO);
             		Media_IF.getInstance().setAudioDevice(fileNode.getDeviceType());
 	                if (!Media_IF.getInstance().playNext()) {
 	                    Media_IF.getInstance().changePlayState();
@@ -307,11 +311,11 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
     }
     
     private void onClickRadioPlayButton() {
-        if (Media_IF.getInstance().getCurSource() == ModeDef.BT) {
+        if (Media_IF.getCurSource() == ModeDef.BT) {
             BT_IF.getInstance().music_pause();
             mLastDevice = ModeDef.BT;
             Radio_IF.getInstance().requestAudioFocus(true);
-        } else if (Media_IF.getInstance().getCurSource() == ModeDef.AUDIO) {
+        } else if (Media_IF.getCurSource() == ModeDef.AUDIO) {
             Media_IF.getInstance().setPlayState(PlayState.PAUSE);
             Radio_IF.getInstance().requestAudioFocus(true);
             mLastDevice = ModeDef.AUDIO;
