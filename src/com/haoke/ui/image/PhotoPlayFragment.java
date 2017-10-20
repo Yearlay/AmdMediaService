@@ -138,6 +138,8 @@ public class PhotoPlayFragment extends Fragment implements OnClickListener,
                 mUnsupportView.setVisibility(View.VISIBLE);
                 mHandler.removeMessages(PLAY_ERROR);
                 mHandler.sendEmptyMessageDelayed(PLAY_ERROR, 1000);
+            } else {
+                mUnsupportView.setVisibility(View.GONE);
             }
             mPreFlag = mLastPosition > position;
             mLastPosition = position;
@@ -280,6 +282,7 @@ public class PhotoPlayFragment extends Fragment implements OnClickListener,
     }
     
     public void preImage() {
+        mHandler.removeMessages(PLAY_ERROR);
         if (mRootView != null) {
             if (getCurPhotoView() != null) {
                 int position = PlayStateSharedPreferences.instance(getActivity()).getImageCurrentPosition();
@@ -293,6 +296,7 @@ public class PhotoPlayFragment extends Fragment implements OnClickListener,
     }
     
     public void nextImage() {
+        mHandler.removeMessages(PLAY_ERROR);
         if (mRootView != null) {
             if (getCurPhotoView() != null) {
                 int position = PlayStateSharedPreferences.instance(getActivity()).getImageCurrentPosition();
@@ -492,13 +496,13 @@ public class PhotoPlayFragment extends Fragment implements OnClickListener,
             photoView.setOnMatrixChangeListener(PhotoPlayFragment.this);
             photoView.setOnPhotoTapListener(PhotoPlayFragment.this);
             if (fileNode.isUnSupportFlag() || fileNode.getFile().length() > 52428800) {
-                if (position == mViewPager.getCurrentItem()) {
-                	mUnsupportView.setVisibility(View.VISIBLE);
+                int currentPos = PlayStateSharedPreferences.instance(mContext).getImageCurrentPosition();
+                if (position == currentPos) {
+                    mUnsupportView.setVisibility(View.VISIBLE);
                     mHandler.removeMessages(PLAY_ERROR);
                     mHandler.sendEmptyMessageDelayed(PLAY_ERROR, 1000);
                 }
             } else {
-            	mUnsupportView.setVisibility(View.GONE);
                 ImageLoad.instance(mContext).loadImageBitmap(photoView, R.drawable.image_icon_default,
                         fileNode, PhotoPlayFragment.this);
             }

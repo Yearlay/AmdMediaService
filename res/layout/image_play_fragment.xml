@@ -86,7 +86,7 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:singleLine="true"
-        android:visibility="visible"
+        android:visibility="gone"
         android:text="@string/media_play_nosupport"
         android:textSize="26sp"
         android:textColor="@android:color/white" />
