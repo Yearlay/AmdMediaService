@@ -26,7 +26,7 @@ import android.widget.Toast;
 public class Music_Play_Id3 extends LinearLayout implements OnClickListener, ID3ParseListener {
     private final String TAG = this.getClass().getSimpleName();
     
-    private static final String VERSION_INFO = "当前媒体apk版本为 20171017 20:00";
+    private static final String VERSION_INFO = "当前媒体apk版本为 20171019 20:00";
     
     private TextView mTrack;
     private TextView mAlbum;

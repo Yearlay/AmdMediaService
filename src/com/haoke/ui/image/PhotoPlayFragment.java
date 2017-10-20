@@ -48,13 +48,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class PhotoPlayFragment extends Fragment implements OnClickListener,
-        OnMatrixChangedListener, OnPhotoTapListener, OperateListener, OnDismissListener, ImageLoadingListener {
+        OnMatrixChangedListener, OnPhotoTapListener, OperateListener, ImageLoadingListener {
     private Context mContext;
     private View mRootView;
     private View mCtrlBar;
     private ImageView mPlayImageView;
     private ImageView mCollectView;
     private TextView mTitleTextView;
+    private TextView mUnsupportView;
     private HKViewPager mViewPager;
     private PhotoPagerAdapter mAdapter;
     private Handler mActivityHandler;
@@ -75,7 +76,7 @@ public class PhotoPlayFragment extends Fragment implements OnClickListener,
     }
     
     public void setCurrentPosition(int position) {
-    	mLastPosition = position;
+        mLastPosition = position;
         PlayStateSharedPreferences.instance(getActivity()).saveImageCurrentPosition(position);
     }
     
@@ -133,20 +134,16 @@ public class PhotoPlayFragment extends Fragment implements OnClickListener,
             mTitleTextView.setText(fileNode.getTitleEx());
             
             if (fileNode.isUnSupportFlag() || fileNode.getFile().length() > 52428800) { // 不支持的图片。
-                CustomDialog mDialog = new CustomDialog();
-                mDialog.ShowDialog(mContext, DIALOG_TYPE.NONE_BTN, R.string.media_play_nosupport);
-                mDialog.getDialog().setOnDismissListener(PhotoPlayFragment.this);
+                mCollectView.setVisibility(View.GONE);
+                mUnsupportView.setVisibility(View.VISIBLE);
+                mHandler.removeMessages(PLAY_ERROR);
+                mHandler.sendEmptyMessageDelayed(PLAY_ERROR, 1000);
             }
             mPreFlag = mLastPosition > position;
             mLastPosition = position;
         }
     };
     
-    @Override
-    public void onDismiss(DialogInterface dialog) {
-    	mHandler.sendEmptyMessage(PLAY_ERROR);
-    }
-
     @Override
     public void onAttach(Activity activity) {
         if (activity instanceof Image_Activity_Main) {
@@ -173,6 +170,7 @@ public class PhotoPlayFragment extends Fragment implements OnClickListener,
         mCollectView = (ImageView) mRootView.findViewById(R.id.collect_image);
         mCollectView.setOnClickListener(this);
         mTitleTextView = (TextView) mRootView.findViewById(R.id.title_image);
+        mUnsupportView = (TextView) mRootView.findViewById(R.id.not_support_text);
         
         mProgressDialog = new ProgressDialog(mContext);
         mProgressDialog.setCancelable(false);
@@ -274,6 +272,9 @@ public class PhotoPlayFragment extends Fragment implements OnClickListener,
         case R.id.collect_image:
             collectOrUncollect();
             break;
+        case R.id.not_support_text:
+        	slaverShow(mCtrlBar.getVisibility() != View.VISIBLE);
+        	break;
         }
         startHideTimer();
     }
@@ -490,15 +491,16 @@ public class PhotoPlayFragment extends Fragment implements OnClickListener,
             Media_Photo_View photoView = (Media_Photo_View) view.findViewById(R.id.photopager_imageview);
             photoView.setOnMatrixChangeListener(PhotoPlayFragment.this);
             photoView.setOnPhotoTapListener(PhotoPlayFragment.this);
-            TextView textView = (TextView) view.findViewById(R.id.not_support_text);
-            if (fileNode.getFile().length() > 52428800) {
-                photoView.setVisibility(View.GONE);
-                // textView.setVisibility(View.VISIBLE);
+            if (fileNode.isUnSupportFlag() || fileNode.getFile().length() > 52428800) {
+                if (position == mViewPager.getCurrentItem()) {
+                	mUnsupportView.setVisibility(View.VISIBLE);
+                    mHandler.removeMessages(PLAY_ERROR);
+                    mHandler.sendEmptyMessageDelayed(PLAY_ERROR, 1000);
+                }
             } else {
-                photoView.setVisibility(View.VISIBLE);
-                textView.setVisibility(View.GONE);
+            	mUnsupportView.setVisibility(View.GONE);
                 ImageLoad.instance(mContext).loadImageBitmap(photoView, R.drawable.image_icon_default,
-                		fileNode, PhotoPlayFragment.this);
+                        fileNode, PhotoPlayFragment.this);
             }
             photoView.setTag(position);
             container.addView(view, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
@@ -513,33 +515,41 @@ public class PhotoPlayFragment extends Fragment implements OnClickListener,
     }
     
     @Override
-	public void onLoadingCancelled(String arg0, View arg1) {
-	}
+    public void onLoadingCancelled(String arg0, View arg1) {
+    }
 
-	@Override
-	public void onLoadingComplete(String arg0, View arg1, Bitmap arg2) {
-	}
+    @Override
+    public void onLoadingComplete(String arg0, View arg1, Bitmap arg2) {
+    }
 
-	@Override
-	public void onLoadingFailed(String uri, View view, FailReason reason) {
-		DebugLog.e("Yearlay", "onLoadingFailed uri : " + uri);
-		FileNode failedFileNode = null;
-		for (FileNode fileNode : mPhotoList) {
-			if (uri != null && uri.equals("file://" + fileNode.getFilePath())) {
-				failedFileNode = fileNode;
-				break;
-			}
-		}
-		failedFileNode.setUnSupportFlag(true);
-		FileNode curFileNode = mPhotoList.get(mViewPager.getCurrentItem());
-		if (failedFileNode != null && failedFileNode.isSame(curFileNode)) {
-			CustomDialog mDialog = new CustomDialog();
-            mDialog.ShowDialog(mContext, DIALOG_TYPE.NONE_BTN, R.string.media_play_nosupport);
-            mDialog.getDialog().setOnDismissListener(PhotoPlayFragment.this);
-		}
-	}
+    @Override
+    public void onLoadingFailed(String uri, View view, FailReason reason) {
+        FileNode failedFileNode = null;
+        int failedPosition = -1;
+        for (int index = 0; index < mPhotoList.size(); index++) {
+        	FileNode fileNode = mPhotoList.get(index);
+            if (uri != null && uri.equals("file://" + fileNode.getFilePath())) {
+                failedFileNode = fileNode;
+                failedPosition = index;
+                break;
+            }
+        }
+        if (failedFileNode != null) {
+            failedFileNode.setUnSupportFlag(true);
+            try {
+                if (failedPosition == mViewPager.getCurrentItem()) {
+                    mCollectView.setVisibility(View.GONE);
+                    mUnsupportView.setVisibility(View.VISIBLE);
+                    mHandler.removeMessages(PLAY_ERROR);
+                    mHandler.sendEmptyMessageDelayed(PLAY_ERROR, 1000);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-	@Override
-	public void onLoadingStarted(String arg0, View arg1) {
-	}
+    @Override
+    public void onLoadingStarted(String arg0, View arg1) {
+    }
 }
