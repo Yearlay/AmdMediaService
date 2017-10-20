@@ -139,6 +139,9 @@ public class MusicHomeFragment extends Fragment implements Media_Listener, BT_Li
 			updateSystemUILabel(source, true);
 		}
 		mHomeLayout.onResume();
+		if (mPlayLayout != null && mPlayLayout.getVisibility() == View.VISIBLE) {
+			mPlayLayout.onResume();
+		}
 	}
 
 	@Override

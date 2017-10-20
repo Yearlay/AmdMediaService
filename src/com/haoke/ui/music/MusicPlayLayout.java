@@ -154,6 +154,11 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 		super.onDetachedFromWindow();
 	}
 	
+	public void onResume() {
+		updateCtrlBar();
+		updateTimeBar();
+	}
+	
 	@Override
 	public void setVisibility(int visibility) {
 		super.setVisibility(visibility);
