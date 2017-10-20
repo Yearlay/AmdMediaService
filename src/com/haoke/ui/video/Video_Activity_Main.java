@@ -66,6 +66,8 @@ public class Video_Activity_Main extends FragmentActivity implements
     private TextView mSelectAllView;
     private TextView mCopyTextView;
     private boolean mPreFlag;
+    
+    private int mCurPosition;
 
     public PlayStateSharedPreferences mPreferences;
     private ArrayList<FileNode> mVideoList = new ArrayList<FileNode>();
@@ -128,8 +130,9 @@ public class Video_Activity_Main extends FragmentActivity implements
             }
             mPreferences.saveVideoDeviceType(deviceType);
             mPreferences.saveVideoShowFragment(SWITCH_TO_PLAY_FRAGMENT);
-            mPreferences.saveVideoCurrentPosition(position);
-            mPlayFragment.setFileNode(mVideoList.get(position));
+            mCurPosition = position;
+            FileNode fileNode = mVideoList.get(mCurPosition);
+            mPlayFragment.setFileNode(fileNode);
         }
     }
 
@@ -481,12 +484,10 @@ public class Video_Activity_Main extends FragmentActivity implements
     	if (MediaInterfaceUtil.mediaCannotPlay()) {
     		return;
     	}
-        FileNode fileNode = mVideoList.get(position);
-        if (!fileNode.isSame(mIF.getPlayItem())) {
-            mPreferences.saveVideoCurrentPosition(position);
-        }
+    	mCurPosition = position;
+        FileNode fileNode = mVideoList.get(mCurPosition);
+        mPlayFragment.setFileNode(fileNode);
         onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
-        mPlayFragment.setFileNode(mVideoList.get(position));
     }
     
     private BroadcastReceiver mOperateAppReceiver = new BroadcastReceiver() {
@@ -603,23 +604,21 @@ public class Video_Activity_Main extends FragmentActivity implements
     }
 
     private void playPre() {
-        int position = mPreferences.getVideoCurrentPosition();
-        position--;
-        position = (position < 0) ? mVideoList.size() - 1 : position;
-        mPreferences.saveVideoCurrentPosition(position);
+        mCurPosition--;
+        mCurPosition = (mCurPosition < 0) ? mVideoList.size() - 1 : mCurPosition;
         mPlayFragment.updateVideoLayout();
-        mPlayFragment.setFileNode(mVideoList.get(position));
-        mIF.play(position);
+        FileNode fileNode = mVideoList.get(mCurPosition);
+        mPlayFragment.setFileNode(fileNode);
+        mIF.play(fileNode);
     }
 
     private void playNext() {
-        int position = mPreferences.getVideoCurrentPosition();
-        position++;
-        position = (position >= mVideoList.size()) ? 0 : position;
-        mPreferences.saveVideoCurrentPosition(position);
+        mCurPosition++;
+        mCurPosition = (mCurPosition >= mVideoList.size()) ? 0 : mCurPosition;
         mPlayFragment.updateVideoLayout();
-        mPlayFragment.setFileNode(mVideoList.get(position));
-        mIF.play(position);
+        FileNode fileNode = mVideoList.get(mCurPosition);
+        mPlayFragment.setFileNode(fileNode);
+        mIF.play(fileNode);
     }
 
 	@Override
