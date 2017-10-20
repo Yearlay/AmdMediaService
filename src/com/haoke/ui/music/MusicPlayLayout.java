@@ -50,7 +50,7 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 	
 	private int mTextFormat = 1; //1为分秒，2为时分秒
 	
-	private Media_IF mIF = null;
+	private Media_IF mIF = Media_IF.getInstance();
 	
 	private boolean isBTPlay = false;
 	
@@ -94,7 +94,6 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
     protected void onFinishInflate() {
         super.onFinishInflate();
         Log.d(TAG, "onFinishInflate");
-		mIF = Media_IF.getInstance();
 		
 		mId3 = (Music_Play_Id3) findViewById(R.id.music_play_id3);
 		mTimeSeekBar = (SeekBar) findViewById(R.id.music_play_time_seekbar);
@@ -154,27 +153,44 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 		super.onDetachedFromWindow();
 	}
 	
+    public void onPause() {
+    	Log.d(TAG, "onPause isBTPlay="+isBTPlay);
+    	exitScanMode();
+    	mTimeHandler.removeCallbacksAndMessages(null);
+    }
+    
 	public void onResume() {
+		Log.d(TAG, "onResume isBTPlay="+isBTPlay);
+		AllMediaList.notifyAllLabelChange(getContext(), 
+				isBTPlay ? R.string.pub_btmusic :R.string.pub_music);
 		updateCtrlBar();
 		updateTimeBar();
+		
+		refreshFromViewPagerMaybePlayBT(true, true);
+    	if (mIF == null || isBTPlay) {
+    		return;
+    	}
+    	mTimeHandler.removeMessages(MSG_UPDATE_TIME);
+    	if (getVisibility() == View.VISIBLE) {
+    		if (mIF.getPlayState() == PlayState.PLAY) {
+				mTimeHandler.sendEmptyMessageDelayed(MSG_UPDATE_TIME, 200);
+			}
+    	} else {
+    		onPause();
+    	}
 	}
 	
 	@Override
 	public void setVisibility(int visibility) {
+    	int getVisibility = getVisibility();
+    	Log.d(TAG, "setVisibility getVisibility="+getVisibility+"; visibility="+visibility);
 		super.setVisibility(visibility);
-		Log.d(TAG, "setVisibility visibility="+visibility);
-		mTimeHandler.removeMessages(MSG_UPDATE_TIME);
-		if (visibility == View.VISIBLE && !isBTPlay) {
-			mIF.setCurScanner(mIF.getPlayingDevice(), mIF.getPlayingFileType());
-			if (mIF.getPlayState() == PlayState.PLAY) {
-				mTimeHandler.sendEmptyMessageDelayed(MSG_UPDATE_TIME, 200);
+		if (getVisibility != visibility) {
+			if (visibility != View.VISIBLE) {
+				onPause();
+			} else {
+				onResume();
 			}
-		}
-		if (visibility != View.VISIBLE) {
-			exitScanMode();
-		}
-		if (visibility == View.VISIBLE) {
-			refreshFromViewPagerMaybePlayBT(true, false);
 		}
 	}
 
@@ -498,30 +514,6 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
     
     public void onCompletion() {
     	checkScanModeAndGoOn();
-    }
-    
-    public void onPause() {
-    	exitScanMode();
-    	mTimeHandler.removeCallbacksAndMessages(null);
-    }
-    
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-    	refreshFromViewPagerMaybePlayBT(isVisibleToUser, true);
-    	if (mIF == null || isBTPlay) {
-    		return;
-    	}
-    	mTimeHandler.removeMessages(MSG_UPDATE_TIME);
-    	if (isVisibleToUser) {
-        	if (getVisibility() == View.VISIBLE) {
-        		if (mIF.getPlayState() == PlayState.PLAY) {
-    				mTimeHandler.sendEmptyMessageDelayed(MSG_UPDATE_TIME, 200);
-    			}
-        	} else {
-        		onPause();
-        	}
-    	} else {
-    		onPause();
-    	}
     }
     
     private void refreshFromViewPagerMaybePlayBTEx(boolean fragmentVisible) {

@@ -1,5 +1,6 @@
 package com.amd.radio;
 
+import com.haoke.data.AllMediaList;
 import com.haoke.data.ModeSwitch;
 import com.haoke.define.ModeDef;
 import com.haoke.define.McuDef.McuFunc;
@@ -12,12 +13,14 @@ import com.amd.radio.Radio_IF;
 import com.amd.radio.Radio_CarListener;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,12 +30,15 @@ import android.view.View.OnLongClickListener;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class Radio_Activity_Main extends Fragment implements Radio_CarListener, CarService_Listener,
+public class Radio_Activity_Main extends RelativeLayout implements Radio_CarListener, CarService_Listener,
         OnClickListener, OnLongClickListener, OnPageChangeListener {
 	private static final String TAG = "Radio_Activity_Main";
     private static final int FREQ_COUNT_MAX = 30;
+    
+    private Context mContext;
     
     private ImageButton mCollectButton;
     private ImageView mPlayImageView;
@@ -49,28 +55,36 @@ public class Radio_Activity_Main extends Fragment implements Radio_CarListener, 
     private static int tempFreq;
     private Radio_IF mIF;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);    
-        mIF = Radio_IF.getInstance();
-        mIF.registerCarCallBack(this);
-        mIF.registerModeCallBack(this);
-        
-        mIF.initFavoriteData(getActivity().getApplicationContext());
-        Radio_SimpleSave.getInstance().getCurCityStationNameList();
+    public Radio_Activity_Main(Context context) {
+    	super(context);
+	}
+    
+    public Radio_Activity_Main(Context context, AttributeSet attrs) {
+    	super(context, attrs);
+    }
+    
+    public Radio_Activity_Main(Context context, AttributeSet attrs, int defStyle) {
+		super(context, attrs, defStyle);
+		Log.d(TAG, "Radio_Activity_Main init");
     }
     
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Log.d(TAG, "onCreateView");
+    protected void onFinishInflate() {
+    	super.onFinishInflate();
+    	Log.d(TAG, "onFinishInflate");
+		mContext = getContext();
+		mIF = Radio_IF.getInstance();
+        mIF.registerCarCallBack(this);
+        mIF.registerModeCallBack(this);
+        
+        mIF.initFavoriteData(getContext().getApplicationContext());
+        Radio_SimpleSave.getInstance().getCurCityStationNameList();
         //高德广播
         Intent intent =new Intent();
         intent.setAction("AUTONAVI_STANDARD_BROADCAST_RECV");
         intent.putExtra("KEY_TYPE", 10029);
-        getActivity().sendBroadcast(intent);
-        
-        View rootView = inflater.inflate(R.layout.radio_main_fragment, null);
+        this.getContext().sendBroadcast(intent);
+        RelativeLayout rootView = this;
         mCollectButton = (ImageButton) rootView.findViewById(R.id.radio_fragment_ib_collect);
         viewPager = (ViewPager) rootView.findViewById(R.id.radio_fragment_viewpager);
         viewPager.setOnPageChangeListener(this);
@@ -99,23 +113,20 @@ public class Radio_Activity_Main extends Fragment implements Radio_CarListener, 
         rescan.setOnClickListener(this);
         scan_5s.setOnClickListener(this);
 
-        mPagerAdapter = new RadioPagerAdapter<View>(inflater);
+        mPagerAdapter = new RadioPagerAdapter<View>(LayoutInflater.from(this.getContext()));
         viewPager.setAdapter(mPagerAdapter);
         updateAllStations();
         
         mIF.setCurBand();
         mIF.scanListChannel();
-        return rootView ;
     }
     
-    @Override
     public void onStart() {
-        super.onStart();
         //高德广播
         Intent intent =new Intent();
         intent.setAction("AUTONAVI_STANDARD_BROADCAST_RECV");
         intent.putExtra("KEY_TYPE", 10029);
-        getActivity().sendBroadcast(intent);
+        mContext.sendBroadcast(intent);
         
         if(Data_Common.tempFreq.size() > 0){
             int freq = Radio_IF.sfreqToInt(Data_Common.tempFreq.get(0));
@@ -136,49 +147,27 @@ public class Radio_Activity_Main extends Fragment implements Radio_CarListener, 
         }
     }
     
-    @Override
     public void onResume() {
-        super.onResume();
         Log.d(TAG, "onResume isScan5S="+isScan5S);
-//        if (isScan5S) {
-//            mIF.setScan();
-//        }
-        if (this.getUserVisibleHint()) {
-            updateSystemUILabel(ModeDef.RADIO, true);
-        }
+        AllMediaList.notifyAllLabelChange(getContext(), R.string.pub_radio);
         updateFreq(mIF.getCurFreq());
+        ModeSwitch.instance().setCurrentMode(mContext, true, ModeSwitch.RADIO_MODE);
+        updateAll();
     }
     
-    @Override
 	public void onPause() {
-		super.onPause();
         Log.d(TAG, "onPause isScan5S="+isScan5S);
-//        if (isScan5S) {
-//        	isScan5S = false;
-//            mIF.stopScan();
-//        }
+        ModeSwitch.instance().setCurrentMode(mContext, false, 0);
 	}
 
-	@Override
     public void onStop() {
-        Log.d(TAG, "onStop");
-        super.onStop();
     }
     
-    @Override
     public void onDestroy() {
-        super.onDestroy();
         Log.d(TAG, "onDestroy");
         mIF.unregisterCarCallBack(this);
         mIF.unregisterModeCallBack(this);
     }
-    
-    private void updateSystemUILabel(int curLabel, boolean force) {
-		Activity activity = getActivity();
-        if (activity != null && activity instanceof Media_Activity_Main) {
-        	((Media_Activity_Main)activity).updateSystemUILabel(curLabel, force);
-        }
-	}
     
     private void getViewPagerFragmentNum(){
         int num = Data_Common.stationList.size();
@@ -320,7 +309,7 @@ public class Radio_Activity_Main extends Fragment implements Radio_CarListener, 
         tempFreq = data;
         mFreqNameTextView.setText(Radio_SimpleSave.getInstance().getStationName(data));
         
-        boolean isCollected = mIF.isCollected(getActivity(), data);
+        boolean isCollected = mIF.isCollected(mContext, data);
         if (isCollected) {
             mCollectButton.setImageResource(R.drawable.media_collect);
         } else {
@@ -403,23 +392,11 @@ public class Radio_Activity_Main extends Fragment implements Radio_CarListener, 
     }
     
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser) {
-            ModeSwitch.instance().setCurrentMode(getActivity(), true, ModeSwitch.RADIO_MODE);
-            updateAll();
-            updateSystemUILabel(ModeDef.RADIO, true);
-        } else {
-    		ModeSwitch.instance().setCurrentMode(getActivity(), false, 0);
-        }
-    }
-    
-    @Override
     public void onClick(View v) {
         int id = v.getId();
         Log.d(TAG, "onClick id="+id+"; isRescan="+isRescan+"; isScan5S="+isScan5S);
         if(id == R.id.radio_fragment_all){
-            startActivity(new Intent(getActivity(), Radio_To_Favorite.class));
+            mContext.startActivity(new Intent(mContext, Radio_To_Favorite.class));
             return;
         } else if (id == R.id.radio_fragment_down){
             int currentPage = viewPager.getCurrentItem();
@@ -434,13 +411,13 @@ public class Radio_Activity_Main extends Fragment implements Radio_CarListener, 
             }
             return;
         } else if (id == R.id.radio_fragment_ib_collect) {
-            boolean isCollected = mIF.isCollected(getActivity(), tempFreq);
+            boolean isCollected = mIF.isCollected(mContext, tempFreq);
             if (isCollected) {
-                if (mIF.uncollectFreq(getActivity(), tempFreq, true)) {
+                if (mIF.uncollectFreq(mContext, tempFreq, true)) {
                     mCollectButton.setImageResource(R.drawable.media_uncollect);
                 }
             } else {
-                if (mIF.collectFreq(getActivity(), tempFreq, true)) {
+                if (mIF.collectFreq(mContext, tempFreq, true)) {
                     mCollectButton.setImageResource(R.drawable.media_collect);
                 }
             }

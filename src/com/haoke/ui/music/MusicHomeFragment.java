@@ -1,14 +1,11 @@
 package com.haoke.ui.music;
 
-import android.app.Activity;
 import android.content.Context;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.util.AttributeSet;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.amd.bt.BTMusic_IF;
@@ -16,7 +13,6 @@ import com.amd.bt.BT_IF;
 import com.amd.bt.BT_Listener;
 import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.btjar.main.BTDef.BTFunc;
-import com.haoke.define.GlobalDef;
 import com.haoke.define.ModeDef;
 import com.haoke.define.MediaDef.MediaFunc;
 import com.haoke.define.MediaDef.MediaState;
@@ -28,7 +24,7 @@ import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
 import com.haoke.util.Media_IF;
 import com.haoke.util.Media_Listener;
 
-public class MusicHomeFragment extends Fragment implements Media_Listener, BT_Listener {
+public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT_Listener {
 	private static final String TAG = "MusicHomeFragment";
 	private Context mContext;
 	private Media_IF mIF = null;
@@ -38,57 +34,36 @@ public class MusicHomeFragment extends Fragment implements Media_Listener, BT_Li
 	private MusicPlayLayout mPlayLayout;
 	private ViewStub mPlayLayoutStub;
 	private CustomDialog mDialog;
-	private boolean mRefreshLayout = false;
 	
-	public MusicHomeFragment() {
-		super();
+	public MusicHomeFragment(Context context) {
+    	super(context);
+	}
+    
+    public MusicHomeFragment(Context context, AttributeSet attrs) {
+    	super(context, attrs);
+    }
+    
+    public MusicHomeFragment(Context context, AttributeSet attrs, int defStyle) {
+		super(context, attrs, defStyle);
+		Log.d(TAG, "MusicHomeFragment init");
+	}
+    
+    @Override
+    protected void onFinishInflate() {
+    	super.onFinishInflate();
+		mContext = getContext();
+		Log.d(TAG, "onFinishInflate mContext="+mContext);
 		mIF = Media_IF.getInstance();
 		mIF.initMedia();
 		mBTIF = BT_IF.getInstance();
 		mBTIF.bindBTService();
 		mBTMusicIF = BTMusic_IF.getInstance();
-		Log.d(TAG, "MusicHomeFragment()");
-	}
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		Log.d(TAG, "onCreateView");
-		mContext = getActivity();
-		
-		View rootView = inflater.inflate(R.layout.music_activity_home, container, false);
-		mDialog = new CustomDialog();
-		mHomeLayout = (MusicHomeLayout) rootView.findViewById(R.id.music_home_layout);
-		mPlayLayoutStub = (ViewStub) rootView.findViewById(R.id.music_play_layout_stub);
+    	mDialog = new CustomDialog();
+		mHomeLayout = (MusicHomeLayout) findViewById(R.id.music_home_layout);
+		mPlayLayoutStub = (ViewStub) findViewById(R.id.music_play_layout_stub);
 		mPlayLayout = null;
-		mRefreshLayout = true;
-		return rootView;
-	}
+    }
 
-	private void setMusicModeFragment() {
-		String md = null;
-		if (getActivity() != null && getActivity().getIntent() != null) {
-			md = (String) getActivity().getIntent().getSerializableExtra("Mode_To_Music");
-		}
-		Log.d(TAG, "setMusicModeFragment md="+md);
-		if ("btMusic_intent".equals(md)) {
-			GlobalDef.currentsource = 4;
-			changeShowLayout(ShowLayout.BT_PLAY_LAYOUT);
-			getActivity().setIntent(null);
-			return;
-		}
-		
-		int playState = mIF.getPlayState();
-		int source = mIF.getCurSource();
-		// 更新界面状态
-		if (source == ModeDef.AUDIO && playState != PlayState.STOP) {
-			changeShowLayout(ShowLayout.AUDIO_PLAY_LAYOUT);
-		} else if (source == ModeDef.BT && mBTIF.music_isPlaying()) {
-			changeShowLayout(ShowLayout.BT_PLAY_LAYOUT);
-		} else {
-			changeShowLayout(ShowLayout.HOME_LAYOUT);
-		}
-	}
-	
 	enum ShowLayout {
 		HOME_LAYOUT,
 		AUDIO_PLAY_LAYOUT,
@@ -99,12 +74,8 @@ public class MusicHomeFragment extends Fragment implements Media_Listener, BT_Li
 	private void changeShowLayout(ShowLayout showLayout) {
 		Log.d(TAG, "changeShowLayout showLayout="+showLayout+"; mShowLayout="+mShowLayout+"; mPlayLayout="+mPlayLayout);
 		mShowLayout = showLayout;
-		mRefreshLayout = false;
-		if (mHomeLayout == null) {
-			mRefreshLayout = true;
-		} else if (mShowLayout == ShowLayout.HOME_LAYOUT) {
+		if (mShowLayout == ShowLayout.HOME_LAYOUT) {
 			mHomeLayout.setVisibility(View.VISIBLE);
-			updateSystemUILabel(ModeDef.AUDIO, false);
 			if (mPlayLayout!=null) mPlayLayout.setVisibility(View.GONE);
 		} else {
 			mHomeLayout.setVisibility(View.GONE);
@@ -116,74 +87,46 @@ public class MusicHomeFragment extends Fragment implements Media_Listener, BT_Li
 				mPlayLayout.setBTPlayMode(mShowLayout == ShowLayout.BT_PLAY_LAYOUT);
 				mPlayLayout.setVisibility(View.VISIBLE);
 			}
-			updateSystemUILabel(mPlayLayout.isBTPlay() ? ModeDef.BT : ModeDef.AUDIO, false);
+		}
+		setCurPlayViewState();
+	}
+	
+	public void onStart() {
+		mIF.registerLocalCallBack(this);
+		mBTIF.registerModeCallBack(this);
+	}
+	
+	public void onStop() {
+		mIF.unregisterLocalCallBack(this);
+		mBTIF.unregisterModeCallBack(this);
+    }
+
+	public void onResume() {
+		Log.d(TAG, "onResume mShowLayout="+mShowLayout);
+		if (mPlayLayout != null) {
+			if (mPlayLayout.getVisibility() == View.VISIBLE) {
+				mPlayLayout.onResume();
+			} else {
+				mPlayLayout.onPause();
+			}
+		}
+		if (mHomeLayout.getVisibility() == View.VISIBLE) {
+			mHomeLayout.onResume();
+		} else {
+			mHomeLayout.onPause();
 		}
 		setCurPlayViewState();
 	}
 
-	@Override
-	public void onResume() {
-		super.onResume();
-		Log.d(TAG, "onResume");
-		mIF.registerLocalCallBack(this);
-		mBTIF.registerModeCallBack(this);
-		//setMusicModeFragment();
-		if (mRefreshLayout) {
-			changeShowLayout(mShowLayout);
-		}
-		if (getUserVisibleHint()) {
-			int source = ModeDef.AUDIO;
-			if (mShowLayout == ShowLayout.BT_PLAY_LAYOUT) {
-				source = ModeDef.BT;
-			}
-			updateSystemUILabel(source, true);
-		}
-		mHomeLayout.onResume();
-		if (mPlayLayout != null && mPlayLayout.getVisibility() == View.VISIBLE) {
-			setCurPlayViewState();
-			mPlayLayout.onResume();
-		}
-	}
-
-	@Override
 	public void onPause() {
-		super.onPause();
 		Log.d(TAG, "onPause");
-		mIF.unregisterLocalCallBack(this);
-		mBTIF.unregisterModeCallBack(this);
 		if (mPlayLayout!=null) {
 			mPlayLayout.onPause();
 		}
+		mHomeLayout.onPause();
 	}
 	
-	@Override
-	public void setUserVisibleHint(boolean isVisibleToUser) {
-		super.setUserVisibleHint(isVisibleToUser);
-		if (mPlayLayout!=null) {
-			mPlayLayout.setUserVisibleHint(isVisibleToUser);
-		}
-		if (isVisibleToUser) {
-			int source = ModeDef.AUDIO;
-			if (mPlayLayout != null && mPlayLayout.getVisibility() == View.VISIBLE) {
-				if (mPlayLayout.isBTPlay()) {
-					source = ModeDef.BT;
-				}
-			}
-			updateSystemUILabel(source, true);
-		}
-	}
-	
-	private void updateSystemUILabel(int curLabel, boolean force) {
-		Activity activity = getActivity();
-        if (activity != null && activity instanceof Media_Activity_Main) {
-        	((Media_Activity_Main)activity).updateSystemUILabel(curLabel, force);
-        }
-	}
-
-	private void stopBtMusic() {
-		if (mBTIF.music_isPlaying()) {
-			mBTIF.music_stop();
-		}
+	public void onDestroy() {
 	}
 	
 	public boolean isBTMusicPlayFragment() {
@@ -197,9 +140,9 @@ public class MusicHomeFragment extends Fragment implements Media_Listener, BT_Li
 		int source = mIF.getCurSource();
 		boolean isAudioMusicPlay = (source == ModeDef.AUDIO && mIF.getPlayState() == PlayState.PLAY);
 		boolean isBTMusicPlay = (source == ModeDef.BT && mBTIF.music_isPlaying());
-		Activity activity = getActivity();
-		if (activity instanceof com.haoke.ui.media.Media_Activity_Main) {
-			((com.haoke.ui.media.Media_Activity_Main)activity).setCurPlayViewState(
+		//Activity activity = getActivity();
+		if (mContext instanceof com.haoke.ui.media.Media_Activity_Main) {
+			((com.haoke.ui.media.Media_Activity_Main)mContext).setCurPlayViewState(
 					isHomeFragment, isAudioMusicPlayFragment, isBtMusicPlayFragment,
 					isAudioMusicPlay, isBTMusicPlay);
 		}
@@ -370,14 +313,14 @@ public class MusicHomeFragment extends Fragment implements Media_Listener, BT_Li
 				setCurPlayViewState();
 				if (mPlayLayout != null) {
 					mPlayLayout.updateCtrlBar();
-					mPlayLayout.refreshFromViewPagerMaybePlayBT(getUserVisibleHint(), true);
+					mPlayLayout.refreshFromViewPagerMaybePlayBT(getVisibility() == View.VISIBLE, true);
 				}
 				break;
 			case BTFunc.MUSIC_ID3_UPDATE://401
 				setCurPlayViewState();
 				if (mPlayLayout != null) {
 					mPlayLayout.updateId3Info();
-					mPlayLayout.refreshFromViewPagerMaybePlayBT(getUserVisibleHint(), true);
+					mPlayLayout.refreshFromViewPagerMaybePlayBT(getVisibility() == View.VISIBLE, true);
 				}
 				break;
 			}

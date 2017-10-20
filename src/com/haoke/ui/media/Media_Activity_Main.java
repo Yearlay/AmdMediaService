@@ -1,19 +1,17 @@
 package com.haoke.ui.media;
 
-import java.util.ArrayList;
-
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.constant.VRConstant;
@@ -28,7 +26,7 @@ import com.haoke.ui.widget.MyViewPaper;
 import com.haoke.ui.widget.MyViewPaper.OnPageChangeListener;
 import com.haoke.util.Media_IF;
 
-public class Media_Activity_Main extends FragmentActivity implements OnClickListener {
+public class Media_Activity_Main extends Activity implements OnClickListener {
     private static final String TAG = "Media_Activity_Main";
     private int mLayoutProps = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
     private Media_IF mMediaIF;
@@ -37,7 +35,7 @@ public class Media_Activity_Main extends FragmentActivity implements OnClickList
     private MusicHomeFragment mHomeFragment = null;
     private MyViewPaper mViewPager = null;
     private View mSearchButton;
-    private ArrayList<Fragment> mFragList = null;
+//    private ArrayList<Fragment> mFragList = null;
     private final int VIEWPAGER_ID_RADIO = 0;
     private final int VIEWPAGER_ID_MUSIC = 1;
     private int mCurLabel = ModeDef.AUDIO;
@@ -52,13 +50,16 @@ public class Media_Activity_Main extends FragmentActivity implements OnClickList
         mMediaIF = Media_IF.getInstance();
         mActivityTab = (Media_Activity_Tab) findViewById(R.id.media_activity_tab);
         mActivityTab.setClickListener(this);
-        mFragList = new ArrayList<Fragment>();
-        mRadioFragment = new Radio_Activity_Main();
-        mHomeFragment = new MusicHomeFragment();
-        mFragList.add(mRadioFragment);
-        mFragList.add(mHomeFragment);
+//        mFragList = new ArrayList<Fragment>();
+//        mRadioFragment = new Radio_Activity_Main();
+//        mHomeFragment = new MusicHomeFragment();
+//        mFragList.add(mRadioFragment);
+//        mFragList.add(mHomeFragment);
+        LayoutInflater inflater = getLayoutInflater();
+        mHomeFragment = (MusicHomeFragment) inflater.inflate(R.layout.music_activity_home, null, false);
+        mRadioFragment = (Radio_Activity_Main) inflater.inflate(R.layout.radio_main_fragment, null, false);
         mViewPager = (MyViewPaper) findViewById(R.id.media_activity_viewpager);
-        mViewPager.setAdapter(new MediaPagerAdapter(getSupportFragmentManager()));
+        mViewPager.setAdapter(new MediaPagerAdapter());
         mViewPager.setOnPageChangeListener(mPageChangeListener);
         mViewPager.setOffscreenPageLimit(0);
         mSearchButton = findViewById(R.id.search_button);
@@ -73,11 +74,64 @@ public class Media_Activity_Main extends FragmentActivity implements OnClickList
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         this.setIntent(intent);
-        initCurSource();
         Log.d(TAG, "onNewIntent");
+        initCurSource();
     }
     
-    private void initCurSource() {
+    @Override
+	protected void onStart() {
+		super.onStart();
+		mRadioFragment.onStart();
+		mHomeFragment.onStart();
+	}
+
+	@Override
+	protected void onStop() {
+		mRadioFragment.onStop();
+		mHomeFragment.onStop();
+		super.onStop();
+	}
+
+	@Override
+	protected void onPause() {
+		mRadioFragment.onPause();
+		mHomeFragment.onPause();
+		super.onPause();
+	}
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume ");
+        if (isShowRadioLayout()) {
+    		mRadioFragment.onResume();
+        } else {
+    		mHomeFragment.onResume();
+        }
+        if (getIntent() != null && "com.haoke.data.ModeSwitch".equals(getIntent().getAction())) {
+            ModeSwitch.instance().setGoingFlag(false);
+        }
+        //解决：U盘歌曲播放界面，点击返回，点击蓝牙界面，进入蓝牙界面后，按HOME，然后再按导航的媒体键，会闪一下蓝牙音乐。
+//      updateSystemUILabel(mCurLabel, true);
+        if (isShowRadioLayout()) {
+        	ModeSwitch.instance().setCurrentMode(this, true, ModeSwitch.RADIO_MODE);
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+		mRadioFragment.onDestroy();
+		mHomeFragment.onDestroy();
+        unregisterReceiver(mReceiver);
+        Log.d(TAG, "onDestroy");
+    }
+    
+    private boolean isShowRadioLayout() {
+    	return mViewPager.getCurrentItem() == VIEWPAGER_ID_RADIO;
+    }
+    
+	private void initCurSource() {
         Intent intent = getIntent();
         int source = Media_IF.getCurSource();
         if (intent != null) {
@@ -95,8 +149,6 @@ public class Media_Activity_Main extends FragmentActivity implements OnClickList
             	fromIntent = true;
             }
             if (fromIntent) {
-//            	setIntent(null);
-            	updateSystemUILabel(source, true);
             	if (source == ModeDef.BT) {
             		replaceBtMusicFragment();
             	} else if (source == ModeDef.AUDIO) {
@@ -142,47 +194,15 @@ public class Media_Activity_Main extends FragmentActivity implements OnClickList
         } else {
             mSearchButton.setVisibility(View.VISIBLE);
         }
-    }
-    
-    public void updateSystemUILabel(int curLabel, boolean force) {
-    	if (!force && mCurLabel == curLabel) {
-        	Log.d(TAG, "updateLabel return! curLabel=mCurLabel="+curLabel+"; force="+force);
-    		return;
-    	}
-        mCurLabel = curLabel;
-        int labelRes = -1;
-        if (curLabel == ModeDef.RADIO) {
-            labelRes = R.string.pub_radio;
-        } else if (curLabel == ModeDef.BT) {
-            labelRes = R.string.pub_btmusic;
-        } else if (curLabel == ModeDef.AUDIO) {
-            labelRes = R.string.pub_music;
+        if (smoothScroll) {
+        	if (mViewPager.getCurrentItem() == VIEWPAGER_ID_RADIO) {
+        		mRadioFragment.onResume();
+        		mHomeFragment.onPause();
+        	} else {
+        		mRadioFragment.onPause();
+        		mHomeFragment.onResume();
+        	}
         }
-        if (labelRes != -1) {
-            AllMediaList.notifyAllLabelChange(getApplicationContext(), labelRes);
-        }
-    }
-    
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d(TAG, "onResume ");
-        if (getIntent() != null && "com.haoke.data.ModeSwitch".equals(getIntent().getAction())) {
-            ModeSwitch.instance().setGoingFlag(false);
-        }
-        //解决：U盘歌曲播放界面，点击返回，点击蓝牙界面，进入蓝牙界面后，按HOME，然后再按导航的媒体键，会闪一下蓝牙音乐。
-//      updateSystemUILabel(mCurLabel, true);
-        if (mViewPager.getCurrentItem() == VIEWPAGER_ID_RADIO) {
-        	ModeSwitch.instance().setCurrentMode(this, true, ModeSwitch.RADIO_MODE);
-        }
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mFragList.clear();
-        unregisterReceiver(mReceiver);
-        Log.d(TAG, "onDestroy");
     }
     
     private void goHome() {
@@ -244,20 +264,39 @@ public class Media_Activity_Main extends FragmentActivity implements OnClickList
         };
     };
 
-    class MediaPagerAdapter extends FragmentPagerAdapter {
-        public MediaPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int arg0) {
-            return mFragList.get(arg0);
-        }
-
+    class MediaPagerAdapter<T extends View> extends PagerAdapter {
         @Override
         public int getCount() {
-            return mFragList.size();
+            return 2;
         }
+
+		@Override
+		public boolean isViewFromObject(View arg0, Object arg1) {
+			return arg0 == arg1;
+		}
+		
+	    @Override  
+	    public void destroyItem(ViewGroup container, int position, Object object) {
+	        container.removeView((View) object);  
+	    }  
+	  
+	    @Override  
+	    public Object instantiateItem(ViewGroup container, int position) {
+	    	ViewGroup obj = mHomeFragment;
+	    	if (position == 0) {
+	    		obj = mRadioFragment;  
+	    	}
+	    	if (obj.getParent() == null) {
+                container.addView(obj);
+            }
+	        return obj;  
+	    }  
+	  
+	    @Override  
+	    public int getItemPosition(Object object) {  
+	        return POSITION_NONE;  
+	    }  
+
     }
 
     class MediaPageChangeListener implements OnPageChangeListener {

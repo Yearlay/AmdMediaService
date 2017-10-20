@@ -85,15 +85,29 @@ public class MusicHomeLayout extends LinearLayout implements OnClickListener,
 		super.onAttachedToWindow();
 	}
     
+    public void onPause() {
+    	Log.d(TAG, "onPause");
+    }
+    
+	public void onResume() {
+		Log.d(TAG, "onResume");
+		AllMediaList.notifyAllLabelChange(getContext(), R.string.pub_music);
+		refreshInterface();
+	}
+
     @Override
     public void setVisibility(int visibility) {
     	int getVisibility = getVisibility();
     	Log.d(TAG, "setVisibility getVisibility="+getVisibility+"; visibility="+visibility);
-    	if (getVisibility() != View.VISIBLE && visibility == View.VISIBLE) {
-    		refreshInterface();
-    	}
-    	super.setVisibility(visibility);
-    }
+		super.setVisibility(visibility);
+		if (getVisibility != visibility) {
+			if (visibility != View.VISIBLE) {
+				onPause();
+			} else {
+				onResume();
+			}
+		}
+	}
 
 	@Override
 	protected void onDetachedFromWindow() {
@@ -104,10 +118,6 @@ public class MusicHomeLayout extends LinearLayout implements OnClickListener,
 		super.onDetachedFromWindow();
 	}
 	
-	public void onResume() {
-		refreshInterface();
-	}
-
     public void setBTConnectedState(int data) {
         mHistoryTextView.setText(data == BTConnState.CONNECTED ?
                 R.string.bt_connect_success : R.string.music_scan_bt_free);
