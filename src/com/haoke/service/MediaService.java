@@ -572,7 +572,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     }
 
     private void launchSourceActivity(int mode) {
-        ModeSwitch.instance().setGoingFlag(true);
+        // ModeSwitch.instance().setGoingFlag(true);
         Intent intent = new Intent();
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setAction("com.haoke.data.ModeSwitch");
