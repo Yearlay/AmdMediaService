@@ -65,7 +65,7 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
     
     public void setUnsupportViewShow(boolean showFlag) {
         if (mUnsupportView != null) {
-        	mUnsupportView.setVisibility(showFlag ? View.VISIBLE : View.GONE);
+            mUnsupportView.setVisibility(showFlag ? View.VISIBLE : View.GONE);
         }
     }
     
@@ -426,6 +426,19 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
         return true;
     }
     
+    private int modifyDistanceX(float distanceX) {
+        int distance = 0;
+        if (mFileNode != null) {
+            int duration = Video_IF.getInstance().getDuration();
+            float temp = distanceX * duration / 3600.0f;
+            if (((int ) Math.abs(temp)) == 0) {
+                temp = (temp < 0 ? -1 : 1);
+            }
+            distance = (int)(temp);
+        }
+        return distance;
+    }
+    
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
         if (mCtrlBar.getVisibility() != View.VISIBLE) {
@@ -434,7 +447,7 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
         mTimeSeekBar.onStartTrackingTouch(mTimeSeekBar.getSeekBar());
         SeekBar seekBar = mTimeSeekBar.getSeekBar();
         int position = seekBar.getProgress();
-        seekBar.setProgress(position - ((int)distanceX));
+        seekBar.setProgress(position - modifyDistanceX(distanceX));
         mTimeSeekBar.checkScroll();
         return true;
     }
