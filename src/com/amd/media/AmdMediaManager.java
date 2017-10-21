@@ -182,20 +182,21 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		mHandler.removeMessages(MSG_SAVE_PLAYTIME);
 	}
 
-	// 播放默认歌曲（在加载完成后调用）
-	public boolean playDefault() {
-		Log.v(TAG, "playDefault");
+	// 播放默认歌曲（在mode切源后调用）
+	public boolean playDefault(int deviceType, int fileType) {
+		Log.v(TAG, "playDefault deviceType="+deviceType+"; fileType="+fileType);
 
-		FileNode node = mAllMediaList.getPlayState(mPlayingDeviceType, mPlayingFileType);
-		// 之前没有路径记录，默认第1首
+		FileNode node = mAllMediaList.getPlayState(deviceType, fileType);
+		ArrayList<FileNode> lists = mAllMediaList.getMediaList(deviceType, fileType);
 		if (node == null) {
-			return playOther(null, 0);
+			if (lists.size() > 0) {
+				setPlayingData(deviceType, fileType, true);
+				return playOther(null, 0);
+			}
+			Log.v(TAG, "playDefault no song!");
+			return false;
 		}
-		boolean result = playOther(node, -1);
-		if (result) {
-			mIsPlayDefault = true;
-		}
-		return result;
+		return play(node);
 	}
 	
 	// 播放指定歌曲
