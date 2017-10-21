@@ -3,8 +3,6 @@ package com.haoke.ui.video;
 import java.util.ArrayList;
 
 import haoke.ui.util.HKTextView;
-import haoke.ui.util.OnHKTouchListener;
-import haoke.ui.util.TOUCH_ACTION;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
@@ -39,7 +37,7 @@ import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
 import com.haoke.ui.widget.CustomDialog.OnDialogListener;
 
-public class VideoListLayout extends RelativeLayout implements OnHKTouchListener,
+public class VideoListLayout extends RelativeLayout implements
         OnItemClickListener, OnItemLongClickListener, OperateListener, OnDismissListener{
     private Context mContext;
     private GridView mGridView;
@@ -147,26 +145,6 @@ public class VideoListLayout extends RelativeLayout implements OnHKTouchListener
         }
     }
 
-    @Override
-    public void OnHKTouchEvent(View view, TOUCH_ACTION action) {
-        if (action == TOUCH_ACTION.BTN_CLICKED) {
-            switch (view.getId()) {
-            default:
-                break;
-            }
-        } else if (action == TOUCH_ACTION.BTN_DOWN) {
-        } else if (action == TOUCH_ACTION.BTN_UP) {
-        }
-    }
-    
-    public FileNode getFileNode(int position) {
-        FileNode fileNode = null;
-        if (position < mVideoList.size()) {
-            fileNode = mVideoList.get(position);
-        }
-        return fileNode;
-    }
-    
     public boolean isEditMode() {
         return isEditMode;
     }

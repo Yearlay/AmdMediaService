@@ -239,7 +239,6 @@ public class Video_Activity_Main extends FragmentActivity implements
             case MediaFunc.SCAN_THUMBNAIL_ALL_OVER:
                 break;
             case MediaFunc.PREPARING:
-                onPreparing();  // 到播放列表。
                 break;
             case MediaFunc.PREPARED:
                 onPrepared();
@@ -267,10 +266,6 @@ public class Video_Activity_Main extends FragmentActivity implements
                 break;
             }
         }
-    }
-
-    private void onPreparing() {
-        onChangeFragment(SWITCH_TO_PLAY_FRAGMENT); // 回播放
     }
 
     private void onPrepared() {
@@ -560,6 +555,7 @@ public class Video_Activity_Main extends FragmentActivity implements
     };
     
     private void onChangeFragment(int index) {
+        DebugLog.d(TAG, "onChangeFragment index: " + index);
         mPreferences.saveVideoShowFragment(index);
         if (index == SWITCH_TO_PLAY_FRAGMENT) {
             mPlayLayout.setVisibility(View.VISIBLE);
