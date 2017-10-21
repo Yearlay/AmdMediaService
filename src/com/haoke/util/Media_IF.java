@@ -2,6 +2,7 @@ package com.haoke.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.RemoteException;
 import android.util.Log;
 
@@ -9,6 +10,7 @@ import com.amd.media.AmdMediaManager;
 import com.amd.media.MediaInterfaceUtil;
 import com.haoke.aidl.ICarCallBack;
 import com.haoke.aidl.IMediaCallBack;
+import com.haoke.application.MediaApplication;
 import com.haoke.audiofocus.AudioFocus;
 import com.haoke.bean.FileNode;
 import com.haoke.aidl.ICarUartCallBack;
@@ -166,10 +168,13 @@ public class Media_IF extends CarService_IF {
 		mMediaCallBack.setInterface(id);
 	}
 
+	public static int sLastSource;
 	// 设置当前源
 	public static boolean setCurSource(int source) {
 		try {
-			if (getCurSource() != source) {
+			int lastSource = getCurSource();
+			if (lastSource != source) {
+				sLastSource = lastSource;
 				Log.d(TAG, "setCurSource source="+source);
 				return getInstance().mServiceIF.mcu_setCurSource(source);
 			}

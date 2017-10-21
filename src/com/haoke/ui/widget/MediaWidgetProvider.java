@@ -30,7 +30,6 @@ import com.amd.radio.Radio_IF;
 public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseListener {
 
     private final String TAG = "MediaWidgetProvider";
-    private static int mLastDevice = ModeDef.AUDIO;
     
     private PendingIntent getPendingIntent(Context context, int buttonId) {
         Log.v(TAG, "pushUpdate() buttonId:" + buttonId);
@@ -43,26 +42,26 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
     }
     
     private void setLabelInfo(Context context, RemoteViews remoteViews) {
-        int strId = 0;
+        int strId = R.string.launcher_card_media;
         if (Media_IF.getCurSource() == ModeDef.RADIO) {
             strId = R.string.pub_radio;
         } else if (Media_IF.getCurSource() == ModeDef.BT) {
             strId = R.string.pub_bt;
-        } else {
+        } else if (Media_IF.getCurSource() == ModeDef.AUDIO) {
             strId = R.string.launcher_card_media;
         }
         String title = context.getResources().getString(strId);
         remoteViews.setTextViewText(R.id.widget_media_style, title);
     }
     
-    private void setMusicInfo(Context context, RemoteViews remoteViews) {
+    private void setMusicInfo(Context context, RemoteViews remoteViews, int source) {
         String unkownStr = context.getResources().getString(R.string.media_unknow);
         String musicTitle  = null;
         String artist  = null;
-        if (Media_IF.getCurSource() == ModeDef.BT) {
+        if (source == ModeDef.BT) {
             musicTitle = BT_IF.getInstance().music_getTitle();
             artist = BT_IF.getInstance().music_getArtist();
-        } else {
+        } else if (source == ModeDef.AUDIO || source == ModeDef.NULL) {
             FileNode fileNode = getFileNode(context);
             if (fileNode != null) {
                 musicTitle = fileNode.getTitleEx();
@@ -126,7 +125,6 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
         if(curFreq >= 8750){ // FM
             freq = freq.substring(0, freq.length()-2) + "." + freq.substring(freq.length()-2);
         }
-        setLabelInfo(context, remoteViews);
         remoteViews.setTextViewText(R.id.widget_radio_am, (band >= 1 && band <= 3) ? "FM" : "AM");
         remoteViews.setTextViewText(R.id.widget_radio__mhz, (band == 4 || band == 5) ? "KHZ" : "MHZ");
         remoteViews.setTextViewText(R.id.widget_radio_num, freq);
@@ -149,12 +147,7 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
         remoteViews.setOnClickPendingIntent(R.id.radio_enter_layout, getPendingIntent(context, R.id.radio_enter_layout));
         remoteViews.setOnClickPendingIntent(R.id.widget_radio_btn_play, getPendingIntent(context, R.id.widget_radio_btn_play));
         
-        setLabelInfo(context, remoteViews);
-        setMusicInfo(context, remoteViews);
-        setShowImage(context, remoteViews);
-        setRadioInfo(context, remoteViews);
-        setMusicPlayButton(context, remoteViews); // 更新音乐的播放按键。
-        setRadioPlayButton(context, remoteViews); // 更新收音机的播放按键。
+        setAllInfo(context, remoteViews);
         updateAppWidgets(context, remoteViews);
         super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
@@ -201,15 +194,27 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
                 Media_IF.setCurSource(ModeDef.BT);
             }
             RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.media_widget_provider);
-            setLabelInfo(context, remoteViews); // 更新Label信息。
-            setMusicInfo(context, remoteViews); // 更新Music（蓝牙音乐或我的音乐）的信息。
-            setShowImage(context, remoteViews); // 更新Music（蓝牙显示为默认，我的音乐显示专辑图）显示的图片。
-            setRadioInfo(context, remoteViews);
-            setMusicPlayButton(context, remoteViews); // 更新音乐的播放按键。
-            setRadioPlayButton(context, remoteViews); // 更新收音机的播放按键。
+            setAllInfo(context, remoteViews);
             updateAppWidgets(context, remoteViews);
         }
         super.onReceive(context, intent);
+    }
+    
+    private void setAllInfo(Context context, RemoteViews remoteViews) {
+        int source = Media_IF.getCurSource();
+        DebugLog.d("Yearlay", "setAllInfo source: " + source);
+        if (source == ModeDef.BT || source == ModeDef.RADIO || source == ModeDef.AUDIO) {
+            setLabelInfo(context, remoteViews); // 更新Label信息。
+        }
+        if (source == ModeDef.BT || source == ModeDef.AUDIO || source == ModeDef.NULL) {
+            setMusicInfo(context, remoteViews, source); // 更新Music（蓝牙音乐或我的音乐）的信息。
+            setShowImage(context, remoteViews); // 更新Music（蓝牙显示为默认，我的音乐显示专辑图）显示的图片。
+        }
+        if (source == ModeDef.RADIO || source == ModeDef.NULL) {
+            setRadioInfo(context, remoteViews);
+        }
+        setMusicPlayButton(context, remoteViews); // 更新音乐的播放按键。
+        setRadioPlayButton(context, remoteViews); // 更新收音机的播放按键。
     }
     
     private void onClickMusicPlayButton(Context context) {
@@ -229,9 +234,14 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
                 Toast.makeText(context, R.string.no_media_can_play, Toast.LENGTH_SHORT).show();
             }
         } else {
-            if (mLastDevice == ModeDef.BT) {
+            if (Media_IF.getCurSource() == ModeDef.RADIO) {
+                Radio_IF.getInstance().setEnable(false);
+            }
+            if (Media_IF.sLastSource == ModeDef.BT) {
+                Media_IF.setCurSource(ModeDef.BT);
                 BT_IF.getInstance().music_play();
             } else {
+                Media_IF.setCurSource(ModeDef.AUDIO);
                 if (Media_IF.getInstance().getPlayingFileType() == FileType.AUDIO) {
                     // 只有是音乐的情况下，才会播放。
                     Media_IF.getInstance().setPlayState(PlayState.PLAY);
@@ -252,29 +262,33 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
         if (Media_IF.getCurSource() == ModeDef.BT) {
             BT_IF.getInstance().music_pre();
         } else if (Media_IF.getCurSource() == ModeDef.AUDIO) {
-        	FileNode fileNode = getFileNode(context);
-        	if (fileNode != null) {
-        		boolean ret = Media_IF.getInstance().playPre();
-        		if (!ret) {
-        			DebugLog.e("Yearlay", "Error AppWidget#playPre ...");
-        		}
-        	} else {
-        		Toast.makeText(context, R.string.no_media_can_play, Toast.LENGTH_SHORT).show();
-        	}
+            FileNode fileNode = getFileNode(context);
+            if (fileNode != null) {
+                boolean ret = Media_IF.getInstance().playPre();
+                if (!ret) {
+                    DebugLog.e("Yearlay", "Error AppWidget#playPre ...");
+                }
+            } else {
+                Toast.makeText(context, R.string.no_media_can_play, Toast.LENGTH_SHORT).show();
+            }
         } else {
-            if (mLastDevice == ModeDef.BT) {
+            if (Media_IF.getCurSource() == ModeDef.RADIO) {
+                Radio_IF.getInstance().setEnable(false);
+            }
+            if (Media_IF.sLastSource == ModeDef.BT) {
+                Media_IF.setCurSource(ModeDef.BT);
                 BT_IF.getInstance().music_play();
             } else {
-            	FileNode fileNode = getFileNode(context);
-            	if (fileNode != null) {
-            		Media_IF.setCurSource(ModeDef.AUDIO);
-            		Media_IF.getInstance().setAudioDevice(fileNode.getDeviceType());
-            		if (!Media_IF.getInstance().playPre()) {
-            			Media_IF.getInstance().changePlayState();
-            		}
-            	} else {
-            		Toast.makeText(context, R.string.no_media_can_play, Toast.LENGTH_SHORT).show();
-            	}
+                Media_IF.setCurSource(ModeDef.AUDIO);
+                FileNode fileNode = getFileNode(context);
+                if (fileNode != null) {
+                    Media_IF.getInstance().setAudioDevice(fileNode.getDeviceType());
+                    if (!Media_IF.getInstance().playPre()) {
+                        Media_IF.getInstance().changePlayState();
+                    }
+                } else {
+                    Toast.makeText(context, R.string.no_media_can_play, Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }
@@ -283,29 +297,34 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
         if (Media_IF.getCurSource() == ModeDef.BT) {
             BT_IF.getInstance().music_next();
         } else if (Media_IF.getCurSource() == ModeDef.AUDIO) {
-        	FileNode fileNode = getFileNode(context);
-        	if (fileNode != null) {
-        		boolean ret = Media_IF.getInstance().playNext();
-        		if (!ret) {
-        			DebugLog.e("Yearlay", "Error AppWidget#playNext ...");
-        		}
-        	} else {
-        		Toast.makeText(context, R.string.no_media_can_play, Toast.LENGTH_SHORT).show();
-        	}
+            FileNode fileNode = getFileNode(context);
+            if (fileNode != null) {
+                boolean ret = Media_IF.getInstance().playNext();
+                if (!ret) {
+                    DebugLog.e("Yearlay", "Error AppWidget#playNext ...");
+                }
+            } else {
+                Toast.makeText(context, R.string.no_media_can_play, Toast.LENGTH_SHORT).show();
+            }
         } else {
-            if (mLastDevice == ModeDef.BT) {
+            if (Media_IF.getCurSource() == ModeDef.RADIO) {
+                Radio_IF.getInstance().setEnable(false);
+            }
+            if (Media_IF.sLastSource == ModeDef.BT) {
+                Media_IF.setCurSource(ModeDef.BT);
                 BT_IF.getInstance().music_play();
             } else {
-            	FileNode fileNode = getFileNode(context);
-            	if (fileNode != null) {
-            		Media_IF.setCurSource(ModeDef.AUDIO);
-            		Media_IF.getInstance().setAudioDevice(fileNode.getDeviceType());
-	                if (!Media_IF.getInstance().playNext()) {
-	                    Media_IF.getInstance().changePlayState();
-	                }
-            	} else {
-            		Toast.makeText(context, R.string.no_media_can_play, Toast.LENGTH_SHORT).show();
-            	}
+                Media_IF.setCurSource(ModeDef.AUDIO);
+                FileNode fileNode = getFileNode(context);
+                if (fileNode != null) {
+                    Media_IF.setCurSource(ModeDef.AUDIO);
+                    Media_IF.getInstance().setAudioDevice(fileNode.getDeviceType());
+                    if (!Media_IF.getInstance().playNext()) {
+                        Media_IF.getInstance().changePlayState();
+                    }
+                } else {
+                    Toast.makeText(context, R.string.no_media_can_play, Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }
@@ -313,13 +332,11 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
     private void onClickRadioPlayButton() {
         if (Media_IF.getCurSource() == ModeDef.BT) {
             BT_IF.getInstance().music_pause();
-            mLastDevice = ModeDef.BT;
-            Radio_IF.getInstance().requestAudioFocus(true);
         } else if (Media_IF.getCurSource() == ModeDef.AUDIO) {
             Media_IF.getInstance().setPlayState(PlayState.PAUSE);
-            Radio_IF.getInstance().requestAudioFocus(true);
-            mLastDevice = ModeDef.AUDIO;
         }
+        Media_IF.setCurSource(ModeDef.RADIO);
+        Radio_IF.getInstance().requestAudioFocus(true);
         boolean radioPlay = Radio_IF.getInstance().isEnable();
         Radio_IF.getInstance().setEnable(!radioPlay);
     }
@@ -335,9 +352,9 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
             ID3Parse.instance().parseID3(context, fileNode, this);
         }
         if (fileNode != null) {
-        	DebugLog.e("Yearlay", "AppWidget getDefaultItem : " + fileNode.getFilePath());
+            DebugLog.e("Yearlay", "AppWidget getDefaultItem : " + fileNode.getFilePath());
         } else {
-        	DebugLog.e("Yearlay", "AppWidget getDefaultItem : null");
+            DebugLog.e("Yearlay", "AppWidget getDefaultItem : null");
         }
         return fileNode;
     }
@@ -347,7 +364,7 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
         if (object instanceof Context) {
             Context context = (Context) object;
             RemoteViews remoteView = new RemoteViews(context.getPackageName(), R.layout.media_widget_provider);
-            setMusicInfo(context, remoteView);
+            setMusicInfo(context, remoteView, Media_IF.getCurSource());
             setShowImage(context, remoteView);
             updateAppWidgets(context, remoteView);
         }
