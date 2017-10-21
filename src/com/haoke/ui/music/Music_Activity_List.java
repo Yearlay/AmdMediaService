@@ -205,6 +205,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         super.onResume();
         if (getIntent() != null && "com.haoke.data.ModeSwitch".equals(getIntent().getAction())) {
             ModeSwitch.instance().setGoingFlag(false);
+            setIntent(null);
         }
         mIF.registerLocalCallBack(this); // 注册服务监听
         updateStatus();

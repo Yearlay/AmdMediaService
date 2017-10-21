@@ -497,6 +497,20 @@ public class Media_IF extends CarService_IF {
 			e.printStackTrace();
 		}
 	}
+	
+	// 播放指定设备的默认歌曲（在mode切源后调用）
+	public boolean playDefault(int deviceType, int fileType) {
+		try {
+			Log.d(TAG, "playDefault deviceType="+deviceType+"; fileType="+fileType);
+			if (MediaInterfaceUtil.mediaCannotPlay()) {
+				return false;
+			}
+			return mMediaManager.playDefault(deviceType, fileType);
+		} catch (Exception e) {
+			Log.e(TAG, "playDefault", e);
+		}
+		return false;
+	}
 
 	// 播放(list中的postion)
 	public boolean play(int pos) {
