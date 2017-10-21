@@ -188,10 +188,14 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
         }
         if ("main_activity_update_ui".equals(intent.getAction())) {
             if (intent.getBooleanExtra("bt_disconnect", false)) {
-                Media_IF.setCurSource(ModeDef.AUDIO);
+                if (Media_IF.getCurSource() == ModeDef.BT) {
+                    Media_IF.setCurSource(ModeDef.AUDIO);
+                }
             }
             if (intent.getBooleanExtra("bt_connected", false)) {
-                Media_IF.setCurSource(ModeDef.BT);
+                if (Media_IF.getCurSource() != ModeDef.AUDIO) {
+                    Media_IF.setCurSource(ModeDef.BT);
+                }
             }
             RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.media_widget_provider);
             setAllInfo(context, remoteViews);
