@@ -237,7 +237,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     private void operateImage(boolean yesOperate) {
         DebugLog.d(TAG, "operateImage");
         if (yesOperate) {
-        	Intent intent = new Intent(this, Image_Activity_Main.class);
+            Intent intent = new Intent(this, Image_Activity_Main.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         } else {
@@ -499,18 +499,19 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     }
     
     @Override
-	public void onUartDataChange(int mode, int len, byte[] datas) {}
+    public void onUartDataChange(int mode, int len, byte[] datas) {}
     
     @Override
     public void onCarDataChange(int mode, int func, int data) {
         if (mode == ModeDef.MCU && func == McuFunc.KEY) {
             int keyState = data >> 8;
-			int keyCode = data & 0xFF;
+            int keyCode = data & 0xFF;
             if (keyState == McuDef.KeyState.PRESS_RELEASED) {
                 if (keyCode == McuDef.KeyCode.MODE) {
+                     DebugLog.d("Yearlay", "MediaService onCarDataChange handle Mode_Key...");
                      handleModeKey();
                 } else if (keyCode == McuDef.KeyCode.POWER2) {
-                	
+                    
                 }
             }
         }
@@ -523,12 +524,12 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
             case McuFunc.KEY://按钮处理
                 break;
             case McuFunc.POWER_STATE:
-            	if (data == PowerState.POWER_OFF) {
-            		MediaInterfaceUtil.setMuteRecordPlayState();
-            	} else if (data == PowerState.POWER_ON) {
-            		MediaInterfaceUtil.cancelMuteRecordPlayState();
-            	}
-            	break;
+                if (data == PowerState.POWER_OFF) {
+                    MediaInterfaceUtil.setMuteRecordPlayState();
+                } else if (data == PowerState.POWER_ON) {
+                    MediaInterfaceUtil.cancelMuteRecordPlayState();
+                }
+                break;
             }
             
         } else if (mode == ModeDef.BT) { // 通话开始或结束，声音需要处理
@@ -545,13 +546,13 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
                 }
             }*/
         } else if (mode == ModeDef.EQ) {
-        	if (func == EQFunc.MUTE) {
-        		if (data == 0) {  //取消静音
-        			MediaInterfaceUtil.cancelMuteRecordPlayState();
-        		} else { //静音
-        			MediaInterfaceUtil.setMuteRecordPlayState();
-        		}
-        	}
+            if (func == EQFunc.MUTE) {
+                if (data == 0) {  //取消静音
+                    MediaInterfaceUtil.cancelMuteRecordPlayState();
+                } else { //静音
+                    MediaInterfaceUtil.setMuteRecordPlayState();
+                }
+            }
         }
     }
 
@@ -610,11 +611,11 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     }
     
     private void checkLaunchRadio() {
-    	boolean showMark = PlayStateSharedPreferences.instance(this).getModeMark();
-    	int currentMode = PlayStateSharedPreferences.instance(this).getSwitchMode();
-    	if (showMark && currentMode == ModeSwitch.RADIO_MODE) {
-    		launchSourceActivity(ModeSwitch.RADIO_MODE);
-    	}
+        boolean showMark = PlayStateSharedPreferences.instance(this).getModeMark();
+        int currentMode = PlayStateSharedPreferences.instance(this).getSwitchMode();
+        if (showMark && currentMode == ModeSwitch.RADIO_MODE) {
+            launchSourceActivity(ModeSwitch.RADIO_MODE);
+        }
     }
 
     @Override
