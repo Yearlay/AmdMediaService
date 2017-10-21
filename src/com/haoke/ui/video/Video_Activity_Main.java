@@ -256,13 +256,11 @@ public class Video_Activity_Main extends FragmentActivity implements
                 onPlayOver();
                 break;
             case MediaFunc.PLAY_STATE:
-                playStateChanged(data1);
-                break;
             case MediaFunc.REPEAT_MODE:
-                repeatModeChanged(data1);
-                break;
             case MediaFunc.RANDOM_MODE:
-                randomModeChanged(data1);
+            	if (mPlayLayout.getVisibility() == View.VISIBLE) {
+                    mPlayLayout.updatePlayState(mIF.getPlayState());
+                }
                 break;
             }
         }
@@ -276,7 +274,7 @@ public class Video_Activity_Main extends FragmentActivity implements
             return;
         }
         if (mPlayLayout.getVisibility() == View.VISIBLE) {
-            mPlayLayout.updateCtrlBar(mIF.getPlayState());
+            mPlayLayout.updatePlayState(mIF.getPlayState());
             mPlayLayout.updateTimeBar();
         }
         mErrorCount = 0;
@@ -307,24 +305,6 @@ public class Video_Activity_Main extends FragmentActivity implements
 
     private void onPlayOver() {
         onChangeFragment(SWITCH_TO_LIST_FRAGMENT); // 回列表
-    }
-
-    private void playStateChanged(int state) {
-        if (mPlayLayout.getVisibility() == View.VISIBLE) {
-            mPlayLayout.updateCtrlBar(mIF.getPlayState());
-        }
-    }
-
-    private void repeatModeChanged(int mode) {
-        if (mPlayLayout.getVisibility() == View.VISIBLE) {
-            mPlayLayout.updateCtrlBar(mIF.getPlayState());
-        }
-    }
-
-    private void randomModeChanged(int mode) {
-        if (mPlayLayout.getVisibility() == View.VISIBLE) {
-            mPlayLayout.updateCtrlBar(mIF.getPlayState());
-        }
     }
 
     @Override
@@ -464,11 +444,11 @@ public class Video_Activity_Main extends FragmentActivity implements
                         onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
                     }
                     mIF.play(mPreferences.getVideoCurrentPosition());
-                    mPlayLayout.updateCtrlBar(mIF.getPlayState());
+                    mPlayLayout.updatePlayState(mIF.getPlayState());
                     break;
                 case VRIntent.PAUSE_VIDEO:
                     mIF.setPlayState(PlayState.PAUSE);
-                    mPlayLayout.updateCtrlBar(mIF.getPlayState());
+                    mPlayLayout.updatePlayState(mIF.getPlayState());
                     break;
                 case VRIntent.PRE_VIDEO:
                     if (mPreferences.getVideoShowFragment() != SWITCH_TO_PLAY_FRAGMENT) {

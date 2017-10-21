@@ -84,12 +84,10 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         }
     }
     
-    public void updateCtrlBar(int playState) {
-        if (mPlayImageView != null && mTimeSeekBar != null) {
-            mPlayImageView.setImageResource(playState == PlayState.PLAY ?
-                    R.drawable.image_pause_icon_selector : R.drawable.image_play_icon_selector);
-            mTimeSeekBar.updateCurTime();
-        }
+    public void updatePlayState(int playState) {
+        mPlayImageView.setImageResource(playState == PlayState.PLAY ?
+                R.drawable.image_pause_icon_selector : R.drawable.image_play_icon_selector);
+        mTimeSeekBar.updateCurTime();
     }
     
     public void updateTimeBar() {
@@ -134,7 +132,6 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     }
 
     public void onResume() {
-        mHandler.sendEmptyMessageDelayed(UPDATE_VIEWS, 1000);
         if (mFileNode != null && mCollectView != null) {
             mCollectView.setVisibility(mFileNode.isFromCollectTable() ? View.GONE : View.VISIBLE);
             mCollectView.setImageResource(mFileNode.getCollect() == 1 ? R.drawable.media_collect : R.drawable.media_uncollect);
@@ -144,7 +141,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         if (savePlayState) { // 如果在onPause的时候有保存这个状态。
             savePlayState = false;
             if (mFileNode != null && mFileNode.isSame(Video_IF.getInstance().getPlayItem())) {
-                Video_IF.getInstance().setPlayState(PlayState.PLAY);
+                mHandler.sendEmptyMessageDelayed(DELAY_PLAY, 1000);
             }
         }
         updateVideoLayout();
@@ -156,7 +153,8 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         if (Video_IF.getInstance().getPlayState() == PlayState.PLAY) {
             savePlayState = true;
             Video_IF.getInstance().setPlayState(PlayState.PAUSE);
-            updateCtrlBar(PlayState.PAUSE);
+            mPlayImageView.setImageResource(R.drawable.image_play_icon_selector);
+            mTimeSeekBar.updateCurTime();
             
             mHandler.removeMessages(HIDE_CTRL);
             mCtrlBar.setVisibility(View.VISIBLE);
@@ -199,7 +197,9 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
                 break;
             }
             Video_IF.getInstance().changePlayState();
-            updateCtrlBar(Video_IF.getInstance().getPlayState());
+            mPlayImageView.setImageResource(Video_IF.getInstance().getPlayState() == PlayState.PLAY ?
+                    R.drawable.image_pause_icon_selector : R.drawable.image_play_icon_selector);
+            mTimeSeekBar.updateCurTime();
             break;
         case R.id.video_ctrlbar_fastnext: // 快进
             if (MediaInterfaceUtil.mediaCannotPlay()) {
@@ -330,7 +330,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     
     private static final int DELAY_TIME = 5000;
     private static final int HIDE_CTRL = 1;
-    private static final int UPDATE_VIEWS = 2;
+    private static final int DELAY_PLAY = 2;
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -338,8 +338,9 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
             case HIDE_CTRL:
                 slaverShow(false);
                 break;
-            case UPDATE_VIEWS:
-                updateCtrlBar(Video_IF.getInstance().getPlayState());
+            case DELAY_PLAY:
+                Video_IF.getInstance().setPlayState(PlayState.PLAY);
+                updatePlayState(Video_IF.getInstance().getPlayState());
                 startHideTimer();
                 break;
             default:
