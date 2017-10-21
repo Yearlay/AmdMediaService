@@ -97,24 +97,28 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
         }
     }
     
-    private void setMusicPlayButton(Context context, RemoteViews remoteViews) {
-        int resId = 0;
-        if (Media_IF.getInstance().getPlayState() == PlayState.PLAY || BT_IF.getInstance().music_isPlaying()) {
-            resId = R.drawable.main_home1_card_music_pause_selector;
+    private void setMusicPlayButton(Context context, RemoteViews remoteViews, int source) {
+        int resPlayId = R.drawable.main_home1_card_music_play_selector;
+        int resPauseId = R.drawable.main_home1_card_music_pause_selector;
+        if (source == ModeDef.BT) {
+            remoteViews.setImageViewResource(R.id.widget_music_btn_play,
+                    BT_IF.getInstance().music_isPlaying() ? resPauseId : resPlayId);
+        } else if (source == ModeDef.AUDIO) {
+            remoteViews.setImageViewResource(R.id.widget_music_btn_play,
+                    Media_IF.getInstance().getPlayState() == PlayState.PLAY ? resPauseId : resPlayId);
         } else {
-            resId = R.drawable.main_home1_card_music_play_selector;
+            remoteViews.setImageViewResource(R.id.widget_music_btn_play, resPlayId);
         }
-        remoteViews.setImageViewResource(R.id.widget_music_btn_play, resId);
     }
     
-    private void setRadioPlayButton(Context context, RemoteViews remoteViews) {
-        int resId = 0;
-        if (Radio_IF.getInstance().isEnable()) {
-            resId = R.drawable.main_home1_card_radio_pause_selector;
+    private void setRadioPlayButton(Context context, RemoteViews remoteViews, int source) {
+        if (source == ModeDef.RADIO && Radio_IF.getInstance().isEnable()) {
+            remoteViews.setImageViewResource(R.id.widget_radio_btn_play,
+                    R.drawable.main_home1_card_radio_pause_selector);
         } else {
-            resId = R.drawable.main_home1_card_radio_play_selector;
+            remoteViews.setImageViewResource(R.id.widget_radio_btn_play,
+                    R.drawable.main_home1_card_radio_play_selector);
         }
-        remoteViews.setImageViewResource(R.id.widget_radio_btn_play, resId);
     }
     
     private void setRadioInfo(Context context, RemoteViews remoteViews) {
@@ -217,8 +221,8 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
         if (source == ModeDef.RADIO || source == ModeDef.NULL) {
             setRadioInfo(context, remoteViews);
         }
-        setMusicPlayButton(context, remoteViews); // 更新音乐的播放按键。
-        setRadioPlayButton(context, remoteViews); // 更新收音机的播放按键。
+        setMusicPlayButton(context, remoteViews, source); // 更新音乐的播放按键。
+        setRadioPlayButton(context, remoteViews, source); // 更新收音机的播放按键。
     }
     
     private void onClickMusicPlayButton(Context context) {
