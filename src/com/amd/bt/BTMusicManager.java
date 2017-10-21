@@ -8,6 +8,7 @@ import android.util.Log;
 import com.amd.media.MediaInterfaceUtil;
 import com.haoke.audiofocus.AudioFocusListener;
 import com.haoke.define.ModeDef;
+import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.btjar.main.BTDef.BTFunc;
 import com.haoke.define.McuDef.KeyCode;
 import com.haoke.define.McuDef.McuFunc;
@@ -186,6 +187,11 @@ public class BTMusicManager implements CarService_Listener,
 	public void onBTDataChange(int mode, int func, int data) {
 		if (mode == ModeDef.BT) {
 			switch (func) {
+			case BTFunc.CONN_STATE:
+				if (data == BTConnState.DISCONNECTED) {
+					mBTIF.music_stop();
+				}
+				break;
 			case BTFunc.MUSIC_PLAY_STATE:
 				// 手机端连接蓝牙后，在手机端操作放歌
 //				int source = mIF.getCurSource();
