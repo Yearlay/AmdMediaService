@@ -278,6 +278,12 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 			return false;
 		}
 		
+		if (mPlayingFileNode!=null && !mPlayingFileNode.isSamePathAndFrom(node)) {
+			if (getPlayState() == PlayState.PLAY) {
+				mAllMediaList.savePlayState(mPlayingFileNode, getPosition());
+			}
+		}
+		
 		mPlayingFileNode = node;
 		if (mPlayingDeviceType == DeviceType.NULL || mPlayingFileType == FileType.NULL) {
 			setPlayingData(node.getDeviceType(), node.getFileType(), true);
@@ -950,7 +956,9 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 				// 清除标志，避免原本是暂停，每次抢焦点都进行播放
 				setRecordPlayState(PlayState.STOP);
 			}
-			mAudioManager.registerMediaButtonEventReceiver(mComponentName);
+			if (mComponentName != null) {
+				mAudioManager.registerMediaButtonEventReceiver(mComponentName);
+			}
 			break;
 			
 		case PlayState.PAUSE:
@@ -965,7 +973,9 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 			
 		case PlayState.STOP:
 			MediaInterfaceUtil.resetMediaPlayStateRecord(mPlayingFileType == FileType.AUDIO ? ModeDef.AUDIO : ModeDef.VIDEO);
-			mAudioManager.unregisterMediaButtonEventReceiver(mComponentName);
+			if (mComponentName != null) {
+				mAudioManager.unregisterMediaButtonEventReceiver(mComponentName);
+			}
 			if (playState == PlayState.STOP) {
 				Log.v(TAG, "HMI------------audioFocusChanged STOP 2");
 				return;

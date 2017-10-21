@@ -81,12 +81,14 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
     @Override
 	protected void onStart() {
 		super.onStart();
+		Log.d(TAG, "onStart");
 		mRadioFragment.onStart();
 		mHomeFragment.onStart();
 	}
 
 	@Override
 	protected void onStop() {
+		Log.d(TAG, "onStart");
 		mRadioFragment.onStop();
 		mHomeFragment.onStop();
 		super.onStop();
@@ -94,6 +96,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
 
 	@Override
 	protected void onPause() {
+		Log.d(TAG, "onPause");
 		mRadioFragment.onPause();
 		mHomeFragment.onPause();
 		super.onPause();
@@ -120,11 +123,11 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
+        Log.d(TAG, "onDestroy");
 		mRadioFragment.onDestroy();
 		mHomeFragment.onDestroy();
+        super.onDestroy();
         unregisterReceiver(mReceiver);
-        Log.d(TAG, "onDestroy");
     }
     
     private boolean isShowRadioLayout() {

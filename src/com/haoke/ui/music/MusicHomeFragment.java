@@ -18,7 +18,6 @@ import com.haoke.define.MediaDef.MediaFunc;
 import com.haoke.define.MediaDef.MediaState;
 import com.haoke.define.MediaDef.PlayState;
 import com.haoke.mediaservice.R;
-import com.haoke.ui.media.Media_Activity_Main;
 import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
 import com.haoke.util.Media_IF;
@@ -34,6 +33,7 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 	private MusicPlayLayout mPlayLayout;
 	private ViewStub mPlayLayoutStub;
 	private CustomDialog mDialog;
+	private boolean isShow = false;
 	
 	public MusicHomeFragment(Context context) {
     	super(context);
@@ -62,6 +62,8 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 		mHomeLayout = (MusicHomeLayout) findViewById(R.id.music_home_layout);
 		mPlayLayoutStub = (ViewStub) findViewById(R.id.music_play_layout_stub);
 		mPlayLayout = null;
+		mIF.registerLocalCallBack(this);
+		mBTIF.registerModeCallBack(this);
     }
 
 	enum ShowLayout {
@@ -92,17 +94,14 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 	}
 	
 	public void onStart() {
-		mIF.registerLocalCallBack(this);
-		mBTIF.registerModeCallBack(this);
 	}
 	
 	public void onStop() {
-		mIF.unregisterLocalCallBack(this);
-		mBTIF.unregisterModeCallBack(this);
     }
 
 	public void onResume() {
-		Log.d(TAG, "onResume mShowLayout="+mShowLayout);
+		Log.d(TAG, "onResume mShowLayout="+mShowLayout+"; isShow="+isShow);
+		isShow = true;
 		if (mPlayLayout != null) {
 			if (mPlayLayout.getVisibility() == View.VISIBLE) {
 				mPlayLayout.onResume();
@@ -120,6 +119,7 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 
 	public void onPause() {
 		Log.d(TAG, "onPause");
+		isShow = false;
 		if (mPlayLayout!=null) {
 			mPlayLayout.onPause();
 		}
@@ -127,6 +127,8 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 	}
 	
 	public void onDestroy() {
+		mIF.unregisterLocalCallBack(this);
+		mBTIF.unregisterModeCallBack(this);
 	}
 	
 	public boolean isBTMusicPlayFragment() {
@@ -193,7 +195,9 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 	
 	private void showDeviceOutDialog() {
 		if (mShowLayout == ShowLayout.AUDIO_PLAY_LAYOUT) {
-			mDialog.ShowDialog(mContext, DIALOG_TYPE.NONE_BTN, R.string.music_device_pullout_usb);
+			if (isShow) {
+				mDialog.ShowDialog(mContext, DIALOG_TYPE.NONE_BTN, R.string.music_device_pullout_usb);
+			}
 			changeShowLayout(ShowLayout.HOME_LAYOUT);
 		}
 	}
@@ -313,14 +317,14 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 				setCurPlayViewState();
 				if (mPlayLayout != null) {
 					mPlayLayout.updateCtrlBar();
-					mPlayLayout.refreshFromViewPagerMaybePlayBT(getVisibility() == View.VISIBLE, true);
+					mPlayLayout.refreshFromViewPagerMaybePlayBT(isShow, true);
 				}
 				break;
 			case BTFunc.MUSIC_ID3_UPDATE://401
 				setCurPlayViewState();
 				if (mPlayLayout != null) {
 					mPlayLayout.updateId3Info();
-					mPlayLayout.refreshFromViewPagerMaybePlayBT(getVisibility() == View.VISIBLE, true);
+					mPlayLayout.refreshFromViewPagerMaybePlayBT(isShow, true);
 				}
 				break;
 			}
