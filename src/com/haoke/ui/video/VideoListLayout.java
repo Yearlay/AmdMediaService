@@ -5,17 +5,13 @@ import java.util.ArrayList;
 import haoke.ui.util.HKTextView;
 import haoke.ui.util.OnHKTouchListener;
 import haoke.ui.util.TOUCH_ACTION;
-import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.Fragment;
+import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +21,7 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,12 +38,10 @@ import com.haoke.mediaservice.R;
 import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
 import com.haoke.ui.widget.CustomDialog.OnDialogListener;
-import com.haoke.window.HKWindowManager;
 
-public class VideoListFragment extends Fragment implements OnHKTouchListener,
+public class VideoListLayout extends RelativeLayout implements OnHKTouchListener,
         OnItemClickListener, OnItemLongClickListener, OperateListener, OnDismissListener{
     private Context mContext;
-    private View rootView;
     private GridView mGridView;
     private TextView mEmptyView;
     private View mLoadingView;
@@ -59,16 +54,37 @@ public class VideoListFragment extends Fragment implements OnHKTouchListener,
     
     private ArrayList<FileNode> mVideoList = new ArrayList<FileNode>();
     
+    public VideoListLayout(Context context) {
+        super(context);
+    }
+    
+    public VideoListLayout(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+    
+    public VideoListLayout(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+    }
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        mContext = getContext();
+        mEmptyView = (TextView) findViewById(R.id.video_list_empty);
+        mLoadingView = findViewById(R.id.loading_layout);
+        mGridView = (GridView) findViewById(R.id.video_grid_list);
+        mGridView.setChoiceMode(GridView.CHOICE_MODE_SINGLE);
+        mGridView.setSelector(new ColorDrawable(Color.TRANSPARENT));
+        mGridView.setOnItemClickListener(this);
+        mGridView.setOnItemLongClickListener(this);
+        mVideoAdapter = new VideoAdapter();
+        mGridView.setAdapter(mVideoAdapter);
+    }
+    
     public void updataList(ArrayList<FileNode> dataList, StorageBean storageBean) {
         mCurrentStorageBean = storageBean;
         mVideoList.clear();
         mVideoList.addAll(dataList);
-        if (rootView != null) {
-            refreshView(storageBean);
-        }
-    }
-
-    private void refreshView(StorageBean storageBean) {
         mGridView.requestFocusFromTouch();
         mGridView.setSelection(0);
         mVideoAdapter.notifyDataSetChanged();
@@ -100,53 +116,11 @@ public class VideoListFragment extends Fragment implements OnHKTouchListener,
             mLoadingView.setVisibility(View.GONE);
         }
     }
-    
-    @Override
-    public void onAttach(Activity activity) {
-        if (activity instanceof Video_Activity_Main) {
-            mActivityHandler = ((Video_Activity_Main) activity).getHandler();
-        }
-        super.onAttach(activity);
-    }
 
-    @Override
-    public void onDetach() {
-        mActivityHandler = null;
-        super.onDetach();
-    }
-    
-   @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
-        HKWindowManager.fullScreen(this.getActivity(), false);
-        mContext = getActivity();
-        
-        // 初始化控件
-        rootView = inflater.inflate(R.layout.photo_list_layout, null);
-        mEmptyView = (TextView) rootView.findViewById(R.id.image_list_empty);
-        mLoadingView = rootView.findViewById(R.id.loading_layout);
-
-        mGridView = (GridView) rootView.findViewById(R.id.image_grid_list);
-        mGridView.setChoiceMode(GridView.CHOICE_MODE_SINGLE);
-        mGridView.setSelector(new ColorDrawable(Color.TRANSPARENT));
-        mGridView.setOnItemClickListener(this);
-        mGridView.setOnItemLongClickListener(this);
-        mVideoAdapter = new VideoAdapter();
-        mGridView.setAdapter(mVideoAdapter);
-        
-        if (mCurrentStorageBean != null) {
-            refreshView(mCurrentStorageBean);
-        }
-        
-        return rootView;
+    public void setActivityHandler(Handler handler) {
+        mActivityHandler = handler;
     }
    
-   @Override
-    public void onPause() {
-        dismissDialog();
-        super.onPause();
-    }
-
     public void dismissDialog() {
         if (mErrorDialog != null) {
             mErrorDialog.CloseDialog();
@@ -314,7 +288,7 @@ public class VideoListFragment extends Fragment implements OnHKTouchListener,
                     mProgressDialog = new CustomDialog();
                 }
                 mProgressDialog.showProgressDialog(mContext, R.string.copy_video_progress_title, this);
-                AllMediaList.instance(mContext).copyToLocal(selectList, VideoListFragment.this);
+                AllMediaList.instance(mContext).copyToLocal(selectList, VideoListLayout.this);
             }
         } else {
             new CustomDialog().ShowDialog(mContext, DIALOG_TYPE.ONE_BTN, R.string.failed_check_available_size);

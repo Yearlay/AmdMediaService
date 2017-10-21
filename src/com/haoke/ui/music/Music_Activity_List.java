@@ -3,7 +3,6 @@ package com.haoke.ui.music;
 import java.util.ArrayList;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
@@ -34,7 +33,6 @@ import com.haoke.define.MediaDef.MediaState;
 import com.haoke.define.MediaDef.RepeatMode;
 import com.haoke.define.MediaDef.ScanState;
 import com.haoke.mediaservice.R;
-import com.haoke.ui.video.VideoListFragment;
 import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
 import com.haoke.ui.widget.CustomDialog.OnDialogListener;

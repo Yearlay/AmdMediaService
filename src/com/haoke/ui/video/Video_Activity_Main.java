@@ -9,21 +9,15 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.RadioGroup.OnCheckedChangeListener;
-import android.widget.RelativeLayout;
-import android.widget.RelativeLayout.LayoutParams;
 
 import com.amd.media.MediaInterfaceUtil;
 import com.haoke.bean.FileNode;
@@ -47,6 +41,7 @@ import com.haoke.util.DebugLog;
 import com.haoke.util.Media_CarListener;
 import com.haoke.util.Media_IF;
 import com.haoke.util.Media_Listener;
+import com.haoke.window.HKWindowManager;
 
 public class Video_Activity_Main extends FragmentActivity implements
         CarService_Listener, Media_Listener, OnClickListener,
@@ -55,10 +50,8 @@ public class Video_Activity_Main extends FragmentActivity implements
     private final String TAG = this.getClass().getSimpleName();
     private int mLayoutProps = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
     private Video_IF mIF;
-    private FragmentManager mFragmentManager = null;
-    private VideoListFragment mListFragment = null;
-    private VideoPlayFragment mPlayFragment = null;
-    private FrameLayout mLayout = null;
+    private VideoListLayout mListLayout;
+    private VideoPlayLayout mPlayLayout;
     
     private RadioGroup mRadioGroup;
     private ImageButton mSearchButton;
@@ -79,7 +72,6 @@ public class Video_Activity_Main extends FragmentActivity implements
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.v(TAG, "HMI------------onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.video_activity_main);
         
@@ -94,10 +86,10 @@ public class Video_Activity_Main extends FragmentActivity implements
         mIF.initMedia();
         mPreferences = PlayStateSharedPreferences.instance(getApplicationContext());
         
-        mFragmentManager = this.getSupportFragmentManager();
-        mListFragment = new VideoListFragment();
-        mPlayFragment = new VideoPlayFragment();
-        mLayout = (FrameLayout) findViewById(R.id.video_fragment);
+        mListLayout = (VideoListLayout) findViewById(R.id.video_list_layout);
+        mListLayout.setActivityHandler(mHandler);
+        mPlayLayout = (VideoPlayLayout) findViewById(R.id.video_play_home);
+        mPlayLayout.setActivityHandler(mHandler);
         
         mRadioGroup = (RadioGroup) findViewById(R.id.video_tab_group);
         mRadioGroup.setOnCheckedChangeListener(this);
@@ -137,7 +129,7 @@ public class Video_Activity_Main extends FragmentActivity implements
             mPreferences.saveVideoShowFragment(SWITCH_TO_PLAY_FRAGMENT);
             updateCurPosition(position);
             FileNode fileNode = mVideoList.get(mCurPosition);
-            mPlayFragment.setFileNode(fileNode);
+            mPlayLayout.setFileNode(fileNode);
         }
     }
 
@@ -168,12 +160,12 @@ public class Video_Activity_Main extends FragmentActivity implements
         mVideoList.clear();
         mVideoList.addAll(AllMediaList.instance(getApplicationContext())
                 .getMediaList(deviceType, FileType.VIDEO));
-        mListFragment.updataList(mVideoList, storageBean);
-        if (mVideoList.size() == 0 && mListFragment.isEditMode()) {
+        mListLayout.updataList(mVideoList, storageBean);
+        if (mVideoList.size() == 0 && mListLayout.isEditMode()) {
             cancelEdit();
         }
-        if (getCurFragment() == mPlayFragment) {
-            mPlayFragment.checkPlayFileNode(mVideoList);
+        if (mPlayLayout.getVisibility() == View.VISIBLE) {
+            mPlayLayout.checkPlayFileNode(mVideoList);
         }
     }
     
@@ -190,7 +182,19 @@ public class Video_Activity_Main extends FragmentActivity implements
     @Override
     protected void onResume() {
         AllMediaList.notifyAllLabelChange(getApplicationContext(), R.string.pub_video);
+        if (mPlayLayout.getVisibility() == View.VISIBLE) {
+            mPlayLayout.onResume();
+        }
         super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        if (mPlayLayout.getVisibility() == View.VISIBLE) {
+            mPlayLayout.onPause();
+        }
+        mListLayout.dismissDialog();
+        super.onPause();
     }
 
     @Override
@@ -209,49 +213,6 @@ public class Video_Activity_Main extends FragmentActivity implements
         Media_IF.getInstance().setVideoActivity(null);
         AllMediaList.instance(getApplicationContext()).unRegisterLoadListener(this);
         unregisterReceiver(mOperateAppReceiver);
-    }
-
-    // Fragment替换
-    private void replaceFragment(Fragment fragment) {
-        if (fragment == null)
-            return;
-
-        try {
-            FragmentTransaction transaction = mFragmentManager
-                    .beginTransaction();
-            if (getCurFragment() != fragment) {
-                transaction.replace(R.id.video_fragment, fragment);
-            }
-            transaction.commitAllowingStateLoss();
-
-        } catch (Exception e) {
-        }
-        setFragmentparams(fragment);
-    }
-
-    private Fragment getCurFragment() {
-        Fragment fragment = mFragmentManager.findFragmentById(R.id.video_fragment);
-        return fragment;
-    }
-    
-    private void setFragmentparams(Fragment fragment) {
-        RelativeLayout.LayoutParams videolParams = new RelativeLayout.LayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        if (fragment == mPlayFragment) {
-            videolParams.width = LayoutParams.MATCH_PARENT;
-            videolParams.height = LayoutParams.MATCH_PARENT;
-            if (fragment == mListFragment) {
-                videolParams.topMargin = (int) getResources()
-                        .getDimension(R.dimen.pub_statusbar_height);
-            }
-        } else {
-            videolParams.width = LayoutParams.MATCH_PARENT;
-            videolParams.height = 550;
-            videolParams.topMargin = (int) getResources().getDimension(R.dimen.pub_statusbar_height);
-        }
-        if (mLayout != null) {
-            mLayout.setLayoutParams(videolParams);
-        }
     }
 
     // ------------------------------回调函数 start------------------------------
@@ -319,9 +280,9 @@ public class Video_Activity_Main extends FragmentActivity implements
         if (mediaState != MediaState.PREPARED) {
             return;
         }
-        if (getCurFragment() == mPlayFragment) {
-            mPlayFragment.updateCtrlBar(mIF.getPlayState());
-            mPlayFragment.updateTimeBar();
+        if (mPlayLayout.getVisibility() == View.VISIBLE) {
+            mPlayLayout.updateCtrlBar(mIF.getPlayState());
+            mPlayLayout.updateTimeBar();
         }
         mErrorCount = 0;
     }
@@ -333,8 +294,8 @@ public class Video_Activity_Main extends FragmentActivity implements
     private int mErrorCount;
     private void onError() {
         mErrorCount++;
-        if (mPlayFragment != null) {
-            mPlayFragment.setUnsupportViewShow(true);
+        if (mPlayLayout != null) {
+            mPlayLayout.setUnsupportViewShow(true);
             mHandler.removeMessages(HIDE_UNSUPPORT_VIEW);
             mHandler.sendEmptyMessageDelayed(HIDE_UNSUPPORT_VIEW, 1000);
             if (mErrorCount >= 5) {
@@ -345,7 +306,7 @@ public class Video_Activity_Main extends FragmentActivity implements
             } else {
                 playNext();
             }
-            mPlayFragment.updateVideoLayout();
+            mPlayLayout.updateVideoLayout();
         }
     }
 
@@ -354,20 +315,20 @@ public class Video_Activity_Main extends FragmentActivity implements
     }
 
     private void playStateChanged(int state) {
-        if (getCurFragment() == mPlayFragment) {
-            mPlayFragment.updateCtrlBar(mIF.getPlayState());
+        if (mPlayLayout.getVisibility() == View.VISIBLE) {
+            mPlayLayout.updateCtrlBar(mIF.getPlayState());
         }
     }
 
     private void repeatModeChanged(int mode) {
-        if (getCurFragment() == mPlayFragment) {
-            mPlayFragment.updateCtrlBar(mIF.getPlayState());
+        if (mPlayLayout.getVisibility() == View.VISIBLE) {
+            mPlayLayout.updateCtrlBar(mIF.getPlayState());
         }
     }
 
     private void randomModeChanged(int mode) {
-        if (getCurFragment() == mPlayFragment) {
-            mPlayFragment.updateCtrlBar(mIF.getPlayState());
+        if (mPlayLayout.getVisibility() == View.VISIBLE) {
+            mPlayLayout.updateCtrlBar(mIF.getPlayState());
         }
     }
 
@@ -407,25 +368,25 @@ public class Video_Activity_Main extends FragmentActivity implements
             Intent intent = new Intent(getApplicationContext(), MediaSearchActivity.class);
             intent.putExtra(MediaSearchActivity.INTENT_KEY_FILE_TYPE, FileType.VIDEO);
             startActivity(intent);
-        } else if (v.getId() == R.id.edit_delete) { // TODO
-            mListFragment.deleteSelected(mRadioGroup.getCheckedRadioButtonId() == R.id.video_device_collect);
-        } else if (v.getId() == R.id.edit_cancel) { // TODO
+        } else if (v.getId() == R.id.edit_delete) {
+            mListLayout.deleteSelected(mRadioGroup.getCheckedRadioButtonId() == R.id.video_device_collect);
+        } else if (v.getId() == R.id.edit_cancel) {
             cancelEdit();
-        } else if (v.getId() == R.id.edit_all) { // TODO
+        } else if (v.getId() == R.id.edit_all) {
             if (AllMediaList.checkSelected(this, mVideoList)) {
-                mListFragment.unSelectAll();
+                mListLayout.unSelectAll();
                 mSelectAllView.setText(R.string.music_choose_all);
             } else {
-                mListFragment.selectAll();
+                mListLayout.selectAll();
                 mSelectAllView.setText(R.string.music_choose_remove);
             }
         } else if (v.getId() == R.id.copy_to_local) {
-            mListFragment.copySelected();
+            mListLayout.copySelected();
         }
     }
     
     private void cancelEdit() {
-        mListFragment.cancelEdit();
+        mListLayout.cancelEdit();
         mEditView.setVisibility(View.GONE);
         mRadioGroup.setVisibility(View.VISIBLE);
         mSearchButton.setVisibility(View.VISIBLE);
@@ -446,8 +407,8 @@ public class Video_Activity_Main extends FragmentActivity implements
             updateDevice(getCurrentDeviceType());
             onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
             if (!storageBean.isMounted()) {
-                if (mListFragment != null) {
-                    mListFragment.dismissDialog();
+                if (mListLayout != null) {
+                    mListLayout.dismissDialog();
                 }
                 new CustomDialog().ShowDialog(Video_Activity_Main.this, DIALOG_TYPE.NONE_BTN,
                         R.string.music_device_pullout_usb);
@@ -470,13 +431,12 @@ public class Video_Activity_Main extends FragmentActivity implements
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            Fragment curFragment = getCurFragment();
-            if (curFragment == mPlayFragment) {
+            if (mPlayLayout.getVisibility() == View.VISIBLE) {
                 onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
                 return true;
             }
-            if (mListFragment.isEditMode()) {
-                mListFragment.cancelEdit();
+            if (mListLayout.isEditMode()) {
+                mListLayout.cancelEdit();
                 mEditView.setVisibility(View.GONE);
                 mRadioGroup.setVisibility(View.VISIBLE);
                 mSearchButton.setVisibility(View.VISIBLE);
@@ -492,8 +452,8 @@ public class Video_Activity_Main extends FragmentActivity implements
         }
         updateCurPosition(position);
         FileNode fileNode = mVideoList.get(mCurPosition);
-        mPlayFragment.setFileNode(fileNode);
         onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
+        mPlayLayout.setFileNode(fileNode);
     }
     
     private BroadcastReceiver mOperateAppReceiver = new BroadcastReceiver() {
@@ -509,11 +469,11 @@ public class Video_Activity_Main extends FragmentActivity implements
                         onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
                     }
                     mIF.play(mPreferences.getVideoCurrentPosition());
-                    mPlayFragment.updateCtrlBar(mIF.getPlayState());
+                    mPlayLayout.updateCtrlBar(mIF.getPlayState());
                     break;
                 case VRIntent.PAUSE_VIDEO:
                     mIF.setPlayState(PlayState.PAUSE);
-                    mPlayFragment.updateCtrlBar(mIF.getPlayState());
+                    mPlayLayout.updateCtrlBar(mIF.getPlayState());
                     break;
                 case VRIntent.PRE_VIDEO:
                     if (mPreferences.getVideoShowFragment() != SWITCH_TO_PLAY_FRAGMENT) {
@@ -544,8 +504,7 @@ public class Video_Activity_Main extends FragmentActivity implements
     public static final int LONG_CLICK_LIST_ITEM = 3;
     public static final int PLAY_PRE = 4;
     public static final int PLAY_NEXT = 5;
-    public static final int SHOW_BOTTOM = 6;
-    public static final int HIDE_UNSUPPORT_VIEW = 7;
+    public static final int HIDE_UNSUPPORT_VIEW = 6;
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -555,8 +514,8 @@ public class Video_Activity_Main extends FragmentActivity implements
                 onChangeFragment(msg.what);
                 break;
             case CLICK_LIST_ITEM:
-                if (mListFragment.isEditMode()) {
-                    mListFragment.selectItem(msg.arg1);
+                if (mListLayout.isEditMode()) {
+                    mListLayout.selectItem(msg.arg1);
                     if (AllMediaList.checkSelected(Video_Activity_Main.this, mVideoList)) {
                         mSelectAllView.setText(R.string.music_choose_remove);
                     } else {
@@ -567,7 +526,7 @@ public class Video_Activity_Main extends FragmentActivity implements
                 }
                 break;
             case LONG_CLICK_LIST_ITEM:
-                if (!mListFragment.isEditMode()) {
+                if (!mListLayout.isEditMode()) {
                     mEditView.setVisibility(View.VISIBLE);
                     if (mRadioGroup.getCheckedRadioButtonId() == R.id.video_device_usb1 || 
                             mRadioGroup.getCheckedRadioButtonId() == R.id.video_device_usb2) {
@@ -578,7 +537,7 @@ public class Video_Activity_Main extends FragmentActivity implements
                     mRadioGroup.setVisibility(View.INVISIBLE);
                     mSearchButton.setVisibility(View.INVISIBLE);
                     mSelectAllView.setText(R.string.music_choose_all);
-                    mListFragment.beginEdit();
+                    mListLayout.beginEdit();
                 }
                 break;
             case PLAY_PRE:
@@ -589,14 +548,9 @@ public class Video_Activity_Main extends FragmentActivity implements
                 mPreFlag = false;
                 playNext();
                 break;
-            case SHOW_BOTTOM:
-                getWindow().getDecorView()
-                        .setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-                getWindow().getDecorView().setSystemUiVisibility(mLayoutProps);
-                break;
             case HIDE_UNSUPPORT_VIEW:
-                if (mPlayFragment != null) {
-                    mPlayFragment.setUnsupportViewShow(false);
+                if (mPlayLayout != null) {
+                    mPlayLayout.setUnsupportViewShow(false);
                 }
             default:
                 break;
@@ -608,27 +562,36 @@ public class Video_Activity_Main extends FragmentActivity implements
     private void onChangeFragment(int index) {
         mPreferences.saveVideoShowFragment(index);
         if (index == SWITCH_TO_PLAY_FRAGMENT) {
-            replaceFragment(mPlayFragment);
+            mPlayLayout.setVisibility(View.VISIBLE);
+            HKWindowManager.hideWallpaper(this);
+            HKWindowManager.fullScreen(this, true);
+            getWindow().getDecorView()
+                    .setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         } else {
-            replaceFragment(mListFragment);
+            mPlayLayout.onPause();
+            mPlayLayout.setVisibility(View.GONE);
+            HKWindowManager.showWallpaper(this);
+            HKWindowManager.fullScreen(this, false);
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+            getWindow().getDecorView().setSystemUiVisibility(mLayoutProps);
         }
     }
 
     private void playPre() {
         mCurPosition--;
         mCurPosition = (mCurPosition < 0) ? mVideoList.size() - 1 : mCurPosition;
-        mPlayFragment.updateVideoLayout();
+        mPlayLayout.updateVideoLayout();
         FileNode fileNode = mVideoList.get(mCurPosition);
-        mPlayFragment.setFileNode(fileNode);
+        mPlayLayout.setFileNode(fileNode);
         mIF.play(fileNode);
     }
 
     private void playNext() {
         mCurPosition++;
         mCurPosition = (mCurPosition >= mVideoList.size()) ? 0 : mCurPosition;
-        mPlayFragment.updateVideoLayout();
+        mPlayLayout.updateVideoLayout();
         FileNode fileNode = mVideoList.get(mCurPosition);
-        mPlayFragment.setFileNode(fileNode);
+        mPlayLayout.setFileNode(fileNode);
         mIF.play(fileNode);
     }
 
@@ -649,13 +612,13 @@ public class Video_Activity_Main extends FragmentActivity implements
                 float speed = (float) speedData / 100;
                 DebugLog.d("Yearlay", "onUartDataChange speed: " + speed);
                 
-                if (speed > 20.0f && AllMediaList.sCarSpeed < 20.0f && mPlayFragment != null) { // 加速超过20km/h
+                if (speed > 20.0f && AllMediaList.sCarSpeed < 20.0f && mPlayLayout != null) { // 加速超过20km/h
                     AllMediaList.sCarSpeed = speed;
-                    mPlayFragment.updateVideoLayout();
+                    mPlayLayout.updateVideoLayout();
                 }
-                if (speed < 20.0f && AllMediaList.sCarSpeed > 20.0f && mPlayFragment != null) { // 减速低于20km/h
+                if (speed < 20.0f && AllMediaList.sCarSpeed > 20.0f && mPlayLayout != null) { // 减速低于20km/h
                     AllMediaList.sCarSpeed = speed;
-                    mPlayFragment.updateVideoLayout();
+                    mPlayLayout.updateVideoLayout();
                 }
             }
         }

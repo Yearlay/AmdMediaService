@@ -29,7 +29,6 @@ import com.haoke.define.MediaDef.PlayState;
 import com.haoke.define.MediaDef.RepeatMode;
 import com.haoke.define.ModeDef;
 import com.haoke.mediaservice.R;
-import com.haoke.ui.video.VideoPlayFragment;
 import com.haoke.util.Media_IF;
 
 public class MusicPlayLayout extends RelativeLayout implements OnClickListener {

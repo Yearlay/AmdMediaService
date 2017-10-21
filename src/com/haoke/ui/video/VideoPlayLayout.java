@@ -4,21 +4,17 @@ import java.util.ArrayList;
 
 import haoke.ui.util.OnHKTouchListener;
 import haoke.ui.util.TOUCH_ACTION;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.Fragment;
+import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
-import android.view.ViewGroup; 
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -35,13 +31,10 @@ import com.haoke.define.MediaDef.PlayState;
 import com.haoke.mediaservice.R;
 import com.haoke.util.DebugLog;
 import com.haoke.video.VideoSurfaceView;
-import com.haoke.window.HKWindowManager;
-import com.nforetek.bt.res.MsgOutline;
 
-public class VideoPlayFragment extends Fragment implements OnHKTouchListener, View.OnClickListener,
+public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener, View.OnClickListener,
         OperateListener, OnTouchListener, OnGestureListener {
     private Context mContext;
-    private View mRootView;
     private RelativeLayout mVideoLayout; // 视频布局框
     private VideoSurfaceView mVideoView;
     private View mForbiddenView;
@@ -56,20 +49,21 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
     
     private FileNode mFileNode;
     
+    public VideoPlayLayout(Context context) {
+        super(context);
+    }
+    
+    public VideoPlayLayout(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+    
+    public VideoPlayLayout(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+    }
+
     public void setFileNode(FileNode fileNode) {
         mFileNode = fileNode;
-        if (mRootView != null) {
-            refreshViewAndPlay();
-        }
-    }
-    
-    public void setUnsupportViewShow(boolean showFlag) {
-        if (mUnsupportView != null) {
-            mUnsupportView.setVisibility(showFlag ? View.VISIBLE : View.GONE);
-        }
-    }
-    
-    private void refreshViewAndPlay() {
+        Video_IF.getInstance().setVideoView(mVideoView);
         mTitleTextView.setText(mFileNode.getFileName());
         mCollectView.setImageResource(mFileNode.getCollect() == 1 ?
                 R.drawable.media_collect : R.drawable.media_uncollect);
@@ -79,8 +73,17 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
             Video_IF.getInstance().play(mFileNode);
         }
         checkSpeedAndRefreshView();
+        if (mCtrlBar.getVisibility() == View.VISIBLE) {
+            startHideTimer();
+        }
     }
-
+    
+    public void setUnsupportViewShow(boolean showFlag) {
+        if (mUnsupportView != null) {
+            mUnsupportView.setVisibility(showFlag ? View.VISIBLE : View.GONE);
+        }
+    }
+    
     public void updateCtrlBar(int playState) {
         if (mPlayImageView != null && mTimeSeekBar != null) {
             mPlayImageView.setImageResource(playState == PlayState.PLAY ?
@@ -100,26 +103,19 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
         mTimeSeekBar.updateTimeInfo();
     }
     
-    @Override
-    public void onAttach(Activity activity) {
-        if (activity instanceof Video_Activity_Main) {
-            mActivityHandler = ((Video_Activity_Main) activity).getHandler();
-        }
-        super.onAttach(activity);
+    public void setActivityHandler(Handler handler) {
+        mActivityHandler = handler;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
-        mContext = getActivity();
-        HKWindowManager.hideWallpaper(getActivity());
-        
-        mRootView = inflater.inflate(R.layout.video_play_fragment, null);
-        mVideoLayout = (RelativeLayout) mRootView.findViewById(R.id.video_play_layout);
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        mContext = getContext();
+        mVideoLayout = (RelativeLayout) findViewById(R.id.video_play_layout);
         mGestureDetector = new GestureDetector(this);
         mVideoLayout.setOnTouchListener(this);
         mVideoView = new VideoSurfaceView(mContext);
-        mCtrlBar = mRootView.findViewById(R.id.video_play_ctrlbar);
+        mCtrlBar = findViewById(R.id.video_play_ctrlbar);
         mCtrlBar.findViewById(R.id.video_ctrlbar_list).setOnClickListener(this);
         mCtrlBar.findViewById(R.id.video_ctrlbar_pre).setOnClickListener(this);
         mCtrlBar.findViewById(R.id.video_ctrlbar_fastpre).setOnClickListener(this);
@@ -127,32 +123,16 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
         mCtrlBar.findViewById(R.id.video_ctrlbar_next).setOnClickListener(this);
         mPlayImageView = (ImageView) mCtrlBar.findViewById(R.id.video_ctrlbar_pp);
         mPlayImageView.setOnClickListener(this);
-        mTimeSeekBar = (VideoPlayTimeSeekBar) mRootView.findViewById(R.id.video_play_time_seekbar);
+        mTimeSeekBar = (VideoPlayTimeSeekBar) findViewById(R.id.video_play_time_seekbar);
         mTimeSeekBar.setHKTouchListener(this);
-        mCollectView = (ImageView) mRootView.findViewById(R.id.collect_video);
+        mCollectView = (ImageView) findViewById(R.id.collect_video);
         mCollectView.setOnClickListener(this);
-        mTitleTextView = (TextView) mRootView.findViewById(R.id.title_video);
-        mForbiddenView = mRootView.findViewById(R.id.video_play_forbidden);
+        mTitleTextView = (TextView) findViewById(R.id.title_video);
+        mForbiddenView = findViewById(R.id.video_play_forbidden);
         mForbiddenView.setOnTouchListener(this);
-        mUnsupportView = mRootView.findViewById(R.id.not_support_text);
-        
-        return mRootView;
+        mUnsupportView = findViewById(R.id.not_support_text);
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        updateTimeBar();
-        Video_IF.getInstance().setVideoView(mVideoView);
-        if (mCtrlBar.getVisibility() == View.VISIBLE) {
-            startHideTimer();
-        }
-        if (mFileNode != null) {
-            refreshViewAndPlay();
-        }
-    }
-    
-    @Override
     public void onResume() {
         mHandler.sendEmptyMessageDelayed(UPDATE_VIEWS, 1000);
         if (mFileNode != null && mCollectView != null) {
@@ -160,9 +140,6 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
             mCollectView.setImageResource(mFileNode.getCollect() == 1 ? R.drawable.media_collect : R.drawable.media_uncollect);
             mTitleTextView.setText(mFileNode.getFileName());
         }
-        HKWindowManager.fullScreen(getActivity(), true);
-        getActivity().getWindow().getDecorView()
-            .setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         
         if (savePlayState) { // 如果在onPause的时候有保存这个状态。
             savePlayState = false;
@@ -170,17 +147,12 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
                 Video_IF.getInstance().setPlayState(PlayState.PLAY);
             }
         }
-        super.onResume();
+        updateVideoLayout();
     }
     
     private boolean savePlayState = false;
 
-    @Override
     public void onPause() {
-        HKWindowManager.fullScreen(getActivity(), false);
-        if (mActivityHandler != null) {
-            mActivityHandler.sendEmptyMessage(Video_Activity_Main.SHOW_BOTTOM);
-        }
         if (Video_IF.getInstance().getPlayState() == PlayState.PLAY) {
             savePlayState = true;
             Video_IF.getInstance().setPlayState(PlayState.PAUSE);
@@ -192,25 +164,13 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
             mCollectView.setVisibility(mFileNode.isFromCollectTable() ? View.GONE : View.VISIBLE);
             mTitleTextView.setVisibility(View.VISIBLE);
         }
-        super.onPause();
+        mVideoLayout.removeAllViews();
     }
 
-    @Override
-    public void onStop() {
-        mVideoLayout.removeAllViews();
-        super.onStop();
-    }
-    
     public void updateVideoLayout() {
         checkSpeedAndRefreshView();
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        HKWindowManager.showWallpaper(getActivity());
-    }
-    
     @Override
     public void onClick(View view) {
         stopHideTimer();
@@ -293,7 +253,7 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             AllMediaList.instance(mContext).deleteOldCollect(FileType.VIDEO);
-                            AllMediaList.instance(mContext).collectMediaFile(mFileNode, VideoPlayFragment.this);
+                            AllMediaList.instance(mContext).collectMediaFile(mFileNode, VideoPlayLayout.this);
                         }
                     })
                     .setNegativeButton(R.string.collect_limit_dialog_cancel, null)
@@ -459,9 +419,6 @@ public class VideoPlayFragment extends Fragment implements OnHKTouchListener, Vi
     }
     
     private void checkSpeedAndRefreshView() {
-        if (mRootView == null) {
-            return;
-        }
         mVideoLayout.removeAllViews();
         mVideoLayout.addView(mVideoView);
         boolean showForbiddenViewFlag = false;
