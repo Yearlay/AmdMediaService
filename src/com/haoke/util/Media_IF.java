@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.RemoteException;
+import android.provider.Settings;
 import android.util.Log;
 
 import com.amd.media.AmdMediaManager;
@@ -18,6 +19,7 @@ import com.haoke.constant.MediaUtil;
 import com.haoke.define.BTDef.*;
 import com.haoke.define.CMSStatusDef.CMSStatusFuc;
 import com.haoke.define.CMSStatusDef.TrafficRestriction;
+import com.haoke.define.McuDef.McuFunc;
 import com.haoke.define.MediaDef.DeviceType;
 import com.haoke.define.MediaDef.FileType;
 import com.haoke.define.MediaDef.MediaState;
@@ -45,6 +47,8 @@ public class Media_IF extends CarService_IF {
 	private int mAudioDevice = DeviceType.NULL;
 	
 	private AmdMediaManager mMediaManager = null;
+	
+	private boolean mServiceConn = false;
 
 	public Media_IF() {
 		mMode = ModeDef.MEDIA;
@@ -59,7 +63,10 @@ public class Media_IF extends CarService_IF {
 			@Override
 			public void onDataChange(int mode, int func, int data)
 					throws RemoteException {
-				mCarCallBack.onDataChange(mode, func, data);
+				if (mode == ModeDef.MCU && func == McuFunc.SOURCE) {
+				} else {
+					mCarCallBack.onDataChange(mode, func, data);
+				}
 			}
 		};
 		
@@ -101,6 +108,18 @@ public class Media_IF extends CarService_IF {
 	@Override
 	protected void onServiceConn() {
 		mCarCallBack.onServiceConn();
+		mServiceConn = true;
+	}
+	
+	@Override
+	protected void onServiceDisConn() {
+		super.onServiceDisConn();
+		Log.v(TAG, "HMI------------onServiceDisConn");
+		mServiceConn = false;
+	}
+	
+	public boolean isServiceConnected() {
+		return mServiceConn;
 	}
 
 	// 注册车载服务回调（全局状态变化）
@@ -131,6 +150,13 @@ public class Media_IF extends CarService_IF {
 	// 注销本地服务回调（模块相关变化）
 	public void unregisterLocalCallBack(Media_Listener listener) {
 		mMediaCallBack.unregisterMediaCallBack(listener);
+	}
+	
+	//禁止UI层调用
+	public void sendSouceChange(int source) {
+		mCarCallBack.onDataChange(ModeDef.MCU, McuFunc.SOURCE, source);
+		com.amd.bt.BTMusic_IF.getInstance().sendSouceChange(source);
+		com.amd.radio.Radio_IF.getInstance().sendSouceChange(source);
 	}
 
 	// 设置主界面
@@ -167,6 +193,18 @@ public class Media_IF extends CarService_IF {
 	public void setInterface(int id) {
 		mMediaCallBack.setInterface(id);
 	}
+	
+	public static void resetSource(Context context) {
+		Settings.System.putInt(context.getContentResolver(), "MediaSource", ModeDef.NULL);
+	}
+	
+	private int getSourceFromSettings() {
+		return Settings.System.getInt(mContext.getContentResolver(), "MediaSource", ModeDef.NULL);
+	}
+	
+	private boolean setSourceToSettings(int source) {
+		return Settings.System.putInt(mContext.getContentResolver(), "MediaSource", source);
+	}
 
 	public static int sLastSource;
 	// 设置当前源
@@ -177,11 +215,16 @@ public class Media_IF extends CarService_IF {
 			if (lastSource != source) {
 				sLastSource = lastSource;
 				Log.d(TAG, "setCurSource source="+source);
-				return getInstance().mServiceIF.mcu_setCurSource(source);
+				//return getInstance().mServiceIF.mcu_setCurSource(source);
+				boolean success = getInstance().setSourceToSettings(source);
+				if (success) {
+					getInstance().sendSouceChange(source);
+				}
+				getInstance().mServiceIF.mcu_setCurSource(source);
+				return success;
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "setCurSource exception");
-			e.printStackTrace();
+			Log.e(TAG, "setCurSource exception", e);
 		}
 		return false;
 	}
@@ -190,8 +233,9 @@ public class Media_IF extends CarService_IF {
 	public static int getCurSource() {
 		try {
 			int source = getInstance().mServiceIF.mcu_getCurSource();
-			Log.d(TAG, "getCurSource source="+source);
-			return source;
+			int sourceEx = getInstance().getSourceFromSettings();
+			Log.d(TAG, "getCurSource source="+source+"; sourceEx="+sourceEx);
+			return sourceEx;
 		} catch (Exception e) {
 			Log.e(TAG, "getCurSource error e="+e);
 		}

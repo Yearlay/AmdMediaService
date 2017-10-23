@@ -10,6 +10,7 @@ import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.define.ModeDef;
 import com.haoke.define.McuDef.KeyCode;
 import com.haoke.define.McuDef.KeyState;
+import com.haoke.define.McuDef.McuFunc;
 import com.haoke.service.BTMusicService;
 import com.haoke.serviceif.CarService_IF;
 import com.haoke.serviceif.CarService_Listener;
@@ -20,6 +21,7 @@ public class BTMusic_IF extends CarService_IF {
 	private final String TAG = this.getClass().getSimpleName();
 	private static BTMusic_IF mSelf = null;
 	private BTMusic_CarCallBack mCarCallBack = null;
+	private boolean mServiceConn = false;
 
 	public BTMusic_IF() {
 		mMode = ModeDef.BTMUSIC;
@@ -30,8 +32,10 @@ public class BTMusic_IF extends CarService_IF {
 			@Override
 			public void onDataChange(int mode, int func, int data)
 					throws RemoteException {
-				// TODO Auto-generated method stub
-				mCarCallBack.onDataChange(mode, func, data);
+				if (mode == ModeDef.MCU && func == McuFunc.SOURCE) {
+				} else {
+					mCarCallBack.onDataChange(mode, func, data);
+				}
 			}
 		};
 	}
@@ -57,8 +61,19 @@ public class BTMusic_IF extends CarService_IF {
 	// 服务已经绑定成功，需要刷新动作
 	@Override
 	protected void onServiceConn() {
-		// TODO Auto-generated method stub
 		mCarCallBack.onServiceConn();
+		mServiceConn = true;
+	}
+	
+	@Override
+	protected void onServiceDisConn() {
+		super.onServiceDisConn();
+		Log.v(TAG, "HMI------------onServiceDisConn");
+		mServiceConn = false;
+	}
+	
+	public boolean isServiceConnected() {
+		return mServiceConn;
 	}
 
 	// 注册车载服务回调（全局状态变化）
@@ -79,6 +94,11 @@ public class BTMusic_IF extends CarService_IF {
 	// 注销车载服务回调（模块相关变化）
 	public void unregisterModeCallBack(BTMusic_CarListener listener) {
 		mCarCallBack.unregisterModeCallBack(listener);
+	}
+	
+	//禁止UI层调用
+	public void sendSouceChange(int source) {
+		mCarCallBack.onDataChange(ModeDef.MCU, McuFunc.SOURCE, source);
 	}
 	
 	private boolean hasAudioFocus() {
