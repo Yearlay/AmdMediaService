@@ -220,6 +220,16 @@ public class Media_IF extends CarService_IF {
 		return limitFlag;
 	}
 	
+	public static int getCarSpeed() {
+		int speed = 0;
+		try {
+			speed = getInstance().mServiceIF.getCMSStatus(CMSStatusFuc.CAR_SPEED);
+		} catch (Exception e) {
+			Log.e(TAG, "getCarSpeed error e="+e);
+		}
+		return speed;
+	}
+	
 	public static void cancelMute() {
 		try {
 			if (getMute()) {

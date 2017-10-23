@@ -169,7 +169,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     	mVideoLayout.removeAllViews();
         mVideoLayout.addView(mVideoView);
         if (checkSpeed) {
-            checkSpeedAndRefreshView(AllMediaList.sCarSpeed);
+            checkSpeedAndRefreshView(Video_IF.getCarSpeed());
         }
     }
 
