@@ -628,16 +628,25 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
 //        mListView.dispatchTouchEvent(MotionEvent.obtain(
 //                SystemClock.uptimeMillis(), SystemClock.uptimeMillis(),
 //                MotionEvent.ACTION_CANCEL, 0, 0, 0));
+        
+        final Runnable checkSelection = new Runnable() {
+			@Override
+			public void run() {
+				mListView.requestFocusFromTouch();
+		        if (mIF.getPlayingDevice() == mDeviceType && mIF.getPlayingFileType() == FileType.AUDIO) {
+		            int focusNo = 0;
+		            focusNo = mIF.getPlayPos();
+		            if (focusNo < 0)
+		                focusNo = 0;
+		            mListView.setSelection(focusNo);
+		        } else {
+		        	mListView.setSelection(0);
+		        }
+			}
+		};
 
-        if (mIF.getPlayingDevice() == mDeviceType && mIF.getPlayingFileType() == FileType.AUDIO) {
-            int focusNo = 0;
-            focusNo = mIF.getPlayPos();
-            if (focusNo < 0)
-                focusNo = 0;
-            mListView.setSelection(focusNo);
-        } else {
-        	mListView.setSelection(0);
-        }
+		checkSelection.run();
+        mListView.postDelayed(checkSelection, 20);
     }
 
     @Override
