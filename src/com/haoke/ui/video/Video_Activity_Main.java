@@ -258,7 +258,7 @@ public class Video_Activity_Main extends FragmentActivity implements
             case MediaFunc.PLAY_STATE:
             case MediaFunc.REPEAT_MODE:
             case MediaFunc.RANDOM_MODE:
-            	if (mPlayLayout.getVisibility() == View.VISIBLE) {
+                if (mPlayLayout.getVisibility() == View.VISIBLE) {
                     mPlayLayout.updatePlayState(mIF.getPlayState());
                 }
                 break;
@@ -583,14 +583,16 @@ public class Video_Activity_Main extends FragmentActivity implements
                 int speedData = 0x0000;
                 speedData = (speedData | datas[6]) << 8;
                 speedData = speedData | datas[7];
-                float speed = (float) speedData / 100;
+                float speed = (float) (speedData & 0xFFFF) / 100;
                 
-                if (speed > 20.0f && AllMediaList.sCarSpeed <= 20.0f && mPlayLayout != null) { // 加速超过20km/h
-                    DebugLog.d("Yearlay", "onUartDataChange 0D 00 2D show ForbiddenView");
+                if (speed >= 20.0f && AllMediaList.sCarSpeed < 20.0f && mPlayLayout != null) { // 加速超过20km/h
+                    DebugLog.d("Yearlay", "onUartDataChange 0D 00 2D show ForbiddenView current speed: " + speed
+                            + " && And Last speed: " + AllMediaList.sCarSpeed);
                     mPlayLayout.checkSpeedAndRefreshView(speed);
                 }
                 if (speed < 20.0f && AllMediaList.sCarSpeed >= 20.0f && mPlayLayout != null) { // 减速低于20km/h
-                	DebugLog.d("Yearlay", "onUartDataChange 0D 00 2D hide ForbiddenView");
+                    DebugLog.d("Yearlay", "onUartDataChange 0D 00 2D hide ForbiddenView current speed: " + speed
+                            + " && And Last speed: " + AllMediaList.sCarSpeed);
                     mPlayLayout.checkSpeedAndRefreshView(speed);
                 }
                 AllMediaList.sCarSpeed = speed;
