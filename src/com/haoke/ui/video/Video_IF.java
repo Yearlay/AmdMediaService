@@ -112,6 +112,10 @@ public class Video_IF {
 		return Media_IF.limitToPlayVideoWhenDrive();
 	}
 	
+	public static int getCarSpeed() {
+		return Media_IF.getCarSpeed();
+	}
+	
 	public static void cancelMute() {
 		Media_IF.cancelMute();
 	}

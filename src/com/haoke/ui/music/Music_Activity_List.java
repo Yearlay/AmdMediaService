@@ -339,27 +339,31 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
 
     private void onPrepared() {
         // 快速切换曲时，在收到onPrepared()后，mediaState可能已经不是PREPARED状态，需要过滤不处理
-        int mediaState = mIF.getMediaState();
-        if (mediaState != MediaState.PREPARED) {
-            return;
-        }
-        if (isVisibility(mListLayout)) {
-            updateListWithoutSelection();
-        }
+    	if (mIF.getPlayingDevice() == mDeviceType) {
+    		int mediaState = mIF.getMediaState();
+    		if (mediaState != MediaState.PREPARED) {
+    			return;
+    		}
+    		if (isVisibility(mListLayout)) {
+    			updateListWithoutSelection();
+    		}
+    	}
     }
 
     private void onError() {
-        if (isVisibility(mListLayout)) {
-            updateListWithoutSelection();
+        if (mIF.getPlayingDevice() == mDeviceType) {
+            if (isVisibility(mListLayout)) {
+                updateListWithoutSelection();
+            }
+            if (mDialog == null) {
+                mDialog = new CustomDialog();
+            }
+            mDialog.ShowDialog(this, DIALOG_TYPE.NONE_BTN, R.string.media_play_nosupport);
         }
-        if (mDialog == null) {
-            mDialog = new CustomDialog();
-        }
-        mDialog.ShowDialog(this, DIALOG_TYPE.NONE_BTN, R.string.media_play_nosupport);
     }
 
     private void onPlayOver() {
-        if (isVisibility(mListLayout)) {
+        if (isVisibility(mListLayout) && mIF.getPlayingDevice() == mDeviceType) {
             updateListWithoutSelection();
         }
     }
@@ -564,10 +568,10 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position,
             long id) {
-    	Log.v(TAG, "onItemClick mType="+mType+"; position="+position);
+        Log.v(TAG, "onItemClick mType="+mType+"; position="+position);
         if (mType == 0) {//扫描列表
             if (MediaInterfaceUtil.mediaCannotPlay()) {
-            	return;
+                return;
             }
             finish();
             int index = mIF.getListItemIndex(position);
@@ -630,22 +634,22 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
 //                MotionEvent.ACTION_CANCEL, 0, 0, 0));
         
         final Runnable checkSelection = new Runnable() {
-			@Override
-			public void run() {
-				mListView.requestFocusFromTouch();
-		        if (mIF.getPlayingDevice() == mDeviceType && mIF.getPlayingFileType() == FileType.AUDIO) {
-		            int focusNo = 0;
-		            focusNo = mIF.getPlayPos();
-		            if (focusNo < 0)
-		                focusNo = 0;
-		            mListView.setSelection(focusNo);
-		        } else {
-		        	mListView.setSelection(0);
-		        }
-			}
-		};
+            @Override
+            public void run() {
+                mListView.requestFocusFromTouch();
+                if (mIF.getPlayingDevice() == mDeviceType && mIF.getPlayingFileType() == FileType.AUDIO) {
+                    int focusNo = 0;
+                    focusNo = mIF.getPlayPos();
+                    if (focusNo < 0)
+                        focusNo = 0;
+                    mListView.setSelection(focusNo);
+                } else {
+                    mListView.setSelection(0);
+                }
+            }
+        };
 
-		checkSelection.run();
+        checkSelection.run();
         mListView.postDelayed(checkSelection, 20);
     }
 
