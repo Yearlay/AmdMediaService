@@ -9,7 +9,7 @@ package com.haoke.service;
 import com.amd.bt.BTMusicManager;
 import com.amd.bt.BTMusic_IF;
 import com.amd.bt.BT_IF;
-import com.haoke.audiofocus.AudioFocus;
+import com.amd.media.AudioFocus;
 import com.haoke.define.GlobalDef;
 
 import android.app.Service;

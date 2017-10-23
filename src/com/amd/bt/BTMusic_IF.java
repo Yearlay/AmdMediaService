@@ -112,14 +112,15 @@ public class BTMusic_IF extends CarService_IF {
 	}
 	
 	// 设置当前音频焦点
-	public void requestAudioFocus(boolean request) {
+	public boolean requestAudioFocus(boolean request) {
 		try {
 			if (!hasAudioFocus()) {
-				BTMusicService.getInstance().getAudioFocus().requestAudioFocus(request);
+				return BTMusicService.getInstance().getAudioFocus().requestAudioFocus(request);
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
 		}
+		return true;
 	}
 	
 	// 设置当前源

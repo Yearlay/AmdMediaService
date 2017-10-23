@@ -6,7 +6,7 @@ import android.media.AudioManager;
 import android.util.Log;
 
 import com.amd.media.MediaInterfaceUtil;
-import com.haoke.audiofocus.AudioFocusListener;
+import com.amd.media.AudioFocus.AudioFocusListener;
 import com.haoke.define.ModeDef;
 import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.btjar.main.BTDef.BTFunc;
