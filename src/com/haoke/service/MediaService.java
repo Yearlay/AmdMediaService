@@ -571,6 +571,14 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
             DebugLog.e(TAG, "handleModeKey lost  isGoingFlag : true");
         }
     }
+    
+    private void checkAndPlayDeviceType(int deviceType) {
+        if (mMediaIF.isPlayState() && mMediaIF.getPlayingDevice() == deviceType) {
+            Log.d(TAG, "checkAndPlayDeviceType return! deviceType="+deviceType);
+            return;
+        }
+        mMediaIF.playDefault(deviceType, FileType.AUDIO);
+    }
 
     private void launchSourceActivity(int mode) {
         // ModeSwitch.instance().setGoingFlag(true);
@@ -588,14 +596,17 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         case ModeSwitch.MUSIC_LOCAL_MODE:
             intent.setClass(this, Music_Activity_List.class);
             intent.putExtra("Mode_To_Music", "hddAudio_intent");
+            checkAndPlayDeviceType(DeviceType.FLASH);
             break;
         case ModeSwitch.MUSIC_USB1_MODE:
             intent.setClass(this, Music_Activity_List.class);
             intent.putExtra("Mode_To_Music", "USB1_intent");
+            checkAndPlayDeviceType(DeviceType.USB1);
             break;
         case ModeSwitch.MUSIC_USB2_MODE:
             intent.setClass(this, Music_Activity_List.class);
             intent.putExtra("Mode_To_Music", "USB2_intent");
+            checkAndPlayDeviceType(DeviceType.USB2);
             break;
         case ModeSwitch.MUSIC_BT_MODE:
             intent.setClass(this, Media_Activity_Main.class);
