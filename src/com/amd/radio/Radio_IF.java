@@ -133,13 +133,14 @@ public class Radio_IF extends CarService_IF {
 	}
 
 	// 设置当前音频焦点
-	public void requestAudioFocus(boolean request) {
+	public boolean requestAudioFocus(boolean request) {
 		try {
-			RadioService.getInstance().getRadioManager()
+			return RadioService.getInstance().getRadioManager()
 					.requestAudioFocus(request);
 		} catch (Exception e) {
 			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
 		}
+		return false;
 	}
 
 	// 获取收音机状态（扫描，浏览，搜索）
@@ -194,15 +195,21 @@ public class Radio_IF extends CarService_IF {
 	//设置播放暂停
 	public void setEnable(boolean enable){
 		try {
-			Log.d(TAG, "setEnable enable="+enable);
+			boolean focus = true;
 			if (MediaInterfaceUtil.mediaCannotPlay()) {
 				return;
 			}
+			Log.d(TAG, "setEnable enable="+enable);
 			if (enable) {
-				setRadioSource();
-				RadioService.getInstance().getRadioManager().requestAudioFocus(true);
+				focus = RadioService.getInstance().getRadioManager().requestAudioFocus(true);
+				Log.d(TAG, "setEnable enable="+enable+"; focus="+focus);
+				if (focus) {
+					setRadioSource();
+					mServiceIF.radio_setEnable(enable);
+				}
+			} else {
+				mServiceIF.radio_setEnable(enable);
 			}
-			mServiceIF.radio_setEnable(enable);
 		} catch (Exception e) {
 			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
 		}
@@ -373,10 +380,12 @@ public class Radio_IF extends CarService_IF {
 	// 左搜索
 	public void setPreSearch() {
 		try {
-			Log.d(TAG, "setPreSearch");
-			setRadioSource();
-			RadioService.getInstance().getRadioManager().requestAudioFocus(true);
-			mServiceIF.radio_scanAutoPre();
+			boolean focus = RadioService.getInstance().getRadioManager().requestAudioFocus(true);
+			Log.d(TAG, "setPreSearch focus="+focus);
+			if (focus) {
+				setRadioSource();
+				mServiceIF.radio_scanAutoPre();
+			}
 		} catch (Exception e) {
 			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
 		}
@@ -385,10 +394,12 @@ public class Radio_IF extends CarService_IF {
 	// 右搜索
 	public void setNextSearch() {
 		try {
-			Log.d(TAG, "setNextSearch");
-			setRadioSource();
-			RadioService.getInstance().getRadioManager().requestAudioFocus(true);
-			mServiceIF.radio_scanAutoNext();
+			boolean focus = RadioService.getInstance().getRadioManager().requestAudioFocus(true);
+			Log.d(TAG, "setNextSearch focus="+focus);
+			if (focus) {
+				setRadioSource();
+				mServiceIF.radio_scanAutoNext();
+			}
 		} catch (Exception e) {
 			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
 		}
@@ -525,11 +536,13 @@ public class Radio_IF extends CarService_IF {
 	// 扫描
 	public void scanStore() {
 		try {
-			Log.d(TAG, "scanStore");
-			setRadioSource();
-			setRecordRadioOnOff(false);
-			RadioService.getInstance().getRadioManager().requestAudioFocus(true);
-			mServiceIF.radio_scanStore();
+			boolean focus = RadioService.getInstance().getRadioManager().requestAudioFocus(true);
+			Log.d(TAG, "scanStore focus="+focus);
+			if (focus) {
+				setRadioSource();
+				setRecordRadioOnOff(false);
+				mServiceIF.radio_scanStore();
+			}
 		} catch (Exception e) {
 			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
 		}

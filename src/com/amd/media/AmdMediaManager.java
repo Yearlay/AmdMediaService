@@ -11,8 +11,8 @@ import java.util.Random;
 
 import com.haoke.aidl.IMediaCallBack;
 import com.haoke.application.MediaApplication;
-import com.haoke.audiofocus.AudioFocus;
-import com.haoke.audiofocus.AudioFocusListener;
+import com.amd.media.AudioFocus;
+import com.amd.media.AudioFocus.AudioFocusListener;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.StorageBean;
 import com.haoke.constant.MediaUtil;
@@ -279,6 +279,11 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 			return false;
 		}
 		
+		if (!requestAudioFocus(true)) {
+			Log.e(TAG, "playOther requestAudioFocus fail!");
+			return false;
+		}
+		
 		if (mPlayingFileNode!=null && !mPlayingFileNode.isSamePathAndFrom(node)) {
 			stopRecordTimer();
 			if (mPlayingFileNode.getDeviceType() == node.getDeviceType()) {
@@ -293,7 +298,6 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 			setPlayingData(node.getDeviceType(), node.getFileType(), true);
 		}
 		changeSource(mPlayingFileType);
-		requestAudioFocus(true);
 		if (mPlayingFileType == FileType.AUDIO && mRepeatMode == RepeatMode.RANDOM) { // 随机开
 			mRandomListPos = changeIndexToRandomPos(mPlayingPos);
 		}
@@ -421,11 +425,14 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		Log.v(TAG, "setPlayState state=" + state);
 		if (state == PlayState.PLAY) {
 			if (mPlayingFileNode != null) {
-				changeSource(mPlayingFileType); // 确保当前源在媒体
-				requestAudioFocus(true);
-	    		mMediaPlayer.start();
-	    		mPlayState = PlayState.PLAY;
-	    		onDataChanged(mMediaMode, MediaFunc.PLAY_STATE, getPlayState(), 0);
+				if (requestAudioFocus(true)) {
+					changeSource(mPlayingFileType); // 确保当前源在媒体
+		    		mMediaPlayer.start();
+		    		mPlayState = PlayState.PLAY;
+		    		onDataChanged(mMediaMode, MediaFunc.PLAY_STATE, getPlayState(), 0);
+				} else {
+					Log.e(TAG, "setPlayState requestAudioFocus fail!");
+				}
 	    	} else {
 	    		FileNode fileNode = getDefaultItem();
 	    		if (fileNode == null) {
@@ -932,17 +939,17 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	}
 	
 	// 设置当前音频焦点
-	public void requestAudioFocus(boolean request) {
+	public boolean requestAudioFocus(boolean request) {
 		if (request && hasAudioFocus()) {
-			
+			return true;
 		} else {
-			mAudioFocus.requestAudioFocus(request);
+			return mAudioFocus.requestAudioFocus(request);
 		}
 	}
 	
 	// 设置当前音频焦点
-	public void requestTransientAudioFocus(boolean request) {
-		mAudioFocus.requestTransientAudioFocus(request);
+	public boolean requestTransientAudioFocus(boolean request) {
+		return mAudioFocus.requestTransientAudioFocus(request);
 	}
 	
 	@Override

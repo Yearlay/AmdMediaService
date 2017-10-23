@@ -122,16 +122,18 @@ public class BT_IF extends BTService_IF {
 	// 播放
 	public void music_play() {
 		try {
-			Log.v(TAG, "music_play() musicOpen="+musicOpen);
 			if (MediaInterfaceUtil.mediaCannotPlay()) {
 				return;
 			}
-			if (!musicOpen) {
-				music_open();
+			boolean focus = BTMusic_IF.getInstance().requestAudioFocus(true);
+			Log.v(TAG, "music_play() musicOpen="+musicOpen+"; focus="+focus);
+			if (focus) {
+				if (!musicOpen) {
+					music_open();
+				}
+				setBTSource();
+				mServiceIF.music_play();
 			}
-			setBTSource();
-			BTMusic_IF.getInstance().requestAudioFocus(true);
-			mServiceIF.music_play();
 		} catch (Exception e) {
 			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
 		}
@@ -162,16 +164,18 @@ public class BT_IF extends BTService_IF {
 	// 上一曲
 	public void music_pre() {
 		try {
-			Log.v(TAG, "music_pre() musicOpen="+musicOpen);
 			if (MediaInterfaceUtil.mediaCannotPlay()) {
 				return;
 			}
-			if (!musicOpen) {
-				music_open();
+			boolean focus = BTMusic_IF.getInstance().requestAudioFocus(true);
+			Log.v(TAG, "music_pre() musicOpen="+musicOpen+"; focus="+focus);
+			if (focus) {
+				if (!musicOpen) {
+					music_open();
+				}
+				setBTSource();
+				mServiceIF.music_pre();
 			}
-			setBTSource();
-			BTMusic_IF.getInstance().requestAudioFocus(true);
-			mServiceIF.music_pre();
 		} catch (Exception e) {
 			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
 		}
@@ -180,16 +184,18 @@ public class BT_IF extends BTService_IF {
 	// 下一曲
 	public void music_next() {
 		try {
-			Log.v(TAG, "music_next() musicOpen="+musicOpen);
 			if (MediaInterfaceUtil.mediaCannotPlay()) {
 				return;
 			}
-			if (!musicOpen) {
-				music_open();
+			boolean focus = BTMusic_IF.getInstance().requestAudioFocus(true);
+			Log.v(TAG, "music_next() musicOpen="+musicOpen+"; focus="+focus);
+			if (focus) {
+				if (!musicOpen) {
+					music_open();
+				}
+				setBTSource();
+				mServiceIF.music_next();
 			}
-			setBTSource();
-			BTMusic_IF.getInstance().requestAudioFocus(true);
-			mServiceIF.music_next();
 		} catch (Exception e) {
 			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
 		}

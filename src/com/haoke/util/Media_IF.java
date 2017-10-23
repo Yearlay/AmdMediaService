@@ -12,7 +12,7 @@ import com.amd.media.MediaInterfaceUtil;
 import com.haoke.aidl.ICarCallBack;
 import com.haoke.aidl.IMediaCallBack;
 import com.haoke.application.MediaApplication;
-import com.haoke.audiofocus.AudioFocus;
+import com.amd.media.AudioFocus;
 import com.haoke.bean.FileNode;
 import com.haoke.aidl.ICarUartCallBack;
 import com.haoke.constant.MediaUtil;
@@ -286,13 +286,14 @@ public class Media_IF extends CarService_IF {
 	}
 	
 	public static boolean getCallState() {
-		try {
+		/* 先屏蔽，因为通话时，是无法进入媒体界面的。
+		 * try {
 			int state = getInstance().mServiceIF.bt_getCallState();
 			Log.e(TAG, "getCallState state="+state);
 			return state == BTCallState.IDLE ? false : true;
 		} catch (Exception e) {
 			Log.e(TAG, "getCallState error e="+e);
-		}
+		}*/
 		return false;
 	}
 	
@@ -301,13 +302,13 @@ public class Media_IF extends CarService_IF {
 	}
 	
 	// 设置当前音频焦点
-	public void requestAudioFocus(boolean request) {
-		mMediaManager.requestAudioFocus(request);
+	public boolean requestAudioFocus(boolean request) {
+		return mMediaManager.requestAudioFocus(request);
 	}
 	
 	// 设置当前音频焦点
-	public void requestTransientAudioFocus(boolean request) {
-		mMediaManager.requestTransientAudioFocus(request);
+	public boolean requestTransientAudioFocus(boolean request) {
+		return mMediaManager.requestTransientAudioFocus(request);
 	}
 
 	// 初始化媒体

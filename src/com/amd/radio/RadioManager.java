@@ -3,7 +3,7 @@ package com.amd.radio;
 import android.media.AudioManager;
 import android.util.Log;
 
-import com.haoke.audiofocus.AudioFocusListener;
+import com.amd.media.AudioFocus.AudioFocusListener;
 import com.haoke.define.McuDef.McuFunc;
 import com.haoke.define.MediaDef.PlayState;
 import com.haoke.define.ModeDef;
@@ -93,12 +93,13 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 		return ret;
 	}
 	
-	public void requestAudioFocus(boolean request) {
+	public boolean requestAudioFocus(boolean request) {
 		boolean focus = hasAudioFocus();
 		Log.d(TAG, "requestAudioFocus request="+request+"; focus="+focus);
 		if (!focus) {
-			mParent.getAudioFocus().requestAudioFocus(request);
+			return mParent.getAudioFocus().requestAudioFocus(request);
 		}
+		return true;
 	}
 
 	// 焦点变化通知

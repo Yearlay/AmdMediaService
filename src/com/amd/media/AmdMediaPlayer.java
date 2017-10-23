@@ -6,8 +6,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import com.haoke.application.MediaApplication;
-import com.haoke.audiofocus.AudioFocus;
-import com.haoke.audiofocus.AudioFocusListener;
+import com.amd.media.AudioFocus;
+import com.amd.media.AudioFocus.AudioFocusListener;
 import com.haoke.define.MediaDef.FileType;
 import com.haoke.define.MediaDef.MediaState;
 import com.haoke.define.MediaDef.PlayState;

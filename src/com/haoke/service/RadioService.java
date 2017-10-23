@@ -6,7 +6,7 @@
 
 package com.haoke.service;
 
-import com.haoke.audiofocus.AudioFocus;
+import com.amd.media.AudioFocus;
 import com.haoke.define.GlobalDef;
 import com.amd.radio.RadioManager;
 import com.amd.radio.Radio_IF;
