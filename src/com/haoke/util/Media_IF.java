@@ -173,6 +173,7 @@ public class Media_IF extends CarService_IF {
 	public static boolean setCurSource(int source) {
 		try {
 			int lastSource = getCurSource();
+			DebugLog.d("Yearlay", "sourceChanged from: " + lastSource + " && to: " + source);
 			if (lastSource != source) {
 				sLastSource = lastSource;
 				Log.d(TAG, "setCurSource source="+source);

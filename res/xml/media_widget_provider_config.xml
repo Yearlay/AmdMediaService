@@ -1,21 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-    android:configure="com.example.appwidgettest.MyAppWidgetConfigure"
     android:initialLayout="@layout/media_widget_provider"
     android:minHeight="384px"
     android:minWidth="594px"
     android:previewImage="@drawable/music_back_ground"
     android:resizeMode="horizontal|vertical"
     android:updatePeriodMillis="86400000"
+    android:configure="com.haoke.ui.media.Media_Activity_Main"
     android:widgetCategory="home_screen|keyguard" >
-
-    <!--
-    android:minWidth="800px" 最小寬度
-    android:minHeight="400px" 最小高度
-    android:previewImage="@drawable/music_back_ground" 預覽圖片
-    android:initialLayout="@layout/media_widget_provider"
-    android:resizeMode="horizontal|vertical"
-    android:widgetCategory="home_screen|keyguard"
-    -->
-
 </appwidget-provider>

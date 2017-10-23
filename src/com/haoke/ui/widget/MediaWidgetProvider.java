@@ -32,7 +32,6 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
     private final String TAG = "MediaWidgetProvider";
     
     private PendingIntent getPendingIntent(Context context, int buttonId) {
-        Log.v(TAG, "pushUpdate() buttonId:" + buttonId);
         Intent intent = new Intent();
         intent.setClass(context, MediaWidgetProvider.class);
         intent.addCategory(Intent.CATEGORY_ALTERNATIVE);
@@ -137,20 +136,16 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
     
     @Override
     public void onEnabled(Context context) {
-        Media_IF.getInstance().initMedia();
+        RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.media_widget_provider);
+        setonClickPendding(context, remoteViews);
+        updateAppWidgets(context, remoteViews);
         super.onEnabled(context);
     }
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.media_widget_provider);
-        remoteViews.setOnClickPendingIntent(R.id.widget_music_btn_play, getPendingIntent(context, R.id.widget_music_btn_play));
-        remoteViews.setOnClickPendingIntent(R.id.widget_music_btn_pre, getPendingIntent(context, R.id.widget_music_btn_pre));
-        remoteViews.setOnClickPendingIntent(R.id.widget_music_btn_next, getPendingIntent(context, R.id.widget_music_btn_next));
-        remoteViews.setOnClickPendingIntent(R.id.home1_rl_left, getPendingIntent(context, R.id.home1_rl_left));
-        remoteViews.setOnClickPendingIntent(R.id.radio_enter_layout, getPendingIntent(context, R.id.radio_enter_layout));
-        remoteViews.setOnClickPendingIntent(R.id.widget_radio_btn_play, getPendingIntent(context, R.id.widget_radio_btn_play));
-        
+        setonClickPendding(context, remoteViews);
         setAllInfo(context, remoteViews);
         updateAppWidgets(context, remoteViews);
         super.onUpdate(context, appWidgetManager, appWidgetIds);
@@ -206,6 +201,15 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
             updateAppWidgets(context, remoteViews);
         }
         super.onReceive(context, intent);
+    }
+    
+    private void setonClickPendding(Context context, RemoteViews remoteViews) {
+        remoteViews.setOnClickPendingIntent(R.id.widget_music_btn_play, getPendingIntent(context, R.id.widget_music_btn_play));
+        remoteViews.setOnClickPendingIntent(R.id.widget_music_btn_pre, getPendingIntent(context, R.id.widget_music_btn_pre));
+        remoteViews.setOnClickPendingIntent(R.id.widget_music_btn_next, getPendingIntent(context, R.id.widget_music_btn_next));
+        remoteViews.setOnClickPendingIntent(R.id.home1_rl_left, getPendingIntent(context, R.id.home1_rl_left));
+        remoteViews.setOnClickPendingIntent(R.id.radio_enter_layout, getPendingIntent(context, R.id.radio_enter_layout));
+        remoteViews.setOnClickPendingIntent(R.id.widget_radio_btn_play, getPendingIntent(context, R.id.widget_radio_btn_play));
     }
     
     private void setAllInfo(Context context, RemoteViews remoteViews) {
