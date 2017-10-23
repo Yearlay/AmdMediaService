@@ -34,6 +34,7 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 	private ViewStub mPlayLayoutStub;
 	private CustomDialog mDialog;
 	private boolean isShow = false;
+	private boolean mBtConnected =false;
 	
 	public MusicHomeFragment(Context context) {
     	super(context);
@@ -58,6 +59,7 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 		mBTIF = BT_IF.getInstance();
 		mBTIF.bindBTService();
 		mBTMusicIF = BTMusic_IF.getInstance();
+		mBtConnected = mBTIF.getConnState() == BTConnState.CONNECTED;
     	mDialog = new CustomDialog();
 		mHomeLayout = (MusicHomeLayout) findViewById(R.id.music_home_layout);
 		mPlayLayoutStub = (ViewStub) findViewById(R.id.music_play_layout_stub);
@@ -338,12 +340,20 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 			if (mShowLayout == ShowLayout.BT_PLAY_LAYOUT) {
 				changeShowLayout(ShowLayout.HOME_LAYOUT);
 			}
-			showBTDialog();
-		} else if (Media_IF.getCurSource() != ModeDef.BT) {
-			
-		} else if (data == BTConnState.CONNECTED) {
-			if (mShowLayout != ShowLayout.BT_PLAY_LAYOUT) {
-				changeShowLayout(ShowLayout.BT_PLAY_LAYOUT);
+			if (mBtConnected) {
+				showBTDialog();
+			}
+			mBtConnected = false;
+		} else {
+			if (data == BTConnState.CONNECTED) {
+				mBtConnected = true;
+			}
+			if (Media_IF.getCurSource() != ModeDef.BT) {
+				
+			} else if (data == BTConnState.CONNECTED) {
+				if (mShowLayout != ShowLayout.BT_PLAY_LAYOUT) {
+					changeShowLayout(ShowLayout.BT_PLAY_LAYOUT);
+				}
 			}
 		}
 	}
