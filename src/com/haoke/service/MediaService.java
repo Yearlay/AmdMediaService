@@ -1,11 +1,8 @@
 package com.haoke.service;
 
-import java.util.ArrayList;
-
 import com.amd.bt.BT_IF;
 import com.amd.bt.BT_Listener;
 import com.haoke.bean.FileNode;
-import com.haoke.btjar.main.BTDef.BTCallState;
 import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.btjar.main.BTDef.BTFunc;
 import com.haoke.constant.MediaUtil;
@@ -24,7 +21,6 @@ import com.haoke.data.PlayStateSharedPreferences;
 import com.haoke.define.GlobalDef;
 import com.haoke.define.McuDef;
 import com.haoke.define.EQDef.EQFunc;
-import com.haoke.define.McuDef.KeyCode;
 import com.haoke.define.McuDef.McuFunc;
 import com.haoke.define.McuDef.PowerState;
 import com.haoke.define.MediaDef.DeviceType;
@@ -36,8 +32,6 @@ import com.haoke.define.ModeDef;
 import com.haoke.scanner.MediaScanner;
 import com.haoke.scanner.MediaScannerListner;
 import com.haoke.ui.image.Image_Activity_Main;
-import com.haoke.ui.media.Media_Activity_Main;
-import com.haoke.ui.music.Music_Activity_List;
 import com.haoke.ui.video.Video_Activity_Main;
 import com.haoke.ui.video.Video_IF;
 import com.haoke.util.DebugLog;
@@ -104,7 +98,8 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         
         AllMediaList.instance(getApplicationContext());
         
-        checkLaunchRadio(); // 开机的时候检查关机的时候，是否是Radio界面。
+        checkLaunchFromBoot();
+//        checkLaunchRadio(); // 开机的时候检查关机的时候，是否是Radio界面。
         
         mScanner = new MediaScanner(this, this);
         int pidID = android.os.Process.myPid();
@@ -253,7 +248,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         }
         // 蓝牙音乐，播放蓝牙音乐，进入蓝牙音乐界面。
         if (yesOperate) {
-            launchSourceActivity(ModeSwitch.MUSIC_BT_MODE);
+            launchSourceActivity(ModeSwitch.MUSIC_BT_MODE, true);
         } else {
             if (mBTIF.music_isPlaying()) {
                 mBTIF.music_pause();
@@ -266,7 +261,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     private void operateRadio(boolean yesOperate) {
         // 收音机，播放电台，进入收音机播放界面。
         if (yesOperate) {
-            launchSourceActivity(ModeSwitch.RADIO_MODE);
+            launchSourceActivity(ModeSwitch.RADIO_MODE, true);
         } else {
             if (mRadioIF.isEnable()) {
                 mRadioIF.setEnable(false);
@@ -494,8 +489,13 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         return super.onUnbind(intent);
     }
 
-    public ArrayList<MediaClient> getClientList() {
-        return null;
+    private Handler mHandler = new Handler() {
+        public void handleMessage(Message msg) {
+        };
+    };
+    
+    public Handler getHandler() {
+        return mHandler;
     }
     
     @Override
@@ -519,6 +519,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
             Log.v(TAG, "onCarDataChange MCU func=" + func + ", data=" + data);
             switch (func) {
             case McuFunc.SOURCE:
+                getHandler().removeCallbacksAndMessages(null);
                 mMediaIF.sourceChanged(data);
                 break;
             case McuFunc.KEY://按钮处理
@@ -557,75 +558,38 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     }
 
     private void launchMusicPlayActivity() {
-        Intent intent = new Intent();
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.setClassName("com.haoke.mediaservice", "com.haoke.ui.media.Media_Activity_Main");
-        intent.putExtra("Mode_To_Music", "music_play_intent");
-        this.startActivity(intent);
+        MediaInterfaceUtil.launchMusicPlayActivity(this);
     }
     
     private void handleModeKey() {
         if (!ModeSwitch.instance().isGoingFlag()) {
-            launchSourceActivity(ModeSwitch.instance().getNextMode(getApplicationContext()));
+            launchSourceActivity(ModeSwitch.instance().getNextMode(getApplicationContext()), true);
         } else {
             DebugLog.e(TAG, "handleModeKey lost  isGoingFlag : true");
         }
     }
     
-    private void checkAndPlayDeviceType(int deviceType) {
-        if (mMediaIF.isPlayState() && mMediaIF.getPlayingDevice() == deviceType) {
-            Log.d(TAG, "checkAndPlayDeviceType return! deviceType="+deviceType);
-            return;
-        }
-        mMediaIF.playDefault(deviceType, FileType.AUDIO);
+    private void launchSourceActivity(int mode, boolean autoPlay) {
+        MediaInterfaceUtil.launchSourceActivity(mode, autoPlay);
     }
-
-    private void launchSourceActivity(int mode) {
-        // ModeSwitch.instance().setGoingFlag(true);
-        Intent intent = new Intent();
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.setAction("com.haoke.data.ModeSwitch");
-        switch (mode) {
-        case ModeSwitch.RADIO_MODE:
-            intent.setClass(this, Media_Activity_Main.class);
-            intent.putExtra("Mode_To_Music", "radio_intent");
-            if (!mRadioIF.isEnable()) {
-                mRadioIF.setEnable(true);
-            }
-            break;
-        case ModeSwitch.MUSIC_LOCAL_MODE:
-            intent.setClass(this, Music_Activity_List.class);
-            intent.putExtra("Mode_To_Music", "hddAudio_intent");
-            checkAndPlayDeviceType(DeviceType.FLASH);
-            break;
-        case ModeSwitch.MUSIC_USB1_MODE:
-            intent.setClass(this, Music_Activity_List.class);
-            intent.putExtra("Mode_To_Music", "USB1_intent");
-            checkAndPlayDeviceType(DeviceType.USB1);
-            break;
-        case ModeSwitch.MUSIC_USB2_MODE:
-            intent.setClass(this, Music_Activity_List.class);
-            intent.putExtra("Mode_To_Music", "USB2_intent");
-            checkAndPlayDeviceType(DeviceType.USB2);
-            break;
-        case ModeSwitch.MUSIC_BT_MODE:
-            intent.setClass(this, Media_Activity_Main.class);
-            intent.putExtra("Mode_To_Music", "btMusic_intent");
-            if (!mBTIF.music_isPlaying()) {
-                mBTIF.music_play();
-            }
-            break;
-        default:
-           break;
+    
+    private void checkLaunchFromBoot() {
+        final int ms = MediaInterfaceUtil.checkSourceFromBoot(this);
+        if (ms >= 0) {
+            getHandler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    checkLaunchFromBoot();
+                }
+            }, ms);
         }
-        startActivity(intent);
     }
     
     private void checkLaunchRadio() {
         boolean showMark = PlayStateSharedPreferences.instance(this).getModeMark();
         int currentMode = PlayStateSharedPreferences.instance(this).getSwitchMode();
         if (showMark && currentMode == ModeSwitch.RADIO_MODE) {
-            launchSourceActivity(ModeSwitch.RADIO_MODE);
+            launchSourceActivity(ModeSwitch.RADIO_MODE, true);
         }
     }
 

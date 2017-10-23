@@ -19,6 +19,7 @@ public class FirstPowerReceiver extends BroadcastReceiver{
 			//断B+起来，carmanager会发送该广播，此时应用需要清除一些记忆数据。
 			Radio_IF.getInstance().clearColloctFreq(context);
 			Media_IF.getInstance().setRepeatMode(CIRCLE);
+			Media_IF.resetSource(context);
 		}
 	}
 }

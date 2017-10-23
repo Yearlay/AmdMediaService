@@ -22,6 +22,7 @@ public class BT_IF extends BTService_IF {
 	private final String TAG = this.getClass().getSimpleName();
 	private static BT_IF mSelf = null;
 	private BT_CallBack mBTCallBack = null;
+	private boolean mServiceConn = false;
 
 	public BT_IF() {
 		mMode = ModeDef.BTMUSIC;
@@ -79,9 +80,20 @@ public class BT_IF extends BTService_IF {
 
 	@Override
 	protected void onServiceConn() {
-		// TODO Auto-generated method stub
 		Log.v(TAG, "HMI------------onServiceConnected");
 		mBTCallBack.onServiceConn();
+		mServiceConn = true;
+	}
+	
+	@Override
+	protected void onServiceDisConn() {
+		super.onServiceDisConn();
+		Log.v(TAG, "HMI------------onServiceDisConn");
+		mServiceConn = false;
+	}
+	
+	public boolean isServiceConnected() {
+		return mServiceConn;
 	}
 
 	private boolean musicOpen = false;

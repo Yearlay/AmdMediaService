@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.amd.media.MediaInterfaceUtil;
 import com.haoke.aidl.ICarCallBack;
 import com.haoke.define.ModeDef;
+import com.haoke.define.McuDef.McuFunc;
 import com.haoke.define.RadioDef.Area;
 import com.haoke.define.RadioDef.Band_5;
 import com.haoke.define.RadioDef.RadioFunc;
@@ -29,7 +30,7 @@ public class Radio_IF extends CarService_IF {
 	private static final String TAG = "Radio_IF";
 	private static Radio_IF mSelf = null;
 	private Radio_CarCallBack mCarCallBack = null;
-	private Activity mMainActivity = null;
+	private boolean mServiceConn = false;
 	
 	public Radio_IF() {
 		mMode = ModeDef.RADIO;
@@ -40,8 +41,10 @@ public class Radio_IF extends CarService_IF {
 			@Override
 			public void onDataChange(int mode, int func, int data)
 					throws RemoteException {
-				// TODO Auto-generated method stub
-				mCarCallBack.onDataChange(mode, func, data);
+				if (mode == ModeDef.MCU && func == McuFunc.SOURCE) {
+				} else {
+					mCarCallBack.onDataChange(mode, func, data);
+				}
 			}
 		};
 	}
@@ -67,8 +70,19 @@ public class Radio_IF extends CarService_IF {
 	// 服务已经绑定成功，需要刷新动作
 	@Override
 	protected void onServiceConn() {
-		// TODO Auto-generated method stub
 		mCarCallBack.onServiceConn();
+		mServiceConn = true;
+	}
+	
+	@Override
+	protected void onServiceDisConn() {
+		super.onServiceDisConn();
+		Log.v(TAG, "HMI------------onServiceDisConn");
+		mServiceConn = false;
+	}
+	
+	public boolean isServiceConnected() {
+		return mServiceConn;
 	}
 
 	// 注册车载服务回调（全局状态变化）
@@ -90,21 +104,10 @@ public class Radio_IF extends CarService_IF {
 	public void unregisterModeCallBack(Radio_CarListener listener) {
 		mCarCallBack.unregisterModeCallBack(listener);
 	}
-
-	// 设置主界面
-	public void setMainActivity(Activity activity) {
-		Log.v(TAG, "HMI------------setMainActivity activity=" + activity);
-		mMainActivity = activity;
-	}
-
-	// 获取主界面
-	public Activity getMainActivity() {
-		return mMainActivity;
-	}
-
-	// 设置当前界面
-	public void setInterface(int id) {
-		mCarCallBack.setInterface(id);
+	
+	//禁止UI层调用
+	public void sendSouceChange(int source) {
+		mCarCallBack.onDataChange(ModeDef.MCU, McuFunc.SOURCE, source);
 	}
 
 	// 设置当前源
@@ -176,8 +179,11 @@ public class Radio_IF extends CarService_IF {
 	//播放暂停状态
 	public boolean isEnable(){
 		boolean enable = false;
+		int source = getCurSource();
 		try {
-			enable = mServiceIF.radio_isEnable();
+			if (source == ModeDef.RADIO) {
+				enable = mServiceIF.radio_isEnable();
+			}
 		} catch (Exception e) {
 			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
 		}
