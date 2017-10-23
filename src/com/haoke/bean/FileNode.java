@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream.GetField;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -14,7 +15,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.file.server.scan.ScanJni;
 import com.haoke.application.MediaApplication;
@@ -483,6 +486,22 @@ public class FileNode {
             }
         }
         return resultList;
+    }
+    
+    public static boolean existSameNameFile(ArrayList<FileNode> sourceList) {
+        boolean existFlag = false;
+        Map<String, String> map = new HashMap<String, String>();
+        for (FileNode fileNode : sourceList) {
+            if (!fileNode.isSelected) {
+                continue;
+            }
+            if (map.containsKey(fileNode.getFileName())) {
+                existFlag = true;
+            } else {
+                map.put(fileNode.getFileName(), fileNode.getFileName());
+            }
+        }
+        return existFlag;
     }
     
     private String thumbnailPath;

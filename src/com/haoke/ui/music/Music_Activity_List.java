@@ -472,6 +472,10 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
                 public void OnDialogEvent(int id) {
                     switch (id) {
                     case R.id.pub_dialog_ok:
+                    	if (FileNode.existSameNameFile(audioList)) {
+                            Toast.makeText(Music_Activity_List.this, R.string.copy_file_error_of_same_name,
+                                    Toast.LENGTH_SHORT).show();
+                        }
                         doCopy(audioList);
                         break;
                     case R.id.pub_dialog_cancel:

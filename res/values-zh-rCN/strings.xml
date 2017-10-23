@@ -47,4 +47,5 @@
     <string name="media_scanning_try_a_late">媒体扫描中，请稍后再试！</string>
     <string name="no_device_usb_one">请插入USB1设备</string>
     <string name="no_device_usb_two">请插入USB2设备</string>
+    <string name="copy_file_error_of_same_name">拷贝的文件列表中存在多个文件同名，复制过程中默认覆盖。</string>
 </resources>

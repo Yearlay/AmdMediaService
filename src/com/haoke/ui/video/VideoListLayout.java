@@ -261,6 +261,10 @@ public class VideoListLayout extends RelativeLayout implements
                     selectList.add(fileNode);
                 }
             }
+            if (FileNode.existSameNameFile(selectList)) {
+                Toast.makeText(mContext, R.string.copy_file_error_of_same_name,
+                        Toast.LENGTH_SHORT).show();
+            }
             if (selectList.size() > 0) {
                 if (mProgressDialog == null) {
                     mProgressDialog = new CustomDialog();

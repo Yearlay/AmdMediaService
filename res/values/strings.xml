@@ -49,4 +49,5 @@
     <string name="media_scanning_try_a_late">Media scanning. Please try a late!</string>
     <string name="no_device_usb_one">Please inset USB1</string>
     <string name="no_device_usb_two">Please inset USB2</string>
+    <string name="copy_file_error_of_same_name">Multiple files with the same name, default coverage.</string>
 </resources>
