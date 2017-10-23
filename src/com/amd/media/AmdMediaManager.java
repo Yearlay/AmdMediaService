@@ -991,7 +991,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 				Log.v(TAG, "HMI------------audioFocusChanged STOP 2");
 				return;
 			}
-			setRecordPlayState(playState);
+			setRecordPlayState(PlayState.STOP);
 			setPlayState(PlayState.PAUSE);
 			focusLossed();
 			break;

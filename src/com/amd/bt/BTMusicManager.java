@@ -100,7 +100,7 @@ public class BTMusicManager implements CarService_Listener,
 			mAudioManager.unregisterMediaButtonEventReceiver(mComponentName);
 			mBTIF.music_stop();
 //			mBTIF.music_close();
-			setRecordPlayState(playing ? PlayState.PLAY : PlayState.STOP);
+			setRecordPlayState(PlayState.STOP);
 			break;
 		}
 	}

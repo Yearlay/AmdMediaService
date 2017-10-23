@@ -125,11 +125,11 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 			break;
 		case PlayState.STOP:
 			MediaInterfaceUtil.resetMediaPlayStateRecord(ModeDef.RADIO);
-			if (!enable) {
-				Log.v(TAG, "HMI------------audioFocusChanged STOP 2");
-				return;
-			}
-			setRecordRadioOnOff(enable);
+//			if (!enable) {
+//				Log.v(TAG, "HMI------------audioFocusChanged STOP 2");
+//				return;
+//			}
+			setRecordRadioOnOff(false);
 			mIF.setEnable(false);
 			break;
 		}

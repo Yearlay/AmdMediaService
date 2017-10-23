@@ -453,7 +453,7 @@ public class FileNode {
         StringBuffer buffer = new StringBuffer();
         buffer.append("id=");
         buffer.append(id);
-        buffer.append("; deviceType="+deviceType);
+        buffer.append("; deviceType=");
         buffer.append(deviceType);
         buffer.append("; fileType=");
         buffer.append(fileType);
