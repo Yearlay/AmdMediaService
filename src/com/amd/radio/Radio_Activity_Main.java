@@ -150,6 +150,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     public void onResume() {
         Log.d(TAG, "onResume isScan5S="+isScan5S);
         AllMediaList.notifyAllLabelChange(getContext(), R.string.pub_radio);
+        mPlayImageView.setImageResource(mIF.isEnable() ? R.drawable.pause : R.drawable.play);
         updateFreq(mIF.getCurFreq());
         ModeSwitch.instance().setCurrentMode(mContext, true, ModeSwitch.RADIO_MODE);
         updateAll();
