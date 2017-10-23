@@ -1,6 +1,11 @@
 package com.haoke.data;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,6 +18,7 @@ import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.haoke.application.MediaApplication;
@@ -605,7 +611,11 @@ public class AllMediaList {
                         unCollectMediaFiles(operateData.dataList, operateData);
                         break;
                     case OperateListener.OPERATE_COPY_TO_LOCAL:
-                        copyToLocal(operateData.dataList, operateData, this);
+                        if (operateData.dataList.get(0).getFileType() == FileType.IMAGE) {
+                            copyToLocal(operateData.dataList, operateData, this);
+                        } else {
+                            copyToLocalForFileSize(operateData.dataList, operateData, this);
+                        }
                         break;
                     default:
                         break;
@@ -735,6 +745,97 @@ public class AllMediaList {
                 break;
             }
         }
+        mMediaDbHelper.setStartFlag(false);
+    }
+    
+    private void copyToLocalForFileSize(ArrayList<FileNode> list, OperateData operateData, Thread thread) {
+    	int resultCode = OperateListener.OPERATE_SUCEESS;
+        int currentprogress = 0;
+        mMediaDbHelper.setStartFlag(true);
+        long totalSize = 0;
+        long docopySize = 0;
+        for (FileNode fileNode : list) {
+            totalSize += fileNode.getFile().length();
+        }
+        for (FileNode fileNode : list) {
+            if (thread.isInterrupted()) {
+                break;
+            }
+            String destFilePath = MediaUtil.LOCAL_COPY_DIR + "/" + fileNode.getFileName();
+            boolean ret = true;
+            File file = new File(MediaUtil.LOCAL_COPY_DIR);
+            if (file != null && !file.exists()) {
+                if (!file.mkdirs()) {
+                    Log.w("Yearlay", "mkdir collect path failed");
+                }
+            }
+            File srcfile = fileNode.getFile();
+            File tarFile = new File(destFilePath);
+            // 是文件,读取文件字节流,同时记录进度
+            InputStream inputStream = null;
+            OutputStream outputStream = null;
+            try {
+                inputStream = new FileInputStream(srcfile);// 读取源文件
+                outputStream = new FileOutputStream(tarFile);// 要写入的目标文件
+                System.gc();
+                byte[] buffer = new byte[(int) Math.pow(2, 20)];// 每次最大读取的长度，字节，2的10次方=1MB。
+                int length = -1;
+                while ((length = inputStream.read(buffer)) != -1 && !thread.isInterrupted()) {
+                    // 累计每次读取的大小
+                    outputStream.write(buffer, 0, length);
+                    docopySize += length;
+                    
+                    int progress = (int) (docopySize  * 100 / totalSize);
+                    if (progress != currentprogress && progress < 100) {
+                        currentprogress = progress;
+                        mLocalHandler.sendMessage(mLocalHandler.obtainMessage(NOTIFY_LIST_ITEM_PROGRESS,
+                                currentprogress, resultCode, operateData));
+                    }
+                }
+            } catch (Exception e) {
+                try {
+                    if (outputStream != null) outputStream.close();
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
+                tarFile.delete();
+                e.printStackTrace();
+                ret = false;
+            } finally {
+                try {
+                    if (inputStream != null) inputStream.close();
+                    if (outputStream != null) outputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (thread.isInterrupted()) {
+                try {
+                    if (outputStream != null) outputStream.close();
+                    tarFile.delete();
+                } catch (IOException ioe) {
+                    ioe.printStackTrace();
+                }
+                ret = false;
+            }
+            if (ret) { // 文件拷贝成功。
+                mMediaDbHelper.addToNeedToInsertList(new TransactionTask(new FileNode(destFilePath),
+                        TransactionTask.DELETE_TASK));
+                mMediaDbHelper.addToNeedToInsertList(new TransactionTask(new FileNode(destFilePath),
+                        TransactionTask.INSERT_TASK)); // 后更新 到对应的收藏表中
+            } else { // 文件拷贝失败。
+                resultCode = OperateListener.OPERATE_COLLECT_COPY_FILE_FAILED;
+                if (thread.isInterrupted()) {
+                    resultCode = OperateListener.OPERATE_SUCEESS;
+                }
+            }
+            if (resultCode != OperateListener.OPERATE_SUCEESS) {
+                break;
+            }
+        }
+        currentprogress = 100;
+        mLocalHandler.sendMessage(mLocalHandler.obtainMessage(NOTIFY_LIST_ITEM_PROGRESS,
+                currentprogress, resultCode, operateData));
         mMediaDbHelper.setStartFlag(false);
     }
     
