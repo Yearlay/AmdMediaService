@@ -72,7 +72,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         } else {
             Video_IF.getInstance().play(mFileNode);
         }
-        checkSpeedAndRefreshView();
+        updateVideoLayout(true);
         if (mCtrlBar.getVisibility() == View.VISIBLE) {
             startHideTimer();
         }
@@ -144,7 +144,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
                 mHandler.sendEmptyMessageDelayed(DELAY_PLAY, 1000);
             }
         }
-        updateVideoLayout();
+        updateVideoLayout(true);
     }
     
     private boolean savePlayState = false;
@@ -165,8 +165,12 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         mVideoLayout.removeAllViews();
     }
 
-    public void updateVideoLayout() {
-        checkSpeedAndRefreshView();
+    public void updateVideoLayout(boolean checkSpeed) {
+    	mVideoLayout.removeAllViews();
+        mVideoLayout.addView(mVideoView);
+        if (checkSpeed) {
+            checkSpeedAndRefreshView(AllMediaList.sCarSpeed);
+        }
     }
 
     @Override
@@ -419,15 +423,11 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         return true;
     }
     
-    private void checkSpeedAndRefreshView() {
-        mVideoLayout.removeAllViews();
-        mVideoLayout.addView(mVideoView);
+    public void checkSpeedAndRefreshView(float speed) {
         boolean showForbiddenViewFlag = false;
         try {
             boolean sysLimitFlag = Video_IF.limitToPlayVideoWhenDrive();
-            boolean speedLimitFlag = (AllMediaList.sCarSpeed > 20.0f);
-            DebugLog.d("Yearlay", " checkSpeedAndRefreshView sysLimitFlag: " + sysLimitFlag);
-            DebugLog.d("Yearlay", " checkSpeedAndRefreshView speedLimitFlag: " + speedLimitFlag);
+            boolean speedLimitFlag = (speed >= 20.0f);
             showForbiddenViewFlag = (sysLimitFlag && speedLimitFlag);
         } catch (Exception e) {
             e.printStackTrace();

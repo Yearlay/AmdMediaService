@@ -299,7 +299,7 @@ public class Video_Activity_Main extends FragmentActivity implements
             } else {
                 playNext();
             }
-            mPlayLayout.updateVideoLayout();
+            mPlayLayout.updateVideoLayout(true);
         }
     }
 
@@ -556,7 +556,7 @@ public class Video_Activity_Main extends FragmentActivity implements
     private void playPre() {
         mCurPosition--;
         mCurPosition = (mCurPosition < 0) ? mVideoList.size() - 1 : mCurPosition;
-        mPlayLayout.updateVideoLayout();
+        mPlayLayout.updateVideoLayout(true);
         FileNode fileNode = mVideoList.get(mCurPosition);
         mPlayLayout.setFileNode(fileNode);
         mIF.play(fileNode);
@@ -565,7 +565,7 @@ public class Video_Activity_Main extends FragmentActivity implements
     private void playNext() {
         mCurPosition++;
         mCurPosition = (mCurPosition >= mVideoList.size()) ? 0 : mCurPosition;
-        mPlayLayout.updateVideoLayout();
+        mPlayLayout.updateVideoLayout(true);
         FileNode fileNode = mVideoList.get(mCurPosition);
         mPlayLayout.setFileNode(fileNode);
         mIF.play(fileNode);
@@ -575,8 +575,6 @@ public class Video_Activity_Main extends FragmentActivity implements
     public void onCarDataChange(int mode, int func, int data) {}
     @Override
     public void onUartDataChange(int mode, int len, byte[] datas) {
-        DebugLog.d("Yearlay", "onUartDataChange mode:" + mode + " && len:" + len +
-                " && datas[]:" + bytesToHexString(datas));
         if (datas.length > 8) {
             int data3 = datas[3] & 0xFF;
             int data4 = datas[4] & 0xFF;
@@ -586,16 +584,16 @@ public class Video_Activity_Main extends FragmentActivity implements
                 speedData = (speedData | datas[6]) << 8;
                 speedData = speedData | datas[7];
                 float speed = (float) speedData / 100;
-                DebugLog.d("Yearlay", "onUartDataChange speed: " + speed);
                 
-                if (speed > 20.0f && AllMediaList.sCarSpeed < 20.0f && mPlayLayout != null) { // 加速超过20km/h
-                    AllMediaList.sCarSpeed = speed;
-                    mPlayLayout.updateVideoLayout();
+                if (speed > 20.0f && AllMediaList.sCarSpeed <= 20.0f && mPlayLayout != null) { // 加速超过20km/h
+                    DebugLog.d("Yearlay", "onUartDataChange 0D 00 2D show ForbiddenView");
+                    mPlayLayout.checkSpeedAndRefreshView(speed);
                 }
-                if (speed < 20.0f && AllMediaList.sCarSpeed > 20.0f && mPlayLayout != null) { // 减速低于20km/h
-                    AllMediaList.sCarSpeed = speed;
-                    mPlayLayout.updateVideoLayout();
+                if (speed < 20.0f && AllMediaList.sCarSpeed >= 20.0f && mPlayLayout != null) { // 减速低于20km/h
+                	DebugLog.d("Yearlay", "onUartDataChange 0D 00 2D hide ForbiddenView");
+                    mPlayLayout.checkSpeedAndRefreshView(speed);
                 }
+                AllMediaList.sCarSpeed = speed;
             }
         }
     }
