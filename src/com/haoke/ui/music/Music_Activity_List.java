@@ -8,6 +8,7 @@ import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -67,6 +68,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     private CustomDialog mProgressDialog;
 
     private int mType = 0;//当前模式：0 列表模式，1 编辑模式
+    private boolean mPlayDefault = false;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,6 +123,8 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         } else if ("USB2_intent".equals(musicMode)) {
             mDeviceType = DeviceType.USB2;
         }
+        
+        mPlayDefault = intent.getBooleanExtra("play_music", false);
     }
     
     private void resetDeviceType() {
@@ -205,13 +209,13 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         super.onResume();
         if (getIntent() != null && "com.haoke.data.ModeSwitch".equals(getIntent().getAction())) {
             ModeSwitch.instance().setGoingFlag(false);
-            setIntent(null);
+            //setIntent(null);
         }
         mIF.registerLocalCallBack(this); // 注册服务监听
         updateStatus();
         
         int labelRes = R.string.pub_media;
-        int curSource = mIF.getMediaDevice();
+        int curSource = mDeviceType;
         if (curSource == DeviceType.COLLECT) {
             labelRes = R.string.music_my_save;
         } else if (curSource == DeviceType.USB1) {
@@ -225,6 +229,14 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             ModeSwitch.instance().setCurrentMode(this, true, ModeSwitch.MUSIC_LOCAL_MODE);
         }
         AllMediaList.notifyAllLabelChange(getApplicationContext(), labelRes);
+        
+        if (mPlayDefault) {
+            if (mIF.isPlayState() && mIF.getPlayingDevice() == mDeviceType) {
+            } else {
+                mIF.playDefault(mDeviceType, FileType.AUDIO);
+            }
+            mPlayDefault = false;
+        }
     }
     
     @Override
@@ -236,6 +248,15 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             mProgressDialog.CloseDialog();
             Toast.makeText(this, R.string.file_operate_cancel, Toast.LENGTH_SHORT).show();
         }
+    }
+    
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (getIntent() != null && "com.haoke.data.ModeSwitch".equals(getIntent().getAction())) {
+            MediaInterfaceUtil.launchMusicMainActivity(this);
+            return true;
+        }
+        return super.onKeyUp(keyCode, event);
     }
 
     @Override

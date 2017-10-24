@@ -139,6 +139,8 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
         int source = Media_IF.getCurSource();
         if (intent != null) {
             boolean fromIntent = false;
+            boolean goPlay = false;
+            boolean goHome = false;
             String musicMode = intent.getStringExtra("Mode_To_Music");
             Log.d(TAG, "initCurSource musicMode="+musicMode);
             if ("radio_intent".equals(musicMode)) {
@@ -150,12 +152,19 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
             } else if ("music_play_intent".equals(musicMode)) {
             	source = ModeDef.AUDIO;
             	fromIntent = true;
+            	goPlay = true;
+            } else if ("music_main_home".equals(musicMode)) {
+            	source = ModeDef.AUDIO;
+            	fromIntent = true;
+            	goHome = true;
             }
             if (fromIntent) {
             	if (source == ModeDef.BT) {
             		replaceBtMusicFragment();
-            	} else if (source == ModeDef.AUDIO) {
+            	} else if (goPlay) {
             		goPlay(false, true);
+            	} else if (goHome) {
+            		goHome();
             	}
             } else {
             	if (source == ModeDef.AUDIO || source == ModeDef.BT) {

@@ -156,12 +156,32 @@ public class MediaInterfaceUtil {
         return Media_IF.getCallState();
     }
     
-    private static void checkAndPlayDeviceType(int deviceType) {
+    private static void checkAndPlayDeviceType(final MediaService service, final int deviceType, boolean post) {
         if (Media_IF.getInstance().isPlayState() && Media_IF.getInstance().getPlayingDevice() == deviceType) {
             Log.d(TAG, "checkAndPlayDeviceType return! deviceType="+deviceType);
             return;
         }
-        Media_IF.getInstance().playDefault(deviceType, FileType.AUDIO);
+        if (post) {
+            MediaService.getInstance().getHandler().post(new Runnable() {
+                @Override
+                public void run() {
+                    Media_IF.getInstance().playDefault(deviceType, FileType.AUDIO);
+                }
+            });
+        } else {
+            Media_IF.getInstance().playDefault(deviceType, FileType.AUDIO);
+        }
+    }
+    
+    /**
+     * 启动音乐主界面。
+     */
+    public static void launchMusicMainActivity(Context context) {
+        Intent intent = new Intent();
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setClassName("com.haoke.mediaservice", "com.haoke.ui.media.Media_Activity_Main");
+        intent.putExtra("Mode_To_Music", "music_main_home");
+        context.startActivity(intent);
     }
     
     /**
@@ -180,6 +200,9 @@ public class MediaInterfaceUtil {
      * @param mode为相关模式，autoPlay为自动播放
      */
     public static void launchSourceActivity(int mode, boolean autoPlay) {
+        if (autoPlay) {
+            MediaService.getInstance().getHandler().removeCallbacksAndMessages(null);
+        }
         Context context = MediaApplication.getInstance();
         // ModeSwitch.instance().setGoingFlag(true);
         Intent intent = new Intent();
@@ -199,21 +222,24 @@ public class MediaInterfaceUtil {
             intent.setClass(context, Music_Activity_List.class);
             intent.putExtra("Mode_To_Music", "hddAudio_intent");
             if (autoPlay) {
-                checkAndPlayDeviceType(DeviceType.FLASH);
+                intent.putExtra("play_music", true);
+                checkAndPlayDeviceType(MediaService.getInstance(), DeviceType.FLASH, false);
             }
             break;
         case ModeSwitch.MUSIC_USB1_MODE:
             intent.setClass(context, Music_Activity_List.class);
             intent.putExtra("Mode_To_Music", "USB1_intent");
             if (autoPlay) {
-                checkAndPlayDeviceType(DeviceType.USB1);
+                intent.putExtra("play_music", true);
+                checkAndPlayDeviceType(MediaService.getInstance(), DeviceType.USB1, false);
             }
             break;
         case ModeSwitch.MUSIC_USB2_MODE:
             intent.setClass(context, Music_Activity_List.class);
             intent.putExtra("Mode_To_Music", "USB2_intent");
             if (autoPlay) {
-                checkAndPlayDeviceType(DeviceType.USB2);
+                intent.putExtra("play_music", true);
+                checkAndPlayDeviceType(MediaService.getInstance(), DeviceType.USB2, false);
             }
             break;
         case ModeSwitch.MUSIC_BT_MODE:
@@ -245,7 +271,7 @@ public class MediaInterfaceUtil {
             Log.d(TAG, "checkSourceFromBoot BT_IF or BTMusic_IF or Media_IF or Radio_IF cannot bind service!");
             ms = 50;
         }
-    	
+        
         final int source = Media_IF.getCurSource();
         if (ms >= 0) {
         } else if (source == ModeDef.RADIO) {
@@ -254,34 +280,34 @@ public class MediaInterfaceUtil {
             AllMediaList allMediaList = AllMediaList.instance(service);
             int deviceType = allMediaList.getLastDeviceType();
             if (deviceType != DeviceType.NULL) {
-	            StorageBean storage = allMediaList.getStoragBean(deviceType);
-	            if (storage.isId3ParseCompleted()) {
-	                ArrayList<FileNode> lists = allMediaList.getMediaList(deviceType, FileType.AUDIO);
-	                int size = lists.size();
-	                if (size > 0) {
-	                    FileNode lastFileNode = allMediaList.getPlayState(deviceType, FileType.AUDIO);
-	                    if (lastFileNode != null) {
-	                        checkAndPlayDeviceType(deviceType);
-	                        launchMusicPlayActivity(service);
-	                    } else {
-	                        //TODO song not exist
-	                    	Log.d(TAG, "checkSourceFromBoot song not exist!");
-	                    }
-	                } else {
-	                    //TODO device has no song
-	                    Log.d(TAG, "checkSourceFromBoot device has no song");
-	                }
-	            } else {
-	                //TODO loading
-	                Log.d(TAG, "checkSourceFromBoot loading");
-	                ms = 500;
-	            }
+                StorageBean storage = allMediaList.getStoragBean(deviceType);
+                if (storage.isId3ParseCompleted()) {
+                    ArrayList<FileNode> lists = allMediaList.getMediaList(deviceType, FileType.AUDIO);
+                    int size = lists.size();
+                    if (size > 0) {
+                        FileNode lastFileNode = allMediaList.getPlayState(deviceType, FileType.AUDIO);
+                        if (lastFileNode != null) {
+                            checkAndPlayDeviceType(service, deviceType, false);
+                            launchMusicPlayActivity(service);
+                        } else {
+                            //TODO song not exist
+                            Log.d(TAG, "checkSourceFromBoot song not exist!");
+                        }
+                    } else {
+                        //TODO device has no song
+                        Log.d(TAG, "checkSourceFromBoot device has no song");
+                    }
+                } else {
+                    //TODO loading
+                    Log.d(TAG, "checkSourceFromBoot loading");
+                    ms = 500;
+                }
             }
         } else if (source == ModeDef.VIDEO) {
             
         } else if (source == ModeDef.BT) {
-        	BT_IF btIF = BT_IF.getInstance();
-        	int state = btIF.getConnState();
+            BT_IF btIF = BT_IF.getInstance();
+            int state = btIF.getConnState();
             if (state == BTConnState.DISCONNECTED) {
                 
             } else if (state == BTConnState.CONNECTED) {
