@@ -65,8 +65,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         mFileNode = fileNode;
         Video_IF.getInstance().setVideoView(mVideoView);
         mTitleTextView.setText(mFileNode.getFileName());
-        mCollectView.setImageResource(mFileNode.getCollect() == 1 ?
-                R.drawable.media_collect : R.drawable.media_uncollect);
+        updateCollectView();
         if (mFileNode.isSame(Video_IF.getInstance().getPlayItem())) {
             Video_IF.getInstance().setPlayState(PlayState.PLAY);
         } else {
@@ -132,11 +131,10 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     }
 
     public void onResume() {
-        if (mFileNode != null && mCollectView != null) {
-            mCollectView.setVisibility(mFileNode.isFromCollectTable() ? View.GONE : View.VISIBLE);
-            mCollectView.setImageResource(mFileNode.getCollect() == 1 ? R.drawable.media_collect : R.drawable.media_uncollect);
+        if (mFileNode != null) {
             mTitleTextView.setText(mFileNode.getFileName());
         }
+        updateCollectView();
         
         if (savePlayState) { // 如果在onPause的时候有保存这个状态。
             savePlayState = false;
@@ -150,9 +148,9 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     private boolean savePlayState = false;
 
     public void onPause() {
-    	if (mContext == null) {
-    		return;
-    	}
+        if (mContext == null) {
+            return;
+        }
         if (Video_IF.getInstance().getPlayState() == PlayState.PLAY) {
             savePlayState = true;
             Video_IF.getInstance().setPlayState(PlayState.PAUSE);
@@ -162,14 +160,14 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
             mHandler.removeMessages(HIDE_CTRL);
             mCtrlBar.setVisibility(View.VISIBLE);
             mTimeSeekBar.setVisibility(View.VISIBLE);
-            mCollectView.setVisibility(mFileNode.isFromCollectTable() ? View.GONE : View.VISIBLE);
+            updateCollectView();
             mTitleTextView.setVisibility(View.VISIBLE);
         }
         mVideoLayout.removeAllViews();
     }
 
     public void updateVideoLayout(boolean checkSpeed) {
-    	mVideoLayout.removeAllViews();
+        mVideoLayout.removeAllViews();
         mVideoLayout.addView(mVideoView);
         if (checkSpeed) {
             checkSpeedAndRefreshView(Video_IF.getCarSpeed());
@@ -322,7 +320,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
             if (mCtrlBar.getVisibility() != View.VISIBLE) {
                 mCtrlBar.setVisibility(View.VISIBLE);
                 mTimeSeekBar.setVisibility(View.VISIBLE);
-                mCollectView.setVisibility(mFileNode.isFromCollectTable() ? View.GONE : View.VISIBLE);
+                updateCollectView();
                 mTitleTextView.setVisibility(View.VISIBLE);
                 startHideTimer();
             }
@@ -438,4 +436,15 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         mForbiddenView.setVisibility(showForbiddenViewFlag ? View.VISIBLE : View.GONE);
     }
 
+    private void updateCollectView() {
+        if (mFileNode == null || mCollectView == null) {
+            return;
+        }
+        boolean showFlag = !mFileNode.isFromCollectTable();
+        mCollectView.setVisibility(showFlag ? View.VISIBLE : View.GONE);
+        if (showFlag) {
+            mCollectView.setImageResource(mFileNode.getCollect() == 1 ?
+                    R.drawable.media_collect : R.drawable.media_uncollect);
+        }
+    }
 }
