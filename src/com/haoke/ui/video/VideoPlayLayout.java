@@ -155,14 +155,6 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         if (Video_IF.getInstance().getPlayState() == PlayState.PLAY) {
             savePlayState = true;
             Video_IF.getInstance().setPlayState(PlayState.PAUSE);
-            mPlayImageView.setImageResource(R.drawable.image_play_icon_selector);
-            mTimeSeekBar.updateCurTime();
-            
-            mHandler.removeMessages(HIDE_CTRL);
-            mCtrlBar.setVisibility(View.VISIBLE);
-            mTimeSeekBar.setVisibility(View.VISIBLE);
-            updateCollectView();
-            mTitleTextView.setVisibility(View.VISIBLE);
         }
         mVideoLayout.removeAllViews();
     }
