@@ -176,6 +176,17 @@ public class MediaInterfaceUtil {
     /**
      * 启动音乐主界面。
      */
+    public static void launchLauncherActivity(Context context) {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+        context.startActivity(intent);
+    }
+    
+    /**
+     * 启动音乐主界面。
+     */
     public static void launchMusicMainActivity(Context context) {
         Intent intent = new Intent();
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

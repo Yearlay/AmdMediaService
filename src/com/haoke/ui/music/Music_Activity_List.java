@@ -253,7 +253,9 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         if (getIntent() != null && "com.haoke.data.ModeSwitch".equals(getIntent().getAction())) {
-            MediaInterfaceUtil.launchMusicMainActivity(this);
+            MediaInterfaceUtil.launchLauncherActivity(this);
+            setIntent(null);
+            finish();
             return true;
         }
         return super.onKeyUp(keyCode, event);

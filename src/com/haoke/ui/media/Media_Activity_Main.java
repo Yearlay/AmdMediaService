@@ -20,6 +20,7 @@ import com.haoke.data.ModeSwitch;
 import com.haoke.define.ModeDef;
 import com.haoke.mediaservice.R;
 import com.haoke.ui.music.MusicHomeFragment;
+import com.amd.media.MediaInterfaceUtil;
 import com.amd.radio.Radio_Activity_Main;
 import com.amd.radio.SearchRadioActivity;
 import com.haoke.ui.widget.MyViewPaper;
@@ -40,6 +41,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
     private final int VIEWPAGER_ID_MUSIC = 1;
     private int mCurLabel = ModeDef.AUDIO;
     private MediaPageChangeListener mPageChangeListener = new MediaPageChangeListener();
+    private boolean pressBackToHome = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +101,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
 		Log.d(TAG, "onPause");
 		mRadioFragment.onPause();
 		mHomeFragment.onPause();
+		pressBackToHome = false;
 		super.onPause();
 	}
 
@@ -175,6 +178,9 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
             }
         }
         setCurSource(source, false);
+        if (intent != null && "com.haoke.data.ModeSwitch".equals(intent.getAction())) {
+            pressBackToHome = true;
+        }
     }
     
     private void setCurSource(int curSource) {
@@ -215,6 +221,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
         		mHomeFragment.onResume();
         	}
         }
+        pressBackToHome = false;
     }
     
     private void goHome() {
@@ -360,6 +367,13 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
     public boolean onKeyUp(int keyCode, KeyEvent event) {
     	Log.d(TAG, "onKeyUp keyCode="+keyCode);
         if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (pressBackToHome) {
+            	pressBackToHome = false;
+                MediaInterfaceUtil.launchLauncherActivity(this);
+                setIntent(null);
+                finish();
+                return true;
+            }
             int item = mViewPager.getCurrentItem();
             if (item == VIEWPAGER_ID_MUSIC) {
                 if (mHomeFragment.isPlayFragment()) {
