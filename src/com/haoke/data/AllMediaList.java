@@ -33,6 +33,7 @@ import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.mediaservice.R;
 import com.haoke.scanner.MediaDbHelper;
 import com.haoke.scanner.MediaDbHelper.TransactionTask;
+import com.haoke.service.MediaService;
 import com.haoke.util.DebugLog;
 
 public class AllMediaList {
@@ -848,7 +849,15 @@ public class AllMediaList {
     }
     
     public static void notifyUpdateAppWidget() {
-        MediaApplication.getInstance().sendBroadcast(new Intent("main_activity_update_ui"));
+        try {
+            Handler handler = MediaService.getInstance().getHandler();
+            if (!handler.hasMessages(MediaService.MSG_UPDATE_APPWIDGET)) {
+                Log.d(TAG, "notifyUpdateAppWidget sendBroadcast main_activity_update_ui");
+                handler.sendEmptyMessageDelayed(MediaService.MSG_UPDATE_APPWIDGET, 200);
+            }
+        } catch (Exception e) {
+            MediaApplication.getInstance().sendBroadcast(new Intent("main_activity_update_ui"));
+        }
     }
     
     public void deleteOldCollect(final int fileType) {

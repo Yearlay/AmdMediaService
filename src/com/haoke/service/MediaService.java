@@ -2,6 +2,7 @@ package com.haoke.service;
 
 import com.amd.bt.BT_IF;
 import com.amd.bt.BT_Listener;
+import com.haoke.application.MediaApplication;
 import com.haoke.bean.FileNode;
 import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.btjar.main.BTDef.BTFunc;
@@ -489,13 +490,26 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         return super.onUnbind(intent);
     }
 
+    public static final int MSG_UPDATE_APPWIDGET = 1;
     private Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {
+            int what = msg.what;
+            switch (what) {
+            case MSG_UPDATE_APPWIDGET:
+                removeMessages(what);
+                sendBroadcast(new Intent("main_activity_update_ui"));
+                break;
+            }
         };
     };
-    
     public Handler getHandler() {
         return mHandler;
+    }
+    
+    private Handler mModeHandler = new Handler();
+    /* 此方法只供按mode键和开机进入源时调用  */
+    public Handler getModeHandler() {
+        return mModeHandler;
     }
     
     @Override
@@ -519,7 +533,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
             Log.v(TAG, "onCarDataChange MCU func=" + func + ", data=" + data);
             switch (func) {
             case McuFunc.SOURCE:
-                getHandler().removeCallbacksAndMessages(null);
+                getModeHandler().removeCallbacksAndMessages(null);
                 mMediaIF.sourceChanged(data);
                 break;
             case McuFunc.KEY://按钮处理
@@ -579,7 +593,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     private void checkLaunchFromBoot() {
         final int ms = MediaInterfaceUtil.checkSourceFromBoot(this);
         if (ms >= 0) {
-            getHandler().postDelayed(new Runnable() {
+            getModeHandler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     checkLaunchFromBoot();

@@ -162,7 +162,7 @@ public class MediaInterfaceUtil {
             return;
         }
         if (post) {
-            MediaService.getInstance().getHandler().post(new Runnable() {
+            MediaService.getInstance().getModeHandler().post(new Runnable() {
                 @Override
                 public void run() {
                     Media_IF.getInstance().playDefault(deviceType, FileType.AUDIO);
@@ -212,7 +212,7 @@ public class MediaInterfaceUtil {
      */
     public static void launchSourceActivity(int mode, boolean autoPlay) {
         if (autoPlay) {
-            MediaService.getInstance().getHandler().removeCallbacksAndMessages(null);
+            MediaService.getInstance().getModeHandler().removeCallbacksAndMessages(null);
         }
         Context context = MediaApplication.getInstance();
         // ModeSwitch.instance().setGoingFlag(true);
