@@ -4,7 +4,7 @@
     xmlns:hkui="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingTop="50px"
+    android:paddingTop="20px"
      >
 	
 	<!-- pm or am-->
@@ -159,7 +159,7 @@
 	    android:padding="30px"
 	    android:layout_alignParentLeft="true"
 	    android:layout_marginLeft="40px"
-	    android:layout_marginTop="336px"
+	    android:layout_marginTop="330px"
 	    />
 	
 	<!-- left -->
@@ -182,7 +182,7 @@
 	    android:layout_alignParentRight="true"
 	    android:padding="30px"
 	    android:layout_marginRight="40px"
-	    android:layout_marginTop="336px"
+	    android:layout_marginTop="330px"
 	    />
 	
 	<!-- all list -->
