@@ -6,8 +6,10 @@ import com.amd.media.MediaInterfaceUtil;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.ID3Parse;
 import com.haoke.bean.ImageLoad;
+import com.haoke.bean.StorageBean;
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.data.AllMediaList;
+import com.haoke.data.LoadListener;
 import com.haoke.data.SearchListener;
 import com.haoke.define.MediaDef.DeviceType;
 import com.haoke.mediaservice.R;
@@ -42,7 +44,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class MediaSearchActivity extends Activity implements OnClickListener,
+public class MediaSearchActivity extends Activity implements OnClickListener, LoadListener,
         OnItemClickListener, TextView.OnEditorActionListener, SearchListener, TextWatcher {
     private String TAG = "MediaSearchActivity";
     public static final String INTENT_KEY_FILE_TYPE = "file_type";
@@ -77,8 +79,15 @@ public class MediaSearchActivity extends Activity implements OnClickListener,
         setContentView(R.layout.music_search_activity);
         init();
         initView();
+        AllMediaList.instance(getApplicationContext()).registerLoadListener(this);
     }
     
+    @Override
+    protected void onDestroy() {
+        AllMediaList.instance(getApplicationContext()).unRegisterLoadListener(this);
+        super.onDestroy();
+    }
+
     private void init() {
         Intent intent = getIntent();
         mFileType = intent.getByteExtra(INTENT_KEY_FILE_TYPE, FileType.NULL);
@@ -101,23 +110,23 @@ public class MediaSearchActivity extends Activity implements OnClickListener,
     }
     
     private void updateLabel() {
-    	int resId = -1;
-    	if (mFileType == FileType.AUDIO) {
-    		resId = R.string.pub_music;
+        int resId = -1;
+        if (mFileType == FileType.AUDIO) {
+            resId = R.string.pub_music;
         } else if (mFileType == FileType.IMAGE) {
-        	resId = R.string.pub_image;
+            resId = R.string.pub_image;
         } else if (mFileType == FileType.VIDEO) {
-        	resId = R.string.pub_video;
+            resId = R.string.pub_video;
         }
-    	if (resId != -1) {
+        if (resId != -1) {
             AllMediaList.notifyAllLabelChange(getApplicationContext(), resId);
-    	}
+        }
     }
     
     @Override
     protected void onResume() {
-    	super.onResume();
-    	updateLabel();
+        super.onResume();
+        updateLabel();
     }
 
     @Override
@@ -309,20 +318,20 @@ public class MediaSearchActivity extends Activity implements OnClickListener,
         return true;
     }
 
-	private void doSearch() {
-		String searchStr = mInputEditText.getEditableText().toString();
-		if (!TextUtils.isEmpty(searchStr)) {
-		    if (mFileType == FileType.AUDIO) {
-		        AllMediaList.instance(getApplicationContext()).searchMusic(searchStr, this);
-		    } else if (mFileType == FileType.VIDEO) {
-		        AllMediaList.instance(getApplicationContext()).searchVideo(searchStr, this);
-		    } else if (mFileType == FileType.IMAGE) {
-		        AllMediaList.instance(getApplicationContext()).searchImage(searchStr, this);
-		    }
-		    showDialog(PROGRESS_DIALOG);
-		    mNotifyText.setVisibility(View.INVISIBLE);
-		}
-	}
+    private void doSearch() {
+        String searchStr = mInputEditText.getEditableText().toString();
+        if (!TextUtils.isEmpty(searchStr)) {
+            if (mFileType == FileType.AUDIO) {
+                AllMediaList.instance(getApplicationContext()).searchMusic(searchStr, this);
+            } else if (mFileType == FileType.VIDEO) {
+                AllMediaList.instance(getApplicationContext()).searchVideo(searchStr, this);
+            } else if (mFileType == FileType.IMAGE) {
+                AllMediaList.instance(getApplicationContext()).searchImage(searchStr, this);
+            }
+            showDialog(PROGRESS_DIALOG);
+            mNotifyText.setVisibility(View.INVISIBLE);
+        }
+    }
 
     @SuppressWarnings("deprecation")
     @Override
@@ -342,17 +351,26 @@ public class MediaSearchActivity extends Activity implements OnClickListener,
     
     @Override
     public void onTextChanged(CharSequence s, int start, int before, int count) {
-    	if (TextUtils.isEmpty(mInputEditText.getEditableText().toString())) {
-    		mNotifyText.setVisibility(View.INVISIBLE);
-    		mSearchAdapter.mResultStationList.clear();
+        if (TextUtils.isEmpty(mInputEditText.getEditableText().toString())) {
+            mNotifyText.setVisibility(View.INVISIBLE);
+            mSearchAdapter.mResultStationList.clear();
             mSearchAdapter.notifyDataSetChanged();
-    	}
+        }
     }
 
-	@Override
-	public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
-	@Override
-	public void afterTextChanged(Editable s) {}
+    @Override
+    public void afterTextChanged(Editable s) {}
+
+    @Override
+    public void onLoadCompleted(int deviceType, int fileType) {
+    }
+
+    @Override
+    public void onScanStateChange(StorageBean storageBean) {
+        doSearch();
+    }
 
 }
