@@ -154,6 +154,7 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
     /* widget 接受到广播时触发 */
     @Override
     public void onReceive(Context context, Intent intent) {
+        Log.d(TAG, "onReceive intent="+intent);
         if (intent.hasCategory(Intent.CATEGORY_ALTERNATIVE)) {
             int buttonId = Integer.parseInt(intent.getData().getSchemeSpecificPart());
             switch (buttonId) {

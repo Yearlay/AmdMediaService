@@ -284,12 +284,19 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 			return false;
 		}
 		
-		if (mPlayingFileNode!=null && !mPlayingFileNode.isSamePathAndFrom(node)) {
-			stopRecordTimer();
-			if (mPlayingFileNode.getDeviceType() == node.getDeviceType()) {
-				mAllMediaList.savePlayState(node, 0);
-			} else if (getPlayState() == PlayState.PLAY) {
-				mAllMediaList.savePlayState(mPlayingFileNode, getPosition());
+		if (mPlayingFileNode!=null) {
+			if (!mPlayingFileNode.isSamePathAndFrom(node)) {
+				stopRecordTimer();
+				if (mPlayingFileNode.getDeviceType() == node.getDeviceType()) {
+					mAllMediaList.savePlayState(node, 0);
+				} else if (getPlayState() == PlayState.PLAY) {
+					mAllMediaList.savePlayState(mPlayingFileNode, getPosition());
+				}
+			} else {
+				ArrayList<FileNode> lists = mAllMediaList.getMediaList(node.getDeviceType(), node.getFileType());
+				if (lists.size() == 1) { //fix bug 17652
+					mAllMediaList.savePlayState(node, 0);
+				}
 			}
 		}
 		

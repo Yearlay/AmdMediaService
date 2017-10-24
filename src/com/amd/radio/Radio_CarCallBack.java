@@ -31,6 +31,7 @@ public class Radio_CarCallBack {
 
 			listener.onServiceConn();
 		}
+		AllMediaList.notifyUpdateAppWidget();//收音机绑定成功，需要通知桌面媒体框
 	}
 
 	public void registerCarCallBack(CarService_Listener listener) {
