@@ -13,6 +13,7 @@ import com.amd.bt.BT_IF;
 import com.amd.bt.BT_Listener;
 import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.btjar.main.BTDef.BTFunc;
+import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.define.ModeDef;
 import com.haoke.define.MediaDef.MediaFunc;
 import com.haoke.define.MediaDef.MediaState;
@@ -205,7 +206,15 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 	}
 	
 	private void deviceChanged(int deviceType, int state) {
-		if (mIF.getPlayingDevice() == deviceType) {
+		boolean flag1 = (mIF.getPlayingDevice() == deviceType);
+		boolean flag2 = false;
+		if (mIF.getPlayingDevice() == DeviceType.COLLECT && mPlayLayout.getFileNode() != null) {
+			if (mPlayLayout.getFileNode().getFromDeviceType() == deviceType) {
+				flag2 = true;
+			}
+		}
+		
+		if (flag1 || flag2) {
 			if (state == 0) { // 无设备
 				showDeviceOutDialog();
 			} 

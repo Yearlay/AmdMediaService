@@ -17,9 +17,6 @@ import com.haoke.mediaservice.R;
 import com.haoke.ui.photoview.Media_Photo_View;
 import com.haoke.ui.photoview.PhotoViewAttacher.OnMatrixChangedListener;
 import com.haoke.ui.photoview.PhotoViewAttacher.OnPhotoTapListener;
-import com.haoke.ui.widget.CustomDialog;
-import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
-import com.haoke.util.DebugLog;
 import com.haoke.window.HKWindowManager;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
@@ -30,7 +27,6 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener;
 import android.graphics.Bitmap;
 import android.graphics.RectF;
 import android.os.Bundle;
@@ -83,7 +79,7 @@ public class PhotoPlayFragment extends Fragment implements OnClickListener,
     private ArrayList<FileNode> mPhotoList = new ArrayList<FileNode>();
     
     // 更新列表
-    public void updataList(ArrayList<FileNode> dataList, int deviceType) {
+    public void updateList(ArrayList<FileNode> dataList, int deviceType) {
         mPhotoList.clear();
         mPhotoList.addAll(dataList);
         mDeviceType = deviceType;

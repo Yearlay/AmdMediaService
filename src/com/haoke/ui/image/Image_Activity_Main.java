@@ -51,7 +51,6 @@ public class Image_Activity_Main extends FragmentActivity implements
     
     private PhotoListFragment mListFragment = null;
     private PhotoPlayFragment mPlayFragment = null;
-    private PhotoDetailFragment mDetailsFragment = null;
     
     private FrameLayout mLayout = null;
     
@@ -76,7 +75,6 @@ public class Image_Activity_Main extends FragmentActivity implements
         mFragmentManager = this.getSupportFragmentManager();
         mListFragment = new PhotoListFragment();
         mPlayFragment = new PhotoPlayFragment();
-        mDetailsFragment = new PhotoDetailFragment();
         mLayout = (FrameLayout) findViewById(R.id.image_fragment);
         
         mRadioGroup = (RadioGroup) findViewById(R.id.image_tab_group);
@@ -144,15 +142,7 @@ public class Image_Activity_Main extends FragmentActivity implements
         mImageList.addAll(AllMediaList.instance(getApplicationContext())
                 .getMediaList(deviceType, FileType.IMAGE));
         mListFragment.updataList(mImageList, storageBean);
-        mPlayFragment.updataList(mImageList, deviceType);
-        if (mDetailsFragment.getFileNode() == null) {
-            int position = mPlayPreferences.getImageCurrentPosition();
-            position = position < 0 ? 0 : position;
-            position = position >= mImageList.size() ? mImageList.size() - 1 : position; 
-            if (position < mImageList.size() && position >= 0) {
-                mDetailsFragment.setFileNode(mImageList.get(position));
-            }
-        }
+        mPlayFragment.updateList(mImageList, deviceType);
         if (mImageList.size() == 0 && mListFragment.isEditMode()) {
             cancelEdit();
         }
@@ -300,7 +290,7 @@ public class Image_Activity_Main extends FragmentActivity implements
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             Fragment curFragment = getCurFragment();
-            if (curFragment == mDetailsFragment || curFragment == mPlayFragment) {
+            if (curFragment == mPlayFragment) {
                 onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
                 return true;
             }
@@ -381,8 +371,6 @@ public class Image_Activity_Main extends FragmentActivity implements
         mPlayPreferences.saveImageShowFragment(index);
         if (index == SWITCH_TO_PLAY_FRAGMENT) {
             replaceFragment(mPlayFragment);
-        } else if (index == SWITCH_TO_DETAIL_FRAGMENT) {
-            replaceFragment(mDetailsFragment);
         } else {
             replaceFragment(mListFragment);
         }

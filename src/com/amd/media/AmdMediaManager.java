@@ -793,6 +793,16 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 						setRepeatMode(RepeatMode.CIRCLE);//插拔U盘，断随机模式记忆
 					}
 				}
+			} else if (mPlayingDeviceType == DeviceType.COLLECT && mPlayingFileNode != null) {
+				if (mPlayingFileNode.getFromDeviceType() == storageBean.getDeviceType()) {
+					if (!storageBean.isMounted()) {
+						resetMediaPlayer();
+						resetPlayingData(true);
+						if (mRepeatMode == RepeatMode.RANDOM) {
+							setRepeatMode(RepeatMode.CIRCLE);//插拔U盘，断随机模式记忆
+						}
+					}
+				}
 			}
 		}
 		

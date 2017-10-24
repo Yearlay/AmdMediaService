@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.amd.bt.BTMusic_IF;
 import com.amd.bt.BT_IF;
 import com.amd.media.MediaInterfaceUtil;
+import com.haoke.bean.FileNode;
 import com.haoke.constant.MediaUtil;
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.data.AllMediaList;
@@ -50,6 +51,10 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 	private int mTextFormat = 1; //1为分秒，2为时分秒
 	
 	private Media_IF mIF = Media_IF.getInstance();
+	private FileNode mFileNode;
+	public FileNode getFileNode() {
+		return mFileNode;
+	}
 	
 	private boolean isBTPlay = false;
 	
@@ -370,6 +375,7 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 			removeMessages(what);
 			switch (msg.what) {
 			case MSG_UPDATE_TIME:
+				mFileNode = mIF.getPlayItem();
 				int curr = mIF.getPosition();
 				Log.d(TAG, "mTimeHandler MSG_UPDATE_TIME curr="+curr);
 				mTimeSeekBar.setProgress(curr);
