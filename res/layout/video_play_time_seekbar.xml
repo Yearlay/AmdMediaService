@@ -50,7 +50,7 @@
     <RelativeLayout 
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20px"
+        android:layout_marginTop="130px"
         android:layout_below="@id/track_view" >
         <View 
             android:layout_width="match_parent"
