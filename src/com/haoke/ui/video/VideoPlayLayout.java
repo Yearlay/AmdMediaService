@@ -73,7 +73,8 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         }
         updateVideoLayout(true);
         if (mCtrlBar.getVisibility() == View.VISIBLE) {
-            startHideTimer();
+            mHandler.removeMessages(HIDE_CTRL);
+            mHandler.sendEmptyMessageDelayed(HIDE_CTRL, DELAY_TIME);
         }
     }
     
