@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.util.Log;
+import android.view.KeyEvent;
 
 import com.amd.bt.BTMusic_IF;
 import com.amd.bt.BT_IF;
@@ -35,6 +36,8 @@ public class MediaInterfaceUtil {
     private static int sMediaPlayStateRecord = ModeDef.NULL;
     
     private static AudioFocus mAudioFocus;
+    private static boolean sMuteKey_MuteState = false;
+    private static boolean sPowerKey_MuteState = false;
     
     public static void resetMediaPlayStateRecord(int source) {
         Log.d(TAG, "resetMediaPlayStateRecord old is "+sMediaPlayStateRecord + "; caller is "+source);
@@ -68,13 +71,25 @@ public class MediaInterfaceUtil {
         return ret;
     }
     
-    public static void setMuteRecordPlayState() {
+    public static void setMuteRecordPlayState(int key) {
         if (true) {
             if (mAudioFocus == null) {
                 mAudioFocus = new AudioFocus(MediaApplication.getInstance());
                 mAudioFocus.registerListener(mAudioFocusListener);
             }
-            mAudioFocus.requestTransientAudioFocus(true);
+            if (key == KeyEvent.KEYCODE_MUTE) {
+                sMuteKey_MuteState = Media_IF.getMute();
+                if (sMuteKey_MuteState) {
+                    mAudioFocus.requestTransientAudioFocus(true);
+                }
+            } else if (key == KeyEvent.KEYCODE_POWER) {
+                if (hasAudioFocus()) {
+                    
+                } else {
+                    sPowerKey_MuteState = true;
+                    mAudioFocus.requestTransientAudioFocus(true);
+                }
+            }
             return;
         }
         resetMediaPlayStateRecord(); 
@@ -106,11 +121,22 @@ public class MediaInterfaceUtil {
         Log.d(TAG, "setMute mute="+mute+"; sMediaPlayStateRecord="+sMediaPlayStateRecord);
     }
     
-    public static void cancelMuteRecordPlayState() {
-        Log.d(TAG, "cancelMuteRecordPlayState");
+    public static void cancelMuteRecordPlayState(int key) {
+        Log.d(TAG, "cancelMuteRecordPlayState sMuteKey_MuteState="+sMuteKey_MuteState+"; sPowerKey_MuteState="+sPowerKey_MuteState);
         if (true) {
             if (hasAudioFocus()) {
-                mAudioFocus.requestTransientAudioFocus(false);
+                Log.d(TAG, "cancelMuteRecordPlayState hasAudioFocus");
+                if (key == KeyEvent.KEYCODE_MUTE) {
+                    if (sMuteKey_MuteState) {
+                        sMuteKey_MuteState = false;
+                        mAudioFocus.requestTransientAudioFocus(false);
+                    }
+                } else if (key == KeyEvent.KEYCODE_POWER) {
+                    if (sPowerKey_MuteState) {
+                        sPowerKey_MuteState = false;
+                        mAudioFocus.requestTransientAudioFocus(false);
+                    }
+                }
             }
             return;
         }
@@ -143,6 +169,8 @@ public class MediaInterfaceUtil {
                 if (Media_IF.getMute()) {
                     Media_IF.cancelMute();
                 }
+                sMuteKey_MuteState = false;
+                sPowerKey_MuteState = false;
                 break;
             }
         }

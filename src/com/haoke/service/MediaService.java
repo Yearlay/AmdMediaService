@@ -51,6 +51,7 @@ import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.widget.Toast;
 
 public class MediaService extends Service implements Media_CarListener, MediaScannerListner,
@@ -540,9 +541,9 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
                 break;
             case McuFunc.POWER_STATE:
                 if (data == PowerState.POWER_OFF) {
-                    MediaInterfaceUtil.setMuteRecordPlayState();
+                    MediaInterfaceUtil.setMuteRecordPlayState(KeyEvent.KEYCODE_POWER);
                 } else if (data == PowerState.POWER_ON) {
-                    MediaInterfaceUtil.cancelMuteRecordPlayState();
+                    MediaInterfaceUtil.cancelMuteRecordPlayState(KeyEvent.KEYCODE_POWER);
                 }
                 break;
             }
@@ -563,9 +564,9 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         } else if (mode == ModeDef.EQ) {
             if (func == EQFunc.MUTE) {
                 if (data == 0) {  //取消静音
-                    MediaInterfaceUtil.cancelMuteRecordPlayState();
+                    MediaInterfaceUtil.cancelMuteRecordPlayState(KeyEvent.KEYCODE_MUTE);
                 } else { //静音
-                    MediaInterfaceUtil.setMuteRecordPlayState();
+                    MediaInterfaceUtil.setMuteRecordPlayState(KeyEvent.KEYCODE_MUTE);
                 }
             }
         }
