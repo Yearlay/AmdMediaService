@@ -189,12 +189,12 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
         if ("main_activity_update_ui".equals(intent.getAction())) {
             if (intent.getBooleanExtra("bt_disconnect", false)) {
                 if (Media_IF.getCurSource() == ModeDef.BT) {
-                    Media_IF.setCurSource(ModeDef.AUDIO);
+                    Media_IF.setCurSource(ModeDef.NULL);
                 }
             }
             if (intent.getBooleanExtra("bt_connected", false)) {
                 if (Media_IF.getCurSource() != ModeDef.AUDIO) {
-                    Media_IF.setCurSource(ModeDef.BT);
+                    // Media_IF.setCurSource(ModeDef.BT);
                 }
             }
             RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.media_widget_provider);
@@ -251,10 +251,10 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
                 Radio_IF.getInstance().setEnable(false);
             }
             if (Media_IF.sLastSource == ModeDef.BT) {
-                Media_IF.setCurSource(ModeDef.BT);
+                // Media_IF.setCurSource(ModeDef.BT);
                 BT_IF.getInstance().music_play();
             } else {
-                Media_IF.setCurSource(ModeDef.AUDIO);
+                // Media_IF.setCurSource(ModeDef.AUDIO);
                 if (Media_IF.getInstance().getPlayingFileType() == FileType.AUDIO) {
                     // 只有是音乐的情况下，才会播放。
                     Media_IF.getInstance().setPlayState(PlayState.PLAY);
@@ -289,10 +289,10 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
                 Radio_IF.getInstance().setEnable(false);
             }
             if (Media_IF.sLastSource == ModeDef.BT) {
-                Media_IF.setCurSource(ModeDef.BT);
+                //Media_IF.setCurSource(ModeDef.BT);
                 BT_IF.getInstance().music_play();
             } else {
-                Media_IF.setCurSource(ModeDef.AUDIO);
+                //Media_IF.setCurSource(ModeDef.AUDIO);
                 FileNode fileNode = getFileNode(context);
                 if (fileNode != null) {
                     Media_IF.getInstance().setAudioDevice(fileNode.getDeviceType());
@@ -324,13 +324,13 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
                 Radio_IF.getInstance().setEnable(false);
             }
             if (Media_IF.sLastSource == ModeDef.BT) {
-                Media_IF.setCurSource(ModeDef.BT);
+                // Media_IF.setCurSource(ModeDef.BT);
                 BT_IF.getInstance().music_play();
             } else {
-                Media_IF.setCurSource(ModeDef.AUDIO);
+                // Media_IF.setCurSource(ModeDef.AUDIO);
                 FileNode fileNode = getFileNode(context);
                 if (fileNode != null) {
-                    Media_IF.setCurSource(ModeDef.AUDIO);
+                    // Media_IF.setCurSource(ModeDef.AUDIO);
                     Media_IF.getInstance().setAudioDevice(fileNode.getDeviceType());
                     if (!Media_IF.getInstance().playNext()) {
                         Media_IF.getInstance().changePlayState();
@@ -348,8 +348,8 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
         } else if (Media_IF.getCurSource() == ModeDef.AUDIO) {
             Media_IF.getInstance().setPlayState(PlayState.PAUSE);
         }
-        Media_IF.setCurSource(ModeDef.RADIO);
-        Radio_IF.getInstance().requestAudioFocus(true);
+        // Media_IF.setCurSource(ModeDef.RADIO);
+        // Radio_IF.getInstance().requestAudioFocus(true);
         boolean radioPlay = Radio_IF.getInstance().isEnable();
         Radio_IF.getInstance().setEnable(!radioPlay);
     }

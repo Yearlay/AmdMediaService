@@ -553,9 +553,7 @@ public class Radio_IF extends CarService_IF {
 	}
 	
 	private void setRadioSource() {
-		if (getCurSource() != ModeDef.RADIO) {
-			setCurSource(ModeDef.RADIO);
-		}
+		setCurSource(ModeDef.RADIO);
 	}
 	
 	private RadioDatabaseHelper dbHelper;
