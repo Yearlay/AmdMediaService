@@ -72,6 +72,9 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     private BT_IF mBTIF = null;
     private Radio_IF mRadioIF = null;
     private MediaScanner mScanner;
+    
+    private boolean usb1EjectFlag;
+    private boolean usb2EjectFlag;
 
     public static MediaService getInstance() {
         return mSelf;
@@ -146,18 +149,47 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         case ScanType.SCAN_ALL: // 扫描所有已经挂载的磁盘。
             // mScanner.beginScanningAllStorage();
             break;
-        case ScanType.SCAN_STORAGE: // 指定磁盘进行扫描。
-            mScanner.beginScanningStorage(intent.getStringExtra(ScanType.SCAN_FILE_PATH));
+        case ScanType.SCAN_STORAGE: { // 指定磁盘进行扫描。
+            String devicePath = intent.getStringExtra(ScanType.SCAN_FILE_PATH);
+            if (MediaUtil.DEVICE_PATH_USB_1.equals(devicePath)) {
+                if (usb1EjectFlag) {
+                    mHandler.removeMessages(REMOVE_STORAGE);
+                    usb1EjectFlag = false;
+                } else {
+                    mScanner.beginScanningStorage(devicePath);
+                }
+            }
+            
+            if (MediaUtil.DEVICE_PATH_USB_2.equals(devicePath)) {
+                if (usb2EjectFlag) {
+                    mHandler.removeMessages(REMOVE_STORAGE);
+                    usb2EjectFlag = false;
+                } else {
+                    mScanner.beginScanningStorage(devicePath);
+                }
+            }
+            
+            if ("/storage/internal_sd".equals(devicePath)) {
+            	mScanner.beginScanningStorage(devicePath);
+            }
             break;
+        }
         case ScanType.SCAN_DIRECTORY: // 目前不支持。
             break;
         case ScanType.SCAN_FILE: // 目前不支持。
             break;
-        case ScanType.REMOVE_STORAGE: // 磁盘拔出的处理过程。
+        case ScanType.REMOVE_STORAGE:{ // 磁盘拔出的处理过程。
             String devicePath = intent.getStringExtra(ScanType.SCAN_FILE_PATH);
-            mScanner.removeStorage(devicePath);
-            // showEjectToast(devicePath);
+            Message msg = mHandler.obtainMessage(REMOVE_STORAGE, devicePath);
+            mHandler.sendMessageDelayed(msg, 1000);
+            if (MediaUtil.DEVICE_PATH_USB_1.equals(devicePath)) {
+                usb1EjectFlag = true;
+            }
+            if (MediaUtil.DEVICE_PATH_USB_2.equals(devicePath)) {
+                usb2EjectFlag = true;
+            }
             break;
+        }
         }
     }
     
@@ -492,14 +524,25 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     }
 
     public static final int MSG_UPDATE_APPWIDGET = 1;
+    public static final int REMOVE_STORAGE = 2;
     private Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {
             int what = msg.what;
             switch (what) {
-            case MSG_UPDATE_APPWIDGET:
-                removeMessages(what);
-                sendBroadcast(new Intent("main_activity_update_ui"));
-                break;
+                case MSG_UPDATE_APPWIDGET:
+                    removeMessages(what);
+                    sendBroadcast(new Intent("main_activity_update_ui"));
+                    break;
+                case REMOVE_STORAGE:
+                    String devicePath = (String) msg.obj;
+                    if (MediaUtil.DEVICE_PATH_USB_1.equals(devicePath)) {
+                        usb1EjectFlag = false;
+                    }
+                    if (MediaUtil.DEVICE_PATH_USB_2.equals(devicePath)) {
+                        usb2EjectFlag = false;
+                    }
+                    mScanner.removeStorage(devicePath);
+                    break;
             }
         };
     };
@@ -578,7 +621,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     
     private void handleModeKey() {
         if (!ModeSwitch.instance().isGoingFlag()) {
-        	long start = System.currentTimeMillis();
+            long start = System.currentTimeMillis();
             launchSourceActivity(ModeSwitch.instance().getNextMode(getApplicationContext()), true);
             long end = System.currentTimeMillis();
             Log.d(TAG, "handleModeKey consume time="+(end-start)+"ms");
