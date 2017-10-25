@@ -214,6 +214,9 @@ public class Media_IF extends CarService_IF {
 			DebugLog.d("Yearlay", "sourceChanged from: " + lastSource + " && to: " + source);
 			if (lastSource != source) {
 				sLastSource = lastSource;
+				if (source == ModeDef.NULL && sLastSource == ModeDef.BT) {
+					sLastSource = ModeDef.NULL;
+				}
 				Log.d(TAG, "setCurSource source="+source);
 				//return getInstance().mServiceIF.mcu_setCurSource(source);
 				boolean success = getInstance().setSourceToSettings(source);

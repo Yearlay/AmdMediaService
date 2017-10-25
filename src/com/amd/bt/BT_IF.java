@@ -48,9 +48,7 @@ public class BT_IF extends BTService_IF {
 	}
 	
 	private void setBTSource() {
-		if (BTMusic_IF.getInstance().getCurSource() != ModeDef.BT) {
-			BTMusic_IF.getInstance().setCurSource(ModeDef.BT);
-		}
+		BTMusic_IF.getInstance().setCurSource(ModeDef.BT);
 	}
 
 	// 设置上下文

@@ -203,7 +203,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         DebugLog.d(TAG, "operateMusic yesOperate="+yesOperate+"; playState="+playState);
         if (yesOperate) {
             if (playState != PlayState.PLAY) {
-                Media_IF.setCurSource(ModeDef.AUDIO);
+                // Media_IF.setCurSource(ModeDef.AUDIO);
                 mMediaIF.setPlayState(PlayState.PLAY);
             }
             launchMusicPlayActivity();
