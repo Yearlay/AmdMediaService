@@ -12,7 +12,10 @@ public class VideoMediaButtonReceiver extends BroadcastReceiver {
     
     @Override
     public void onReceive(Context context, Intent intent) {
-    	Log.d(TAG, "onReceive do nothing");
-    	//AmdMediaButtonReceiver.onMediaButtonReceive(context, intent);
+        boolean videoShow = Video_IF.getInstance().getVideoShow();
+        Log.d(TAG, "onReceive videoShow="+videoShow);
+        if (videoShow) {
+            AmdMediaButtonReceiver.onMediaButtonReceive(context, intent);
+        }
     }
 }
