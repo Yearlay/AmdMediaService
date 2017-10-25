@@ -86,6 +86,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	protected ComponentName mComponentName;
 	
 	protected int mMediaMode = ModeDef.MEDIA;
+	private boolean mPrevFlag = false;
 
 	public AmdMediaManager() {
 		mContext = MediaApplication.getInstance();
@@ -325,6 +326,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	public boolean pre(boolean force) {
 		Log.v(TAG, "pre force="+force);
 
+		mPrevFlag = true;
 //		setPlayingData(mDeviceType, mFileType, false);
 		int pos = 0;
 		int repeatMode = ((mPlayingFileType == FileType.AUDIO) ? mRepeatMode : RepeatMode.CIRCLE);
@@ -371,6 +373,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	public boolean next(boolean force) {
 		Log.v(TAG, "next force="+force+"; mRepeatMode="+mRepeatMode);
 
+		mPrevFlag = false;
 //		setPlayingData(mDeviceType, mFileType, false);
 		int pos = 0;
 		int repeatMode = ((mPlayingFileType == FileType.AUDIO) ? mRepeatMode : RepeatMode.CIRCLE);
@@ -569,6 +572,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		clearPlayRecord();
 		mMediaPlayer.stop();
 		mPlayState = PlayState.STOP;
+		mPrevFlag = false;
 
 		onDataChanged(mMediaMode, MediaFunc.PLAY_OVER, 0, 0);
 	}
@@ -607,9 +611,9 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	public void onPrepared() {
 		Log.v(TAG, "onPrepared");
 		mErrorCount = 0;
+		mPrevFlag = false;
 		//mBakMediaScanner.readId3(); // 准备好媒体信息
 
-		Log.v(TAG, "onPrepared mIsPlayDefault=" + mIsPlayDefault);
 		// 恢复之前的播放时间
 		if (true || mIsPlayDefault) {
 			mIsPlayDefault = false;
@@ -630,10 +634,8 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		}
 		mPlayState = PlayState.PLAY;
 
-		Log.v(TAG, "onPrepared onDataChanged");
 		onDataChanged(mMediaMode, MediaFunc.PREPARED,
 				mMediaPlayer.getMediaState(), 0);
-		Log.v(TAG, "onPrepared over");
 	}
 
 	// 播放结束
@@ -665,7 +667,11 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 			if (mErrorCount < 5) {
 				mErrorCount++;
 				if (getPlayingFileType() != FileType.VIDEO) {
-					next(true); // 自动播放下一曲
+					if (mPrevFlag) {
+						pre(true); // 自动播放上一曲						
+					} else {
+						next(true); // 自动播放下一曲
+					}
 				}
 			} else {
 				Log.v(TAG, "onError playOver");
@@ -685,7 +691,13 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		if (!mScanMode) {
 			if (mErrorCount < 5) {
 				mErrorCount++;
-				next(true); // 自动播放下一曲
+				if (getPlayingFileType() != FileType.VIDEO) {
+					if (mPrevFlag) {
+						pre(true); // 自动播放上一曲						
+					} else {
+						next(true); // 自动播放下一曲
+					}
+				}
 			} else {
 				Log.v(TAG, "onIOException playOver");
 				playOver();
