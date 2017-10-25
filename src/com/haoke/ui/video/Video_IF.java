@@ -35,6 +35,7 @@ public class Video_IF {
 	private Media_CallBack mMediaCallBack = null; // MediaService的回调处理
 	private IMediaCallBack.Stub mIMediaCallBack = null;
 	private VideoManager mMediaManager = null;
+	private boolean mVideoShow = false;
 
 	private Video_IF() {
 		mMediaManager = new VideoManager();
@@ -306,6 +307,14 @@ public class Video_IF {
 	// 获取播放状态（被抢焦点前）
 	public int getRecordPlayState() {
 		return mMediaManager.getRecordPlayState();
+	}
+	
+	public void setVideoShow(boolean show) {
+		mVideoShow = show;
+	}
+	
+	public boolean getVideoShow() {
+		return mVideoShow;
 	}
 	
 	//-------------------------------仪表接口开始-----------------------------
