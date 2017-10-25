@@ -508,10 +508,9 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 			if (pos > total - 1) {
 				pos = 0;
 			}
+			mIF.play(pos);
 			if (pos == mScanStartPos) {
 				exitScanMode();
-			} else {
-				mIF.play(pos);
 			}
     	}
     }
