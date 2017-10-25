@@ -108,6 +108,9 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 		if (mPlayLayout != null) {
 			if (mPlayLayout.getVisibility() == View.VISIBLE) {
 				mPlayLayout.onResume();
+				if (mPlayLayout.getFileNode() != null && !mPlayLayout.getFileNode().isExist(getContext())) {
+					goHome();
+				}
 			} else {
 				mPlayLayout.onPause();
 			}

@@ -182,6 +182,9 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
     	} else {
     		onPause();
     	}
+    	if (mIF.getPlayItem() != null) {
+    		mFileNode = mIF.getPlayItem();
+    	}
 	}
 	
 	@Override
