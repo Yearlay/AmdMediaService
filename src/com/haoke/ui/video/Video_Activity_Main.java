@@ -278,6 +278,17 @@ public class Video_Activity_Main extends FragmentActivity implements
             mPlayLayout.updateTimeBar();
         }
         mErrorCount = 0;
+        
+        FileNode fileNode = mIF.getPlayItem();
+        int position = 0;
+        if (fileNode != null && mVideoList.size() > 0) {
+        	for (; position < mVideoList.size(); position++) {
+				if (mVideoList.get(position).isSame(fileNode)) {
+					break;
+				}
+			}
+        }
+        updateCurPosition(position);
     }
 
     private void onCompletion() {}
