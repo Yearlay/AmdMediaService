@@ -132,6 +132,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     }
 
     public void onResume() {
+        Video_IF.getInstance().setVideoShow(true);
         if (mFileNode != null) {
             mTitleTextView.setText(mFileNode.getFileName());
         }
@@ -144,11 +145,15 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
             }
         }
         updateVideoLayout(true);
+        if (!Video_IF.getInstance().isPlayState()) {
+            slaverShow(true);
+        }
     }
     
     private boolean savePlayState = false;
 
     public void onPause() {
+        Video_IF.getInstance().setVideoShow(false);
         if (mContext == null) {
             return;
         }

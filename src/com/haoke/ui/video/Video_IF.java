@@ -248,6 +248,11 @@ public class Video_IF {
 		}
 	}
 	
+	// 获取是否播放状态
+	public boolean isPlayState() {
+		return getPlayState() == PlayState.PLAY ? true : false;
+	}
+	
 	// 获取播放状态
 	public int getPlayState() {
 		try {
@@ -311,6 +316,9 @@ public class Video_IF {
 	
 	public void setVideoShow(boolean show) {
 		mVideoShow = show;
+		if (!show) {
+			setRecordPlayState(PlayState.STOP);
+		}
 	}
 	
 	public boolean getVideoShow() {

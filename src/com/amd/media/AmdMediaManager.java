@@ -985,9 +985,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	public void audioFocusChanged(int state) {
 		int playState = getPlayState();
 		int recordPlayState = getRecordPlayState();
-		Log.v(TAG, "HMI------------audioFocusChanged state=" + state);
-		Log.v(TAG, "HMI------------audioFocusChanged playState=" + playState);
-		Log.v(TAG, "HMI------------audioFocusChanged recordPlayState=" + recordPlayState);
+		Log.v(TAG, "HMI------------audioFocusChanged state=" + state + "; playState="+playState+"; recordPlayState="+recordPlayState);
 
 		switch (state) {
 		case PlayState.PLAY:
