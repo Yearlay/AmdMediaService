@@ -104,7 +104,7 @@ public class Video_Activity_Main extends FragmentActivity implements
         mCopyTextView = (TextView) mEditView.findViewById(R.id.copy_to_local);
         mCopyTextView.setOnClickListener(this);
 
-        Media_IF.getInstance().setVideoActivity(this);
+        // Media_IF.getInstance().setVideoActivity(this);
         
         registerReceiver(mOperateAppReceiver, new IntentFilter(VRIntent.ACTION_OPERATE_VIDEO));
         
