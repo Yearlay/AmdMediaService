@@ -343,7 +343,7 @@ public class MediaInterfaceUtil {
                 }
             }
             int fileType = (source == ModeDef.AUDIO ? FileType.AUDIO : FileType.VIDEO);
-            boolean playing = allMediaList.getPlayState(fileType);
+            boolean playing = true;//allMediaList.getPlayState(fileType);
             Log.d(TAG, "checkSourceFromBoot LastDeviceType="+sLastDeviceType+"; playing="+playing);
             if (playing && sLastDeviceType != DeviceType.NULL) {
                 StorageBean storage = allMediaList.getStoragBean(sLastDeviceType);
