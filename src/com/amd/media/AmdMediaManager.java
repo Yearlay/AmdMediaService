@@ -158,15 +158,24 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
     
     private static final int MSG_DELAY_PLAYTIME = 3000;
     private static final int MSG_SAVE_PLAYTIME = 1;
+    private static final int MSG_SAVE_PLAYSTATE = 2;
     private Handler mHandler = new Handler() {
     	public void handleMessage(android.os.Message msg) {
     		switch (msg.what) {
 			case MSG_SAVE_PLAYTIME:
 				int time = getPosition();
-				mAllMediaList.savePlayState(getPlayItem(), time);
-				Log.d(TAG, "MSG_SAVE_PLAYTIME time="+time+"; mPlayingPos="+mPlayingPos+"; mPlayingListSize="+mPlayingListSize);
+				mAllMediaList.savePlayTime(getPlayItem(), time);
+				Log.d(TAG, "mHandler MSG_SAVE_PLAYTIME time="+time+"; mPlayingPos="+mPlayingPos+"; mPlayingListSize="+mPlayingListSize);
 				removeMessages(MSG_SAVE_PLAYTIME);
 				sendEmptyMessageDelayed(MSG_SAVE_PLAYTIME, MSG_DELAY_PLAYTIME);
+				break;
+			case MSG_SAVE_PLAYSTATE:
+				if (!hasMessages(msg.what)) {
+					int fileType = msg.arg1;
+					boolean playing = (msg.arg2 == 0 ? false : true);
+					Log.d(TAG, "mHandler  MSG_SAVE_PLAYSTATE fileType="+fileType+"; playing="+playing);
+					mAllMediaList.savePlayState(fileType, playing);
+				}
 				break;
 			}
     	};
@@ -187,7 +196,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	public boolean playDefault(int deviceType, int fileType) {
 		Log.v(TAG, "playDefault deviceType="+deviceType+"; fileType="+fileType);
 
-		FileNode node = mAllMediaList.getPlayState(deviceType, fileType);
+		FileNode node = mAllMediaList.getPlayTime(deviceType, fileType);
 		ArrayList<FileNode> lists = mAllMediaList.getMediaList(deviceType, fileType);
 		if (node == null) {
 			if (lists.size() > 0) {
@@ -289,14 +298,14 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 			if (!mPlayingFileNode.isSamePathAndFrom(node)) {
 				stopRecordTimer();
 				if (mPlayingFileNode.getDeviceType() == node.getDeviceType()) {
-					mAllMediaList.savePlayState(node, 0);
+					mAllMediaList.savePlayTime(node, 0);
 				} else if (getPlayState() == PlayState.PLAY) {
-					mAllMediaList.savePlayState(mPlayingFileNode, getPosition());
+					mAllMediaList.savePlayTime(mPlayingFileNode, getPosition());
 				}
 			} else {
 				ArrayList<FileNode> lists = mAllMediaList.getMediaList(node.getDeviceType(), node.getFileType());
 				if (lists.size() == 1) { //fix bug 17652
-					mAllMediaList.savePlayState(node, 0);
+					mAllMediaList.savePlayTime(node, 0);
 				}
 			}
 		}
@@ -582,6 +591,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	public void onStart() {
 		Log.v(TAG, "onStart");
 		startRecordTimer(); // 开始播放时间记录
+		mHandler.obtainMessage(MSG_SAVE_PLAYSTATE, mPlayingFileType, 1).sendToTarget();
 	}
 
 	// 播放暂停
@@ -589,6 +599,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	public void onPause() {
 		Log.v(TAG, "onPause");
 		stopRecordTimer(); // 停止播放时间记录
+		mHandler.obtainMessage(MSG_SAVE_PLAYSTATE, mPlayingFileType, 0).sendToTarget();
 	}
 
 	// 播放停止
@@ -596,6 +607,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	public void onStop() {
 		Log.v(TAG, "onStop");
 		stopRecordTimer(); // 停止播放时间记录
+		mHandler.obtainMessage(MSG_SAVE_PLAYSTATE, mPlayingFileType, 0).sendToTarget();
 	}
 
 	// 换曲/歌曲已播放
@@ -618,7 +630,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		if (true || mIsPlayDefault) {
 			mIsPlayDefault = false;
 
-			FileNode fileNode = mAllMediaList.getPlayState(mPlayingDeviceType, mPlayingFileType);
+			FileNode fileNode = mAllMediaList.getPlayTime(mPlayingDeviceType, mPlayingFileType);
 			if (mPlayingFileNode.isSamePathAndFrom(fileNode)) {
 				int playTime = 0;
 				if (fileNode != null) {
@@ -629,8 +641,6 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 					setPosition(playTime);
 				}
 			}
-		} else {
-			mAllMediaList.savePlayState(getPlayItem(), 0);
 		}
 		mPlayState = PlayState.PLAY;
 
@@ -727,7 +737,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	private void clearPlayRecord() {
 		Log.d(TAG, "clearPlayRecord mPlayingDeviceType="+mPlayingDeviceType+"; mPlayingFileType="+mPlayingFileType);
 		stopRecordTimer();
-		mAllMediaList.clearPlayState(mPlayingDeviceType, mPlayingFileType);
+		mAllMediaList.clearPlayTime(mPlayingDeviceType, mPlayingFileType);
 	}
 	
     // 准备好随机列表
@@ -1116,7 +1126,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 							position = getPlayingPos();
 						}
 						if (position == -1) {
-							playFileNode = mAllMediaList.getPlayState(deviceType, FileType.AUDIO);
+							playFileNode = mAllMediaList.getPlayTime(deviceType, FileType.AUDIO);
 						}
 						if (playFileNode== null) {
 							position = position <= 0 ? 0 : position;

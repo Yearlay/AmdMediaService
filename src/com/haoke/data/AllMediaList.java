@@ -416,9 +416,13 @@ public class AllMediaList {
         return PlayStateSharedPreferences.instance(mContext).getLastDeviceType();
     }
     
-    public FileNode getPlayState(int deviceType, int fileType) {
+    public int getLastDeviceTypeVideo() {
+        return PlayStateSharedPreferences.instance(mContext).getLastDeviceTypeVideo();
+    }
+    
+    public FileNode getPlayTime(int deviceType, int fileType) {
         FileNode fileNode = null;
-        String valueStr = PlayStateSharedPreferences.instance(mContext).getPlayState(deviceType, fileType);
+        String valueStr = PlayStateSharedPreferences.instance(mContext).getPlayTime(deviceType, fileType);
         ArrayList<FileNode> list = getMediaList(deviceType, fileType);
         if (list.size() > 0) {
             if ("".equals(valueStr)) {
@@ -439,15 +443,23 @@ public class AllMediaList {
         return fileNode;
     }
     
-    public void savePlayState(FileNode fileNode, int playTime) {
+    public void savePlayTime(FileNode fileNode, int playTime) {
         if (fileNode != null) {
             fileNode.setPlayTime(playTime);
-            PlayStateSharedPreferences.instance(mContext).savePlayState(fileNode);
+            PlayStateSharedPreferences.instance(mContext).savePlayTime(fileNode);
         }
     }
     
-    public void clearPlayState(int deviceType, int fileType) {
-        PlayStateSharedPreferences.instance(mContext).clearPlayState(deviceType, fileType);
+    public void clearPlayTime(int deviceType, int fileType) {
+        PlayStateSharedPreferences.instance(mContext).clearPlayTime(deviceType, fileType);
+    }
+    
+    public void savePlayState(int fileType, boolean playing) {
+        PlayStateSharedPreferences.instance(mContext).savePlayState(fileType, playing);
+    }
+    
+    public boolean getPlayState(int fileType) {
+        return PlayStateSharedPreferences.instance(mContext).getPlayState(fileType);
     }
     
     public void savePlayMode(int playMode) {

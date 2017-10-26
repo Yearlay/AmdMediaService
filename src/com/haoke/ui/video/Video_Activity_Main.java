@@ -109,12 +109,18 @@ public class Video_Activity_Main extends FragmentActivity implements
         registerReceiver(mOperateAppReceiver, new IntentFilter(VRIntent.ACTION_OPERATE_VIDEO));
         
         mPreferences.saveVideoShowFragment(SWITCH_TO_LIST_FRAGMENT);
+        
+        initIntent(getIntent());
     }
     
     @Override
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        if ("MediaSearchActivity".equals(intent.getStringExtra("isfrom"))) {
+        initIntent(intent);
+    }
+    
+    private void initIntent(Intent intent) {
+        if (intent != null && "MediaSearchActivity".equals(intent.getStringExtra("isfrom"))) {
             String filePath = intent.getStringExtra("filepath");
             int deviceType = MediaUtil.getDeviceType(filePath);
             int position = 0;
