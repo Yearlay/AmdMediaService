@@ -16,6 +16,9 @@ public class PlayStateSharedPreferences {
     private static final String LOGINFO_FILE_NAME = "play_state";
     private static final String PLAY_MODE_KEY = "play_mode";
     private static final String LAST_DEVICE_TYPR = "last_device_type";
+    private static final String LAST_DEVICE_TYPE_VIDEO = "last_device_type_video";
+    private static final String LAST_MUSIC_PLAY_STATE = "last_music_play_state";
+    private static final String LAST_VIDEO_PLAY_STATE = "last_video_play_state";
     
     static PlayStateSharedPreferences mSharedPreferences;
 
@@ -36,28 +39,52 @@ public class PlayStateSharedPreferences {
         return mContext.getSharedPreferences(LOGINFO_FILE_NAME, Context.MODE_PRIVATE);
     }
 
-    public void savePlayState(FileNode fileNode) {
+    public void savePlayTime(FileNode fileNode) {
         int deviceType = fileNode.getDeviceType();
         int fileType = fileNode.getFileType();
         String key = DBConfig.getTableName(deviceType, fileType);
         getPreferences().edit().putString(key, fileNode.getFilePath() + SPLIT_STR + fileNode.getPlayTime()).commit();
         if (fileType == FileType.AUDIO) {
             getPreferences().edit().putInt(LAST_DEVICE_TYPR, deviceType).commit();
+        } else if (fileType == FileType.VIDEO) {
+        	getPreferences().edit().putInt(LAST_DEVICE_TYPE_VIDEO, deviceType).commit();
         }
     }
     
-    public void clearPlayState(int deviceType, int fileType) {
+    public void clearPlayTime(int deviceType, int fileType) {
         getPreferences().edit().remove(DBConfig.getTableName(deviceType, fileType)).commit();
     }
     
     public int getLastDeviceType() {
         return getPreferences().getInt(LAST_DEVICE_TYPR, DeviceType.NULL);
     }
+    
+    public int getLastDeviceTypeVideo() {
+        return getPreferences().getInt(LAST_DEVICE_TYPE_VIDEO, DeviceType.NULL);
+    }
 
-    public String getPlayState(int deviceType, int fileType) {
+    public String getPlayTime(int deviceType, int fileType) {
         String key = DBConfig.getTableName(deviceType, fileType);
         String valueStr = getPreferences().getString(key, "");
         return valueStr;
+    }
+    
+    public void savePlayState(int fileType, boolean playing) {
+        if (fileType == FileType.AUDIO) {
+            getPreferences().edit().putBoolean(LAST_MUSIC_PLAY_STATE, playing).apply();
+        } else if (fileType == FileType.VIDEO) {
+            getPreferences().edit().putBoolean(LAST_VIDEO_PLAY_STATE, playing).apply();
+        }
+    }
+    
+    public boolean getPlayState(int fileType) {
+        boolean playing = false;
+        if (fileType == FileType.AUDIO) {
+            playing = getPreferences().getBoolean(LAST_MUSIC_PLAY_STATE, false);
+        } else if (fileType == FileType.VIDEO) {
+            playing = getPreferences().getBoolean(LAST_VIDEO_PLAY_STATE, false);
+        }
+        return playing;
     }
     
     public void savePlayMode(int playMode) {
