@@ -19,6 +19,7 @@ import com.haoke.constant.MediaUtil;
 import com.haoke.define.BTDef.*;
 import com.haoke.define.CMSStatusDef.CMSStatusFuc;
 import com.haoke.define.CMSStatusDef.TrafficRestriction;
+import com.haoke.define.McuDef;
 import com.haoke.define.McuDef.McuFunc;
 import com.haoke.define.MediaDef.DeviceType;
 import com.haoke.define.MediaDef.FileType;
@@ -195,7 +196,12 @@ public class Media_IF extends CarService_IF {
 	}
 	
 	public static void resetSource(Context context) {
-		Settings.System.putInt(context.getContentResolver(), "MediaSource", ModeDef.NULL);
+		Log.d(TAG, "resetSource");
+		if (!setCurSource(ModeDef.NULL)) {
+			Settings.System.putInt(context.getContentResolver(), "MediaSource", ModeDef.NULL);
+			sLastSource = ModeDef.NULL;
+			sCurSource = ModeDef.NULL;
+		}
 	}
 	
 	private int getSourceFromSettings() {
@@ -206,39 +212,47 @@ public class Media_IF extends CarService_IF {
 		return Settings.System.putInt(mContext.getContentResolver(), "MediaSource", source);
 	}
 
-	public static int sLastSource;
+	public static int sLastSource = ModeDef.NULL;
+	private static int sCurSource = -1;
 	// 设置当前源
 	public static boolean setCurSource(int source) {
-		try {
-			int lastSource = getCurSource();
-			DebugLog.d("Yearlay", "sourceChanged from: " + lastSource + " && to: " + source);
-			if (lastSource != source) {
-				sLastSource = lastSource;
-				if (source == ModeDef.NULL && sLastSource == ModeDef.BT) {
-					sLastSource = ModeDef.NULL;
-				}
-				Log.d(TAG, "setCurSource source="+source);
-				//return getInstance().mServiceIF.mcu_setCurSource(source);
-				boolean success = getInstance().setSourceToSettings(source);
+		boolean success = false;
+		int lastSource = getCurSource();
+		if (lastSource != source) {
+			try {
+				// return getInstance().mServiceIF.mcu_setCurSource(source);
+				success = getInstance().setSourceToSettings(source);
 				if (success) {
 					getInstance().sendSouceChange(source);
+					sLastSource = lastSource;
+					sCurSource = source;
+					if (source == ModeDef.NULL && sLastSource == ModeDef.BT) {
+						sLastSource = ModeDef.NULL;
+					}
 				}
 				getInstance().mServiceIF.mcu_setCurSource(source);
-				return success;
+			} catch (Exception e) {
+				Log.e(TAG, "setCurSource exception", e);
 			}
-		} catch (Exception e) {
-			Log.e(TAG, "setCurSource exception", e);
+			DebugLog.d(TAG, "setCurSource from: " + lastSource + " && to: " + source + "; success=" + success);
 		}
-		return false;
+		return success;
 	}
 
 	// 获取当前源
 	public static int getCurSource() {
 		try {
-			int source = getInstance().mServiceIF.mcu_getCurSource();
-			int sourceEx = getInstance().getSourceFromSettings();
-			Log.d(TAG, "getCurSource source="+source+"; sourceEx="+sourceEx);
-			return sourceEx;
+//			int source = ModeDef.NULL;
+//			try {
+//				source = getInstance().mServiceIF.mcu_getCurSource();
+//			} catch (Exception e) {
+//				Log.e(TAG, "getCurSource mcu_getCurSource error e="+e);
+//			}
+			if (sCurSource == -1) {
+				sCurSource = getInstance().getSourceFromSettings();
+			}
+			Log.d(TAG, "getCurSource sCurSource=" + sCurSource);
+			return sCurSource;
 		} catch (Exception e) {
 			Log.e(TAG, "getCurSource error e="+e);
 		}
@@ -298,6 +312,29 @@ public class Media_IF extends CarService_IF {
 			Log.e(TAG, "getCallState error e="+e);
 		}*/
 		return false;
+	}
+	
+	/**
+	 * @return null为carmanager没有收到mcu给的信号，true为断B+起来，false为断acc休眠起来
+	 */
+	public Boolean isFirstPower() {
+		Boolean val = null;
+		if (mServiceConn) {
+			try {
+				int state = getInstance().mServiceIF.mcu_getFirstPower();
+				if (state == McuDef.FirstPower.NULL) {
+					val = null;
+				} else if (state == McuDef.FirstPower.POWER_FIRST) {
+					val = true;
+				} else {
+					val = false;
+				}
+			} catch (Exception e) {
+				Log.e(TAG, "isFirstPower error e="+e);
+			}
+		}
+		Log.e(TAG, "isFirstPower mServiceConn="+mServiceConn+"; val="+val);
+		return val;
 	}
 	
 	public AudioFocus getAudioFocus() {

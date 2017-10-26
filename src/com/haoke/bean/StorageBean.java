@@ -80,4 +80,14 @@ public class StorageBean {
     public String toString() {
         return "StorageBean: deviceType=" + deviceType + "; mState=" + mState;
     }
+    
+    boolean isLoadCompleted;
+
+	public boolean isLoadCompleted() {
+		return isLoadCompleted;
+	}
+
+	public void setLoadCompleted(boolean isLoadCompleted) {
+		this.isLoadCompleted = isLoadCompleted;
+	}
 }

@@ -298,29 +298,41 @@ public class MediaInterfaceUtil {
      * 开机时得跳到上一次关机时所播放的源。
      * 返回值大于等于0为需要延时的时间数，单位毫秒， -1为无需再次调用
      */
+    public static long start = -1;
     public static int checkSourceFromBoot(final MediaService service) {
-        int ms = -1;
         if (BTMusicService.getInstance() == null || RadioService.getInstance() == null) {
             Log.d(TAG, "checkSourceFromBoot BTMusicService or RadioService not startup!");
-            ms = 50;
+            return 200;
         }
-        if (ms >= 0) {
-        } if (!BT_IF.getInstance().isServiceConnected() || !BTMusic_IF.getInstance().isServiceConnected()
+        if (!BT_IF.getInstance().isServiceConnected() || !BTMusic_IF.getInstance().isServiceConnected()
                 || !Media_IF.getInstance().isServiceConnected() || !Radio_IF.getInstance().isServiceConnected()) {
             Log.d(TAG, "checkSourceFromBoot BT_IF or BTMusic_IF or Media_IF or Radio_IF cannot bind service!");
-            ms = 50;
+            return 200;
         }
         
+        //null为carmanager没有收到mcu给的信号，true为断B+起来，false为断acc休眠起来
+        final Boolean power = Media_IF.getInstance().isFirstPower();
+        if (power == null) {
+            Log.d(TAG, "checkSourceFromBoot power is null!");
+            return 100;
+        } else if (power.booleanValue()) {
+            Log.d(TAG, "checkSourceFromBoot power is true! clear app data!");
+            FirstPowerReceiver.clearAppDataFromBoot(service);
+            return -1;
+        }
+        
+        int ms = -1;
         final int source = Media_IF.getCurSource();
-        if (ms >= 0) {
-        } else if (source == ModeDef.RADIO) {
+        if (source == ModeDef.RADIO) {
             launchSourceActivity(ModeSwitch.RADIO_MODE, true);
         } else if (source == ModeDef.AUDIO) {
             AllMediaList allMediaList = AllMediaList.instance(service);
             int deviceType = allMediaList.getLastDeviceType();
+            Log.d(TAG, "checkSourceFromBoot LastDeviceType="+deviceType);
             if (deviceType != DeviceType.NULL) {
                 StorageBean storage = allMediaList.getStoragBean(deviceType);
-                if (storage.isId3ParseCompleted()) {
+                Log.d(TAG, "checkSourceFromBoot storage="+storage);
+                if (storage.isLoadCompleted()) {
                     ArrayList<FileNode> lists = allMediaList.getMediaList(deviceType, FileType.AUDIO);
                     int size = lists.size();
                     if (size > 0) {
@@ -338,8 +350,21 @@ public class MediaInterfaceUtil {
                     }
                 } else {
                     //TODO loading
-                    Log.d(TAG, "checkSourceFromBoot loading");
-                    ms = 500;
+                    boolean mounted = storage.isMounted();
+                    Log.d(TAG, "checkSourceFromBoot loading mounted="+mounted);
+                    if (mounted) {
+                        ms = 500;
+                    } else {
+                        long end = System.currentTimeMillis();
+                        if (start == -1) {
+                            start = end;
+                            ms = 500;
+                        } else if (end - start > 40000) {
+                            Log.d(TAG, "checkSourceFromBoot loading timeout!");
+                        } else {
+                            ms = 500;
+                        }
+                    }
                 }
             }
         } else if (source == ModeDef.VIDEO) {

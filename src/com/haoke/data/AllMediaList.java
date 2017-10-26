@@ -197,6 +197,9 @@ public class AllMediaList {
             listener.onScanStateChange(storageBean);
         }
         mContext.sendBroadcast(new Intent("main_activity_update_ui"));
+        if (storageBean.isId3ParseCompleted() || !storageBean.isMounted()) {
+            storageBean.setLoadCompleted(true);
+        }
     }
     
     private static final int BEGIN_LOAD_THREAD = 1;

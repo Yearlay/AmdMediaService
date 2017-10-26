@@ -16,7 +16,17 @@ public class FirstPowerReceiver extends BroadcastReceiver{
 		String action = intent.getAction();
 		Log.d(TAG, "onReceive action="+action);
 		if ("com.haoke.action.firstpower".equals(action)) {
-			//断B+起来，carmanager会发送该广播，此时应用需要清除一些记忆数据。
+			clearAppDataFromBoot(context);
+		}
+	}
+	
+	private static boolean clearedFlag = false;
+	/**
+	 * 断B+起来，carmanager会发送该广播，此时应用需要清除一些记忆数据。
+	 */
+	public static void clearAppDataFromBoot(Context context) {
+		if (!clearedFlag) {
+			clearedFlag = true;
 			Radio_IF.getInstance().clearColloctFreq(context);
 			Media_IF.getInstance().setRepeatMode(CIRCLE);
 			Media_IF.resetSource(context);
