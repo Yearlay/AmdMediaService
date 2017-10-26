@@ -3,22 +3,20 @@ package com.haoke.ui.image;
 import java.util.ArrayList;
 
 import haoke.ui.util.HKTextView;
-import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.Fragment;
+import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -33,17 +31,26 @@ import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.OperateListener;
-import com.haoke.data.PlayStateSharedPreferences;
 import com.haoke.mediaservice.R;
 import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
 import com.haoke.ui.widget.CustomDialog.OnDialogListener;
-import com.haoke.window.HKWindowManager;
 
-public class PhotoListFragment extends Fragment implements OnItemClickListener, OnItemLongClickListener,
+public class PhotoListLayout extends RelativeLayout implements OnItemClickListener, OnItemLongClickListener,
         OperateListener, OnDismissListener {
-    private Context mContext;
-    private View rootView;
+    public PhotoListLayout(Context context) {
+		super(context);
+	}
+
+	public PhotoListLayout(Context context, AttributeSet attrs) {
+		super(context, attrs);
+	}
+
+	public PhotoListLayout(Context context, AttributeSet attrs, int defStyle) {
+		super(context, attrs, defStyle);
+	}
+
+	private Context mContext;
     private GridView mGridView;
     private TextView mEmptyView;
     private View mLoadingView;
@@ -60,7 +67,7 @@ public class PhotoListFragment extends Fragment implements OnItemClickListener, 
         mCurrentStorageBean = storageBean;
         mPhotoList.clear();
         mPhotoList.addAll(dataList);
-        if (rootView != null) {
+        if (mGridView != null) {
             refreshView(storageBean);
         }
     }
@@ -98,31 +105,19 @@ public class PhotoListFragment extends Fragment implements OnItemClickListener, 
         }
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        if (activity instanceof Image_Activity_Main) {
-            mActivityHandler = ((Image_Activity_Main) activity).getHandler();
-        }
-        super.onAttach(activity);
+    public void setActivityHandler(Handler handler, Context context) {
+        mActivityHandler = handler;
+        mContext = context;
     }
 
     @Override
-    public void onDetach() {
-        mActivityHandler = null;
-        super.onDetach();
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
-        HKWindowManager.fullScreen(this.getActivity(), false);
-        mContext = getActivity();
+    protected void onFinishInflate() {
+    	super.onFinishInflate();
         // 初始化控件
-        rootView = inflater.inflate(R.layout.photo_list_layout, null);
-        mEmptyView = (TextView) rootView.findViewById(R.id.image_list_empty);
-        mLoadingView = rootView.findViewById(R.id.loading_layout);
+        mEmptyView = (TextView) findViewById(R.id.image_list_empty);
+        mLoadingView = findViewById(R.id.loading_layout);
 
-        mGridView = (GridView) rootView.findViewById(R.id.image_grid_list);
+        mGridView = (GridView) findViewById(R.id.image_grid_list);
         mGridView.setChoiceMode(GridView.CHOICE_MODE_SINGLE);
         mGridView.setSelector(new ColorDrawable(Color.TRANSPARENT));
         mGridView.setOnItemClickListener(this);
@@ -133,13 +128,6 @@ public class PhotoListFragment extends Fragment implements OnItemClickListener, 
         if (mCurrentStorageBean != null) {
             refreshView(mCurrentStorageBean);
         }
-        return rootView;
-    }
-
-    @Override
-    public void onPause() {
-        dismissDialog();
-        super.onPause();
     }
 
     public void dismissDialog() {
@@ -285,7 +273,7 @@ public class PhotoListFragment extends Fragment implements OnItemClickListener, 
                     mProgressDialog = new CustomDialog();
                 }
                 mProgressDialog.showProgressDialog(mContext, R.string.copy_image_progress_title, this);
-                AllMediaList.instance(mContext).copyToLocal(selectList, PhotoListFragment.this);
+                AllMediaList.instance(mContext).copyToLocal(selectList, PhotoListLayout.this);
             }
         } else {
             new CustomDialog().ShowDialog(mContext, DIALOG_TYPE.ONE_BTN, R.string.failed_check_available_size);

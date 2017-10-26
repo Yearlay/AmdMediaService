@@ -9,19 +9,13 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
-import android.widget.RelativeLayout;
-import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 
 import com.haoke.bean.FileNode;
@@ -39,6 +33,7 @@ import com.haoke.ui.media.MediaSearchActivity;
 import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
 import com.haoke.util.DebugLog;
+import com.haoke.window.HKWindowManager;
 
 public class Image_Activity_Main extends FragmentActivity implements
         OnClickListener, LoadListener, OnCheckedChangeListener {
@@ -46,13 +41,10 @@ public class Image_Activity_Main extends FragmentActivity implements
     private final String TAG = "PhotoApp";
     private int mLayoutProps = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
 
-    public FragmentManager mFragmentManager;
     private PlayStateSharedPreferences mPlayPreferences;
     
-    private PhotoListFragment mListFragment = null;
-    private PhotoPlayFragment mPlayFragment = null;
-    
-    private FrameLayout mLayout = null;
+    private PhotoListLayout mListLayout = null;
+    private PhotoPlayLayout mPlayLayout = null;
     
     private RadioGroup mRadioGroup;
     private ImageButton mSearchButton;
@@ -72,10 +64,10 @@ public class Image_Activity_Main extends FragmentActivity implements
         
         getWindow().getDecorView().setSystemUiVisibility(mLayoutProps);
 
-        mFragmentManager = this.getSupportFragmentManager();
-        mListFragment = new PhotoListFragment();
-        mPlayFragment = new PhotoPlayFragment();
-        mLayout = (FrameLayout) findViewById(R.id.image_fragment);
+        mListLayout = (PhotoListLayout) findViewById(R.id.image_list_layout);
+        mListLayout.setActivityHandler(mHandler, this);
+        mPlayLayout = (PhotoPlayLayout) findViewById(R.id.image_play_home);
+        mPlayLayout.setActivityHandler(mHandler, this);
         
         mRadioGroup = (RadioGroup) findViewById(R.id.image_tab_group);
         mRadioGroup.setOnCheckedChangeListener(this);
@@ -107,10 +99,9 @@ public class Image_Activity_Main extends FragmentActivity implements
                     break;
                 }
             }
-            mPlayPreferences.saveImageDeviceType(deviceType);
             mPlayPreferences.saveImageShowFragment(SWITCH_TO_PLAY_FRAGMENT);
-            mPlayPreferences.saveImageCurrentPosition(position);
-            mPlayFragment.setPlayState(PlayState.PAUSE);
+            mPlayLayout.setPlayState(PlayState.PAUSE);
+            mPlayLayout.setCurrentPosition(position);
         }
     }
     
@@ -141,9 +132,9 @@ public class Image_Activity_Main extends FragmentActivity implements
         mImageList.clear();
         mImageList.addAll(AllMediaList.instance(getApplicationContext())
                 .getMediaList(deviceType, FileType.IMAGE));
-        mListFragment.updataList(mImageList, storageBean);
-        mPlayFragment.updateList(mImageList, deviceType);
-        if (mImageList.size() == 0 && mListFragment.isEditMode()) {
+        mListLayout.updataList(mImageList, storageBean);
+        mPlayLayout.updateList(mImageList, deviceType);
+        if (mImageList.size() == 0 && mListLayout.isEditMode()) {
             cancelEdit();
         }
     }
@@ -161,54 +152,18 @@ public class Image_Activity_Main extends FragmentActivity implements
     }
 
     @Override
+    protected void onPause() {
+        mListLayout.dismissDialog();
+        super.onPause();
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         AllMediaList.instance(getApplicationContext()).unRegisterLoadListener(this);
         unregisterReceiver(mOperateAppReceiver);
     }
 
-    // Fragment替换
-    private void replaceFragment(Fragment fragment) {
-        if (fragment == null)
-            return;
-        
-        try {
-            FragmentTransaction transaction = mFragmentManager.beginTransaction();
-            if (getCurFragment() != fragment) {
-                transaction.replace(R.id.image_fragment, fragment);
-            }
-            transaction.commitAllowingStateLoss();
-
-        } catch (Exception e) {
-        }
-        setFragmentParams(fragment);
-    }
-
-    // 获取当前Fragment
-    private Fragment getCurFragment() {
-        Fragment fragment = mFragmentManager.findFragmentById(R.id.image_fragment);
-        return fragment;
-    }
-    
-    private void setFragmentParams(Fragment fragment) {
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-                LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        if (fragment == mPlayFragment) {
-            params.width = LayoutParams.MATCH_PARENT;
-            params.height = LayoutParams.MATCH_PARENT;
-            if (fragment == mListFragment) {
-                params.topMargin = (int) getResources().getDimension(R.dimen.pub_statusbar_height);
-            }
-        } else {
-            params.width = LayoutParams.MATCH_PARENT;
-            params.height = 550;
-            params.topMargin = (int) getResources().getDimension(R.dimen.pub_statusbar_height);
-        }
-        if (mLayout != null) {
-            mLayout.setLayoutParams(params);
-        }
-    }
-    
     private int getCurrentDeviceType() {
         int deviceType = DeviceType.FLASH;
         if (mRadioGroup.getCheckedRadioButtonId() == R.id.image_device_usb1) {
@@ -232,15 +187,15 @@ public class Image_Activity_Main extends FragmentActivity implements
 
     @Override
     public void onScanStateChange(StorageBean storageBean) {
-    	DebugLog.d("Yearlay", "onScanStateChange deviceType: " + storageBean.getDeviceType() +
-    			" && isMounted: " + storageBean.isMounted());
+        DebugLog.d("Yearlay", "onScanStateChange deviceType: " + storageBean.getDeviceType() +
+                " && isMounted: " + storageBean.isMounted());
         // 处理磁盘状态 和 扫描状态发生改变的状态： 主要是更新UI的显示效果。
         if (storageBean.getDeviceType() == getCurrentDeviceType()) {
             updateDevice(getCurrentDeviceType());
             onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
             if (!storageBean.isMounted()) {
-                if (mListFragment != null) {
-                    mListFragment.dismissDialog();
+                if (mListLayout != null) {
+                    mListLayout.dismissDialog();
                 }
                 new CustomDialog().ShowDialog(Image_Activity_Main.this, DIALOG_TYPE.NONE_BTN,
                         R.string.music_device_pullout_usb);
@@ -255,24 +210,24 @@ public class Image_Activity_Main extends FragmentActivity implements
             intent.putExtra(MediaSearchActivity.INTENT_KEY_FILE_TYPE, FileType.IMAGE);
             startActivity(intent);
         } else if (v.getId() == R.id.edit_delete) {
-            mListFragment.deleteSelected(mRadioGroup.getCheckedRadioButtonId() == R.id.image_device_collect);
+            mListLayout.deleteSelected(mRadioGroup.getCheckedRadioButtonId() == R.id.image_device_collect);
         } else if (v.getId() == R.id.edit_cancel) {
             cancelEdit();
         } else if (v.getId() == R.id.edit_all) {
             if (AllMediaList.checkSelected(this, mImageList)) {
-                mListFragment.unSelectAll();
+                mListLayout.unSelectAll();
                 mSelectAllView.setText(R.string.music_choose_all);
             } else {
-                mListFragment.selectAll();
+                mListLayout.selectAll();
                 mSelectAllView.setText(R.string.music_choose_remove);
             }
         } else if (v.getId() == R.id.copy_to_local) {
-            mListFragment.copySelected();
+            mListLayout.copySelected();
         }
     }
     
     private void cancelEdit() {
-        mListFragment.cancelEdit();
+        mListLayout.cancelEdit();
         mEditView.setVisibility(View.GONE);
         mRadioGroup.setVisibility(View.VISIBLE);
         mSearchButton.setVisibility(View.VISIBLE);
@@ -289,13 +244,12 @@ public class Image_Activity_Main extends FragmentActivity implements
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            Fragment curFragment = getCurFragment();
-            if (curFragment == mPlayFragment) {
+            if (mPlayLayout.getVisibility() == View.VISIBLE) {
                 onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
                 return true;
             }
-            if (mListFragment.isEditMode()) {
-                mListFragment.cancelEdit();
+            if (mListLayout.isEditMode()) {
+                mListLayout.cancelEdit();
                 mEditView.setVisibility(View.GONE);
                 mRadioGroup.setVisibility(View.VISIBLE);
                 mSearchButton.setVisibility(View.VISIBLE);
@@ -315,6 +269,7 @@ public class Image_Activity_Main extends FragmentActivity implements
     public static final int CLICK_LIST_ITEM = 3;
     public static final int LONG_CLICK_LIST_ITEM = 4;
     public static final int SHOW_BOTTOM = 5;
+    public static final int HIDE_BOTTOM = 6;
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -325,23 +280,20 @@ public class Image_Activity_Main extends FragmentActivity implements
                 onChangeFragment(msg.what);
                 break;
             case CLICK_LIST_ITEM:
-                if (mListFragment.isEditMode()) {
-                    mListFragment.selectItem(msg.arg1);
+                if (mListLayout.isEditMode()) {
+                    mListLayout.selectItem(msg.arg1);
                     if (AllMediaList.checkSelected(Image_Activity_Main.this, mImageList)) {
                         mSelectAllView.setText(R.string.music_choose_remove);
                     } else {
                         mSelectAllView.setText(R.string.music_choose_all);
                     }
                 } else {
-                    mPlayFragment.setPlayState(PlayState.PLAY);
+                    mPlayLayout.setCurrentPosition(msg.arg1);
                     onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
-                    mPlayFragment.setCurrentPosition(msg.arg1);
                 }
                 break;
             case LONG_CLICK_LIST_ITEM:
-                // onChangeFragment(SWITCH_TO_DETAIL_FRAGMENT);
-                // mDetailsFragment.setFileNode(mListFragment.getFileNode(msg.arg1));
-                if (!mListFragment.isEditMode()) {
+                if (!mListLayout.isEditMode()) {
                     mEditView.setVisibility(View.VISIBLE);
                     if (mRadioGroup.getCheckedRadioButtonId() == R.id.image_device_usb1 || 
                             mRadioGroup.getCheckedRadioButtonId() == R.id.image_device_usb2) {
@@ -352,12 +304,17 @@ public class Image_Activity_Main extends FragmentActivity implements
                     mRadioGroup.setVisibility(View.INVISIBLE);
                     mSearchButton.setVisibility(View.INVISIBLE);
                     mSelectAllView.setText(R.string.music_choose_all);
-                    mListFragment.beginEdit();
+                    mListLayout.beginEdit();
                 }
                 break;
             case SHOW_BOTTOM:
                 getWindow().getDecorView()
                         .setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+                getWindow().getDecorView().setSystemUiVisibility(mLayoutProps);
+                break;
+            case HIDE_BOTTOM:
+                getWindow().getDecorView()
+                .setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
                 getWindow().getDecorView().setSystemUiVisibility(mLayoutProps);
                 break;
             default:
@@ -370,9 +327,21 @@ public class Image_Activity_Main extends FragmentActivity implements
     private void onChangeFragment(int index) {
         mPlayPreferences.saveImageShowFragment(index);
         if (index == SWITCH_TO_PLAY_FRAGMENT) {
-            replaceFragment(mPlayFragment);
+            mListLayout.setVisibility(View.INVISIBLE);
+            mPlayLayout.setVisibility(View.VISIBLE);
+            mPlayLayout.onResume();
+            HKWindowManager.hideWallpaper(this);
+            HKWindowManager.fullScreen(this, true);
+            getWindow().getDecorView()
+                    .setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         } else {
-            replaceFragment(mListFragment);
+            mListLayout.setVisibility(View.VISIBLE);
+            mPlayLayout.setVisibility(View.INVISIBLE);
+            mPlayLayout.onPause();
+            HKWindowManager.showWallpaper(this);
+            HKWindowManager.fullScreen(this, false);
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+            getWindow().getDecorView().setSystemUiVisibility(mLayoutProps);
         }
     }
     
@@ -388,22 +357,22 @@ public class Image_Activity_Main extends FragmentActivity implements
                     if (mPlayPreferences.getImageShowFragment() != SWITCH_TO_PLAY_FRAGMENT) {
                         onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
                     }
-                    mPlayFragment.setPlayState(PlayState.PLAY);
+                    mPlayLayout.setPlayState(PlayState.PLAY);
                     break;
                 case VRIntent.PAUSE_IMAGE:
-                    mPlayFragment.setPlayState(PlayState.PAUSE);
+                    mPlayLayout.setPlayState(PlayState.PAUSE);
                     break;
                 case VRIntent.PRE_IMAGE:
                     if (mPlayPreferences.getImageShowFragment() != SWITCH_TO_PLAY_FRAGMENT) {
                         onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
                     }
-                    mPlayFragment.preImage();
+                    mPlayLayout.preImage();
                     break;
                 case VRIntent.NEXT_IMAGE:
                     if (mPlayPreferences.getImageShowFragment() != SWITCH_TO_PLAY_FRAGMENT) {
                         onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
                     }
-                    mPlayFragment.nextImage();
+                    mPlayLayout.nextImage();
                     break;
                 default:
                     break;
@@ -417,13 +386,13 @@ public class Image_Activity_Main extends FragmentActivity implements
         if (event.getAction() == KeyEvent.ACTION_UP) {
             switch (event.getKeyCode()) {
             case KeyEvent.KEYCODE_MEDIA_PLAY:
-                mPlayFragment.setPlayState(PlayState.PLAY);
+                mPlayLayout.setPlayState(PlayState.PLAY);
                 if (mPlayPreferences.getImageShowFragment() == SWITCH_TO_PLAY_FRAGMENT) {
                     return true;
                 }
                 break;
             case KeyEvent.KEYCODE_MEDIA_PAUSE:
-                mPlayFragment.setPlayState(PlayState.PAUSE);
+                mPlayLayout.setPlayState(PlayState.PAUSE);
                 if (mPlayPreferences.getImageShowFragment() == SWITCH_TO_PLAY_FRAGMENT) {
                     return true;
                 }
@@ -437,7 +406,7 @@ public class Image_Activity_Main extends FragmentActivity implements
 
     public static boolean isPlayImage(Context context) {
         int fragmentIndex = PlayStateSharedPreferences.instance(context).getImageShowFragment();
-        return (fragmentIndex == SWITCH_TO_PLAY_FRAGMENT) && PhotoPlayFragment.mPlayState == PlayState.PLAY;
+        return (fragmentIndex == SWITCH_TO_PLAY_FRAGMENT) && PhotoPlayLayout.mPlayState == PlayState.PLAY;
     }
 
     @Override

@@ -131,10 +131,18 @@
 
     </RelativeLayout>
 
-    <FrameLayout
-        android:id="@+id/image_fragment"
+    <include
+        layout="@layout/photo_list_layout"
+        android:id="@+id/image_list_layout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/pub_fragment_height"
         android:layout_marginTop="@dimen/pub_statusbar_height" />
+    
+    <include
+        layout="@layout/image_play_fragment"
+        android:id="@+id/image_play_home"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </RelativeLayout>

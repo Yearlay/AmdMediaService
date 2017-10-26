@@ -11,42 +11,51 @@ import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.OperateListener;
-import com.haoke.data.PlayStateSharedPreferences;
 import com.haoke.define.MediaDef.PlayState;
 import com.haoke.mediaservice.R;
 import com.haoke.ui.photoview.Media_Photo_View;
 import com.haoke.ui.photoview.PhotoViewAttacher.OnMatrixChangedListener;
 import com.haoke.ui.photoview.PhotoViewAttacher.OnPhotoTapListener;
-import com.haoke.window.HKWindowManager;
+import com.haoke.util.DebugLog;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
-import android.support.v4.app.Fragment;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.RectF;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class PhotoPlayFragment extends Fragment implements OnClickListener,
+public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
         OnMatrixChangedListener, OnPhotoTapListener, OperateListener, ImageLoadingListener {
+    public PhotoPlayLayout(Context context) {
+        super(context);
+    }
+
+    public PhotoPlayLayout(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
+    public PhotoPlayLayout(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+    }
+
     private Context mContext;
-    private View mRootView;
     private View mCtrlBar;
     private ImageView mPlayImageView;
     private ImageView mCollectView;
@@ -56,6 +65,7 @@ public class PhotoPlayFragment extends Fragment implements OnClickListener,
     private PhotoPagerAdapter mAdapter;
     private Handler mActivityHandler;
     private int mDeviceType;
+    private int mCurPosition;
     private int mLastPosition;
     private boolean mPreFlag;
     
@@ -66,14 +76,14 @@ public class PhotoPlayFragment extends Fragment implements OnClickListener,
     public void setPlayState(int playState) {
         mPlayState = playState;
         mPreFlag = false;
-        if (mRootView != null) {
+        if (mViewPager != null) {
             updatePlayState(mPlayState);
         }
     }
     
     public void setCurrentPosition(int position) {
-        mLastPosition = position;
-        PlayStateSharedPreferences.instance(getActivity()).saveImageCurrentPosition(position);
+        mLastPosition = mCurPosition;
+        mCurPosition = position;
     }
     
     private ArrayList<FileNode> mPhotoList = new ArrayList<FileNode>();
@@ -83,117 +93,65 @@ public class PhotoPlayFragment extends Fragment implements OnClickListener,
         mPhotoList.clear();
         mPhotoList.addAll(dataList);
         mDeviceType = deviceType;
-        if (mRootView != null) {
+        if (mViewPager != null) {
             if (mPhotoList.size() == 0) {
                 if (mActivityHandler != null) { // 回列表
                     mActivityHandler.sendEmptyMessage(Image_Activity_Main.SWITCH_TO_LIST_FRAGMENT);
                 }
             } else {
-                mAdapter.notifyDataSetChanged();
+                mAdapter = new PhotoPagerAdapter();
+                mViewPager.setAdapter(mAdapter);
                 mCollectView.setVisibility(deviceType == DeviceType.COLLECT ? View.GONE : View.VISIBLE);
                 // 更新一下位置。
-                int position = PlayStateSharedPreferences.instance(getActivity()).getImageCurrentPosition();
-                position = position < 0 ? 0 : position;
-                position = position >= mPhotoList.size() ? mPhotoList.size() - 1 : position; 
-                mViewPager.setCurrentItem(position);
+                mCurPosition = mCurPosition < 0 ? 0 : mCurPosition;
+                mCurPosition = mCurPosition >= mPhotoList.size() ? mPhotoList.size() - 1 : mCurPosition;
+                mViewPager.setCurrentItem(mCurPosition, false);
             }
         }
     }
     
-    private OnPageChangeListener mPageChangeListener = new OnPageChangeListener() {
-        @Override
-        public void onPageScrollStateChanged(int state) {
-            checkPlayStatus(); // 重新计时
-            if (state == 1) {
-                restorePhotoView();
-            }
-        }
-
-        @Override
-        public void onPageScrolled(int arg0, float arg1, int arg2) {
-            checkPlayStatus(); // 重新计时
-        }
-
-        @Override
-        public void onPageSelected(int position) {
-            checkPlayStatus(); // 重新计时
-            restorePhotoView();
-            FileNode fileNode = mPhotoList.get(position);
-            PlayStateSharedPreferences.instance(getActivity()).saveImageCurrentPosition(position);
-            mCollectView.setImageResource(fileNode.getCollect() == 1 ?
-                    R.drawable.media_collect : R.drawable.media_uncollect);
-            if (mDeviceType != DeviceType.COLLECT && mCtrlBar.getVisibility() == View.VISIBLE) {
-                mCollectView.setVisibility(View.VISIBLE);
-            } else {
-                mCollectView.setVisibility(View.GONE);
-            }
-            mTitleTextView.setText(fileNode.getTitleEx());
-            
-            if (fileNode.isUnSupportFlag() || fileNode.getFile().length() > 52428800) { // 不支持的图片。
-                mCollectView.setVisibility(View.GONE);
-                mUnsupportView.setVisibility(View.VISIBLE);
-                mHandler.removeMessages(PLAY_ERROR);
-                mHandler.sendEmptyMessageDelayed(PLAY_ERROR, 1000);
-            } else {
-                mUnsupportView.setVisibility(View.GONE);
-            }
-            mPreFlag = mLastPosition > position;
-            mLastPosition = position;
-        }
-    };
     
-    @Override
-    public void onAttach(Activity activity) {
-        if (activity instanceof Image_Activity_Main) {
-            mActivityHandler = ((Image_Activity_Main) activity).getHandler();
-        }
-        super.onAttach(activity);
+    
+    public void setActivityHandler(Handler handler, Context context) {
+        mActivityHandler = handler;
+        mContext = context;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mContext = getActivity();
-        mRootView = inflater.inflate(R.layout.image_play_fragment, null);
-        mViewPager = (HKViewPager) mRootView.findViewById(R.id.image_play_viewpager);
-        mAdapter = new PhotoPagerAdapter();
-        mViewPager.setAdapter(mAdapter);
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        mViewPager = (HKViewPager) findViewById(R.id.image_play_viewpager);
 
-        mCtrlBar = mRootView.findViewById(R.id.image_play_ctrlbar);
+        mCtrlBar = findViewById(R.id.image_play_ctrlbar);
         mCtrlBar.findViewById(R.id.image_ctrlbar_list).setOnClickListener(this);
         mCtrlBar.findViewById(R.id.image_ctrlbar_pre).setOnClickListener(this);
         mCtrlBar.findViewById(R.id.image_ctrlbar_next).setOnClickListener(this);
         mCtrlBar.findViewById(R.id.image_ctrlbar_turnr).setOnClickListener(this);
         mPlayImageView = (ImageView) mCtrlBar.findViewById(R.id.image_ctrlbar_pp);
         mPlayImageView.setOnClickListener(this);
-        mCollectView = (ImageView) mRootView.findViewById(R.id.collect_image);
+        mCollectView = (ImageView) findViewById(R.id.collect_image);
         mCollectView.setOnClickListener(this);
-        mTitleTextView = (TextView) mRootView.findViewById(R.id.title_image);
-        mUnsupportView = (TextView) mRootView.findViewById(R.id.not_support_text);
+        mTitleTextView = (TextView) findViewById(R.id.title_image);
+        mUnsupportView = (TextView) findViewById(R.id.not_support_text);
         
-        mProgressDialog = new ProgressDialog(mContext);
+        mProgressDialog = new ProgressDialog(getContext());
         mProgressDialog.setCancelable(false);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        return mRootView;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        // 更新图像
+    public void onResume() {
+        DebugLog.d("Yearlay", "onResume mCurPosition: " + mCurPosition);
         if (mPhotoList.size() > 0) {
-            int position = PlayStateSharedPreferences.instance(getActivity()).getImageCurrentPosition();
-            position = position < 0 ? 0 : position;
-            position = position >= mPhotoList.size() ? mPhotoList.size() - 1 : position; 
-            mViewPager.setCurrentItem(position);
-            PlayStateSharedPreferences.instance(getActivity()).saveImageCurrentPosition(position);
+            mCurPosition = mCurPosition < 0 ? 0 : mCurPosition;
+            mCurPosition = mCurPosition >= mPhotoList.size() ? mPhotoList.size() - 1 : mCurPosition; 
+            mViewPager.setCurrentItem(mCurPosition, false);
+            DebugLog.d("Yearlay", "onResume setCurrentItem mCurPosition: " + mCurPosition);
         } else {
             if (mActivityHandler != null) {
                 mActivityHandler.sendEmptyMessage(Image_Activity_Main.SWITCH_TO_LIST_FRAGMENT);
             }
         }
-        mViewPager.setOnPageChangeListener(mPageChangeListener);
         // 更新播放状态
-        updatePlayState(mPlayState);
         // 启动状态栏隐藏计时器
         if (mCtrlBar.getVisibility() == View.VISIBLE) {
             startHideTimer();
@@ -202,36 +160,18 @@ public class PhotoPlayFragment extends Fragment implements OnClickListener,
                 R.drawable.media_collect : R.drawable.media_uncollect);
         mCollectView.setVisibility(mDeviceType == DeviceType.COLLECT ? View.GONE : View.VISIBLE);
         mTitleTextView.setText(mPhotoList.get(mViewPager.getCurrentItem()).getTitleEx());
-    }
-    
-    @Override
-    public void onResume() {
-        checkPlayStatus();
-        HKWindowManager.fullScreen(getActivity(), true);
-        getActivity().getWindow().getDecorView()
-                .setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-        super.onResume();
+        updatePlayState(mPlayState);
+        
+        mViewPager.setOnPageChangeListener(mPageChangeListener);
+        mViewPager.setOnTouchListener(mTouchListener);
     }
 
-    @Override
     public void onPause() {
         mHandler.removeMessages(NEXT_PLAY);
         if (mActivityHandler != null) {
             mActivityHandler.sendEmptyMessage(Image_Activity_Main.SHOW_BOTTOM);
         }
-        HKWindowManager.fullScreen(getActivity(), false);
-        super.onPause();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
         mViewPager.setOnPageChangeListener(null);
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
     }
 
     private void updatePlayState(int playState) {
@@ -271,21 +211,23 @@ public class PhotoPlayFragment extends Fragment implements OnClickListener,
             collectOrUncollect();
             break;
         case R.id.not_support_text:
-        	slaverShow(mCtrlBar.getVisibility() != View.VISIBLE);
-        	break;
+            slaverShow(mCtrlBar.getVisibility() != View.VISIBLE);
+            break;
         }
         startHideTimer();
     }
     
     public void preImage() {
         mHandler.removeMessages(PLAY_ERROR);
-        if (mRootView != null) {
+        if (mViewPager != null) {
             if (getCurPhotoView() != null) {
-                int position = PlayStateSharedPreferences.instance(getActivity()).getImageCurrentPosition();
-                position--;
-                position = position < 0 ? mPhotoList.size() - 1 : position;
-                mViewPager.setCurrentItem(position);
-                PlayStateSharedPreferences.instance(getActivity()).saveImageCurrentPosition(position);
+                mCurPosition--;
+                mCurPosition = mCurPosition < 0 ? mPhotoList.size() - 1 : mCurPosition;
+                if (mCurPosition == (mPhotoList.size() - 1)) {
+                    mViewPager.setCurrentItem(mCurPosition, false);
+                } else {
+                    mViewPager.setCurrentItem(mCurPosition);
+                }
                 checkPlayStatus(); // 重新计时
             }
         }
@@ -293,13 +235,15 @@ public class PhotoPlayFragment extends Fragment implements OnClickListener,
     
     public void nextImage() {
         mHandler.removeMessages(PLAY_ERROR);
-        if (mRootView != null) {
+        if (mViewPager != null) {
             if (getCurPhotoView() != null) {
-                int position = PlayStateSharedPreferences.instance(getActivity()).getImageCurrentPosition();
-                position++;
-                position = position >= mPhotoList.size() ? 0 : position;
-                mViewPager.setCurrentItem(position);
-                PlayStateSharedPreferences.instance(getActivity()).saveImageCurrentPosition(position);
+                mCurPosition++;
+                mCurPosition = mCurPosition >= mPhotoList.size() ? 0 : mCurPosition;
+                if (mCurPosition == 0) {
+                    mViewPager.setCurrentItem(mCurPosition, false);
+                } else {
+                    mViewPager.setCurrentItem(mCurPosition);
+                }
                 checkPlayStatus(); // 重新计时
             }
         }
@@ -322,7 +266,7 @@ public class PhotoPlayFragment extends Fragment implements OnClickListener,
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             AllMediaList.instance(mContext).deleteOldCollect(FileType.IMAGE);
-                            AllMediaList.instance(mContext).collectMediaFile(fileNode, PhotoPlayFragment.this);
+                            AllMediaList.instance(mContext).collectMediaFile(fileNode, PhotoPlayLayout.this);
                         }
                     })
                     .setNegativeButton(R.string.collect_limit_dialog_cancel, null)
@@ -445,13 +389,15 @@ public class PhotoPlayFragment extends Fragment implements OnClickListener,
             switch (msg.what) {
             case NEXT_PLAY:
                 mPreFlag = false;
-                int position = PlayStateSharedPreferences.instance(getActivity()).getImageCurrentPosition();
-                position++;
-                if (position >= mPhotoList.size()) {
-                    position = 0; // 循环播放
+                mCurPosition++;
+                if (mCurPosition >= mPhotoList.size()) {
+                    mCurPosition = 0; // 循环播放
                 }
-                mViewPager.setCurrentItem(position);
-                PlayStateSharedPreferences.instance(getActivity()).saveImageCurrentPosition(position);
+                if (mCurPosition == 0) {
+                    mViewPager.setCurrentItem(mCurPosition, false);
+                } else {
+                    mViewPager.setCurrentItem(mCurPosition);
+                }
                 checkPlayStatus();
                 break;
             case HIDE_CTRL:
@@ -489,18 +435,17 @@ public class PhotoPlayFragment extends Fragment implements OnClickListener,
             
             View view = LayoutInflater.from(mContext).inflate(R.layout.image_photopager_item, null);
             Media_Photo_View photoView = (Media_Photo_View) view.findViewById(R.id.photopager_imageview);
-            photoView.setOnMatrixChangeListener(PhotoPlayFragment.this);
-            photoView.setOnPhotoTapListener(PhotoPlayFragment.this);
+            photoView.setOnMatrixChangeListener(PhotoPlayLayout.this);
+            photoView.setOnPhotoTapListener(PhotoPlayLayout.this);
             if (fileNode.isUnSupportFlag() || fileNode.getFile().length() > 52428800) {
-                int currentPos = PlayStateSharedPreferences.instance(mContext).getImageCurrentPosition();
-                if (position == currentPos) {
+                if (position == mCurPosition) {
                     mUnsupportView.setVisibility(View.VISIBLE);
                     mHandler.removeMessages(PLAY_ERROR);
                     mHandler.sendEmptyMessageDelayed(PLAY_ERROR, 1000);
                 }
             } else {
                 ImageLoad.instance(mContext).loadImageBitmap(photoView, R.drawable.image_icon_default,
-                        fileNode, PhotoPlayFragment.this);
+                        fileNode, PhotoPlayLayout.this);
             }
             photoView.setTag(position);
             container.addView(view, LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
@@ -527,7 +472,7 @@ public class PhotoPlayFragment extends Fragment implements OnClickListener,
         FileNode failedFileNode = null;
         int failedPosition = -1;
         for (int index = 0; index < mPhotoList.size(); index++) {
-        	FileNode fileNode = mPhotoList.get(index);
+            FileNode fileNode = mPhotoList.get(index);
             if (uri != null && uri.equals("file://" + fileNode.getFilePath())) {
                 failedFileNode = fileNode;
                 failedPosition = index;
@@ -552,4 +497,92 @@ public class PhotoPlayFragment extends Fragment implements OnClickListener,
     @Override
     public void onLoadingStarted(String arg0, View arg1) {
     }
+    
+    private boolean isDragPage;
+    private boolean isHeadToEnd;
+    private boolean isEndToHead;
+    private OnPageChangeListener mPageChangeListener = new OnPageChangeListener() {
+        @Override
+        public void onPageScrollStateChanged(int state) {
+            checkPlayStatus(); // 重新计时
+            if (state == 1) {
+                restorePhotoView();
+            }
+            isDragPage = state == 1;
+        }
+
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            checkPlayStatus(); // 重新计时
+            if (position == mPhotoList.size() - 1 && isDragPage) {
+                isEndToHead = positionOffsetPixels == 0;
+                isHeadToEnd = false;
+                DebugLog.d("Yearlay", " ....End.... and sroll offset: " + positionOffsetPixels +
+                        " && isEndToHead: " + isEndToHead);
+            }
+            if (position == 0 && isDragPage) {
+                isHeadToEnd = positionOffsetPixels == 0;
+                isEndToHead = false;
+                DebugLog.d("Yearlay", " ....HEAD... and sroll offset: " + positionOffsetPixels +
+                        " && isHeadToEnd: " + isHeadToEnd);
+            }
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            checkPlayStatus(); // 重新计时
+            restorePhotoView();
+            FileNode fileNode = mPhotoList.get(position);
+            mCollectView.setImageResource(fileNode.getCollect() == 1 ?
+                    R.drawable.media_collect : R.drawable.media_uncollect);
+            if (mDeviceType != DeviceType.COLLECT && mCtrlBar.getVisibility() == View.VISIBLE) {
+                mCollectView.setVisibility(View.VISIBLE);
+            } else {
+                mCollectView.setVisibility(View.GONE);
+            }
+            mTitleTextView.setText(fileNode.getTitleEx());
+            
+            if (fileNode.isUnSupportFlag() || fileNode.getFile().length() > 52428800) { // 不支持的图片。
+                mCollectView.setVisibility(View.GONE);
+                mUnsupportView.setVisibility(View.VISIBLE);
+                mHandler.removeMessages(PLAY_ERROR);
+                mHandler.sendEmptyMessageDelayed(PLAY_ERROR, 1000);
+            } else {
+                mUnsupportView.setVisibility(View.GONE);
+            }
+            mPreFlag = mLastPosition > position;
+            setCurrentPosition(position);
+            DebugLog.d("Yearlay", "onPageSelected mCurPosition: " + mCurPosition);
+        }
+    };
+    
+    private OnTouchListener mTouchListener = new OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            switch (event.getAction()){
+                case MotionEvent.ACTION_DOWN:
+                    break;
+                case MotionEvent.ACTION_UP:
+                    if (mCurPosition == 0 && isDragPage) {
+                        if (isHeadToEnd) {
+                            DebugLog.d("Yearlay", " ...HEAD to END...");
+                            isHeadToEnd = false;
+                            mViewPager.setCurrentItem(mPhotoList.size() - 1, false);
+                            return true;
+                        }
+                    }
+                    if (mCurPosition == mPhotoList.size() - 1 && isDragPage) {
+                        if (isEndToHead) {
+                            DebugLog.d("Yearlay", " ...END to HEAD...");
+                            isEndToHead = false;
+                            nextImage();
+                            mViewPager.setCurrentItem(0, false);
+                            return true;
+                        }
+                    }
+                    break;
+            }
+            return false;
+        }
+    };
 }
