@@ -214,7 +214,7 @@
         android:layout_height="105px"
         android:layout_width="105px"
         android:padding="8px"
-        android:src="@drawable/radio_scan_5s"
+        android:src="@drawable/radio_scan_5s_select"
         android:layout_alignParentRight="true"
         android:layout_marginRight="36px"
         android:layout_marginTop="5px"

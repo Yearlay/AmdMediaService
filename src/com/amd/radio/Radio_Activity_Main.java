@@ -50,8 +50,11 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     private ViewPager viewPager;
     private RadioPagerAdapter<View> mPagerAdapter;
     
-    private boolean isScan5S = false;
-    private boolean isRescan = false;
+    private ImageView mScan5sView;
+    private ImageView mRescanView;
+    
+    private static boolean isScan5S = false;
+    private static boolean isRescan = false;
     private static int tempFreq;
     private Radio_IF mIF;
 
@@ -88,8 +91,8 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
         mCollectButton = (ImageButton) rootView.findViewById(R.id.radio_fragment_ib_collect);
         viewPager = (ViewPager) rootView.findViewById(R.id.radio_fragment_viewpager);
         viewPager.setOnPageChangeListener(this);
-        ImageView rescan = (ImageView) rootView.findViewById(R.id.radio_fragment_rescan);
-        View scan_5s = rootView.findViewById(R.id.radio_fragment_scan_5s);
+        mRescanView = (ImageView) rootView.findViewById(R.id.radio_fragment_rescan);
+        mScan5sView = (ImageView) rootView.findViewById(R.id.radio_fragment_scan_5s);
         mFreqNumTextView = (TextView) rootView.findViewById(R.id.radio_fragment_tv_cur);
         mFreqNameTextView = (TextView) rootView.findViewById(R.id.radio_fragment_tv_name);
         mSTTextView = (TextView) rootView.findViewById(R.id.radio_fragment_tv_st);
@@ -110,8 +113,8 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
         mPrePagerView.setOnClickListener(this);
         rootView.findViewById(R.id.radio_fragment_ib_pm_am).setOnClickListener(this);
         mCollectButton.setOnClickListener(this);
-        rescan.setOnClickListener(this);
-        scan_5s.setOnClickListener(this);
+        mRescanView.setOnClickListener(this);
+        mScan5sView.setOnClickListener(this);
 
         mPagerAdapter = new RadioPagerAdapter<View>(LayoutInflater.from(this.getContext()));
         viewPager.setAdapter(mPagerAdapter);
@@ -131,11 +134,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
         if(Data_Common.tempFreq.size() > 0){
             int freq = Radio_IF.sfreqToInt(Data_Common.tempFreq.get(0));
             Data_Common.tempFreq.clear();
-            if (isRescan || isScan5S) {
-            	isScan5S = false;
-                isRescan = false;
-                mIF.stopScan();
-            }
+            exitRescanAndScan5S(true);
             if (MediaInterfaceUtil.mediaCannotPlay()) {
                 return;
             }
@@ -154,6 +153,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
         updateFreq(mIF.getCurFreq());
         ModeSwitch.instance().setCurrentMode(mContext, true, ModeSwitch.RADIO_MODE);
         updateAll();
+        refreshScanIcon();
     }
     
 	public void onPause() {
@@ -317,7 +317,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
             mCollectButton.setImageResource(R.drawable.media_uncollect);
         }
         
-        if (!isRescan && !isScan5S) {
+        if (!isRescanOrScan5S()) {
             Radio_IF.sendRadioInfo(mIF.getCurBand(), tempFreq);
         }
     }
@@ -333,8 +333,8 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
      * 获取所有频率
      */
     private void updateAllStations() {
-        isScan5S = false;
-        isRescan = false;
+        //exitRescanAndScan5S(false);
+    	//exitRescan();
         //Data_Common.stationList.clear();
         for (int i = 0; i < FREQ_COUNT_MAX; i++) {
             int freq = mIF.getChannel(i);
@@ -428,31 +428,16 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
             return;
         }
         if(id == R.id.radio_fragment_rescan){
-            if (isRescan) {
-                isRescan = false;
-                mIF.stopScan();
+            if (exitRescan()) {
             } else {
-                if (isScan5S) {
-                    isScan5S = false;
-                    mIF.stopScan();
-                }
-                isRescan = true;
-                mIF.scanStore();
+            	exitScan5S();
+            	enterRescan();
             }
         } else if (id == R.id.radio_fragment_scan_5s) {
-            if (isScan5S) {
-                isScan5S = false;
-                mIF.stopScan();
+            if (exitScan5S()) {
             } else {
-                if (isRescan) {
-                    isRescan = false;
-                    mIF.stopScan();
-                }
-                if (!mIF.isEnable()) {
-                	mIF.setEnable(true);
-                }
-                isScan5S = true;
-                mIF.setScan();
+                exitRescan();
+                enterScan5S();
             }
         } else if (id == R.id.radio_fragment_add) {
             mIF.setNextStep();
@@ -461,19 +446,13 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
         } else if (id == R.id.radio_fragment_ib_pm_am) {
             mIF.setCurBand();
         } else if (id == R.id.radio_fragment_pre) {
-            isScan5S = false;
-            isRescan = false;
+        	exitRescanAndScan5S(false);
             mIF.setPreStep();
         } else if (id == R.id.radio_fragment_next) {
-            isScan5S = false;
-            isRescan = false;
+        	exitRescanAndScan5S(false);
             mIF.setNextStep();
         } else if (id == R.id.radio_fragment_pause_play) {
-        	if (isRescan || isScan5S) {
-        		isRescan = false;
-        		isScan5S = false;
-        		mIF.stopScan();
-        	}
+        	exitRescanAndScan5S(true);
         	boolean enable = mIF.isEnable();
         	mIF.setEnable(!enable);
         }
@@ -496,11 +475,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     
     private void sourceChanged(int source) {
 		if (source == ModeDef.AUDIO || source == ModeDef.VIDEO || source == ModeDef.BT) {
-			if (isScan5S || isRescan) {
-				isScan5S = false;
-				isRescan = false;
-				mIF.stopScan();
-			}
+			exitRescanAndScan5S(true);
 		}
 	}
     
@@ -534,16 +509,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
                 break;
             case RadioFunc.STATE:
                 showStateInfo();
-                if (isRescan) {
-                	boolean enable = mIF.isEnable();
-                    if (data == 3 && enable) {
-                    	mIF.setEnable(false);
-                    }
-                    if (data == 0 && (mIF.getCurSource() == ModeDef.RADIO) && !enable) {
-                    	isRescan = false;
-                    	mIF.setEnable(true);
-                    }
-                }
+                isScanStateChange(data);
                 break;
             case RadioFunc.LOC:
                 updateStatus();
@@ -584,4 +550,98 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     private void updatePlayStation() {}
     public void showStateInfo() {}
     private void updateBand(int data) {} // 更新波段
+    
+    private void enterScan5S() {
+        if (!mIF.isEnable()) {
+        	mIF.setEnable(true);
+        }
+    	isScan5S = true;
+    	mIF.setScan();
+    	mScan5sView.setImageResource(R.drawable.radio_scan_5s);
+    }
+    
+    private boolean exitScan5S() {
+    	boolean state = isScan5S;
+    	if (isScan5S) {
+            isScan5S = false;
+            mIF.stopScan();
+        }
+    	mScan5sView.setImageResource(R.drawable.radio_scan_5s_select);
+    	return state;
+    }
+    
+    private void enterRescan() {
+    	isRescan = true;
+        mIF.scanStore();
+        mRescanView.setImageResource(R.drawable.radio_rescan);
+    }
+    
+    private boolean exitRescan() {
+    	boolean state = isRescan;
+    	if (isRescan) {
+            isRescan = false;
+            mIF.stopScan();
+        }
+    	mRescanView.setImageResource(R.drawable.radio_rescan_select);
+    	return state;
+    }
+    
+    private void exitRescanAndScan5S(boolean stopScan) {
+		if (stopScan) {
+			if (isRescan || isScan5S) {
+				mIF.stopScan();
+			}
+		}
+		isRescan = false;
+		isScan5S = false;
+		mRescanView.setImageResource(R.drawable.radio_rescan_select);
+		mScan5sView.setImageResource(R.drawable.radio_scan_5s_select);
+    }
+    
+    private boolean isRescanOrScan5S() {
+    	return isRescan || isScan5S;
+    }
+    
+    private void isScanStateChange(int data) {
+    	//data为2表示SCAN[Scan5S]， 为3表示SEARCH[Rescan]
+    	if (data == 2) {
+    		isScan5S = true;
+    		mScan5sView.setImageResource(R.drawable.radio_scan_5s);
+    	} else if (data == 3) {
+    		isRescan = true;
+    		mRescanView.setImageResource(R.drawable.radio_rescan);
+    	}
+    	if (isRescan) {
+        	boolean enable = mIF.isEnable();
+            if (data == 3 && enable) {
+            	mIF.setEnable(false);
+            }
+            if (data == 0) {
+            	if ((mIF.getCurSource() == ModeDef.RADIO) && !enable) {
+                	mIF.setEnable(true);
+            	}
+            	isRescan = false;
+            	mRescanView.setImageResource(R.drawable.radio_rescan_select);
+            }
+        }
+    	if (isScan5S) {
+    		if (data == 0) {
+    			isScan5S = false;
+    			mScan5sView.setImageResource(R.drawable.radio_scan_5s_select);
+            }
+    	}
+    }
+    
+    private void refreshScanIcon() {
+    	if (isRescan) {
+    		mRescanView.setImageResource(R.drawable.radio_rescan);
+    	} else {
+    		mRescanView.setImageResource(R.drawable.radio_rescan_select);
+    	}
+    	if (isScan5S) {
+    		mScan5sView.setImageResource(R.drawable.radio_scan_5s);
+    	} else {
+    		mScan5sView.setImageResource(R.drawable.radio_scan_5s_select);
+    	}
+    }
 }
