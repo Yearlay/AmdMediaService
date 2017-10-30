@@ -151,7 +151,7 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
                     fileNode.getFilePath().substring(fileNode.getFilePath().lastIndexOf('/') + 1);
             File destFile = new File(destFilePath);
             if (destFile.exists() && fileNode.isSelected()) {
-                CheckBox checkBox = new CheckBox(context);
+                AmdCheckBox checkBox = new AmdCheckBox(context);
                 checkBox.setText(fileNode.getFileName());
                 checkBox.setChecked(true);
                 checkBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
