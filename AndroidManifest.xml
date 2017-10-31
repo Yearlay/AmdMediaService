@@ -68,7 +68,7 @@
                 
         <activity
             android:name="com.haoke.ui.video.Video_Activity_Main"  
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:label="@string/pub_video"
             android:icon="@drawable/ic_video"
         	android:theme="@android:style/Theme.Wallpaper.NoTitleBar" >
@@ -97,7 +97,7 @@
         
         <activity
             android:name="com.haoke.ui.image.Image_Activity_Main"  
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:label="@string/pub_image"
             android:icon="@drawable/ic_image"
         	android:theme="@android:style/Theme.Wallpaper.NoTitleBar" >
