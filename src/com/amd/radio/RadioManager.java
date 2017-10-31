@@ -6,7 +6,9 @@ import android.util.Log;
 import com.amd.media.AudioFocus.AudioFocusListener;
 import com.haoke.define.McuDef.McuFunc;
 import com.haoke.define.MediaDef.PlayState;
+import com.haoke.define.RadioDef.RadioFunc;
 import com.haoke.define.ModeDef;
+import com.haoke.mediaservice.R;
 import com.haoke.service.RadioService;
 import com.haoke.serviceif.CarService_Listener;
 import com.amd.media.MediaInterfaceUtil;
@@ -20,6 +22,8 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 	private RadioService mParent = null;
 	private Radio_IF mIF = null;
 	private int mCurSource = ModeDef.NULL;
+	private static boolean isScan5S = false;
+    private static boolean isRescan = false;
 
 	public RadioManager(RadioService parent) {
 		mParent = parent;
@@ -145,6 +149,12 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 				break;
 			}
 
+		} else if (mode == ModeDef.RADIO) {
+			switch (func) {
+			case RadioFunc.STATE:
+				isScanStateChange(data);
+				break;
+			}
 		}
 //		else if (mode == ModeDef.BT) { // 通话开始或结束，声音需要处理
 //			Log.v(TAG, "onCarDataChange BT func=" + func + ", data=" + data);
@@ -165,5 +175,27 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 	public void setCurInterface(int data) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	private void isScanStateChange(int data) {
+    	//data为2表示SCAN[Scan5S]， 为3表示SEARCH[Rescan]
+    	if (data == 2) {
+    		isScan5S = true;
+    	} else if (data == 3) {
+    		isRescan = true;
+    	} else if (data == 0) {
+    		isRescan = false;
+    		isScan5S = false;
+    	}
+    }
+	
+	//获取是否在扫描状态
+	public boolean isRescanState() {
+		return isRescan;
+	}
+	
+	//获取是否在预览状态
+	public boolean isScan5SState() {
+		return isScan5S;
 	}
 }

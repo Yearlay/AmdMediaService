@@ -633,6 +633,8 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     }
     
     private void refreshScanIcon() {
+    	isRescan = mIF.isRescanState();
+    	isScan5S = mIF.isScan5SState();
     	if (isRescan) {
     		mRescanView.setImageResource(R.drawable.radio_rescan);
     	} else {

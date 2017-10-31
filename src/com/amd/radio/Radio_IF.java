@@ -743,4 +743,24 @@ public class Radio_IF extends CarService_IF {
 		Log.d(TAG, "setRecordRadioOnOff on="+on);
 		return on;
 	}
+	
+	//获取是否在扫描状态
+	public boolean isRescanState() {
+		try {
+			return RadioService.getInstance().getRadioManager().isRescanState();
+		} catch (Exception e) {
+			Log.e(TAG, "isRescanState e="+e);
+		}
+		return false;
+	}
+	
+	//获取是否在预览状态
+	public boolean isScan5SState() {
+		try {
+			return RadioService.getInstance().getRadioManager().isScan5SState();
+		} catch (Exception e) {
+			Log.e(TAG, "isScan5SState e="+e);
+		}
+		return false;
+	}
 }
