@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.media.AudioFocus.AudioFocusListener;
+import com.haoke.data.AllMediaList;
 import com.haoke.define.ModeDef;
 import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.btjar.main.BTDef.BTFunc;
@@ -193,8 +194,11 @@ public class BTMusicManager implements CarService_Listener,
 					mBTIF.music_stop();
 					if (mIF.getCurSource() == ModeDef.BT) {
 						mIF.setCurSource(ModeDef.NULL);
+						AllMediaList.notifyUpdateAppWidget(ModeDef.BT);
+					} else if (Media_IF.sLastSource == ModeDef.BT) {
+						Media_IF.sLastSource = ModeDef.NULL;
+						AllMediaList.notifyUpdateAppWidget(ModeDef.BT);
 					}
-					Media_IF.sLastSource = ModeDef.NULL;
 				}
 				break;
 			case BTFunc.MUSIC_PLAY_STATE:

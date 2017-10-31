@@ -197,7 +197,7 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 		if (getVisibility != visibility) {
 			if (visibility != View.VISIBLE) {
 				onPause();
-			} else {
+			} else if (MusicHomeFragment.isShow) {
 				onResume();
 			}
 		}
