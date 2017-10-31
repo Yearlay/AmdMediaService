@@ -77,15 +77,16 @@ public class Music_Play_Id3 extends LinearLayout implements OnClickListener, ID3
         if (isBTPlay) {
         } else {
             Media_IF mIF = Media_IF.getInstance();
-            String track = mIF.getPlayId3Title();
             String artist = mIF.getPlayId3Artist();
             String album = mIF.getPlayId3Album();
-            if (!mTrack.getText().equals(track)) {
-                mTrack.setText(track);
+            if (TextUtils.isEmpty(album)) {
+                album = unknown;
             }
-            if (!mAlbum.getText().equals(album)) {
-                mAlbum.setText(artist + " - " + album);
+            if (TextUtils.isEmpty(artist)) {
+                artist = unknown;
             }
+            mAlbum.setText(artist + " - " + album);
+            mTrack.setText(mIF.getPlayId3Title());
         }
     }
     

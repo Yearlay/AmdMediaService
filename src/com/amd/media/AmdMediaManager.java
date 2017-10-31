@@ -14,6 +14,7 @@ import com.haoke.application.MediaApplication;
 import com.amd.media.AudioFocus;
 import com.amd.media.AudioFocus.AudioFocusListener;
 import com.haoke.bean.FileNode;
+import com.haoke.bean.ID3Parse;
 import com.haoke.bean.StorageBean;
 import com.haoke.constant.MediaUtil;
 import com.haoke.constant.MediaUtil.CopyState;
@@ -32,6 +33,7 @@ import com.haoke.define.MediaDef.RepeatMode;
 import com.haoke.define.MediaDef.ScanState;
 import com.haoke.define.ModeDef;
 import com.haoke.service.MediaClient;
+import com.haoke.service.MediaService;
 import com.haoke.spectrum.Spectrum;
 import com.haoke.util.DebugLog;
 import com.haoke.util.Media_IF;
@@ -41,6 +43,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.media.AudioManager;
 import android.os.Handler;
+import android.os.Message;
 import android.os.RemoteException;
 import android.util.Log;
 
@@ -159,6 +162,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
     private static final int MSG_DELAY_PLAYTIME = 3000;
     private static final int MSG_SAVE_PLAYTIME = 1;
     private static final int MSG_SAVE_PLAYSTATE = 2;
+    private static final int MSG_PARSE_ID3_INFO = 3;
     private Handler mHandler = new Handler() {
     	public void handleMessage(android.os.Message msg) {
     		switch (msg.what) {
@@ -175,6 +179,26 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 					boolean playing = (msg.arg2 == 0 ? false : true);
 					Log.d(TAG, "mHandler  MSG_SAVE_PLAYSTATE fileType="+fileType+"; playing="+playing);
 					mAllMediaList.savePlayState(fileType, playing);
+				}
+				break;
+			case MSG_PARSE_ID3_INFO:
+				if (true) {
+					final int pos = msg.arg1;
+					int[] index = {0, 0, 0, 0};
+					ArrayList<FileNode> lists = mAllMediaList.getMediaList(mPlayingDeviceType, mPlayingFileType);
+					if (lists.size() > 1) {
+						getPreAndNextIndex(lists.size(), pos, index);
+						Log.d(TAG, "mHandler MSG_PARSE_ID3_INFO index="+index[0]+";"+index[1]+";"+index[2]+";"+index[3]);
+						for (int i=0; i < index.length; i++) {
+							FileNode fileNode = null;
+							try {
+								fileNode = lists.get(index[i]);
+								ID3Parse.instance().parseID3(mContext, fileNode, null);
+							} catch (Exception e) {
+								Log.e(TAG, "mHandler MSG_PARSE_ID3_INFO lists.get error! "+e);
+							}
+						}
+					}
 				}
 				break;
 			}
@@ -287,6 +311,9 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		
 		if (mPlayingPos == -1) {
 			return false;
+		} else {
+			Message msg = mHandler.obtainMessage(MSG_PARSE_ID3_INFO, mPlayingPos, 0);
+			mHandler.sendMessageDelayed(msg, 300);
 		}
 		
 		if (!requestAudioFocus(true)) {
@@ -1323,6 +1350,56 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 					clientList.remove(i);
 				}
 			}
+		}
+	}
+	
+	private void getPreAndNextIndex(int size, int pos, int[] index) {
+		if (mRepeatMode == RepeatMode.RANDOM) {
+			int randPos = changeIndexToRandomPos(pos);
+			randPos--;
+			if (randPos < 0) {
+				randPos = size - 1;
+			}
+			index[1] = mRandomNums[randPos];
+			randPos--;
+			if (randPos < 0) {
+				randPos = size - 1;
+			}
+			index[0] = mRandomNums[randPos];
+			randPos += 2;
+			randPos++;
+			if (randPos >= size) {
+				randPos = 0;
+			}
+			index[2] = mRandomNums[randPos];
+			randPos++;
+			if (randPos >= size) {
+				randPos = 0;
+			}
+			index[3] = mRandomNums[randPos];
+		} else {
+			int circlePos = pos;
+			circlePos--;
+			if (circlePos < 0) {
+				circlePos = size - 1;
+			}
+			index[1] = circlePos;
+			circlePos--;
+			if (circlePos < 0) {
+				circlePos = size - 1;
+			}
+			index[0] = circlePos;
+			circlePos += 2;
+			circlePos++;
+			if (circlePos >= size) {
+				circlePos = 0;
+			}
+			index[2] = circlePos;
+			circlePos++;
+			if (circlePos >= size) {
+				circlePos = 0;
+			}
+			index[3] = circlePos;
 		}
 	}
 }

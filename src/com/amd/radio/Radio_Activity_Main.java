@@ -58,6 +58,8 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     private static int tempFreq;
     private Radio_IF mIF;
 
+	private long mLastClickTime = -1;
+
     public Radio_Activity_Main(Context context) {
     	super(context);
 	}
@@ -396,6 +398,11 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     public void onClick(View v) {
         int id = v.getId();
         Log.d(TAG, "onClick id="+id+"; isRescan="+isRescan+"; isScan5S="+isScan5S);
+        long clickTime = System.currentTimeMillis();
+        if (clickTime - mLastClickTime < 500) {
+                return;
+        }
+        mLastClickTime = clickTime;
         if(id == R.id.radio_fragment_all){
             mContext.startActivity(new Intent(mContext, Radio_To_Favorite.class));
             return;
@@ -462,6 +469,11 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     public boolean onLongClick(View v) {
         int id = v.getId();
         Log.d(TAG, "onLongClick id="+id);
+        long clickTime = System.currentTimeMillis();
+        if (clickTime - mLastClickTime < 500) {
+            return true;
+        }
+        mLastClickTime = clickTime;
         if (MediaInterfaceUtil.mediaCannotPlay()) {
             return true;
         }
