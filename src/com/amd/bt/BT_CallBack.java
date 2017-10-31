@@ -110,21 +110,21 @@ public class BT_CallBack {
 					func == BTFunc.MUSIC_ID3_UPDATE) {
 				AllMediaList.notifyUpdateAppWidget();
 			}
-			if (func == BTFunc.CONN_STATE) {
-				if (data == BTConnState.DISCONNECTED &&
-						Media_IF.getCurSource() == ModeDef.BT) {
-					Intent intent = new Intent("main_activity_update_ui");
-					intent.putExtra("bt_disconnect", true);
-					MediaApplication.getInstance().sendBroadcast(intent);
-				}
-				
-				if (data == BTConnState.CONNECTED &&
-						Media_IF.getCurSource() != ModeDef.BT) {
-					Intent intent = new Intent("main_activity_update_ui");
-					intent.putExtra("bt_connected", true);
-					MediaApplication.getInstance().sendBroadcast(intent);
-				}
-			}
+//			if (func == BTFunc.CONN_STATE) {
+//				if (data == BTConnState.DISCONNECTED &&
+//						Media_IF.getCurSource() == ModeDef.BT) {
+//					Intent intent = new Intent("main_activity_update_ui");
+//					intent.putExtra("bt_disconnect", true);
+//					MediaApplication.getInstance().sendBroadcast(intent);
+//				}
+//				
+//				if (data == BTConnState.CONNECTED &&
+//						Media_IF.getCurSource() != ModeDef.BT) {
+//					Intent intent = new Intent("main_activity_update_ui");
+//					intent.putExtra("bt_connected", true);
+//					MediaApplication.getInstance().sendBroadcast(intent);
+//				}
+//			}
 		}
 	}
 }

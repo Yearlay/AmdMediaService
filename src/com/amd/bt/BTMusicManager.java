@@ -190,6 +190,9 @@ public class BTMusicManager implements CarService_Listener,
 			case BTFunc.CONN_STATE:
 				if (data == BTConnState.DISCONNECTED) {
 					mBTIF.music_stop();
+					if (mIF.getCurSource() == ModeDef.BT) {
+						mIF.setCurSource(ModeDef.NULL);
+					}
 				}
 				break;
 			case BTFunc.MUSIC_PLAY_STATE:

@@ -196,7 +196,8 @@ public class AllMediaList {
         for (LoadListener listener : mLoadListenerList) {
             listener.onScanStateChange(storageBean);
         }
-        mContext.sendBroadcast(new Intent("main_activity_update_ui"));
+        notifyUpdateAppWidget();
+//        mContext.sendBroadcast(new Intent("main_activity_update_ui"));
         if (storageBean.isId3ParseCompleted() || !storageBean.isMounted()) {
             storageBean.setLoadCompleted(true);
         }
@@ -867,10 +868,10 @@ public class AllMediaList {
         try {
             Handler handler = MediaService.getInstance().getHandler();
             if (!handler.hasMessages(MediaService.MSG_UPDATE_APPWIDGET)) {
-                Log.d(TAG, "notifyUpdateAppWidget sendBroadcast main_activity_update_ui");
-                handler.sendEmptyMessageDelayed(MediaService.MSG_UPDATE_APPWIDGET, 200);
+                handler.sendEmptyMessageDelayed(MediaService.MSG_UPDATE_APPWIDGET, 500);
             }
         } catch (Exception e) {
+        	Log.d(TAG, "notifyUpdateAppWidget sendBroadcast main_activity_update_ui");
             MediaApplication.getInstance().sendBroadcast(new Intent("main_activity_update_ui"));
         }
     }

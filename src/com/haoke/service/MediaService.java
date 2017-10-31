@@ -35,6 +35,7 @@ import com.haoke.scanner.MediaScannerListner;
 import com.haoke.ui.image.Image_Activity_Main;
 import com.haoke.ui.video.Video_Activity_Main;
 import com.haoke.ui.video.Video_IF;
+import com.haoke.ui.widget.MediaWidgetProvider;
 import com.haoke.util.DebugLog;
 import com.haoke.util.Media_CarListener;
 import com.haoke.util.Media_IF;
@@ -531,7 +532,9 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
             switch (what) {
                 case MSG_UPDATE_APPWIDGET:
                     removeMessages(what);
-                    sendBroadcast(new Intent("main_activity_update_ui"));
+                    Log.d(TAG, "refreshWidget");
+                    //sendBroadcast(new Intent("main_activity_update_ui"));
+                    MediaWidgetProvider.refreshWidget(MediaService.this);
                     break;
                 case REMOVE_STORAGE:
                     String devicePath = (String) msg.obj;

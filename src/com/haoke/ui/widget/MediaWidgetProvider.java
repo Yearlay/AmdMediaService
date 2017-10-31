@@ -27,7 +27,7 @@ import com.haoke.util.DebugLog;
 import com.haoke.util.Media_IF;
 import com.amd.radio.Radio_IF;
 
-public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseListener {
+public class MediaWidgetProvider extends AppWidgetProvider {
 
     private final String TAG = "MediaWidgetProvider";
     
@@ -40,7 +40,7 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
         return pIntent;
     }
     
-    private void setLabelInfo(Context context, RemoteViews remoteViews) {
+    private static void setLabelInfo(Context context, RemoteViews remoteViews) {
         int strId = R.string.launcher_card_media;
         if (Media_IF.getCurSource() == ModeDef.RADIO) {
             strId = R.string.pub_radio;
@@ -53,7 +53,7 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
         remoteViews.setTextViewText(R.id.widget_media_style, title);
     }
     
-    private void setMusicInfo(Context context, RemoteViews remoteViews, int source) {
+    private static void setMusicInfo(Context context, RemoteViews remoteViews, int source) {
         String unkownStr = context.getResources().getString(R.string.media_unknow);
         String musicTitle  = null;
         String artist  = null;
@@ -72,9 +72,9 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
         remoteViews.setTextViewText(R.id.widget_music_name, musicTitle + " - " + artist);
     }
     
-    private Bitmap mBitmap;
+    private static Bitmap mBitmap;
     
-    private void setShowImage(Context context, RemoteViews remoteViews) {
+    private static void setShowImage(Context context, RemoteViews remoteViews) {
         if (Media_IF.getCurSource() == ModeDef.AUDIO) {
             FileNode fileNode = getFileNode(context);
             if (fileNode != null) {
@@ -96,7 +96,7 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
         }
     }
     
-    private void setMusicPlayButton(Context context, RemoteViews remoteViews, int source) {
+    private static void setMusicPlayButton(Context context, RemoteViews remoteViews, int source) {
         int resPlayId = R.drawable.main_home1_card_music_play_selector;
         int resPauseId = R.drawable.main_home1_card_music_pause_selector;
         if (source == ModeDef.BT) {
@@ -110,7 +110,7 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
         }
     }
     
-    private void setRadioPlayButton(Context context, RemoteViews remoteViews, int source) {
+    private static void setRadioPlayButton(Context context, RemoteViews remoteViews, int source) {
         if (source == ModeDef.RADIO && Radio_IF.getInstance().isEnable()) {
             remoteViews.setImageViewResource(R.id.widget_radio_btn_play,
                     R.drawable.main_home1_card_radio_pause_selector);
@@ -120,7 +120,7 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
         }
     }
     
-    private void setRadioInfo(Context context, RemoteViews remoteViews) {
+    private static void setRadioInfo(Context context, RemoteViews remoteViews) {
         int band = Radio_IF.getInstance().getCurBand();//AM
         int curFreq = Radio_IF.getInstance().getCurFreq();//1055.9
         boolean ST = Radio_IF.getInstance().getST();
@@ -204,6 +204,12 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
         super.onReceive(context, intent);
     }
     
+    public static void refreshWidget(Context context) {
+    	RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.media_widget_provider);
+        setAllInfo(context, remoteViews);
+        updateAppWidgets(context, remoteViews);
+    }
+    
     private void setonClickPendding(Context context, RemoteViews remoteViews) {
         remoteViews.setOnClickPendingIntent(R.id.widget_music_btn_play, getPendingIntent(context, R.id.widget_music_btn_play));
         remoteViews.setOnClickPendingIntent(R.id.widget_music_btn_pre, getPendingIntent(context, R.id.widget_music_btn_pre));
@@ -213,7 +219,7 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
         remoteViews.setOnClickPendingIntent(R.id.widget_radio_btn_play, getPendingIntent(context, R.id.widget_radio_btn_play));
     }
     
-    private void setAllInfo(Context context, RemoteViews remoteViews) {
+    private static void setAllInfo(Context context, RemoteViews remoteViews) {
         int source = Media_IF.getCurSource();
         DebugLog.d("Yearlay", "setAllInfo source: " + source);
         if (source == ModeDef.BT || source == ModeDef.RADIO || source == ModeDef.AUDIO) {
@@ -354,15 +360,15 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
         Radio_IF.getInstance().setEnable(!radioPlay);
     }
     
-    private void updateAppWidgets(Context context, RemoteViews remoteViews) {
+    private static void updateAppWidgets(Context context, RemoteViews remoteViews) {
         ComponentName componentName = new ComponentName(context, MediaWidgetProvider.class);
         AppWidgetManager.getInstance(context).updateAppWidget(componentName, remoteViews);
     }
     
-    private FileNode getFileNode(Context context) {
+    private static FileNode getFileNode(Context context) {
         FileNode fileNode = Media_IF.getInstance().getDefaultItem();
         if (fileNode != null && fileNode.getParseId3() == 0) {
-            ID3Parse.instance().parseID3(context, fileNode, this);
+            ID3Parse.instance().parseID3(context, fileNode, mID3ParseListener);
         }
         if (fileNode != null) {
             DebugLog.e("Yearlay", "AppWidget getDefaultItem : " + fileNode.getFilePath());
@@ -371,15 +377,17 @@ public class MediaWidgetProvider extends AppWidgetProvider implements ID3ParseLi
         }
         return fileNode;
     }
-
-    @Override
-    public void onID3ParseComplete(Object object, FileNode fileNode) {
-        if (object instanceof Context) {
-            Context context = (Context) object;
-            RemoteViews remoteView = new RemoteViews(context.getPackageName(), R.layout.media_widget_provider);
-            setMusicInfo(context, remoteView, Media_IF.getCurSource());
-            setShowImage(context, remoteView);
-            updateAppWidgets(context, remoteView);
+    
+    private static ID3ParseListener mID3ParseListener = new ID3ParseListener() {
+        @Override
+        public void onID3ParseComplete(Object object, FileNode fileNode) {
+            if (object instanceof Context) {
+                Context context = (Context) object;
+                RemoteViews remoteView = new RemoteViews(context.getPackageName(), R.layout.media_widget_provider);
+                setMusicInfo(context, remoteView, Media_IF.getCurSource());
+                setShowImage(context, remoteView);
+                updateAppWidgets(context, remoteView);
+            }
         }
-    }
+    };
 }

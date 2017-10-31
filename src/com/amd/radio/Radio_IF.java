@@ -358,9 +358,12 @@ public class Radio_IF extends CarService_IF {
 	// 左步进
 	public void setPreStep() {
 		try {
-			Log.d(TAG, "setPreStep");
-			setRadioSource();
-			mServiceIF.radio_scanManualPre();
+			boolean focus = RadioService.getInstance().getRadioManager().requestAudioFocus(true);
+			Log.d(TAG, "setPreStep focus="+focus);
+			if (focus) {
+				setRadioSource();
+				mServiceIF.radio_scanManualPre();
+			}
 		} catch (Exception e) {
 			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
 		}
@@ -369,9 +372,12 @@ public class Radio_IF extends CarService_IF {
 	// 右步进
 	public void setNextStep() {
 		try {
-			Log.d(TAG, "setNextStep");
-			setRadioSource();
-			mServiceIF.radio_scanManualNext();
+			boolean focus = RadioService.getInstance().getRadioManager().requestAudioFocus(true);
+			Log.d(TAG, "setNextStep focus="+focus);
+			if (focus) {
+				setRadioSource();
+				mServiceIF.radio_scanManualNext();
+			}
 		} catch (Exception e) {
 			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
 		}

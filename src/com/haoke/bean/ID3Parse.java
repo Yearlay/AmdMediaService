@@ -56,7 +56,9 @@ public class ID3Parse {
                 break;
             case LOADING_END:
                 LoadData loadData = (LoadData) msg.obj;
-                loadData.listener.onID3ParseComplete(loadData.object, loadData.fileNode);
+                if(loadData != null && loadData.listener != null) {
+                    loadData.listener.onID3ParseComplete(loadData.object, loadData.fileNode);
+                }
                 break;
             case RELEASE_THREAD:
                 mLoadThread = null;
