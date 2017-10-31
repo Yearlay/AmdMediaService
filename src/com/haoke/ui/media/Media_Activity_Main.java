@@ -68,7 +68,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
 
         registerReceiver(mReceiver, new IntentFilter(VRConstant.VRIntent.ACTION_FINISH_MUSIC_RADIO));
         initCurSource();
-        AllMediaList.notifyUpdateAppWidget();// 通知MediaWidgetProvider更新UI
+        AllMediaList.notifyUpdateAppWidget(ModeDef.NULL);// 通知MediaWidgetProvider更新UI
         Log.d(TAG, "onCreate");
     }
     

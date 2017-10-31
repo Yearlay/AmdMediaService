@@ -524,18 +524,16 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         return super.onUnbind(intent);
     }
 
-    public static final int MSG_UPDATE_APPWIDGET = 1;
-    public static final int REMOVE_STORAGE = 2;
+    public static final int REMOVE_STORAGE = 1;
+    public static final int MSG_UPDATE_APPWIDGET_BASE = 100;
+    public static final int MSG_UPDATE_APPWIDGET_ALL = MSG_UPDATE_APPWIDGET_BASE + ModeDef.NULL;
+    public static final int MSG_UPDATE_APPWIDGET_BT = MSG_UPDATE_APPWIDGET_BASE + ModeDef.BT;
+    public static final int MSG_UPDATE_APPWIDGET_AUDIO = MSG_UPDATE_APPWIDGET_BASE + ModeDef.AUDIO;
+    public static final int MSG_UPDATE_APPWIDGET_RADIO = MSG_UPDATE_APPWIDGET_BASE + ModeDef.RADIO;
     private Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {
             int what = msg.what;
             switch (what) {
-                case MSG_UPDATE_APPWIDGET:
-                    removeMessages(what);
-                    Log.d(TAG, "refreshWidget");
-                    //sendBroadcast(new Intent("main_activity_update_ui"));
-                    MediaWidgetProvider.refreshWidget(MediaService.this);
-                    break;
                 case REMOVE_STORAGE:
                     String devicePath = (String) msg.obj;
                     if (MediaUtil.DEVICE_PATH_USB_1.equals(devicePath)) {
@@ -545,6 +543,16 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
                         usb2EjectFlag = false;
                     }
                     mScanner.removeStorage(devicePath);
+                    break;
+                case MSG_UPDATE_APPWIDGET_ALL:
+                case MSG_UPDATE_APPWIDGET_BT:
+                case MSG_UPDATE_APPWIDGET_AUDIO:
+                case MSG_UPDATE_APPWIDGET_RADIO:
+                    removeMessages(what);
+                    int refreshMode = what - MSG_UPDATE_APPWIDGET_BASE;
+                    Log.d(TAG, "refreshWidget refreshMode="+refreshMode);
+                    //sendBroadcast(new Intent("main_activity_update_ui"));
+                    MediaWidgetProvider.refreshWidget(MediaService.this, refreshMode);
                     break;
             }
         };

@@ -108,7 +108,7 @@ public class BT_CallBack {
 			}
 			if (func == BTFunc.MUSIC_PLAY_STATE ||
 					func == BTFunc.MUSIC_ID3_UPDATE) {
-				AllMediaList.notifyUpdateAppWidget();
+				AllMediaList.notifyUpdateAppWidget(ModeDef.BT);
 			}
 //			if (func == BTFunc.CONN_STATE) {
 //				if (data == BTConnState.DISCONNECTED &&

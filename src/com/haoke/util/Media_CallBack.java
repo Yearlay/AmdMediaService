@@ -102,7 +102,7 @@ public class Media_CallBack {
 						func == MediaFunc.PLAY_STATE ||
 						func == MediaFunc.PLAY_OVER) {
 					if (mode == ModeDef.MEDIA) {
-						AllMediaList.notifyUpdateAppWidget();
+						AllMediaList.notifyUpdateAppWidget(ModeDef.AUDIO);
 					}
 				}
 			}

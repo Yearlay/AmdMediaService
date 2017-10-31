@@ -31,7 +31,7 @@ public class Radio_CarCallBack {
 
 			listener.onServiceConn();
 		}
-		AllMediaList.notifyUpdateAppWidget();//收音机绑定成功，需要通知桌面媒体框
+		AllMediaList.notifyUpdateAppWidget(ModeDef.RADIO);//收音机绑定成功，需要通知桌面媒体框
 	}
 
 	public void registerCarCallBack(CarService_Listener listener) {
@@ -122,7 +122,7 @@ public class Radio_CarCallBack {
 	                || func == RadioFunc.STATE // 表示收音播放状态发生改变
 	                || func == RadioFunc.ENABLE // 表示收音Enable状态发生改变
 	                || func == RadioFunc.CUR_CH /* 表示当前台发生变化 */ ) {
-	            AllMediaList.notifyUpdateAppWidget();
+	            AllMediaList.notifyUpdateAppWidget(ModeDef.RADIO);
 	        }
 		}
 	}

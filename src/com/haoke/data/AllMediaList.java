@@ -30,6 +30,7 @@ import com.haoke.constant.DBConfig.UriAddress;
 import com.haoke.constant.DBConfig.UriType;
 import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.FileType;
+import com.haoke.define.ModeDef;
 import com.haoke.mediaservice.R;
 import com.haoke.scanner.MediaDbHelper;
 import com.haoke.scanner.MediaDbHelper.TransactionTask;
@@ -196,7 +197,7 @@ public class AllMediaList {
         for (LoadListener listener : mLoadListenerList) {
             listener.onScanStateChange(storageBean);
         }
-        notifyUpdateAppWidget();
+        notifyUpdateAppWidget(ModeDef.AUDIO);
 //        mContext.sendBroadcast(new Intent("main_activity_update_ui"));
         if (storageBean.isId3ParseCompleted() || !storageBean.isMounted()) {
             storageBean.setLoadCompleted(true);
@@ -864,11 +865,12 @@ public class AllMediaList {
         context.sendBroadcast(intent); 
     }
     
-    public static void notifyUpdateAppWidget() {
+    public static void notifyUpdateAppWidget(int refreshMode) {
         try {
             Handler handler = MediaService.getInstance().getHandler();
-            if (!handler.hasMessages(MediaService.MSG_UPDATE_APPWIDGET)) {
-                handler.sendEmptyMessageDelayed(MediaService.MSG_UPDATE_APPWIDGET, 500);
+            int what = MediaService.MSG_UPDATE_APPWIDGET_BASE + refreshMode;
+            if (!handler.hasMessages(what)) {
+                handler.sendEmptyMessageDelayed(what, 500);
             }
         } catch (Exception e) {
         	Log.d(TAG, "notifyUpdateAppWidget sendBroadcast main_activity_update_ui");

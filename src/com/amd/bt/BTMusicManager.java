@@ -16,6 +16,7 @@ import com.haoke.define.MediaDef.PlayState;
 import com.haoke.service.BTMusicService;
 import com.haoke.serviceif.BTService_Listener;
 import com.haoke.serviceif.CarService_Listener;
+import com.haoke.util.Media_IF;
 import com.haoke.window.HKWindowManager;
 
 public class BTMusicManager implements CarService_Listener,
@@ -193,6 +194,7 @@ public class BTMusicManager implements CarService_Listener,
 					if (mIF.getCurSource() == ModeDef.BT) {
 						mIF.setCurSource(ModeDef.NULL);
 					}
+					Media_IF.sLastSource = ModeDef.NULL;
 				}
 				break;
 			case BTFunc.MUSIC_PLAY_STATE:
