@@ -105,8 +105,10 @@ public class ID3Parse {
                 while (mLoadMsgList.size() > 0) {
                     LoadData loaddata = mLoadMsgList.remove(0);
                     FileNode fileNode = loaddata.fileNode;
-                    fileNode.parseID3Info();
-                    mLoadHandler.sendMessage(mLoadHandler.obtainMessage(LOADING_END, loaddata));
+                    if (fileNode.getParseId3() == 0) {
+                        fileNode.parseID3Info();
+                        mLoadHandler.sendMessage(mLoadHandler.obtainMessage(LOADING_END, loaddata));
+                    }
                 }
             } catch (Exception e) {
                 DebugLog.e(TAG, "LoadThread running exception: " + e.toString());
