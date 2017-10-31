@@ -99,6 +99,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
             mTitleTextView.setText(fileNode.getFileName());
         }
         mTimeSeekBar.updateTimeInfo();
+        updateCollectView();
     }
     
     public void setActivityHandler(Handler handler) {
