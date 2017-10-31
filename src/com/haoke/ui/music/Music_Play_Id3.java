@@ -24,9 +24,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class Music_Play_Id3 extends LinearLayout implements OnClickListener, ID3ParseListener {
-    private final String TAG = this.getClass().getSimpleName();
+    private static final String TAG = "Music_Play_Id3";
     
-    private static final String VERSION_INFO = "当前媒体apk版本为 20171026 19:30";
+    private static final String VERSION_INFO = "当前媒体apk版本为 20171031 19:30";
     
     private TextView mTrack;
     private TextView mAlbum;
@@ -37,7 +37,7 @@ public class Music_Play_Id3 extends LinearLayout implements OnClickListener, ID3
     
     private static Bitmap mDefaultBitmap;
     private static Bitmap mDefaultBTBitmap;
-    private Bitmap mBitmap;
+    private static Bitmap mBitmap;
     private String unknown;
     
     private boolean isBTPlay = false;
@@ -45,7 +45,8 @@ public class Music_Play_Id3 extends LinearLayout implements OnClickListener, ID3
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-    	mAlbumView.setImageBitmap(null);
+        Log.d(TAG, "onDetachedFromWindow");
+        /*mAlbumView.setImageBitmap(null);
         if (mDefaultBitmap != null && !mDefaultBitmap.isRecycled()) {
             mDefaultBitmap.recycle();
             mDefaultBitmap = null;
@@ -57,7 +58,7 @@ public class Music_Play_Id3 extends LinearLayout implements OnClickListener, ID3
         if (mBitmap != null && !mBitmap.isRecycled()) {
         	mBitmap.recycle();
         	mBitmap = null;
-        }
+        }*/
     }
     
     public void setBTPlayMode(boolean btModeFlag) {
