@@ -77,8 +77,10 @@ public class MediaWidgetProvider extends AppWidgetProvider {
     
     private static Bitmap mBitmap;
     
-    private static void setShowImage(Context context, RemoteViews remoteViews) {
-        if (Media_IF.getCurSource() == ModeDef.AUDIO) {
+    private static void setShowImage(Context context, RemoteViews remoteViews, int source) {
+    	if (source == ModeDef.BT) {
+            remoteViews.setImageViewResource(R.id.widget_media_icon, R.drawable.home1_card_bt_default);
+        } else if (source == ModeDef.AUDIO || source == ModeDef.NULL) {
             FileNode fileNode = getFileNode(context);
             if (fileNode != null) {
                 if (fileNode.getParseId3() == 1 && fileNode.getThumbnailPath() != null) {
@@ -94,8 +96,6 @@ public class MediaWidgetProvider extends AppWidgetProvider {
             } else {
                 remoteViews.setImageViewResource(R.id.widget_media_icon, R.drawable.home1_card_media_default);
             }
-        } else if (Media_IF.getCurSource() == ModeDef.BT) {
-            remoteViews.setImageViewResource(R.id.widget_media_icon, R.drawable.home1_card_media_default);
         }
     }
     
@@ -238,7 +238,7 @@ public class MediaWidgetProvider extends AppWidgetProvider {
                 }
             }
             setMusicInfo(context, remoteViews, sourceEx); // 更新Music（蓝牙音乐或我的音乐）的信息。
-            setShowImage(context, remoteViews); // 更新Music（蓝牙显示为默认，我的音乐显示专辑图）显示的图片。
+            setShowImage(context, remoteViews, sourceEx); // 更新Music（蓝牙显示为默认，我的音乐显示专辑图）显示的图片。
         }
         if (refreshMode == ModeDef.RADIO || refreshMode == ModeDef.NULL) {
             setRadioInfo(context, remoteViews);
@@ -396,7 +396,7 @@ public class MediaWidgetProvider extends AppWidgetProvider {
                 Context context = (Context) object;
                 RemoteViews remoteView = new RemoteViews(context.getPackageName(), R.layout.media_widget_provider);
                 setMusicInfo(context, remoteView, Media_IF.getCurSource());
-                setShowImage(context, remoteView);
+                setShowImage(context, remoteView, Media_IF.getCurSource());
                 updateAppWidgets(context, remoteView);
             }
         }
