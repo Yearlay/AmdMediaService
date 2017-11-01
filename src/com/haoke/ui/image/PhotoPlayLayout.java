@@ -92,6 +92,9 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     public void updateList(ArrayList<FileNode> dataList, int deviceType) {
         mPhotoList.clear();
         mPhotoList.addAll(dataList);
+        if (mAdapter != null) {
+            mAdapter.notifyDataSetChanged();
+        }
         mDeviceType = deviceType;
         if (mViewPager != null) {
             if (mPhotoList.size() == 0) {
