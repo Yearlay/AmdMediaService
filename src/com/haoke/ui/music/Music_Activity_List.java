@@ -566,6 +566,9 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         hideAllLayout();
         mNoDeviceLayout.setVisibility(View.VISIBLE);
         backToList();
+        if (mErrorDialog != null) {
+            mErrorDialog.CloseDialog();
+        }
     }
     
     private void showLoadingLayout() {
