@@ -304,7 +304,7 @@ public class Video_Activity_Main extends FragmentActivity implements
     private int mErrorCount;
     private void onError() {
         mErrorCount++;
-        if (mPlayLayout != null) {
+        if (mPlayLayout != null && mPlayLayout.getVisibility() == View.VISIBLE) {
             mPlayLayout.setUnsupportViewShow(true);
             mHandler.removeMessages(HIDE_UNSUPPORT_VIEW);
             mHandler.sendEmptyMessageDelayed(HIDE_UNSUPPORT_VIEW, 1000);
