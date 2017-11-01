@@ -19,6 +19,7 @@ import com.amd.bt.BT_IF;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.ID3Parse;
 import com.haoke.bean.ID3Parse.ID3ParseListener;
+import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.define.MediaDef.PlayState;
 import com.haoke.define.ModeDef;
@@ -29,7 +30,7 @@ import com.amd.radio.Radio_IF;
 
 public class MediaWidgetProvider extends AppWidgetProvider {
 
-    private final String TAG = "MediaWidgetProvider";
+    private static final String TAG = "MediaWidgetProvider";
     
     private PendingIntent getPendingIntent(Context context, int buttonId) {
         Intent intent = new Intent();
@@ -40,13 +41,13 @@ public class MediaWidgetProvider extends AppWidgetProvider {
         return pIntent;
     }
     
-    private static void setLabelInfo(Context context, RemoteViews remoteViews) {
+    private static void setLabelInfo(Context context, RemoteViews remoteViews, int source) {
         int strId = R.string.launcher_card_media;
-        if (Media_IF.getCurSource() == ModeDef.RADIO) {
+        if (source == ModeDef.RADIO) {
             strId = R.string.pub_radio;
-        } else if (Media_IF.getCurSource() == ModeDef.BT) {
+        } else if (source == ModeDef.BT) {
             strId = R.string.pub_bt;
-        } else if (Media_IF.getCurSource() == ModeDef.AUDIO) {
+        } else if (source == ModeDef.AUDIO) {
             strId = R.string.launcher_card_media;
         }
         String title = context.getResources().getString(strId);
@@ -66,6 +67,8 @@ public class MediaWidgetProvider extends AppWidgetProvider {
                 musicTitle = fileNode.getTitleEx();
                 artist = fileNode.getArtist();
             }
+        } else {
+            return;
         }
         musicTitle = TextUtils.isEmpty(musicTitle) ? unkownStr : musicTitle;
         artist = TextUtils.isEmpty(artist) ? unkownStr : artist;
@@ -74,8 +77,10 @@ public class MediaWidgetProvider extends AppWidgetProvider {
     
     private static Bitmap mBitmap;
     
-    private static void setShowImage(Context context, RemoteViews remoteViews) {
-        if (Media_IF.getCurSource() == ModeDef.AUDIO) {
+    private static void setShowImage(Context context, RemoteViews remoteViews, int source) {
+    	if (source == ModeDef.BT) {
+            remoteViews.setImageViewResource(R.id.widget_media_icon, R.drawable.home1_card_bt_default);
+        } else if (source == ModeDef.AUDIO || source == ModeDef.NULL) {
             FileNode fileNode = getFileNode(context);
             if (fileNode != null) {
                 if (fileNode.getParseId3() == 1 && fileNode.getThumbnailPath() != null) {
@@ -91,8 +96,6 @@ public class MediaWidgetProvider extends AppWidgetProvider {
             } else {
                 remoteViews.setImageViewResource(R.id.widget_media_icon, R.drawable.home1_card_media_default);
             }
-        } else if (Media_IF.getCurSource() == ModeDef.BT) {
-            remoteViews.setImageViewResource(R.id.widget_media_icon, R.drawable.home1_card_media_default);
         }
     }
     
@@ -146,7 +149,7 @@ public class MediaWidgetProvider extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.media_widget_provider);
         setonClickPendding(context, remoteViews);
-        setAllInfo(context, remoteViews);
+        setAllInfo(context, remoteViews, ModeDef.NULL);
         updateAppWidgets(context, remoteViews);
         super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
@@ -198,16 +201,18 @@ public class MediaWidgetProvider extends AppWidgetProvider {
                 }
             }
             RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.media_widget_provider);
-            setAllInfo(context, remoteViews);
+            setAllInfo(context, remoteViews, ModeDef.NULL);
             updateAppWidgets(context, remoteViews);
         }
         super.onReceive(context, intent);
     }
     
-    public static void refreshWidget(Context context) {
-    	RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.media_widget_provider);
-        setAllInfo(context, remoteViews);
+    public static void refreshWidget(Context context, int refreshMode) {
+        long start = System.currentTimeMillis();
+        RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.media_widget_provider);
+        setAllInfo(context, remoteViews, refreshMode);
         updateAppWidgets(context, remoteViews);
+        Log.d(TAG, "refreshWidget consume="+(System.currentTimeMillis() - start));
     }
     
     private void setonClickPendding(Context context, RemoteViews remoteViews) {
@@ -219,17 +224,23 @@ public class MediaWidgetProvider extends AppWidgetProvider {
         remoteViews.setOnClickPendingIntent(R.id.widget_radio_btn_play, getPendingIntent(context, R.id.widget_radio_btn_play));
     }
     
-    private static void setAllInfo(Context context, RemoteViews remoteViews) {
+    private static void setAllInfo(Context context, RemoteViews remoteViews, int refreshMode) {
         int source = Media_IF.getCurSource();
-        DebugLog.d("Yearlay", "setAllInfo source: " + source);
-        if (source == ModeDef.BT || source == ModeDef.RADIO || source == ModeDef.AUDIO) {
-            setLabelInfo(context, remoteViews); // 更新Label信息。
+        DebugLog.d("Yearlay", "setAllInfo source: " + source + "; refreshMode="+refreshMode);
+        if (refreshMode == ModeDef.BT || refreshMode == ModeDef.RADIO || refreshMode == ModeDef.AUDIO || refreshMode == ModeDef.NULL) {
+            setLabelInfo(context, remoteViews, source); // 更新Label信息。
         }
-        if (source == ModeDef.BT || source == ModeDef.AUDIO || source == ModeDef.NULL) {
-            setMusicInfo(context, remoteViews, source); // 更新Music（蓝牙音乐或我的音乐）的信息。
-            setShowImage(context, remoteViews); // 更新Music（蓝牙显示为默认，我的音乐显示专辑图）显示的图片。
+        if (refreshMode == ModeDef.BT || refreshMode == ModeDef.AUDIO || refreshMode == ModeDef.NULL) {
+            int sourceEx = source;
+            if (source != ModeDef.BT && refreshMode == ModeDef.BT) {
+                if (!(BT_IF.getInstance().getConnState() == BTConnState.CONNECTED)) {
+                    sourceEx = ModeDef.NULL;
+                }
+            }
+            setMusicInfo(context, remoteViews, sourceEx); // 更新Music（蓝牙音乐或我的音乐）的信息。
+            setShowImage(context, remoteViews, sourceEx); // 更新Music（蓝牙显示为默认，我的音乐显示专辑图）显示的图片。
         }
-        if (source == ModeDef.RADIO || source == ModeDef.NULL) {
+        if (refreshMode == ModeDef.RADIO || refreshMode == ModeDef.NULL) {
             setRadioInfo(context, remoteViews);
         }
         setMusicPlayButton(context, remoteViews, source); // 更新音乐的播放按键。
@@ -385,7 +396,7 @@ public class MediaWidgetProvider extends AppWidgetProvider {
                 Context context = (Context) object;
                 RemoteViews remoteView = new RemoteViews(context.getPackageName(), R.layout.media_widget_provider);
                 setMusicInfo(context, remoteView, Media_IF.getCurSource());
-                setShowImage(context, remoteView);
+                setShowImage(context, remoteView, Media_IF.getCurSource());
                 updateAppWidgets(context, remoteView);
             }
         }

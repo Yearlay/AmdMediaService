@@ -34,7 +34,7 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 	private MusicPlayLayout mPlayLayout;
 	private ViewStub mPlayLayoutStub;
 	private CustomDialog mDialog;
-	private boolean isShow = false;
+	protected static boolean isShow = false;
 	private boolean mBtConnected =false;
 	
 	public MusicHomeFragment(Context context) {
