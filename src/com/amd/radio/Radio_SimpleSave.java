@@ -120,7 +120,7 @@ public class Radio_SimpleSave {
 							int stationfreq = (int) cursor.getLong(0);
 							String name = cursor.getString(1);
 							String city = cursor.getString(2);
-							Log.d(TAG, "GetAllSaveStation SQLiteDatabase stationfreq:"+stationfreq+" name:"+name);
+							//Log.d(TAG, "GetAllSaveStation SQLiteDatabase stationfreq:"+stationfreq+" name:"+name);
 							
 							RadioStation station = new RadioStation(stationfreq, "",name);
 							if(city.contains(city_name)){								

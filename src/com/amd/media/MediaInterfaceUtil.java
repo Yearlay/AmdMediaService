@@ -355,6 +355,8 @@ public class MediaInterfaceUtil {
             return 200;
         }
         
+        AllMediaList.notifyUpdateAppWidget(ModeDef.NULL);
+        
         //null为carmanager没有收到mcu给的信号，true为断B+起来，false为断acc休眠起来
         final Boolean power = Media_IF.getInstance().isFirstPower();
         if (power == null) {
