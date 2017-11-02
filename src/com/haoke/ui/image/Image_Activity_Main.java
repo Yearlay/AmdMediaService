@@ -242,24 +242,6 @@ public class Image_Activity_Main extends Activity implements
     }
     
     @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (mPlayLayout.getVisibility() == View.VISIBLE) {
-                onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
-                return true;
-            }
-            if (mListLayout.isEditMode()) {
-                mListLayout.cancelEdit();
-                mEditView.setVisibility(View.GONE);
-                mRadioGroup.setVisibility(View.VISIBLE);
-                mSearchButton.setVisibility(View.VISIBLE);
-                return true;
-            }
-        }
-        return super.onKeyUp(keyCode, event);
-    }
-    
-    @Override
     public void onBackPressed() {
         DebugLog.v(TAG, "HMI-----------onBackPressed---");
         if (mPlayLayout.getVisibility() == View.VISIBLE) {
