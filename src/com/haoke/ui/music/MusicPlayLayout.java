@@ -56,6 +56,20 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 		return mFileNode;
 	}
 	
+	public boolean isWillShowState() {
+		if (isBTPlay) {
+			int source = mIF.getCurSource();
+			if (source != ModeDef.BT) {
+				return false;
+			}
+		} else {
+			if (getFileNode() == null || !getFileNode().isExist(getContext())) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	private boolean isBTPlay = false;
 	
 	public boolean isBTPlay() {
