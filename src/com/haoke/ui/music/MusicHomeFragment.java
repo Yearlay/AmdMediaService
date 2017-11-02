@@ -107,9 +107,8 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 		isShow = true;
 		if (mPlayLayout != null) {
 			if (mPlayLayout.getVisibility() == View.VISIBLE) {
-				if (mPlayLayout.isWillShowState()) {
-					mPlayLayout.onResume();
-				} else {
+				mPlayLayout.onResume();
+				if (!mPlayLayout.isWillShowState()) {
 					goHome();
 				}
 			} else {
