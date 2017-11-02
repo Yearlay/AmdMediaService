@@ -362,26 +362,25 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
         	}
         }
     }
-
+    
     @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-    	Log.d(TAG, "onKeyUp keyCode="+keyCode);
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (pressBackToHome) {
-            	pressBackToHome = false;
-                MediaInterfaceUtil.launchLauncherActivity(this);
-                setIntent(null);
-                finish();
-                return true;
-            }
-            int item = mViewPager.getCurrentItem();
-            if (item == VIEWPAGER_ID_MUSIC) {
-                if (mHomeFragment.isPlayFragment()) {
-                    goHome();
-                    return true;
-                }
+    public void onBackPressed() {
+        Log.d(TAG, "onBackPressed pressBackToHome="+pressBackToHome);
+        if (pressBackToHome) {
+            pressBackToHome = false;
+            MediaInterfaceUtil.launchLauncherActivity(this);
+            setIntent(null);
+            finish();
+            return;
+        }
+        int item = mViewPager.getCurrentItem();
+        if (item == VIEWPAGER_ID_MUSIC) {
+            if (mHomeFragment.isPlayFragment()) {
+                goHome();
+                return;
             }
         }
-        return super.onKeyUp(keyCode, event);
+        super.onBackPressed();
     }
+
 }
