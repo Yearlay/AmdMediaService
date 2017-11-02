@@ -16,7 +16,7 @@
     <string name="collect_from_usb1">来源:USB1</string>
     <string name="collect_from_usb2">来源:USB2</string>
     
-    <string name="radio_null">空</string>
+    <string name="radio_null">" "</string>
     <string name="collect_limit_dialog_title">收藏提示</string>
     <string name="collect_limit_dialog_message">收藏的数量已经超过最大值1000，执行收藏将会覆盖不存在的文件记录或较旧的记录。是否执行？</string>
     <string name="collect_limit_dialog_ok">继续</string>
