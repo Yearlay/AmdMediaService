@@ -452,4 +452,17 @@ public class MediaInterfaceUtil {
         Log.d(TAG, "checkSourceFromBoot source="+source+"; ms="+ms);
         return ms;
     }
+    
+    private static final long BUTTON_CLICK_DELAY = 400;
+    private static long sLastClickTime = -1;
+    public static boolean isButtonClickTooFast() {
+        long clickTime = System.currentTimeMillis();
+        long time = Math.abs(clickTime - sLastClickTime);
+        if (time < BUTTON_CLICK_DELAY) {
+            Log.d(TAG, "isButtonClickTooFast: you click too fast!");
+            return true;
+        }
+        sLastClickTime = clickTime;
+        return false;
+    }
 }
