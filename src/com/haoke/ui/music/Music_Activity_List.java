@@ -557,11 +557,11 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     }
     
     private void showNodeviceLayout() {
-        String text = getString(R.string.music_no_device_usb);
+        String text;
         if (mDeviceType == DeviceType.USB2) {
-            text += "2";
+            text = getString(R.string.no_device_usb_two);
         } else {
-            text += "1";
+            text = getString(R.string.no_device_usb_one);
         }
         mNodeviceTextView.setText(text);
         hideAllLayout();
