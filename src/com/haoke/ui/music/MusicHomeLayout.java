@@ -111,9 +111,7 @@ public class MusicHomeLayout extends LinearLayout implements OnClickListener,
 
 	@Override
 	protected void onDetachedFromWindow() {
-		if (mRetryDialog != null) {
-            mRetryDialog.CloseDialog();
-        }
+		closeRetyDialog();
 		AllMediaList.instance(getContext()).unRegisterLoadListener(this);
 		super.onDetachedFromWindow();
 	}
@@ -121,6 +119,9 @@ public class MusicHomeLayout extends LinearLayout implements OnClickListener,
     public void setBTConnectedState(int data) {
         mHistoryTextView.setText(data == BTConnState.CONNECTED ?
                 R.string.bt_connect_success : R.string.music_scan_bt_free);
+        if (data == BTConnState.CONNECTED) {
+            closeRetyDialog();
+        }
     }
     
     public void deviceChanged(int deviceType, boolean noDevice) {
@@ -216,7 +217,9 @@ public class MusicHomeLayout extends LinearLayout implements OnClickListener,
     }
     
     private void showRetryDialog() {
-        mRetryDialog = new CustomDialog();
+        if (mRetryDialog == null) {
+            mRetryDialog = new CustomDialog();
+        }
         mRetryDialog.ShowDialog(getContext(), DIALOG_TYPE.ONE_BTN, R.string.btmusic_device_disconnected);
         mRetryDialog.SetDialogListener(new OnDialogListener() {
             @Override public void OnDialogDismiss() {}
@@ -227,6 +230,13 @@ public class MusicHomeLayout extends LinearLayout implements OnClickListener,
             	getContext().startActivity(in);
             }
         });
+    }
+    
+    private void closeRetyDialog() {
+        if (mRetryDialog != null) {
+            mRetryDialog.CloseDialog();
+            mRetryDialog = null;
+        }
     }
     
     private static final int GET_COLLECT_SIZE = 1;
