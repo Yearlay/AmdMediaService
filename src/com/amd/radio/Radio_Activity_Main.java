@@ -7,16 +7,12 @@ import com.haoke.define.McuDef.McuFunc;
 import com.haoke.define.RadioDef.RadioFunc;
 import com.haoke.mediaservice.R;
 import com.haoke.serviceif.CarService_Listener;
-import com.haoke.ui.media.Media_Activity_Main;
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.radio.Radio_IF;
 import com.amd.radio.Radio_CarListener;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
@@ -57,8 +53,6 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     private static boolean isRescan = false;
     private static int tempFreq;
     private Radio_IF mIF;
-
-	private long mLastClickTime = -1;
 
     public Radio_Activity_Main(Context context) {
     	super(context);
@@ -398,11 +392,9 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     public void onClick(View v) {
         int id = v.getId();
         Log.d(TAG, "onClick id="+id+"; isRescan="+isRescan+"; isScan5S="+isScan5S);
-        long clickTime = System.currentTimeMillis();
-        if (clickTime - mLastClickTime < 500) {
-                return;
+        if (MediaInterfaceUtil.isButtonClickTooFast()) {
+            return;
         }
-        mLastClickTime = clickTime;
         if(id == R.id.radio_fragment_all){
             mContext.startActivity(new Intent(mContext, Radio_To_Favorite.class));
             return;
@@ -469,11 +461,9 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     public boolean onLongClick(View v) {
         int id = v.getId();
         Log.d(TAG, "onLongClick id="+id);
-        long clickTime = System.currentTimeMillis();
-        if (clickTime - mLastClickTime < 500) {
+        if (MediaInterfaceUtil.isButtonClickTooFast()) {
             return true;
         }
-        mLastClickTime = clickTime;
         if (MediaInterfaceUtil.mediaCannotPlay()) {
             return true;
         }

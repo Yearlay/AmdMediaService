@@ -2,9 +2,13 @@ package com.amd.media;
 
 import java.util.ArrayList;
 
+import android.app.ActivityManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
+import android.provider.Settings;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 
@@ -301,6 +305,39 @@ public class MediaInterfaceUtil {
         context.startActivity(intent);
     }
     
+    public static boolean isRunningTopActivity(Context context, String PackName, String ClassName) {
+        try {
+            ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+            ComponentName cn = am.getRunningTasks(1).get(0).topActivity;
+            String currentPackageName = cn.getPackageName();
+            if (!TextUtils.isEmpty(currentPackageName) && currentPackageName.equals(PackName)) {
+                String currentClassName = cn.getClassName();
+                if (TextUtils.isEmpty(ClassName)) {
+                    return true;
+                } else if (!TextUtils.isEmpty(currentClassName) && currentClassName.equals(ClassName)) {
+                    return true;
+                }
+                return false;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "isRunningTopActivity error! e="+e);
+        }
+        return false;
+    }
+    
+    private static boolean isNaviApp(Context context) {
+        int naviOpenKey = Settings.System.getInt(context.getContentResolver(), "naviOpenKey", 0);
+        boolean isTop = false;
+        if (naviOpenKey == 0) {
+            //高德导航
+            //com.autonavi.auto.remote.fill.UsbFillActivity
+            //com.autonavi.amapauto/.MainMapActivity
+            isTop = isRunningTopActivity(context, "com.autonavi.amapauto", null);
+        }
+        Log.d(TAG, "isNaviApp naviOpenKey="+naviOpenKey+"; isTop="+isTop);
+        return naviOpenKey == 0 ? isTop : true;
+    }
+    
     private static long start = -1;
     private static int sLastDeviceType = -1;
     /**
@@ -318,6 +355,8 @@ public class MediaInterfaceUtil {
             return 200;
         }
         
+        AllMediaList.notifyUpdateAppWidget(ModeDef.NULL);
+        
         //null为carmanager没有收到mcu给的信号，true为断B+起来，false为断acc休眠起来
         final Boolean power = Media_IF.getInstance().isFirstPower();
         if (power == null) {
@@ -332,7 +371,12 @@ public class MediaInterfaceUtil {
         int ms = -1;
         final int source = Media_IF.getCurSource();
         if (source == ModeDef.RADIO) {
-            launchSourceActivity(ModeSwitch.RADIO_MODE, true);
+            if (!Radio_IF.getInstance().isEnable()) {
+                Radio_IF.getInstance().setEnable(true);
+            }
+            if (!isNaviApp(service)) {
+                launchSourceActivity(ModeSwitch.RADIO_MODE, false);
+            }
         } else if (source == ModeDef.AUDIO || source == ModeDef.VIDEO) {
             AllMediaList allMediaList = AllMediaList.instance(service);
             if (sLastDeviceType == -1) {
@@ -356,9 +400,13 @@ public class MediaInterfaceUtil {
                         if (lastFileNode != null) {
                             if (source == ModeDef.AUDIO) {
                                 checkAndPlayDeviceType(sLastDeviceType, fileType);
-                                launchMusicPlayActivity(service);
-                            } else {
-                                launchVideoPlayActivity(service, lastFileNode);
+                            }
+                            if (!isNaviApp(service)) {
+                                if (source == ModeDef.AUDIO) {
+                                    launchMusicPlayActivity(service);
+                                } else {
+                                    launchVideoPlayActivity(service, lastFileNode);
+                                }
                             }
                         } else {
                             //TODO song not exist
@@ -393,10 +441,28 @@ public class MediaInterfaceUtil {
             if (state == BTConnState.DISCONNECTED) {
                 
             } else if (state == BTConnState.CONNECTED) {
-                launchSourceActivity(ModeSwitch.MUSIC_BT_MODE, true);
+                if (!BT_IF.getInstance().music_isPlaying()) {
+                    BT_IF.getInstance().music_play();
+                }
+                if (!isNaviApp(service)) {
+                    launchSourceActivity(ModeSwitch.MUSIC_BT_MODE, false);
+                }
             }
         }
         Log.d(TAG, "checkSourceFromBoot source="+source+"; ms="+ms);
         return ms;
+    }
+    
+    private static final long BUTTON_CLICK_DELAY = 400;
+    private static long sLastClickTime = -1;
+    public static boolean isButtonClickTooFast() {
+        long clickTime = System.currentTimeMillis();
+        long time = Math.abs(clickTime - sLastClickTime);
+        if (time < BUTTON_CLICK_DELAY) {
+            Log.d(TAG, "isButtonClickTooFast: you click too fast!");
+            return true;
+        }
+        sLastClickTime = clickTime;
+        return false;
     }
 }

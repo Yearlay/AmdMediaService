@@ -50,8 +50,6 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 	
 	private int mTextFormat = 1; //1为分秒，2为时分秒
 	
-	private long mLastClickTime = -1;
-
 	private Media_IF mIF = Media_IF.getInstance();
 	private FileNode mFileNode;
 	public FileNode getFileNode() {
@@ -207,11 +205,9 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 	public void onClick(View v) {
 		int id = v.getId();
 		Log.d(TAG, "onClick id="+id);
-		long clickTime = System.currentTimeMillis();
-		if (clickTime - mLastClickTime < 500) {
-			return;
-		}
-		mLastClickTime = clickTime;
+        if (MediaInterfaceUtil.isButtonClickTooFast()) {
+            return;
+        }
 		switch (id) {
 		case R.id.music_play_lists:
 			startListActivity(mIF.getPlayingDevice());

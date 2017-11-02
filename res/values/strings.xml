@@ -18,7 +18,7 @@
     <string name="collect_from_usb1">From:USB1</string>
     <string name="collect_from_usb2">From:USB2</string>
     
-    <string name="radio_null">null</string>
+    <string name="radio_null">" "</string>
     <string name="collect_limit_dialog_title">Collection tips</string>
     <string name="collect_limit_dialog_message">The number of collections has exceeded the maximum value of 1000, and the execution collection will overwrite nonexistent files, records, or older records. Is it implemented?</string>
     <string name="collect_limit_dialog_ok">Continue</string>
