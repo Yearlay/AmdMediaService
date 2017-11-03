@@ -21,6 +21,7 @@ import com.amd.bt.BTMusic_IF;
 import com.amd.bt.BT_IF;
 import com.amd.media.MediaInterfaceUtil;
 import com.haoke.bean.FileNode;
+import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.constant.MediaUtil;
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.data.AllMediaList;
@@ -58,8 +59,9 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 	
 	public boolean isWillShowState() {
 		if (isBTPlay) {
-			int source = mIF.getCurSource();
-			if (source != ModeDef.BT) {
+			//int source = mIF.getCurSource();
+			//if (source != ModeDef.BT) {
+			if(BT_IF.getInstance().getConnState() != BTConnState.CONNECTED) {
 				return false;
 			}
 		} else {

@@ -94,13 +94,11 @@ public class BT_IF extends BTService_IF {
 		return mServiceConn;
 	}
 
-	private boolean musicOpen = false;
 	// 打开通道
 	private void music_open() {
 		try {
 			Log.v(TAG, "music_open()");
 			mServiceIF.music_open();
-			musicOpen = true;
 		} catch (Exception e) {
 			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
 		}
@@ -111,7 +109,6 @@ public class BT_IF extends BTService_IF {
 		try {
 			Log.v(TAG, "music_close()");
 			mServiceIF.music_close();
-			musicOpen = false;
 		} catch (Exception e) {
 			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
 		}
@@ -124,11 +121,9 @@ public class BT_IF extends BTService_IF {
 				return;
 			}
 			boolean focus = BTMusic_IF.getInstance().requestAudioFocus(true);
-			Log.v(TAG, "music_play() musicOpen="+musicOpen+"; focus="+focus);
+			Log.v(TAG, "music_play() focus="+focus);
 			if (focus) {
-				if (!musicOpen) {
-					music_open();
-				}
+				music_open();
 				setBTSource();
 				mServiceIF.music_play();
 			}
@@ -148,13 +143,24 @@ public class BT_IF extends BTService_IF {
 		}
 	}
 	
+	// 关闭通道并暂停，适合焦点被抢时调用
+	public void music_close_pause() {
+		try {
+			Log.v(TAG, "music_close_pause()");
+			music_close();
+			mServiceIF.music_pause();
+		} catch (Exception e) {
+			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+		}
+	}
+	
 	// 停止
 	public void music_stop() {
 		try {
 			Log.v(TAG, "music_stop(), but use music_pause!");
+			music_close();
 			//mServiceIF.music_stop(); // bug 17089
 			mServiceIF.music_pause();
-			music_close();
 		} catch (Exception e) {
 			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
 		}
@@ -167,11 +173,9 @@ public class BT_IF extends BTService_IF {
 				return;
 			}
 			boolean focus = BTMusic_IF.getInstance().requestAudioFocus(true);
-			Log.v(TAG, "music_pre() musicOpen="+musicOpen+"; focus="+focus);
+			Log.v(TAG, "music_pre() focus="+focus);
 			if (focus) {
-				if (!musicOpen) {
-					music_open();
-				}
+				music_open();
 				setBTSource();
 				mServiceIF.music_pre();
 			}
@@ -187,11 +191,9 @@ public class BT_IF extends BTService_IF {
 				return;
 			}
 			boolean focus = BTMusic_IF.getInstance().requestAudioFocus(true);
-			Log.v(TAG, "music_next() musicOpen="+musicOpen+"; focus="+focus);
+			Log.v(TAG, "music_next() focus="+focus);
 			if (focus) {
-				if (!musicOpen) {
-					music_open();
-				}
+				music_open();
 				setBTSource();
 				mServiceIF.music_next();
 			}
