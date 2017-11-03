@@ -151,8 +151,9 @@ public class BT_IF extends BTService_IF {
 	// 停止
 	public void music_stop() {
 		try {
-			Log.v(TAG, "music_pause()");
-			mServiceIF.music_stop();
+			Log.v(TAG, "music_stop(), but use music_pause!");
+			//mServiceIF.music_stop(); // bug 17089
+			mServiceIF.music_pause();
 			music_close();
 		} catch (Exception e) {
 			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
