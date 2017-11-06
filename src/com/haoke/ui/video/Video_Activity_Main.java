@@ -2,6 +2,7 @@ package com.haoke.ui.video;
 
 import java.util.ArrayList;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -9,9 +10,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
@@ -43,7 +42,7 @@ import com.haoke.util.Media_IF;
 import com.haoke.util.Media_Listener;
 import com.haoke.window.HKWindowManager;
 
-public class Video_Activity_Main extends FragmentActivity implements
+public class Video_Activity_Main extends Activity implements
         CarService_Listener, Media_Listener, OnClickListener,
         LoadListener, OnCheckedChangeListener, Media_CarListener{
 
@@ -59,6 +58,7 @@ public class Video_Activity_Main extends FragmentActivity implements
     private TextView mSelectAllView;
     private TextView mCopyTextView;
     private boolean mPreFlag;
+    private boolean mPlaying;
 
     public PlayStateSharedPreferences mPreferences;
     private ArrayList<FileNode> mVideoList = new ArrayList<FileNode>();
@@ -93,6 +93,16 @@ public class Video_Activity_Main extends FragmentActivity implements
         
         mRadioGroup = (RadioGroup) findViewById(R.id.video_tab_group);
         mRadioGroup.setOnCheckedChangeListener(this);
+        int deviceType = mPreferences.getVideoDeviceType();
+        if (deviceType == DeviceType.COLLECT) {
+            mRadioGroup.check(R.id.video_device_collect);
+        } else if (deviceType == DeviceType.USB2) {
+            mRadioGroup.check(R.id.video_device_usb2);
+        } else if (deviceType == DeviceType.USB1) {
+            mRadioGroup.check(R.id.video_device_usb1);
+        } else {
+            mRadioGroup.check(R.id.video_device_flash);
+        }
         mSearchButton = (ImageButton) findViewById(R.id.video_search_button);
         mSearchButton.setOnClickListener(this);
         
@@ -108,7 +118,7 @@ public class Video_Activity_Main extends FragmentActivity implements
         
         registerReceiver(mOperateAppReceiver, new IntentFilter(VRIntent.ACTION_OPERATE_VIDEO));
         
-        mPreferences.saveVideoShowFragment(SWITCH_TO_LIST_FRAGMENT);
+        mPlaying = false;
         
         initIntent(getIntent());
     }
@@ -132,7 +142,7 @@ public class Video_Activity_Main extends FragmentActivity implements
                 }
             }
             mPreferences.saveVideoDeviceType(deviceType);
-            mPreferences.saveVideoShowFragment(SWITCH_TO_PLAY_FRAGMENT);
+            mPlaying = true;
             updateCurPosition(position);
             FileNode fileNode = mVideoList.get(mCurPosition);
             mPlayLayout.setFileNode(fileNode);
@@ -157,7 +167,7 @@ public class Video_Activity_Main extends FragmentActivity implements
             onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
         } else {
             if (storageBean.isId3ParseCompleted()) {
-                onChangeFragment(mPreferences.getVideoShowFragment());
+                onChangeFragment(mPlaying ? SWITCH_TO_PLAY_FRAGMENT : SWITCH_TO_LIST_FRAGMENT);
             } else {
                 onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
             }
@@ -178,6 +188,7 @@ public class Video_Activity_Main extends FragmentActivity implements
     @Override
     public void onStart() {
         super.onStart();
+        Log.v(TAG, "HMI------------onStart");
         mIF.registerModeCallBack(this);
         mIF.registerCarCallBack(this); // 注册服务监听
         mIF.registerLocalCallBack(this); // 注册服务监听
@@ -187,7 +198,13 @@ public class Video_Activity_Main extends FragmentActivity implements
     
     @Override
     protected void onResume() {
+        Log.v(TAG, "HMI------------onResume");
         AllMediaList.notifyAllLabelChange(getApplicationContext(), R.string.pub_video);
+        if (mPlaying) {
+            onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
+        } else {
+            onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
+        }
         if (mPlayLayout.getVisibility() == View.VISIBLE) {
             mPlayLayout.onResume();
         }
@@ -196,6 +213,7 @@ public class Video_Activity_Main extends FragmentActivity implements
 
     @Override
     protected void onPause() {
+        Log.v(TAG, "HMI------------onPause");
         if (mPlayLayout.getVisibility() == View.VISIBLE) {
             mPlayLayout.onPause();
         }
@@ -205,7 +223,7 @@ public class Video_Activity_Main extends FragmentActivity implements
 
     @Override
     public void onStop() {
-        Log.v(TAG, "HMI------------onPause");
+        Log.v(TAG, "HMI------------onStop");
         super.onStop();
         mIF.unregisterModeCallBack(this);
         mIF.unregisterCarCallBack(this); // 注销服务监听
@@ -288,11 +306,11 @@ public class Video_Activity_Main extends FragmentActivity implements
         FileNode fileNode = mIF.getPlayItem();
         int position = 0;
         if (fileNode != null && mVideoList.size() > 0) {
-        	for (; position < mVideoList.size(); position++) {
-				if (mVideoList.get(position).isSame(fileNode)) {
-					break;
-				}
-			}
+            for (; position < mVideoList.size(); position++) {
+                if (mVideoList.get(position).isSame(fileNode)) {
+                    break;
+                }
+            }
         }
         updateCurPosition(position);
     }
@@ -347,9 +365,6 @@ public class Video_Activity_Main extends FragmentActivity implements
     
     private void touchEvent(int deviceType) {
         mPreferences.saveVideoDeviceType(deviceType);
-        if (mPreferences.getVideoShowFragment() != SWITCH_TO_LIST_FRAGMENT) {
-            onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
-        }
         mIF.setCurScanner(deviceType, FileType.VIDEO);
         updateDevice(deviceType);
     }
@@ -421,23 +436,20 @@ public class Video_Activity_Main extends FragmentActivity implements
     }
 
     @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (mPlayLayout.getVisibility() == View.VISIBLE) {
-                onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
-                return true;
-            }
-            if (mListLayout.isEditMode()) {
-                mListLayout.cancelEdit();
-                mEditView.setVisibility(View.GONE);
-                mRadioGroup.setVisibility(View.VISIBLE);
-                mSearchButton.setVisibility(View.VISIBLE);
-                return true;
-            }
+    public void onBackPressed() {
+        DebugLog.v(TAG, "HMI-----------onBackPressed---");
+        if (mPlayLayout.getVisibility() == View.VISIBLE) {
+            onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
+        } else if (mListLayout.isEditMode()) {
+            mListLayout.cancelEdit();
+            mEditView.setVisibility(View.GONE);
+            mRadioGroup.setVisibility(View.VISIBLE);
+            mSearchButton.setVisibility(View.VISIBLE);
+        } else {
+            super.onBackPressed();
         }
-        return super.onKeyUp(keyCode, event);
     }
-    
+
     private void playVideo(int position) {
         if (MediaInterfaceUtil.mediaCannotPlay()) {
             return;
@@ -457,7 +469,7 @@ public class Video_Activity_Main extends FragmentActivity implements
                     Video_Activity_Main.this.finish();
                     break;
                 case VRIntent.PLAY_VIDEO:
-                    if (mPreferences.getVideoShowFragment() != SWITCH_TO_PLAY_FRAGMENT) {
+                    if (!mPlaying) {
                         onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
                     }
                     mIF.play(mPreferences.getVideoCurrentPosition());
@@ -468,13 +480,13 @@ public class Video_Activity_Main extends FragmentActivity implements
                     mPlayLayout.updatePlayState(mIF.getPlayState());
                     break;
                 case VRIntent.PRE_VIDEO:
-                    if (mPreferences.getVideoShowFragment() != SWITCH_TO_PLAY_FRAGMENT) {
+                    if (!mPlaying) {
                         onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
                     }
                     playPre();
                     break;
                 case VRIntent.NEXT_VIDEO:
-                    if (mPreferences.getVideoShowFragment() != SWITCH_TO_PLAY_FRAGMENT) {
+                    if (!mPlaying) {
                         onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
                     }
                     playNext();
@@ -553,7 +565,7 @@ public class Video_Activity_Main extends FragmentActivity implements
     
     private void onChangeFragment(int index) {
         DebugLog.d(TAG, "onChangeFragment index: " + index);
-        mPreferences.saveVideoShowFragment(index);
+        mPlaying = (index == SWITCH_TO_PLAY_FRAGMENT);
         if (index == SWITCH_TO_PLAY_FRAGMENT) {
             mPlayLayout.setVisibility(View.VISIBLE);
             HKWindowManager.hideWallpaper(this);

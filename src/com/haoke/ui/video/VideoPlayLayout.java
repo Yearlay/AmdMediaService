@@ -440,10 +440,12 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
             return;
         }
         boolean showFlag = !mFileNode.isFromCollectTable();
-        mCollectView.setVisibility(showFlag ? View.VISIBLE : View.GONE);
         if (showFlag) {
             mCollectView.setImageResource(mFileNode.getCollect() == 1 ?
                     R.drawable.media_collect : R.drawable.media_uncollect);
+        }
+        if (mCtrlBar.getVisibility() == View.VISIBLE) {
+            mCollectView.setVisibility(showFlag ? View.VISIBLE : View.GONE);
         }
     }
 }

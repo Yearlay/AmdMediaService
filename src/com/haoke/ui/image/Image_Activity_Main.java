@@ -2,6 +2,7 @@ package com.haoke.ui.image;
 
 import java.util.ArrayList;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -9,7 +10,6 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.FragmentActivity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -35,7 +35,7 @@ import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
 import com.haoke.util.DebugLog;
 import com.haoke.window.HKWindowManager;
 
-public class Image_Activity_Main extends FragmentActivity implements
+public class Image_Activity_Main extends Activity implements
         OnClickListener, LoadListener, OnCheckedChangeListener {
     
     private final String TAG = "PhotoApp";
@@ -242,21 +242,18 @@ public class Image_Activity_Main extends FragmentActivity implements
     }
     
     @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (mPlayLayout.getVisibility() == View.VISIBLE) {
-                onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
-                return true;
-            }
-            if (mListLayout.isEditMode()) {
-                mListLayout.cancelEdit();
-                mEditView.setVisibility(View.GONE);
-                mRadioGroup.setVisibility(View.VISIBLE);
-                mSearchButton.setVisibility(View.VISIBLE);
-                return true;
-            }
+    public void onBackPressed() {
+        DebugLog.v(TAG, "HMI-----------onBackPressed---");
+        if (mPlayLayout.getVisibility() == View.VISIBLE) {
+            onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
+        } else if (mListLayout.isEditMode()) {
+            mListLayout.cancelEdit();
+            mEditView.setVisibility(View.GONE);
+            mRadioGroup.setVisibility(View.VISIBLE);
+            mSearchButton.setVisibility(View.VISIBLE);
+        } else {
+            super.onBackPressed();
         }
-        return super.onKeyUp(keyCode, event);
     }
 
     public Handler getHandler() {

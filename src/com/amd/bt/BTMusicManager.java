@@ -93,7 +93,8 @@ public class BTMusicManager implements CarService_Listener,
 			break;
 
 		case PlayState.PAUSE:
-			mBTIF.music_pause();
+			//mBTIF.music_pause();
+			mBTIF.music_close_pause();
 			setRecordPlayState(playing ? PlayState.PLAY : PlayState.STOP);
 			break;
 			

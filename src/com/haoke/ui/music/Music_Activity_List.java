@@ -156,6 +156,11 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         mAdapter.updateList();
         mListTab.updateEditTab();
         showListLayout();
+        
+        if (mErrorDialog != null) {
+            mErrorDialog.CloseDialog();
+            mErrorDialog = null;
+        }
     }
     
     private void initView() {
@@ -251,15 +256,15 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     }
     
     @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK && 
-                getIntent() != null && "com.haoke.data.ModeSwitch".equals(getIntent().getAction())) {
+    public void onBackPressed() {
+        Log.d(TAG, "onBackPressed");
+        if (getIntent() != null && "com.haoke.data.ModeSwitch".equals(getIntent().getAction())) {
             MediaInterfaceUtil.launchLauncherActivity(this);
             setIntent(null);
             finish();
-            return true;
+        } else {
+            super.onBackPressed();
         }
-        return super.onKeyUp(keyCode, event);
     }
 
     @Override
@@ -293,6 +298,9 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
                 break;
             case MediaFunc.PLAY_OVER://105
                 onPlayOver();
+                break;
+            case MediaFunc.PLAY_STATE://106
+                onPlayStateChange(data1, data2);
                 break;
             case MediaFunc.DELETE_FILE://7 歌曲删除状态
                 updateDeleteState(data1, data2);
@@ -370,6 +378,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     		}
     		if (isVisibility(mListLayout)) {
     			updateListWithoutSelection();
+                setCurPlaySelection(false);
     		}
     	}
     }
@@ -388,6 +397,12 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
 
     private void onPlayOver() {
         if (isVisibility(mListLayout) && mIF.getPlayingDevice() == mDeviceType) {
+            updateListWithoutSelection();
+        }
+    }
+    
+    private void onPlayStateChange(int data1, int data2) {
+    	if (isVisibility(mListLayout) && mIF.getPlayingDevice() == mDeviceType) {
             updateListWithoutSelection();
         }
     }
@@ -667,21 +682,25 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         final Runnable checkSelection = new Runnable() {
             @Override
             public void run() {
-                mListView.requestFocusFromTouch();
-                if (mIF.getPlayingDevice() == mDeviceType && mIF.getPlayingFileType() == FileType.AUDIO) {
-                    int focusNo = 0;
-                    focusNo = mIF.getPlayPos();
-                    if (focusNo < 0)
-                        focusNo = 0;
-                    mListView.setSelection(focusNo);
-                } else {
-                    mListView.setSelection(0);
-                }
+            	setCurPlaySelection(false);
             }
         };
 
         checkSelection.run();
         mListView.postDelayed(checkSelection, 20);
+    }
+    
+    private void setCurPlaySelection(boolean requestFocus) {
+        if (requestFocus) mListView.requestFocusFromTouch();
+        if (mIF.getPlayingDevice() == mDeviceType && mIF.getPlayingFileType() == FileType.AUDIO) {
+            int focusNo = 0;
+            focusNo = mIF.getPlayPos();
+            if (focusNo < 0)
+                focusNo = 0;
+            mListView.setSelection(focusNo);
+        } else {
+            mListView.setSelection(0);
+        }
     }
 
     @Override
