@@ -392,6 +392,9 @@ public class MediaWidgetProvider extends AppWidgetProvider {
     private static ID3ParseListener mID3ParseListener = new ID3ParseListener() {
         @Override
         public void onID3ParseComplete(Object object, FileNode fileNode) {
+            if (fileNode == null || fileNode.getParseId3() == 0) {
+                return;
+            }
             if (object instanceof Context) {
                 Context context = (Context) object;
                 RemoteViews remoteView = new RemoteViews(context.getPackageName(), R.layout.media_widget_provider);

@@ -86,7 +86,6 @@
         
         <activity android:name="com.haoke.ui.music.Music_Activity_List"
             android:launchMode="singleTask"
-            android:noHistory="true"
         	android:theme="@android:style/Theme.Wallpaper.NoTitleBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -124,18 +123,15 @@
         </receiver>
         
         <activity android:name="com.amd.radio.Radio_To_Favorite"
-            android:noHistory="true"
             android:theme="@android:style/Theme.Wallpaper.NoTitleBar" >
         </activity>
 	
         <activity android:name="com.amd.radio.SearchRadioActivity"
-            android:noHistory="true"
             android:theme="@android:style/Theme.Wallpaper.NoTitleBar"
             android:windowSoftInputMode="stateHidden">
         </activity>
         
         <activity android:name="com.haoke.ui.media.MediaSearchActivity"
-            android:noHistory="true"
             android:theme="@android:style/Theme.Wallpaper.NoTitleBar"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" >
         </activity>
