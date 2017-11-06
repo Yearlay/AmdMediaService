@@ -321,20 +321,10 @@ public class Video_Activity_Main extends Activity implements
 
     private int mErrorCount;
     private void onError() {
-        mErrorCount++;
         if (mPlayLayout != null && mPlayLayout.getVisibility() == View.VISIBLE) {
             mPlayLayout.setUnsupportViewShow(true);
             mHandler.removeMessages(HIDE_UNSUPPORT_VIEW);
             mHandler.sendEmptyMessageDelayed(HIDE_UNSUPPORT_VIEW, 1000);
-            if (mErrorCount >= 5) {
-                return;
-            }
-            if (mPreFlag) {
-                playPre();
-            } else {
-                playNext();
-            }
-            mPlayLayout.updateVideoLayout(true);
         }
     }
 
@@ -553,9 +543,23 @@ public class Video_Activity_Main extends Activity implements
                 playNext();
                 break;
             case HIDE_UNSUPPORT_VIEW:
+                mErrorCount++;
+                DebugLog.d(TAG, "HIDE_UNSUPPORT_VIEW mErrorCount: " + mErrorCount);
                 if (mPlayLayout != null) {
                     mPlayLayout.setUnsupportViewShow(false);
                 }
+                if (mErrorCount >= 5) {
+                    mErrorCount = 0;
+                    onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
+                } else {
+                    if (mPreFlag) {
+                        playPre();
+                    } else {
+                        playNext();
+                    }
+                    mPlayLayout.updateVideoLayout(true);
+                }
+                break;
             default:
                 break;
             }
