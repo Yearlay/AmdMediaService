@@ -90,14 +90,13 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     
     // 更新列表
     public void updateList(ArrayList<FileNode> dataList, int deviceType) {
-        mPhotoList.clear();
-        mPhotoList.addAll(dataList);
+        mPhotoList = dataList;
         if (mAdapter != null) {
             mAdapter.notifyDataSetChanged();
         }
         mDeviceType = deviceType;
         if (mViewPager != null) {
-            if (mPhotoList.size() == 0) {
+            if (dataList.size() == 0) {
                 if (mActivityHandler != null) { // 回列表
                     mActivityHandler.sendEmptyMessage(Image_Activity_Main.SWITCH_TO_LIST_FRAGMENT);
                 }
