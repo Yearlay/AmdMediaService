@@ -167,6 +167,11 @@ public class MediaInterfaceUtil {
         public void audioFocusChanged(int state) {
             switch (state) {
             case PlayState.PLAY:
+                if (sMuteKey_MuteState) {
+                    if (!Media_IF.getMute()) {
+                        mAudioFocus.requestTransientAudioFocus(false);
+                    }
+                }
                 break;
             case PlayState.PAUSE:
                 break;
