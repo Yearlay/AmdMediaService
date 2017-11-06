@@ -163,6 +163,15 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
         mCollectView.setVisibility(mDeviceType == DeviceType.COLLECT ? View.GONE : View.VISIBLE);
         mTitleTextView.setText(mPhotoList.get(mViewPager.getCurrentItem()).getTitleEx());
         updatePlayState(mPlayState);
+        FileNode fileNode = mPhotoList.get(mCurPosition);
+        if (fileNode.isUnSupportFlag() || fileNode.getFile().length() > 52428800) { // 不支持的图片。
+            mCollectView.setVisibility(View.GONE);
+            mUnsupportView.setVisibility(View.VISIBLE);
+            mHandler.removeMessages(PLAY_ERROR);
+            mHandler.sendEmptyMessageDelayed(PLAY_ERROR, 1000);
+        } else {
+            mUnsupportView.setVisibility(View.GONE);
+        }
         
         mViewPager.setOnPageChangeListener(mPageChangeListener);
         mViewPager.setOnTouchListener(mTouchListener);
