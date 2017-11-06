@@ -129,7 +129,7 @@ public class MediaInterfaceUtil {
     public static void cancelMuteRecordPlayState(int key) {
         Log.d(TAG, "cancelMuteRecordPlayState sMuteKey_MuteState="+sMuteKey_MuteState+"; sPowerKey_MuteState="+sPowerKey_MuteState);
         if (true) {
-            if (hasAudioFocus()) {
+            if (hasAudioFocus() || sMuteKey_MuteState || sPowerKey_MuteState) {
                 Log.d(TAG, "cancelMuteRecordPlayState hasAudioFocus");
                 if (key == KeyEvent.KEYCODE_MUTE) {
                     if (sMuteKey_MuteState) {
@@ -165,13 +165,14 @@ public class MediaInterfaceUtil {
     private static AudioFocusListener mAudioFocusListener = new AudioFocusListener() {
         @Override
         public void audioFocusChanged(int state) {
+            Log.d(TAG,  "audioFocusChanged state="+state+"; sMuteKey_MuteState="+sMuteKey_MuteState+"; sPowerKey_MuteState="+sPowerKey_MuteState);
             switch (state) {
             case PlayState.PLAY:
-                if (sMuteKey_MuteState) {
-                    if (!Media_IF.getMute()) {
-                        mAudioFocus.requestTransientAudioFocus(false);
-                    }
-                }
+//                if (sMuteKey_MuteState) {
+//                    if (!Media_IF.getMute()) {
+//                        mAudioFocus.requestTransientAudioFocus(false);
+//                    }
+//                }
                 break;
             case PlayState.PAUSE:
                 break;
@@ -378,6 +379,9 @@ public class MediaInterfaceUtil {
         final int source = Media_IF.getCurSource();
         if (source == ModeDef.RADIO) {
             if (!Radio_IF.getInstance().isEnable()) {
+                if (Media_IF.getMute()) {
+                    Media_IF.cancelMute();
+                }
                 Radio_IF.getInstance().setEnable(true);
             }
             if (!isNaviApp(service)) {
@@ -405,6 +409,9 @@ public class MediaInterfaceUtil {
                         FileNode lastFileNode = allMediaList.getPlayTime(sLastDeviceType, fileType);
                         if (lastFileNode != null) {
                             if (source == ModeDef.AUDIO) {
+                                if (Media_IF.getMute()) {
+                                    Media_IF.cancelMute();
+                                }
                                 checkAndPlayDeviceType(sLastDeviceType, fileType);
                             }
                             if (!isNaviApp(service)) {
@@ -448,6 +455,9 @@ public class MediaInterfaceUtil {
                 
             } else if (state == BTConnState.CONNECTED) {
                 if (!BT_IF.getInstance().music_isPlaying()) {
+                    if (Media_IF.getMute()) {
+                        Media_IF.cancelMute();
+                    }
                     BT_IF.getInstance().music_play();
                 }
                 if (!isNaviApp(service)) {
