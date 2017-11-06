@@ -368,7 +368,18 @@ public class MediaWidgetProvider extends AppWidgetProvider {
         // Media_IF.setCurSource(ModeDef.RADIO);
         // Radio_IF.getInstance().requestAudioFocus(true);
         boolean radioPlay = Radio_IF.getInstance().isEnable();
-        Radio_IF.getInstance().setEnable(!radioPlay);
+        //Radio_IF.getInstance().setEnable(!radioPlay);
+        boolean radioRescan = Radio_IF.getInstance().isRescanState();
+        boolean radioScan5s = Radio_IF.getInstance().isScan5SState();
+        Log.e("Luke","--radioPlay: " + radioPlay + " ,radioRescan: " + radioRescan + " ,radioScan5s: " + radioScan5s);
+        if(radioPlay){
+        	Radio_IF.getInstance().setEnable(!radioPlay);
+        }else if(radioRescan || radioScan5s){
+        	Radio_IF.getInstance().stopScan();
+        }else {
+        	Radio_IF.getInstance().setEnable(!radioPlay);
+        }
+        
     }
     
     private static void updateAppWidgets(Context context, RemoteViews remoteViews) {
