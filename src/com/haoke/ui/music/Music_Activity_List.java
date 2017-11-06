@@ -156,6 +156,11 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         mAdapter.updateList();
         mListTab.updateEditTab();
         showListLayout();
+        
+        if (mErrorDialog != null) {
+            mErrorDialog.CloseDialog();
+            mErrorDialog = null;
+        }
     }
     
     private void initView() {
