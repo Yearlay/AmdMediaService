@@ -47,7 +47,7 @@ public class FileNode {
     private long fileSize; // 文件大小
     private String lastDate; // 文件日期
     
-    private int parseId3;
+    private int parseId3; // 0：表示没有解析过； 1：表示解析成功； -1：表示解析失败。
     private String title; // 歌曲名
     private String artist; // 艺术家
     private String album; // 专辑名
@@ -604,6 +604,9 @@ public class FileNode {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            setParseId3(-1);
+            Context context = MediaApplication.getInstance().getApplicationContext();
+            MediaDbHelper.instance(context).update(this);
         } finally {
             if (is != null) {
                 try {
@@ -656,6 +659,9 @@ public class FileNode {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            setParseId3(-1);
+            Context context = MediaApplication.getInstance().getApplicationContext();
+            MediaDbHelper.instance(context).update(this);
         } finally {
             if (is != null) {
                 try {
