@@ -110,7 +110,7 @@ public class PlayStateSharedPreferences {
         getPreferences().edit().putInt(ImageInfo.SHOWFRAGMENT, fragmentId).commit();
     }
     public int getImageShowFragment() {
-        return getPreferences().getInt(ImageInfo.SHOWFRAGMENT, Image_Activity_Main.SWITCH_TO_LIST_FRAGMENT);
+        return getPreferences().getInt(ImageInfo.SHOWFRAGMENT, 0);
     }
     public void saveImageCurrentPosition(int currentPosition) {
         getPreferences().edit().putInt(ImageInfo.CURRENTPOSITION, currentPosition).commit();
@@ -134,7 +134,7 @@ public class PlayStateSharedPreferences {
         getPreferences().edit().putInt(VideoInfo.SHOWFRAGMENT, fragmentId).commit();
     }
     public int getVideoShowFragment() {
-        return getPreferences().getInt(VideoInfo.SHOWFRAGMENT, Image_Activity_Main.SWITCH_TO_LIST_FRAGMENT);
+        return getPreferences().getInt(VideoInfo.SHOWFRAGMENT, 0);
     }
     public void saveVideoCurrentPosition(int currentPosition) {
         getPreferences().edit().putInt(VideoInfo.CURRENTPOSITION, currentPosition).commit();
