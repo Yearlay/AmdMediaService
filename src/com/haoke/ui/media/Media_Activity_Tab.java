@@ -35,6 +35,7 @@ public class Media_Activity_Tab extends RelativeLayout implements OnCheckedChang
         }
         if (view != null) {
             setFocusBtn(view.getId());
+            mBtnLayout.setEnabled(view == mBtnRadio ? false : true);
             mBtnCurPlay.setVisibility(view == mBtnRadio ? View.INVISIBLE : View.VISIBLE);
             mCurPlayUnderLineView.setVisibility((view == mBtnRadio || !mShowCurPlayUnderLine) ? View.INVISIBLE : View.VISIBLE);
         }
@@ -54,6 +55,7 @@ public class Media_Activity_Tab extends RelativeLayout implements OnCheckedChang
     private RadioButton mBtnMusic;
     private View mBtnSearch;
     private View mCurPlayUnderLineView;
+    private View mBtnLayout;
     private OnClickListener mOnClickListener = null;
     private int mCurSource = -1;
 
@@ -74,7 +76,9 @@ public class Media_Activity_Tab extends RelativeLayout implements OnCheckedChang
         mBtnSearch = this.findViewById(R.id.search_button);
         mBtnSearch.setOnClickListener(this);
         mRadioGroup.setOnCheckedChangeListener(this);
-        findViewById(R.id.media_tab_layout).setOnClickListener(this);
+        mBtnLayout = findViewById(R.id.media_tab_layout);
+        mBtnLayout.setOnClickListener(this);
+        mBtnLayout.setEnabled(true);
     }
     
     @Override
