@@ -572,6 +572,7 @@ public class Video_Activity_Main extends Activity implements
         mPlaying = (index == SWITCH_TO_PLAY_FRAGMENT);
         if (index == SWITCH_TO_PLAY_FRAGMENT) {
             mPlayLayout.setVisibility(View.VISIBLE);
+            mPlayLayout.onResume();
             HKWindowManager.hideWallpaper(this);
             HKWindowManager.fullScreen(this, true);
             getWindow().getDecorView()
