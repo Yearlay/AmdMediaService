@@ -124,6 +124,10 @@ public class MediaWidgetProvider extends AppWidgetProvider {
     }
     
     private static void setRadioInfo(Context context, RemoteViews remoteViews) {
+        if (!Radio_IF.getInstance().isServiceConnected()) {
+            Log.e(TAG, "setRadioInfo Radio_IF isServiceConnected is false!");
+            return;
+        }
         int band = Radio_IF.getInstance().getCurBand();//AM
         int curFreq = Radio_IF.getInstance().getCurFreq();//1055.9
         boolean ST = Radio_IF.getInstance().getST();
@@ -240,7 +244,7 @@ public class MediaWidgetProvider extends AppWidgetProvider {
             setMusicInfo(context, remoteViews, sourceEx); // 更新Music（蓝牙音乐或我的音乐）的信息。
             setShowImage(context, remoteViews, sourceEx); // 更新Music（蓝牙显示为默认，我的音乐显示专辑图）显示的图片。
         }
-        if (refreshMode == ModeDef.RADIO || refreshMode == ModeDef.NULL) {
+        if (true || refreshMode == ModeDef.RADIO || refreshMode == ModeDef.NULL) {
             setRadioInfo(context, remoteViews);
         }
         setMusicPlayButton(context, remoteViews, source); // 更新音乐的播放按键。
@@ -403,6 +407,9 @@ public class MediaWidgetProvider extends AppWidgetProvider {
     private static ID3ParseListener mID3ParseListener = new ID3ParseListener() {
         @Override
         public void onID3ParseComplete(Object object, FileNode fileNode) {
+            if (fileNode == null || fileNode.getParseId3() == 0) {
+                return;
+            }
             if (object instanceof Context) {
                 Context context = (Context) object;
                 RemoteViews remoteView = new RemoteViews(context.getPackageName(), R.layout.media_widget_provider);

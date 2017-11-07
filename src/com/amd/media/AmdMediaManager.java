@@ -701,18 +701,18 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		clearPlayRecord();
 		mIsPlayDefault = false;
 		if (!mScanMode) {
-			if (mErrorCount < 5) {
-				mErrorCount++;
-				if (getPlayingFileType() != FileType.VIDEO) {
+			if (getPlayingFileType() != FileType.VIDEO) {
+				if (mErrorCount < 5) {
+					mErrorCount++;
 					if (mPrevFlag) {
 						pre(true); // 自动播放上一曲						
 					} else {
 						next(true); // 自动播放下一曲
 					}
+				} else {
+					Log.v(TAG, "onError playOver");
+					playOver();
 				}
-			} else {
-				Log.v(TAG, "onError playOver");
-				playOver();
 			}
 		}
 
@@ -726,18 +726,18 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		clearPlayRecord();
 		mIsPlayDefault = false;
 		if (!mScanMode) {
-			if (mErrorCount < 5) {
-				mErrorCount++;
-				if (getPlayingFileType() != FileType.VIDEO) {
+			if (getPlayingFileType() != FileType.VIDEO) {
+				if (mErrorCount < 5) {
+					mErrorCount++;
 					if (mPrevFlag) {
 						pre(true); // 自动播放上一曲						
 					} else {
 						next(true); // 自动播放下一曲
 					}
+				} else {
+					Log.v(TAG, "onIOException playOver");
+					playOver();
 				}
-			} else {
-				Log.v(TAG, "onIOException playOver");
-				playOver();
 			}
 		}
 

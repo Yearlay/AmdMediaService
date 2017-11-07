@@ -90,14 +90,13 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     
     // 更新列表
     public void updateList(ArrayList<FileNode> dataList, int deviceType) {
-        mPhotoList.clear();
-        mPhotoList.addAll(dataList);
+        mPhotoList = dataList;
         if (mAdapter != null) {
             mAdapter.notifyDataSetChanged();
         }
         mDeviceType = deviceType;
         if (mViewPager != null) {
-            if (mPhotoList.size() == 0) {
+            if (dataList.size() == 0) {
                 if (mActivityHandler != null) { // 回列表
                     mActivityHandler.sendEmptyMessage(Image_Activity_Main.SWITCH_TO_LIST_FRAGMENT);
                 }
@@ -164,6 +163,15 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
         mCollectView.setVisibility(mDeviceType == DeviceType.COLLECT ? View.GONE : View.VISIBLE);
         mTitleTextView.setText(mPhotoList.get(mViewPager.getCurrentItem()).getTitleEx());
         updatePlayState(mPlayState);
+        FileNode fileNode = mPhotoList.get(mCurPosition);
+        if (fileNode.isUnSupportFlag() || fileNode.getFile().length() > 52428800) { // 不支持的图片。
+            mCollectView.setVisibility(View.GONE);
+            mUnsupportView.setVisibility(View.VISIBLE);
+            mHandler.removeMessages(PLAY_ERROR);
+            mHandler.sendEmptyMessageDelayed(PLAY_ERROR, 1000);
+        } else {
+            mUnsupportView.setVisibility(View.GONE);
+        }
         
         mViewPager.setOnPageChangeListener(mPageChangeListener);
         mViewPager.setOnTouchListener(mTouchListener);

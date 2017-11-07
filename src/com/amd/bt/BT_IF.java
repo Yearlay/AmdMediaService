@@ -143,6 +143,11 @@ public class BT_IF extends BTService_IF {
 		}
 	}
 	
+	// 打开通道，适合焦点获取时调用
+	public void music_openEx() {
+		music_open();
+	}
+	
 	// 关闭通道并暂停，适合焦点被抢时调用
 	public void music_close_pause() {
 		try {

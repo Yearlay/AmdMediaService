@@ -84,6 +84,7 @@ public class BTMusicManager implements CarService_Listener,
 				mBTIF.music_play();
 				setRecordPlayState(PlayState.PLAY);
 			}*/
+			mBTIF.music_openEx();
 			if (recordPlayState == PlayState.PLAY) {
 				// 清除标志，避免原本是暂停，每次抢焦点都进行播放
 				setRecordPlayState(PlayState.STOP);
