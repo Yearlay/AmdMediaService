@@ -29,7 +29,6 @@ import com.haoke.data.AllMediaList;
 import com.haoke.data.OperateListener;
 import com.haoke.define.MediaDef.PlayState;
 import com.haoke.mediaservice.R;
-import com.haoke.util.DebugLog;
 import com.haoke.video.VideoSurfaceView;
 
 public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener, View.OnClickListener,
@@ -335,6 +334,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     private static final int DELAY_TIME = 5000;
     private static final int HIDE_CTRL = 1;
     private static final int DELAY_PLAY = 2;
+    private static final int END_SCROLL = 3;
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -346,6 +346,9 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
                 Video_IF.getInstance().setPlayState(PlayState.PLAY);
                 updatePlayState(Video_IF.getInstance().getPlayState());
                 startHideTimer();
+                break;
+            case END_SCROLL:
+                mTimeSeekBar.onStopTrackingTouch(mTimeSeekBar.getSeekBar());
                 break;
             default:
                 break;
@@ -414,6 +417,8 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         int position = seekBar.getProgress();
         seekBar.setProgress(position - modifyDistanceX(distanceX));
         mTimeSeekBar.checkScroll();
+        mHandler.removeMessages(END_SCROLL);
+        mHandler.sendEmptyMessageDelayed(END_SCROLL, 1500);
         return true;
     }
 
