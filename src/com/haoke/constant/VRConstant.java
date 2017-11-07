@@ -30,9 +30,19 @@ public class VRConstant {
 	public static class VRRadio {
 		public static final String ACTION_RADIO_OPERATOR = "com.jsbd.vr.radio.operation.action";
 		public static final String KEY_COMMAND_CODE = "commandCode";
+		public static final String KEY_STATION_FREQ = "station";
 		public static final int COMMAND_COLLECT_RADIO = 1;   // 收藏当前播放电台。
 		public static final int COMMAND_UNCOLLECT_RADIO = 2; // 取消收藏当前播放电台。
 		public static final int COMMAND_PLAY_COLLECT_RADIO = 3; // 播放收藏列表的中的电台。
+		public static final int COMMAND_PLAY_PREV_RADIO = 4; // 切换到上一电台（频率小的）
+		public static final int COMMAND_PLAY_NEXT_RADIO = 5; // 切换到下一电台（频率大的）
+		public static final int COMMAND_SEARCH_PREV_RADIO = 6; // 从当前波段向上搜索（频率小的）
+		public static final int COMMAND_SEARCH_NEXT_RADIO = 7; // 从当前波段向下搜索（频率大的）
+		public static final int COMMAND_SCAN_RADIO = 8; // 扫描全波段电台
+		public static final int COMMAND_PLAY_FM_STATION_RADIO = 9; // 切换到调频，如果指定某个电台，会有station参数，需要打开界面
+		public static final int COMMAND_PLAY_AM_STATION_RADIO = 10; // 切换到调幅，如果指定某个电台，会有station参数，需要打开界面
+		public static final int COMMAND_REFRESH_FM_RADIO = 11; // 刷新调频目录，如果当前不是调频，则先切到调频，再刷新
+		public static final int COMMAND_REFRESH_AM_RADIO = 12; // 刷新调幅目录，如果当前不是调幅，则先切到调幅，再刷新
 	}
 	
 	public static class VRImage {

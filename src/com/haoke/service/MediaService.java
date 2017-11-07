@@ -434,6 +434,33 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         case VRRadio.COMMAND_PLAY_COLLECT_RADIO:
             commandPlayCollectRadio();
             break;
+        case VRRadio.COMMAND_PLAY_PREV_RADIO:
+            commandPlayPrevRadio();
+            break;
+        case VRRadio.COMMAND_PLAY_NEXT_RADIO:
+            commandPlayNextRadio();
+            break;
+        case VRRadio.COMMAND_SEARCH_PREV_RADIO:
+            commandSearchPrevRadio();
+            break;
+        case VRRadio.COMMAND_SEARCH_NEXT_RADIO:
+            commandSearchNextRadio();
+            break;
+        case VRRadio.COMMAND_SCAN_RADIO:
+            commandScanRadio();
+            break;
+        case VRRadio.COMMAND_PLAY_FM_STATION_RADIO:
+            commandPlayFMStationRadio(intent.getStringExtra(VRRadio.KEY_STATION_FREQ));
+            break;
+        case VRRadio.COMMAND_PLAY_AM_STATION_RADIO:
+            commandPlayAMStationRadio(intent.getStringExtra(VRRadio.KEY_STATION_FREQ));
+            break;
+        case VRRadio.COMMAND_REFRESH_FM_RADIO:
+            commandRefreshFMRadio();
+            break;
+        case VRRadio.COMMAND_REFRESH_AM_RADIO:
+            commandRefreshAMRadio();
+            break;
         default:
             break;
         }
@@ -504,6 +531,50 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     private void commandPlayCollectRadio() {
         // 播放收藏列表的中的电台（不用打开收音机播放的界面）。
         mRadioIF.playCollectFistFreq(this.getApplicationContext(), true);
+    }
+    
+    private void commandPlayPrevRadio() {
+        // 切换到上一电台（频率小的）
+    }
+    
+    private void commandPlayNextRadio() {
+        // 切换到下一电台（频率大的）
+    }
+    
+    private void commandSearchPrevRadio() {
+        // 从当前波段向上搜索（频率小的）
+        mRadioIF.setPreSearch();
+    }
+    
+    private void commandSearchNextRadio() {
+        // 从当前波段向下搜索（频率大的）
+        mRadioIF.setNextSearch();
+    }
+    
+    private void commandScanRadio() {
+        // 扫描全波段电台
+        mRadioIF.scanStore();
+    }
+    
+    private void commandPlayFMStationRadio(String sfreq) {
+        // 切换到调频，如果指定某个电台，会有station参数，需要打开界面
+        mRadioIF.setCurBand();
+        mRadioIF.setCurFreq(Radio_IF.sfreqToInt(sfreq));
+        launchSourceActivity(ModeSwitch.RADIO_MODE, true);
+    }
+    
+    private void commandPlayAMStationRadio(String sfreq) {
+        // 切换到调幅，如果指定某个电台，会有station参数，需要打开界面
+    }
+    
+    private void commandRefreshFMRadio() {
+        // 刷新调频目录，如果当前不是调频，则先切到调频，再刷新
+        mRadioIF.setCurBand();
+        mRadioIF.scanStore();
+    }
+    
+    private void commandRefreshAMRadio() {
+        // 刷新调幅目录，如果当前不是调幅，则先切到调幅，再刷新
     }
 
     @Override
