@@ -103,7 +103,6 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
             } else {
                 mAdapter = new PhotoPagerAdapter();
                 mViewPager.setAdapter(mAdapter);
-                mCollectView.setVisibility(deviceType == DeviceType.COLLECT ? View.GONE : View.VISIBLE);
                 // 更新一下位置。
                 mCurPosition = mCurPosition < 0 ? 0 : mCurPosition;
                 mCurPosition = mCurPosition >= mPhotoList.size() ? mPhotoList.size() - 1 : mCurPosition;
@@ -158,9 +157,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
         if (mCtrlBar.getVisibility() == View.VISIBLE) {
             startHideTimer();
         }
-        mCollectView.setImageResource(mPhotoList.get(mViewPager.getCurrentItem()).getCollect() == 1 ?
-                R.drawable.media_collect : R.drawable.media_uncollect);
-        mCollectView.setVisibility(mDeviceType == DeviceType.COLLECT ? View.GONE : View.VISIBLE);
+        updateCollectView();
         mTitleTextView.setText(mPhotoList.get(mViewPager.getCurrentItem()).getTitleEx());
         updatePlayState(mPlayState);
         FileNode fileNode = mPhotoList.get(mCurPosition);
@@ -345,7 +342,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     private void slaverShow(boolean visible) {
         if (visible) {
             mCtrlBar.setVisibility(View.VISIBLE);
-            mCollectView.setVisibility(mDeviceType == DeviceType.COLLECT ? View.GONE : View.VISIBLE);
+            updateCollectView();
             mTitleTextView.setVisibility(View.VISIBLE);
             startHideTimer();
         } else {
@@ -566,6 +563,21 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
             DebugLog.d("Yearlay", "onPageSelected mCurPosition: " + mCurPosition);
         }
     };
+    
+    private void updateCollectView() {
+        FileNode fileNode = mPhotoList.get(mCurPosition);
+        if (fileNode == null || mCollectView == null) {
+            return;
+        }
+        boolean showFlag = !fileNode.isFromCollectTable();
+        if (showFlag) {
+            mCollectView.setImageResource(fileNode.getCollect() == 1 ?
+                    R.drawable.media_collect : R.drawable.media_uncollect);
+        }
+        if (mCtrlBar.getVisibility() == View.VISIBLE) {
+            mCollectView.setVisibility(showFlag ? View.VISIBLE : View.GONE);
+        }
+    }
     
     private OnTouchListener mTouchListener = new OnTouchListener() {
         @Override
