@@ -331,25 +331,18 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     private void updateAllStations() {
         //exitRescanAndScan5S(false);
     	//exitRescan();
-        //Data_Common.stationList.clear();
+        Data_Common.stationList.clear();
         for (int i = 0; i < FREQ_COUNT_MAX; i++) {
             int freq = mIF.getChannel(i);
-            boolean addFlag = freq != 0 && !haveFreq(freq);
             if (freq != 0) {
-                Log.d(TAG, "updateAllStations i="+i+"; freq="+freq+"; addFlag="+addFlag);
-            }
-            if (addFlag) {
+                Log.d(TAG, "updateAllStations i="+i+"; freq="+freq);
                 String freq_string = String.valueOf(freq);
                 if (freq >= 8750) {
                     freq_string = freq_string.substring(0, freq_string.length()-2)+"."+freq_string.substring(freq_string.length()-2);
                 } 
                 String stationName = Radio_SimpleSave.getInstance().getStationName(freq);
                 RadioStation station = new RadioStation(freq, freq_string, stationName);
-                if (i < Data_Common.stationList.size()) {
-                    Data_Common.stationList.set(i, station);
-                } else {
-                    Data_Common.stationList.add(station);
-                }
+                Data_Common.stationList.add(station);
             }
         }
         getViewPagerFragmentNum();
@@ -506,8 +499,8 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
                 updateAllStations();
                 break;
             case RadioFunc.CUR_CH:
-                showStateInfo();
-                updateAllStations();
+                //showStateInfo();
+                //updateAllStations();
                 break;
             case RadioFunc.STATE:
                 showStateInfo();
