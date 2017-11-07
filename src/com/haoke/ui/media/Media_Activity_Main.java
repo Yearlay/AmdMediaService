@@ -205,8 +205,10 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
         mViewPager.setOnPageChangeListener(null);
         mViewPager.setCurrentItem(tabItem, smoothScroll);
         mViewPager.setOnPageChangeListener(mPageChangeListener);
+        findViewById(R.id.media_tab_layout).setEnabled(true);
         if (mViewPager.getCurrentItem() == VIEWPAGER_ID_RADIO) {
             mSearchButton.setVisibility(View.VISIBLE);
+            findViewById(R.id.media_tab_layout).setEnabled(false);
         } else if (curSource == ModeDef.BT || mHomeFragment.isBTMusicPlayFragment()) {
             mSearchButton.setVisibility(View.INVISIBLE);
         } else {
