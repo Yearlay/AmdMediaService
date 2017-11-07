@@ -299,8 +299,8 @@ public class Video_Activity_Main extends Activity implements
         }
         if (mPlayLayout.getVisibility() == View.VISIBLE) {
             mPlayLayout.updatePlayState(mIF.getPlayState());
-            mPlayLayout.updateTimeBar();
         }
+        mPlayLayout.updateTimeBar();
         mErrorCount = 0;
         
         FileNode fileNode = mIF.getPlayItem();
