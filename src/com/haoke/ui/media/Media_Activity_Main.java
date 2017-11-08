@@ -122,6 +122,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
         if (isShowRadioLayout()) {
         	ModeSwitch.instance().setCurrentMode(this, true, ModeSwitch.RADIO_MODE);
         }
+        mActivityTab.refreshSkin();
     }
 
     @Override
