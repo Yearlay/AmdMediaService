@@ -36,7 +36,7 @@
             android:orientation="vertical"
             android:gravity="center_vertical">
             
-            <haoke.ui.util.HKTextView 
+            <com.haoke.ui.widget.HKTextView
                 android:id="@+id/item_filename"
                 android:layout_width="380px"
                 android:layout_height="wrap_content"

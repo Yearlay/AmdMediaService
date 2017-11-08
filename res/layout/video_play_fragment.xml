@@ -14,11 +14,11 @@
 	</RelativeLayout>
 	
     <!-- 全透明遮罩（不加此图，音量条不会消失） -->
-    <haoke.ui.util.HKImageView
+    <ImageView
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
 	    android:layout_alignParentBottom="true"
-	    hkui:image_bg="@drawable/pub_transparent_bg" />
+	    android:background="@drawable/pub_transparent_bg" />
     
     <!-- 视频警告 -->
     <include layout="@layout/video_play_forbidden_layout" />

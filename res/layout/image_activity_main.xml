@@ -25,7 +25,7 @@
             android:gravity="center_horizontal"
             android:textColor="@drawable/tab_textcolor_selector"
             android:textSize="22sp"
-            android:text="@string/pub_flash" />
+            android:text="@string/media_flash_tab" />
         
         <RadioButton
             android:id="@+id/image_device_usb1"
@@ -38,7 +38,7 @@
             android:gravity="center_horizontal"
             android:textColor="@drawable/tab_textcolor_selector"
             android:textSize="22sp"
-            android:text="@string/music_scan_usb1" />
+            android:text="@string/media_usb1_tab" />
         
         <RadioButton
             android:id="@+id/image_device_usb2"
@@ -51,7 +51,7 @@
             android:gravity="center_horizontal"
             android:textColor="@drawable/tab_textcolor_selector"
             android:textSize="22sp"
-            android:text="@string/music_scan_usb2" />
+            android:text="@string/media_usb2_tab" />
         
         <RadioButton
             android:id="@+id/image_device_collect"

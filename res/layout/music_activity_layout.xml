@@ -27,7 +27,7 @@
             android:layout_marginTop="10dp"
             android:src="@drawable/music_save" />
 
-        <haoke.ui.util.HKTextView
+        <com.haoke.ui.widget.HKTextView
             android:id="@+id/text_name_save"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -37,7 +37,7 @@
             android:text="@string/music_my_save"
             android:textColor="@color/hk_custom_text" />
 
-        <haoke.ui.util.HKTextView
+        <com.haoke.ui.widget.HKTextView
             android:id="@+id/music_save_count"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -64,7 +64,7 @@
             android:layout_marginTop="10dp"
             android:src="@drawable/music_local" />
 
-        <haoke.ui.util.HKTextView
+        <com.haoke.ui.widget.HKTextView
             android:id="@+id/text_name_local"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -74,7 +74,7 @@
             android:text="@string/music_local"
             android:textColor="@color/hk_custom_text" />
 
-        <haoke.ui.util.HKTextView
+        <com.haoke.ui.widget.HKTextView
             android:id="@+id/music_local_count"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -101,7 +101,7 @@
             android:layout_marginTop="10dp"
             android:src="@drawable/music_scan_bt" />
 
-        <haoke.ui.util.HKTextView
+        <com.haoke.ui.widget.HKTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -110,7 +110,7 @@
             android:text="@string/music_scan_bt"
             android:textColor="@color/hk_custom_text" />
 
-        <haoke.ui.util.HKTextView
+        <com.haoke.ui.widget.HKTextView
             android:id="@+id/music_bt_device_connect"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -144,14 +144,14 @@
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/music_scan_usb" />
 
-            <haoke.ui.util.HKTextView
+            <com.haoke.ui.widget.HKTextView
                 android:id="@+id/fra_button_usb"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:paddingTop="4dp"
                 android:textSize="20dp"
-                android:text="@string/music_scan_usb1"
+                android:text="@string/media_usb1_tab"
                 android:textColor="@color/hk_custom_text" />
         </LinearLayout>
 <!-- USB2 音乐 -->
@@ -171,14 +171,14 @@
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/music_scan_usb" />
 
-            <haoke.ui.util.HKTextView
+            <com.haoke.ui.widget.HKTextView
                 android:id="@+id/fra_button_bt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:paddingTop="4dp"
                 android:textSize="20dp"
-                android:text="@string/music_scan_usb2"
+                android:text="@string/media_usb2_tab"
                 android:textColor="@color/hk_custom_text" />
         </LinearLayout>
     </LinearLayout>

@@ -1,5 +1,6 @@
 package com.haoke.ui.image;
 
+import java.security.spec.MGF1ParameterSpec;
 import java.util.ArrayList;
 
 import android.app.Activity;
@@ -14,10 +15,12 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
 
+import com.archermind.skinlib.SkinManager;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.StorageBean;
 import com.haoke.constant.MediaUtil;
@@ -147,7 +150,25 @@ public class Image_Activity_Main extends Activity implements
             updateDevice(mPlayPreferences.getImageDeviceType());
         }
         mRadioGroup.setOnCheckedChangeListener(this);
+        
+        initSkin();
         super.onResume();
+    }
+    
+    private void initSkin() {
+        SkinManager skinManager = SkinManager.instance(getApplicationContext());
+        RadioButton localRadioButton = (RadioButton) mRadioGroup.findViewById(R.id.image_device_flash);
+        localRadioButton.setTextColor(skinManager.getColorStateList(R.drawable.tab_textcolor_selector));
+        localRadioButton.setBackgroundDrawable(skinManager.getStateListDrawable(R.drawable.tab_backgroud_selector));
+        RadioButton usb1RadioButton = (RadioButton) mRadioGroup.findViewById(R.id.image_device_usb1);
+        usb1RadioButton.setTextColor(skinManager.getColorStateList(R.drawable.tab_textcolor_selector));
+        usb1RadioButton.setBackgroundDrawable(skinManager.getStateListDrawable(R.drawable.tab_backgroud_selector));
+        RadioButton usb2RadioButton = (RadioButton) mRadioGroup.findViewById(R.id.image_device_usb2);
+        usb2RadioButton.setTextColor(skinManager.getColorStateList(R.drawable.tab_textcolor_selector));
+        usb2RadioButton.setBackgroundDrawable(skinManager.getStateListDrawable(R.drawable.tab_backgroud_selector));
+        RadioButton collectRadioButton = (RadioButton) mRadioGroup.findViewById(R.id.image_device_collect);
+        collectRadioButton.setTextColor(skinManager.getColorStateList(R.drawable.tab_textcolor_selector));
+        collectRadioButton.setBackgroundDrawable(skinManager.getStateListDrawable(R.drawable.tab_backgroud_selector));
     }
 
     @Override

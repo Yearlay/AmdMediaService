@@ -221,13 +221,13 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
             // 显示数据来自哪个存储。
             int deviceType = fileNode.getDeviceType();
             if (deviceType == DeviceType.USB1) {
-                holder.mDeviceTypeView.setText(R.string.music_scan_usb1);
+                holder.mDeviceTypeView.setText(R.string.media_usb1_tab);
             } else if (deviceType == DeviceType.USB2) {
-                holder.mDeviceTypeView.setText(R.string.music_scan_usb2);
+                holder.mDeviceTypeView.setText(R.string.media_usb2_tab);
             } else if (deviceType == DeviceType.FLASH) {
-                holder.mDeviceTypeView.setText(R.string.pub_flash);
+                holder.mDeviceTypeView.setText(R.string.media_flash_tab);
             } else {
-                holder.mDeviceTypeView.setText(R.string.music_play_icon_local);
+                holder.mDeviceTypeView.setText(R.string.media_collect_tab);
             }
             // 显示title或者文件名
             String title = fileNode.getTitleEx();

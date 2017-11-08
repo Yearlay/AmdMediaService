@@ -36,12 +36,12 @@
 	        android:layout_marginLeft="30dp"
 	        android:orientation="vertical" >
         
-		    <haoke.ui.util.HKTextView
+		    <com.haoke.ui.widget.HKTextView
         		android:id="@+id/media_id3_track"
         		android:gravity="center_horizontal"
         		style="@style/media_music_id3"
         		android:textSize="28sp" />
-	        <haoke.ui.util.HKTextView
+	        <com.haoke.ui.widget.HKTextView
 	            android:id="@+id/media_id3_album"
 	            android:gravity="center_horizontal"
 	            style="@style/media_music_id3"

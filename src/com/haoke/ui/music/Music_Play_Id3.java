@@ -166,15 +166,15 @@ public class Music_Play_Id3 extends LinearLayout implements OnClickListener, ID3
         }
         
         if (fileNode.getDeviceType() == DeviceType.USB1) {
-            mDeviceView.setText(R.string.music_scan_usb1);
+            mDeviceView.setText(R.string.media_usb1_tab);
         } else if (fileNode.getDeviceType() == DeviceType.USB2) {
-            mDeviceView.setText(R.string.music_scan_usb2);
+            mDeviceView.setText(R.string.media_usb2_tab);
         } else if (fileNode.getDeviceType() == DeviceType.FLASH) {
-            mDeviceView.setText(R.string.pub_flash);
+            mDeviceView.setText(R.string.media_flash_tab);
         } else if (Media_IF.getCurSource() == ModeDef.BT) {
-            mDeviceView.setText(R.string.music_play_icon_bt);
+            mDeviceView.setText(R.string.pub_bt);
         } else {
-            mDeviceView.setText(R.string.music_play_icon_local);
+            mDeviceView.setText(R.string.media_collect_tab);
         }
     }
     
@@ -212,15 +212,15 @@ public class Music_Play_Id3 extends LinearLayout implements OnClickListener, ID3
         mDeviceView = (TextView) findViewById(R.id.music_device_type);
         
         if (Media_IF.getInstance().getPlayingDevice() == DeviceType.USB1) {
-            mDeviceView.setText(R.string.music_scan_usb1);
+            mDeviceView.setText(R.string.media_usb1_tab);
         } else if (Media_IF.getInstance().getPlayingDevice() == DeviceType.USB2) {
-            mDeviceView.setText(R.string.music_scan_usb2);
+            mDeviceView.setText(R.string.media_usb2_tab);
         } else if (Media_IF.getInstance().getPlayingDevice() == DeviceType.FLASH) {
-            mDeviceView.setText(R.string.pub_flash);
+            mDeviceView.setText(R.string.media_flash_tab);
         } else if (Media_IF.getCurSource() == ModeDef.BT) {
-            mDeviceView.setText(R.string.music_play_icon_bt);
+            mDeviceView.setText(R.string.pub_bt);
         } else {
-            mDeviceView.setText(R.string.music_play_icon_local);
+            mDeviceView.setText(R.string.media_collect_tab);
         }
         
         mAlbumView.setOnClickListener(this);

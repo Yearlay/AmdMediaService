@@ -2,4 +2,8 @@
 <resources>
     <color name="cl_ffff">#10FFFFFF</color>
     <color name="cl_55AFFE">#55AFFE</color>
+    <color name="hk_custom_text">#FFFFFFFF</color>  <!-- 通用字体颜色 -->
+    <color name="hk_custom_text_p">#FF0CB8FF</color>  <!-- 通用字体颜色（按下） -->
+    <color name="hk_custom_text_d">#FFBABABD</color>  <!-- 通用字体颜色（无效） -->
+    <color name="hk_backgroup_view">#60000000</color>  <!-- 通用字体颜色 -->
 </resources>

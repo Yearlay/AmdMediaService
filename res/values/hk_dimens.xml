@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+       
+    <!-- 长按时间 -->
+    <integer name="pub_longdown_time">400</integer>
+    
+    <!-- 状态栏 -->
+    <dimen name="pub_statusbar_height">70px</dimen>  <!-- 状态栏高度 -->
+    
+    <!-- fragment 高度 -->
+    <dimen name="pub_fragment_height">550px</dimen>
+    
+    <!-- 全屏大小 -->
+    <dimen name="pub_show_width">1024px</dimen>
+    <dimen name="pub_show_height">600px</dimen>
+
+    <!-- 主布局 -->
+    <dimen name="pub_tab_width">266px</dimen>  <!-- 分页栏 -->
+    <dimen name="pub_tab_height">528px</dimen>  <!-- 分页栏 -->
+    <dimen name="pub_content_width">784px</dimen>  <!-- 内容区 -->
+    <dimen name="pub_content_height">528px</dimen>  <!-- 内容区 -->
+    
+    <!-- 列表 -->
+    <dimen name="pub_list_width">753px</dimen>  <!-- 列表宽度 -->
+    <dimen name="pub_list_height">430px</dimen>  <!-- 列表高度 -->
+    <dimen name="pub_list_height_full">516px</dimen>  <!-- 列表高度 -->
+    <dimen name="pub_list_item_width">753px</dimen>  <!-- 列表项宽度 -->
+    <dimen name="pub_list_item_height">86px</dimen>  <!-- 列表项高度 -->
+    
+    <!-- 列表项 -->
+    <dimen name="pub_item_lrpadding">20px</dimen>  <!-- 左右边距 -->
+    
+</resources>

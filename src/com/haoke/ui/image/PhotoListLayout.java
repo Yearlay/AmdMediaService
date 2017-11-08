@@ -2,7 +2,6 @@ package com.haoke.ui.image;
 
 import java.util.ArrayList;
 
-import haoke.ui.util.HKTextView;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
@@ -35,6 +34,7 @@ import com.haoke.mediaservice.R;
 import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
 import com.haoke.ui.widget.CustomDialog.OnDialogListener;
+import com.haoke.ui.widget.HKTextView;
 
 public class PhotoListLayout extends RelativeLayout implements OnItemClickListener, OnItemLongClickListener,
         OperateListener, OnDismissListener {
