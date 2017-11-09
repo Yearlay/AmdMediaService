@@ -59,6 +59,10 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
 
     private Context mContext;
     private View mCtrlBar;
+    private ImageView mBackImageView;
+    private ImageView mPreImageView; 
+    private ImageView mNextImageView;
+    private ImageView mTurnImageView;
     private ImageView mPlayImageView;
     private ImageView mCollectView;
     private TextView mTitleTextView;
@@ -115,8 +119,6 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
         }
     }
     
-    
-    
     public void setActivityHandler(Handler handler, Context context) {
         mActivityHandler = handler;
         mContext = context;
@@ -128,10 +130,14 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
         mViewPager = (HKViewPager) findViewById(R.id.image_play_viewpager);
 
         mCtrlBar = findViewById(R.id.image_play_ctrlbar);
-        mCtrlBar.findViewById(R.id.image_ctrlbar_list).setOnClickListener(this);
-        mCtrlBar.findViewById(R.id.image_ctrlbar_pre).setOnClickListener(this);
-        mCtrlBar.findViewById(R.id.image_ctrlbar_next).setOnClickListener(this);
-        mCtrlBar.findViewById(R.id.image_ctrlbar_turnr).setOnClickListener(this);
+        mBackImageView = (ImageView) mCtrlBar.findViewById(R.id.image_ctrlbar_list);
+        mBackImageView.setOnClickListener(this);
+        mPreImageView = (ImageView) mCtrlBar.findViewById(R.id.image_ctrlbar_pre);
+        mPreImageView.setOnClickListener(this);
+        mNextImageView = (ImageView) mCtrlBar.findViewById(R.id.image_ctrlbar_next);
+        mNextImageView.setOnClickListener(this);
+        mTurnImageView = (ImageView) mCtrlBar.findViewById(R.id.image_ctrlbar_turnr);
+        mTurnImageView.setOnClickListener(this);
         mPlayImageView = (ImageView) mCtrlBar.findViewById(R.id.image_ctrlbar_pp);
         mPlayImageView.setOnClickListener(this);
         mCollectView = (ImageView) findViewById(R.id.collect_image);
@@ -148,6 +154,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
 
     public void onResume() {
         DebugLog.d("Yearlay", "onResume mCurPosition: " + mCurPosition);
+        refreshSkin();
         if (mPhotoList.size() > 0) {
             mCurPosition = mCurPosition < 0 ? 0 : mCurPosition;
             mCurPosition = mCurPosition >= mPhotoList.size() ? mPhotoList.size() - 1 : mCurPosition; 
@@ -179,6 +186,10 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
         mViewPager.setOnPageChangeListener(mPageChangeListener);
         mViewPager.setOnTouchListener(mTouchListener);
     }
+    
+    private void refreshSkin() {
+    	mBackImageView.setImageDrawable(skinManager.getDrawable(R.drawable.image_back_icon_selector));
+    }
 
     public void onPause() {
         mHandler.removeMessages(NEXT_PLAY);
@@ -190,8 +201,8 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
 
     private void updatePlayState(int playState) {
         checkPlayStatus();
-        mPlayImageView.setImageResource(playState == PlayState.PLAY ?
-                R.drawable.image_pause_icon_selector : R.drawable.image_play_icon_selector);
+        mPlayImageView.setImageDrawable(skinManager.getDrawable(playState == PlayState.PLAY ?
+                R.drawable.image_pause_icon_selector : R.drawable.image_play_icon_selector));
     }
 
     @Override
@@ -302,7 +313,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
             mProgressDialog.setProgress(progress);
             if (resultCode == OperateListener.OPERATE_SUCEESS) {
                 if (progress == 100) {
-                    mCollectView.setImageResource(R.drawable.media_collect);
+                    mCollectView.setImageDrawable(skinManager.getDrawable(R.drawable.media_collect));
                     mProgressDialog.dismiss();
                 }
             } else {
@@ -313,7 +324,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
             mProgressDialog.setProgress(progress);
             if (resultCode == OperateListener.OPERATE_SUCEESS) {
                 if (progress == 100) {
-                    mCollectView.setImageResource(R.drawable.media_uncollect);
+                    mCollectView.setImageDrawable(skinManager.getDrawable(R.drawable.media_uncollect));
                     mProgressDialog.dismiss();
                 }
             } else {
@@ -548,8 +559,8 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
             checkPlayStatus(); // 重新计时
             restorePhotoView();
             FileNode fileNode = mPhotoList.get(position);
-            mCollectView.setImageResource(fileNode.getCollect() == 1 ?
-                    R.drawable.media_collect : R.drawable.media_uncollect);
+            mCollectView.setImageDrawable(skinManager.getDrawable(fileNode.getCollect() == 1 ?
+                    R.drawable.media_collect : R.drawable.media_uncollect));
             if (mDeviceType != DeviceType.COLLECT && mCtrlBar.getVisibility() == View.VISIBLE) {
                 mCollectView.setVisibility(View.VISIBLE);
             } else {
@@ -578,8 +589,8 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
         }
         boolean showFlag = !fileNode.isFromCollectTable();
         if (showFlag) {
-            mCollectView.setImageResource(fileNode.getCollect() == 1 ?
-                    R.drawable.media_collect : R.drawable.media_uncollect);
+            mCollectView.setImageDrawable(skinManager.getDrawable(fileNode.getCollect() == 1 ?
+                    R.drawable.media_collect : R.drawable.media_uncollect));
         }
         if (mCtrlBar.getVisibility() == View.VISIBLE) {
             mCollectView.setVisibility(showFlag ? View.VISIBLE : View.GONE);
