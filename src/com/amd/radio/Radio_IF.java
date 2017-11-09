@@ -2,7 +2,6 @@ package com.amd.radio;
 
 import java.util.ArrayList;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -31,6 +30,8 @@ public class Radio_IF extends CarService_IF {
 	private static Radio_IF mSelf = null;
 	private Radio_CarCallBack mCarCallBack = null;
 	private boolean mServiceConn = false;
+    private boolean isScan5S = false;
+    private boolean isRescan = false;
 	
 	public Radio_IF() {
 		mMode = ModeDef.RADIO;
@@ -205,6 +206,7 @@ public class Radio_IF extends CarService_IF {
 				Log.d(TAG, "setEnable enable="+enable+"; focus="+focus);
 				if (focus) {
 					setRadioSource();
+		        	exitRescanAndScan5S(true);
 					mServiceIF.radio_setEnable(enable);
 				}
 			} else {
@@ -336,6 +338,11 @@ public class Radio_IF extends CarService_IF {
 	public void setScan() {
 		try {
 			Log.d(TAG, "setScan");
+			if (!isEnable()) {
+	        	setEnable(true);
+	        }
+			isRescan = false;
+			isScan5S = true;
 			setRadioSource();
 			mServiceIF.radio_scan();
 		} catch (Exception e) {
@@ -362,6 +369,7 @@ public class Radio_IF extends CarService_IF {
 			Log.d(TAG, "setPreStep focus="+focus);
 			if (focus) {
 				setRadioSource();
+	        	exitRescanAndScan5S(false);
 				mServiceIF.radio_scanManualPre();
 			}
 		} catch (Exception e) {
@@ -376,6 +384,7 @@ public class Radio_IF extends CarService_IF {
 			Log.d(TAG, "setNextStep focus="+focus);
 			if (focus) {
 				setRadioSource();
+	        	exitRescanAndScan5S(false);
 				mServiceIF.radio_scanManualNext();
 			}
 		} catch (Exception e) {
@@ -545,6 +554,8 @@ public class Radio_IF extends CarService_IF {
 			boolean focus = RadioService.getInstance().getRadioManager().requestAudioFocus(true);
 			Log.d(TAG, "scanStore focus="+focus);
 			if (focus) {
+				isRescan = true;
+				isScan5S = false;
 				setRadioSource();
 				setRecordRadioOnOff(false);
 				mServiceIF.radio_scanStore();
@@ -752,21 +763,67 @@ public class Radio_IF extends CarService_IF {
 	
 	//获取是否在扫描状态
 	public boolean isRescanState() {
-		try {
-			return RadioService.getInstance().getRadioManager().isRescanState();
-		} catch (Exception e) {
-			Log.e(TAG, "isRescanState e="+e);
-		}
-		return false;
+		return isRescan;
 	}
 	
 	//获取是否在预览状态
 	public boolean isScan5SState() {
-		try {
-			return RadioService.getInstance().getRadioManager().isScan5SState();
-		} catch (Exception e) {
-			Log.e(TAG, "isScan5SState e="+e);
-		}
-		return false;
+		return isScan5S;
 	}
+	
+    public boolean exitScan5S() {
+        boolean state = isScan5S;
+        if (isScan5S) {
+            isScan5S = false;
+            stopScan();
+        }
+        return state;
+    }
+    
+    public boolean exitRescan() {
+    	boolean state = isRescan;
+    	if (isRescan) {
+            isRescan = false;
+            stopScan();
+        }
+    	return state;
+    }
+    
+    public void exitRescanAndScan5S(boolean stopScan) {
+		if (stopScan) {
+			if (isRescan || isScan5S) {
+				stopScan();
+			}
+		}
+		isRescan = false;
+		isScan5S = false;
+    }
+    
+    public void isScanStateChange(int data) {
+    	//data为2表示SCAN[Scan5S]， 为3表示SEARCH[Rescan]
+    	if (data == 2) {
+    		isScan5S = true;
+    		isRescan = false;
+    	} else if (data == 3) {
+    		isRescan = true;
+    		isScan5S = false;
+    	}
+    	if (isRescan) {
+        	boolean enable = isEnable();
+            if (data == 3 && enable) {
+            	setEnable(false);
+            }
+            if (data == 0) {
+            	if ((getCurSource() == ModeDef.RADIO) && !enable) {
+                	setEnable(true);
+            	}
+            	isRescan = false;
+            }
+        }
+    	if (isScan5S) {
+    		if (data == 0) {
+    			isScan5S = false;
+            }
+    	}
+    }
 }

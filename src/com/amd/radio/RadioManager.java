@@ -8,7 +8,6 @@ import com.haoke.define.McuDef.McuFunc;
 import com.haoke.define.MediaDef.PlayState;
 import com.haoke.define.RadioDef.RadioFunc;
 import com.haoke.define.ModeDef;
-import com.haoke.mediaservice.R;
 import com.haoke.service.RadioService;
 import com.haoke.serviceif.CarService_Listener;
 import com.amd.media.MediaInterfaceUtil;
@@ -21,9 +20,6 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 	private static final String TAG = "RadioManager";
 	private RadioService mParent = null;
 	private Radio_IF mIF = null;
-	private int mCurSource = ModeDef.NULL;
-	private static boolean isScan5S = false;
-    private static boolean isRescan = false;
 
 	public RadioManager(RadioService parent) {
 		mParent = parent;
@@ -51,31 +47,8 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 	public void onServiceConn() {
 		// TODO Auto-generated method stub
 		Log.v(TAG, "HMI------------onServiceConn source=" + mIF.getCurSource());
-		sourceChanged(mIF.getCurSource());
 	}
 
-	/**
-	 * 切换播放源，参数为 {@link com.haoke.define.ModeDef} <p>
-	 * eg. {@link com.haoke.define.ModeDef#VIDEO}
-	 */
-	public void sourceChanged(int source) {
-		Log.v(TAG, "sourceChanged source=" + source);
-		if (source == ModeDef.IMAGE) {
-			return;
-		}
-		if (source == ModeDef.AUDIO || source == ModeDef.VIDEO || source == ModeDef.BT) {
-			mCurSource = ModeDef.NULL;
-//			if (mIF.isEnable()) {
-//				Log.v(TAG, "sourceChanged setEnable false");
-//				mIF.setEnable(false); // 暂停播放
-//			}
-		}
-		if (source != ModeDef.AUDIO && source != ModeDef.VIDEO 
-				&& source != ModeDef.IMAGE && source != ModeDef.BT) {
-			mCurSource = source;
-		}
-	}
-	
 	private boolean mRecordRadioOn = false; // 用来记忆被抢焦点前的播放状态，便于恢复播放
 	// 设置播放状态（被抢焦点前）
 	public void setRecordRadioOnOff(boolean on) {
@@ -145,14 +118,13 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 			Log.v(TAG, "onCarDataChange MCU func=" + func + ", data=" + data);
 			switch (func) {
 			case McuFunc.SOURCE:
-				sourceChanged(data);
 				break;
 			}
 
 		} else if (mode == ModeDef.RADIO) {
 			switch (func) {
 			case RadioFunc.STATE:
-				isScanStateChange(data);
+				mIF.isScanStateChange(data);
 				break;
 			}
 		}
@@ -173,29 +145,6 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 
 	@Override
 	public void setCurInterface(int data) {
-		// TODO Auto-generated method stub
 
-	}
-	
-	private void isScanStateChange(int data) {
-    	//data为2表示SCAN[Scan5S]， 为3表示SEARCH[Rescan]
-    	if (data == 2) {
-    		isScan5S = true;
-    	} else if (data == 3) {
-    		isRescan = true;
-    	} else if (data == 0) {
-    		isRescan = false;
-    		isScan5S = false;
-    	}
-    }
-	
-	//获取是否在扫描状态
-	public boolean isRescanState() {
-		return isRescan;
-	}
-	
-	//获取是否在预览状态
-	public boolean isScan5SState() {
-		return isScan5S;
 	}
 }
