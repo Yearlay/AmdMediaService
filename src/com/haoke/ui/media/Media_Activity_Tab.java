@@ -7,6 +7,7 @@ import com.haoke.mediaservice.R;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -55,7 +56,7 @@ public class Media_Activity_Tab extends RelativeLayout implements OnCheckedChang
     private RadioButton mBtnNetRadio;
     private RadioButton mBtnRadio;
     private RadioButton mBtnMusic;
-    private View mBtnSearch;
+    private ImageButton mBtnSearch;
     private View mCurPlayUnderLineView;
     private View mBtnLayout;
     private OnClickListener mOnClickListener = null;
@@ -75,7 +76,7 @@ public class Media_Activity_Tab extends RelativeLayout implements OnCheckedChang
         mBtnNetRadio = (RadioButton) mRadioGroup.findViewById(R.id.media_tab_net_radio);
         mBtnRadio = (RadioButton) mRadioGroup.findViewById(R.id.media_tab_radio);
         mBtnMusic = (RadioButton) mRadioGroup.findViewById(R.id.media_tab_music);
-        mBtnSearch = this.findViewById(R.id.search_button);
+        mBtnSearch = (ImageButton) findViewById(R.id.search_button);
         mBtnSearch.setOnClickListener(this);
         mRadioGroup.setOnCheckedChangeListener(this);
         mBtnLayout = findViewById(R.id.media_tab_layout);
@@ -89,6 +90,7 @@ public class Media_Activity_Tab extends RelativeLayout implements OnCheckedChang
         mBtnRadio.setBackgroundDrawable(skinManager.getStateListDrawable(R.drawable.tab_backgroud_selector));
         mBtnMusic.setTextColor(skinManager.getColorStateList(R.drawable.tab_textcolor_selector));
         mBtnMusic.setBackgroundDrawable(skinManager.getStateListDrawable(R.drawable.tab_backgroud_selector));
+        mBtnSearch.setImageDrawable(skinManager.getStateListDrawable(R.drawable.media_search_selector));
     }
     
     @Override

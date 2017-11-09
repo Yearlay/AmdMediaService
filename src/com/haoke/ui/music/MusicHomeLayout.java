@@ -12,10 +12,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.amd.bt.BT_IF;
+import com.archermind.skinlib.SkinManager;
 import com.haoke.bean.StorageBean;
 import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.data.AllMediaList;
@@ -33,15 +35,26 @@ import com.haoke.util.Media_IF;
 public class MusicHomeLayout extends LinearLayout implements OnClickListener,
         OnTouchListener, LoadListener {
 	private static final String TAG = "MusicHomeLayout";
+	
 	private TextView mCollectTextView = null;
 	private TextView mLocalTextView = null;
 	private TextView mHistoryTextView = null;
 	private CustomDialog mRetryDialog = null;
+	private View mLayoutCollect;
+	private View mLayoutFlash;
+	private View mLayoutBT;
 	private View mLayoutUsb1;
 	private View mLayoutUsb2;
+	private ImageView mCollectIcon;
+	private ImageView mFlashIcon;
+	private ImageView mBTIcon;
+	private ImageView mUSB1Icon;
+	private ImageView mUSB2Icon;
 	
 	private int mSaveCount = 123;
 	private int mLocalCount = 123;
+	
+	private SkinManager skinManager;
 
     public MusicHomeLayout(Context context) {
     	super(context);
@@ -62,22 +75,29 @@ public class MusicHomeLayout extends LinearLayout implements OnClickListener,
         mCollectTextView = (TextView) findViewById(R.id.music_save_count);
         mLocalTextView = (TextView) findViewById(R.id.music_local_count);
         mHistoryTextView = (TextView) findViewById(R.id.music_bt_device_connect);
-        View layoutView = findViewById(R.id.music_layout_enshrine);
-        layoutView.setOnClickListener(this);
-        layoutView.setOnTouchListener(this);
-        layoutView = findViewById(R.id.music_layout_local);
-        layoutView.setOnClickListener(this);
-        layoutView.setOnTouchListener(this);
-        layoutView = findViewById(R.id.music_layout_scan_bt);
-        layoutView.setOnClickListener(this);
-        layoutView.setOnTouchListener(this);
+        mLayoutCollect = findViewById(R.id.music_layout_enshrine);
+        mLayoutCollect.setOnClickListener(this);
+        mLayoutCollect.setOnTouchListener(this);
+        mLayoutFlash = findViewById(R.id.music_layout_local);
+        mLayoutFlash.setOnClickListener(this);
+        mLayoutFlash.setOnTouchListener(this);
+        mLayoutBT = findViewById(R.id.music_layout_scan_bt);
+        mLayoutBT.setOnClickListener(this);
+        mLayoutBT.setOnTouchListener(this);
         mLayoutUsb1 = findViewById(R.id.music_layout_scan_usb);
         mLayoutUsb1.setOnClickListener(this);
         mLayoutUsb1.setOnTouchListener(this);
         mLayoutUsb2 = findViewById(R.id.music_layout_scan_usb2);
         mLayoutUsb2.setOnClickListener(this);
         mLayoutUsb2.setOnTouchListener(this);
-    };
+        
+        mCollectIcon = (ImageView) findViewById(R.id.home_collect_icon);
+        mFlashIcon = (ImageView) findViewById(R.id.home_flash_icon);
+        mBTIcon = (ImageView) findViewById(R.id.home_bt_icon);
+        mUSB1Icon = (ImageView) findViewById(R.id.home_usb1_icon);
+        mUSB2Icon = (ImageView) findViewById(R.id.home_usb2_icon);
+        skinManager = SkinManager.instance(getContext());
+    }
 
     @Override
 	protected void onAttachedToWindow() {
@@ -93,6 +113,18 @@ public class MusicHomeLayout extends LinearLayout implements OnClickListener,
 		Log.d(TAG, "onResume");
 		AllMediaList.notifyAllLabelChange(getContext(), R.string.pub_music);
 		refreshInterface();
+		refreshSkin();
+	}
+	
+	private void refreshSkin() {
+		mLayoutCollect.setBackground(skinManager.getDrawable(R.drawable.music_back_ground));
+		mLayoutFlash.setBackground(skinManager.getDrawable(R.drawable.music_back_ground));
+		mLayoutBT.setBackground(skinManager.getDrawable(R.drawable.music_back_ground));
+		mCollectIcon.setBackground(skinManager.getDrawable(R.drawable.music_save));
+		mFlashIcon.setBackground(skinManager.getDrawable(R.drawable.music_local));
+		mBTIcon.setBackground(skinManager.getDrawable(R.drawable.music_scan_bt));
+		mUSB1Icon.setBackground(skinManager.getDrawable(R.drawable.music_scan_usb));
+		mUSB2Icon.setBackground(skinManager.getDrawable(R.drawable.music_scan_usb));
 	}
 
     @Override
@@ -127,15 +159,15 @@ public class MusicHomeLayout extends LinearLayout implements OnClickListener,
     public void deviceChanged(int deviceType, boolean noDevice) {
         if (deviceType == DeviceType.USB1) {
         	if (noDevice) {
-        		mLayoutUsb1.setBackgroundResource(R.drawable.music_back_ground_gray);
+        		mLayoutUsb1.setBackground(skinManager.getDrawable(R.drawable.music_back_ground_gray));
         	} else {
-        		mLayoutUsb1.setBackgroundResource(R.drawable.music_back_ground);
+        		mLayoutUsb1.setBackground(skinManager.getDrawable(R.drawable.music_back_ground));
         	}
         } else if (deviceType == DeviceType.USB2) {
         	if (noDevice) {
-        		mLayoutUsb2.setBackgroundResource(R.drawable.music_back_ground_gray);
+        		mLayoutUsb2.setBackground(skinManager.getDrawable(R.drawable.music_back_ground_gray));
         	} else {
-        		mLayoutUsb2.setBackgroundResource(R.drawable.music_back_ground);
+        		mLayoutUsb2.setBackground(skinManager.getDrawable(R.drawable.music_back_ground));
         	}
         }
         mHandler.removeMessages(GET_COLLECT_SIZE);
