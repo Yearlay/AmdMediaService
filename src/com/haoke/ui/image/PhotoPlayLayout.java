@@ -188,7 +188,10 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     }
     
     private void refreshSkin() {
-    	mBackImageView.setImageDrawable(skinManager.getDrawable(R.drawable.image_back_icon_selector));
+        mBackImageView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.image_back_icon_selector));
+        mPreImageView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.image_pre_icon_selector));
+        mNextImageView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.image_next_icon_selector));
+        mTurnImageView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.image_turn_icon_selector));
     }
 
     public void onPause() {
@@ -201,7 +204,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
 
     private void updatePlayState(int playState) {
         checkPlayStatus();
-        mPlayImageView.setImageDrawable(skinManager.getDrawable(playState == PlayState.PLAY ?
+        mPlayImageView.setImageDrawable(skinManager.getStateListDrawable(playState == PlayState.PLAY ?
                 R.drawable.image_pause_icon_selector : R.drawable.image_play_icon_selector));
     }
 
