@@ -565,6 +565,91 @@ public class Radio_IF extends CarService_IF {
 		}
 	}
 	
+	// 上一电台
+	public void setPreChannel() {
+		try {
+			boolean focus = RadioService.getInstance().getRadioManager().requestAudioFocus(true);
+			Log.d(TAG, "setPreChannel focus="+focus);
+			if (focus) {
+				setRadioSource();
+				mServiceIF.radio_setPreChannel();
+			}
+		} catch (Exception e) {
+			Log.e(TAG, "HMI------------setPreChannel e=" + e.getMessage());
+		}
+	}
+	
+	// 下一电台
+	public void setNextChannel() {
+		try {
+			boolean focus = RadioService.getInstance().getRadioManager().requestAudioFocus(true);
+			Log.d(TAG, "setNextChannel focus="+focus);
+			if (focus) {
+				setRadioSource();
+				mServiceIF.radio_setNextChannel();
+			}
+		} catch (Exception e) {
+			Log.e(TAG, "HMI------------setNextChannel e=" + e.getMessage());
+		}
+	}
+	
+	private int getStation(boolean pre) {
+		int size = Data_Common.stationList.size();
+		if (size > 0) {
+			int index = -1;
+			int freq = getCurFreq();
+			for (int i=0; i<size; i++) {
+				RadioStation station = Data_Common.stationList.get(i);
+				if (station.getFreq() == freq) {
+					index = i;
+					break;
+				}
+			}
+			if (index != -1) {
+				if (pre) {
+					index --;
+				} else {
+					index ++;
+				}
+				if (index < 0) {
+					index = size - 1;
+				} else if (index > size -1) {
+					index = 0;
+				}
+				return Data_Common.stationList.get(index).getFreq();
+			}
+		}
+		return -1;
+	}
+	
+	// 上一电台, 暂时废弃
+	public void setPreStation() {
+		try {
+			int freq = getStation(true);
+			Log.d(TAG, "setPreStation freq="+freq);
+			if (freq != -1) {
+				setCurFreq(freq);
+				setEnable(true);
+			}
+		} catch (Exception e) {
+			Log.e(TAG, "HMI------------setPreStation e=" + e.getMessage());
+		}
+	}
+	
+	// 下一电台, 暂时废弃
+	public void setNextStation() {
+		try {
+			int freq = getStation(false);
+			Log.d(TAG, "setNextStation freq="+freq);
+			if (freq != -1) {
+				setCurFreq(freq);
+				setEnable(true);
+			}
+		} catch (Exception e) {
+			Log.e(TAG, "HMI------------setNextStation e=" + e.getMessage());
+		}
+	}
+	
 	public static void sendRadioInfo(int band, int freq) {
 		Meter_IF.sendRadioInfo(band, freq);
 	}
