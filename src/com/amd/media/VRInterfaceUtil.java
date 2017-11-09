@@ -324,11 +324,11 @@ public class VRInterfaceUtil {
         case VRRadio.COMMAND_PLAY_NEXT_RADIO:
             commandPlayNextRadio();
             break;
-        case VRRadio.COMMAND_SEARCH_PREV_RADIO:
-            commandSearchPrevRadio();
-            break;
         case VRRadio.COMMAND_SEARCH_NEXT_RADIO:
-            commandSearchNextRadio();
+        	commandSearchNextRadio();
+            break;
+        case VRRadio.COMMAND_SEARCH_PREV_RADIO:
+        	commandSearchPrevRadio();
             break;
         case VRRadio.COMMAND_SCAN_RADIO:
             commandScanRadio();
@@ -428,12 +428,12 @@ public class VRInterfaceUtil {
     }
     
     private void commandSearchPrevRadio() {
-        // 从当前波段向上搜索（频率小的）
+        // 从当前波段向下搜索（频率小的）
         mRadioIF.setPreSearch();
     }
     
     private void commandSearchNextRadio() {
-        // 从当前波段向下搜索（频率大的）
+        // 从当前波段向上搜索（频率大的）
         mRadioIF.setNextSearch();
     }
     
