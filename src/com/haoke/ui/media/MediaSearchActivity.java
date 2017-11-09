@@ -3,6 +3,7 @@ package com.haoke.ui.media;
 import java.util.ArrayList;
 
 import com.amd.media.MediaInterfaceUtil;
+import com.archermind.skinlib.SkinManager;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.ID3Parse;
 import com.haoke.bean.ImageLoad;
@@ -53,6 +54,7 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
     private ListView mResultListView;
     private TextView mNotifyText;
     private String unknown;
+    private SkinManager skinManager;
     
     private static final int PROGRESS_DIALOG = 1;
     @Override
@@ -80,6 +82,7 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
         init();
         initView();
         AllMediaList.instance(getApplicationContext()).registerLoadListener(this);
+        skinManager = SkinManager.instance(getApplicationContext());
     }
     
     @Override
@@ -256,17 +259,18 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
                 holder.mIconView.setImageResource(R.drawable.media_list_item_music);
                 if (fileNode.getParseId3() == 1) {
                     ImageLoad.instance(MediaSearchActivity.this).loadBitmap(holder.mIconView,
-                            R.drawable.media_list_item_music, fileNode);
+                            skinManager.getDrawable(R.drawable.media_list_item_music), fileNode);
                 }
             } else if (fileNode.getFileType() == FileType.VIDEO) {
                 holder.mIconView.setImageResource(R.drawable.image_icon_default);
                 if (fileNode.getParseId3() == 1) {
                     ImageLoad.instance(MediaSearchActivity.this).loadBitmap(holder.mIconView,
-                            R.drawable.image_icon_default, fileNode);
+                            skinManager.getDrawable(R.drawable.image_icon_default), fileNode);
                 }
             } else if (fileNode.getFileType() == FileType.IMAGE) {
                 holder.mIconView.setImageResource(R.drawable.image_icon_default);
-                ImageLoad.instance(getApplicationContext()).loadBitmap(holder.mIconView, R.drawable.image_icon_default, fileNode);
+                ImageLoad.instance(getApplicationContext()).loadBitmap(holder.mIconView,
+                        skinManager.getDrawable(R.drawable.image_icon_default), fileNode);
             }
             return convertView;
         }
@@ -283,8 +287,8 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
                 //3.更新ui
                 if (holder != null && fileNode.getParseId3() == 1) {
                     ImageLoad.instance(MediaSearchActivity.this).loadBitmap(holder.mIconView,
-                            fileNode.getFileType() == FileType.AUDIO ? 
-                                    R.drawable.media_list_item_music : R.drawable.image_icon_default,
+                            skinManager.getDrawable(fileNode.getFileType() == FileType.AUDIO ? 
+                                    R.drawable.media_list_item_music : R.drawable.image_icon_default),
                                     fileNode);
                     if (mFileType == FileType.AUDIO || mFileType == FileType.VIDEO) {
                         String artist = fileNode.getArtist();

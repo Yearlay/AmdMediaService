@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -22,6 +23,7 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.GridView;
 import android.widget.TextView;
 
+import com.archermind.skinlib.SkinManager;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.ImageLoad;
 import com.haoke.bean.StorageBean;
@@ -39,18 +41,18 @@ import com.haoke.ui.widget.HKTextView;
 public class PhotoListLayout extends RelativeLayout implements OnItemClickListener, OnItemLongClickListener,
         OperateListener, OnDismissListener {
     public PhotoListLayout(Context context) {
-		super(context);
-	}
+        super(context);
+    }
 
-	public PhotoListLayout(Context context, AttributeSet attrs) {
-		super(context, attrs);
-	}
+    public PhotoListLayout(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
 
-	public PhotoListLayout(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
-	}
+    public PhotoListLayout(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+    }
 
-	private Context mContext;
+    private Context mContext;
     private GridView mGridView;
     private TextView mEmptyView;
     private View mLoadingView;
@@ -62,6 +64,8 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
     
     private StorageBean mCurrentStorageBean;
     private ArrayList<FileNode> mPhotoList = new ArrayList<FileNode>();
+    
+    private SkinManager skinManager;
     
     public void updataList(ArrayList<FileNode> dataList, StorageBean storageBean) {
         mCurrentStorageBean = storageBean;
@@ -112,7 +116,7 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
 
     @Override
     protected void onFinishInflate() {
-    	super.onFinishInflate();
+        super.onFinishInflate();
         // 初始化控件
         mEmptyView = (TextView) findViewById(R.id.image_list_empty);
         mLoadingView = findViewById(R.id.loading_layout);
@@ -128,8 +132,9 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
         if (mCurrentStorageBean != null) {
             refreshView(mCurrentStorageBean);
         }
+        skinManager = SkinManager.instance(getContext());
     }
-
+    
     public void dismissDialog() {
         if (mErrorDialog != null) {
             mErrorDialog.CloseDialog();
@@ -351,11 +356,15 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
             }
             mHolder.mItemSelectView.setVisibility(isEditMode ? View.VISIBLE : View.GONE);
             if (isEditMode) {
-                mHolder.mItemSelectView.setImageResource(fileNode.isSelected() ?
-                        R.drawable.music_selected_icon : R.drawable.music_selected_nomal);
+                if (fileNode.isSelected()) {
+                    mHolder.mItemSelectView.setImageDrawable(skinManager.getDrawable(R.drawable.music_selected_icon));
+                } else {
+                    mHolder.mItemSelectView.setImageDrawable(skinManager.getDrawable(R.drawable.music_selected_nomal));
+                }
             }
-            mHolder.mPhotoImageView.setImageResource(R.drawable.image_icon_default);
-            ImageLoad.instance(mContext).loadBitmap(mHolder.mPhotoImageView, R.drawable.image_icon_default, fileNode);
+            Drawable defaultDrawable = skinManager.getDrawable(R.drawable.image_icon_default);
+            mHolder.mPhotoImageView.setImageDrawable(defaultDrawable);
+            ImageLoad.instance(mContext).loadBitmap(mHolder.mPhotoImageView, defaultDrawable, fileNode);
             return convertView;
         }
 

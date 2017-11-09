@@ -4,6 +4,7 @@ import haoke.ui.util.HKViewPager;
 
 import java.util.ArrayList;
 
+import com.archermind.skinlib.SkinManager;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.ImageLoad;
 import com.haoke.constant.MediaUtil;
@@ -74,6 +75,8 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     
     public static int mPlayState;
     
+    private SkinManager skinManager;
+    
     public void setPlayState(int playState) {
         mPlayState = playState;
         mPreFlag = false;
@@ -139,6 +142,8 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
         mProgressDialog = new ProgressDialog(getContext());
         mProgressDialog.setCancelable(false);
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        
+        skinManager = SkinManager.instance(getContext());
     }
 
     public void onResume() {
@@ -453,7 +458,8 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
                     mHandler.sendEmptyMessageDelayed(PLAY_ERROR, 1000);
                 }
             } else {
-                ImageLoad.instance(mContext).loadImageBitmap(photoView, R.drawable.image_icon_default,
+                ImageLoad.instance(mContext).loadImageBitmap(photoView,
+                        skinManager.getDrawable(R.drawable.image_icon_default),
                         fileNode, PhotoPlayLayout.this);
             }
             photoView.setTag(position);

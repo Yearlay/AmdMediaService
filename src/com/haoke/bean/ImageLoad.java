@@ -3,6 +3,7 @@ package com.haoke.bean;
 import java.io.File;
 
 import com.haoke.constant.MediaUtil.FileType;
+import com.haoke.mediaservice.R;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
@@ -14,6 +15,7 @@ import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 
 public class ImageLoad {
@@ -56,41 +58,41 @@ public class ImageLoad {
         return ImageLoader.getInstance();
     }
     
-    public static DisplayImageOptions getOptions(int defaultId) {
+    public static DisplayImageOptions getOptions(Drawable defaultDrawable) {
         return new DisplayImageOptions.Builder()
-        .showImageForEmptyUri(defaultId) // 设置图片Uri为空或是错误的时候显示的图片
+        .showImageForEmptyUri(defaultDrawable) // 设置图片Uri为空或是错误的时候显示的图片
         .cacheInMemory(true)  //设置下载的图片是否缓存在内存中
         .cacheOnDisk(true)
         .considerExifParams(true)
         .build();
     }
     
-    public void loadBitmap(final ImageView imageView, int defaultId, final FileNode fileNode) {
+    public void loadBitmap(final ImageView imageView, Drawable defaultDrawable, final FileNode fileNode) {
         if (fileNode.getFileType() == FileType.IMAGE) {
             if (fileNode.getFile().length() > MAX_SIZE) {
-                imageView.setImageResource(defaultId);
+                imageView.setImageDrawable(defaultDrawable);
             } else {
                 ImageLoader.getInstance().displayImage("file://" + fileNode.getFilePath(),
-                        imageView, getOptions(defaultId), null);
+                        imageView, getOptions(defaultDrawable), null);
             }
         } else {
             if (fileNode.getThumbnailPath() == null) {
-                imageView.setImageResource(defaultId);
+                imageView.setImageDrawable(defaultDrawable);
             } else {
                 ImageLoader.getInstance().displayImage("file://" + fileNode.getThumbnailPath(),
-                        imageView, getOptions(defaultId), null);
+                        imageView, getOptions(defaultDrawable), null);
             }
         }
     }
     
-    public void loadImageBitmap(final ImageView imageView, int defaultId,
+    public void loadImageBitmap(final ImageView imageView, Drawable defaultDrawable,
     		FileNode fileNode, ImageLoadingListener listener) {
         if (fileNode.getFileType() == FileType.IMAGE) {
             if (fileNode.getFile().length() > MAX_SIZE) {
-                imageView.setImageResource(defaultId);
+                imageView.setImageDrawable(defaultDrawable);
             } else {
                 ImageLoader.getInstance().displayImage("file://" + fileNode.getFilePath(),
-                        imageView, getOptions(defaultId), listener);
+                        imageView, getOptions(defaultDrawable), listener);
             }
         }
     }

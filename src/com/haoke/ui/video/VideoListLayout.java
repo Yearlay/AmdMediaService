@@ -22,6 +22,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.archermind.skinlib.SkinManager;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.ID3Parse;
 import com.haoke.bean.ImageLoad;
@@ -50,6 +51,8 @@ public class VideoListLayout extends RelativeLayout implements
     private CustomDialog mErrorDialog;
     private StorageBean mCurrentStorageBean;
     
+    private SkinManager skinManager;
+    
     private ArrayList<FileNode> mVideoList = new ArrayList<FileNode>();
     
     public VideoListLayout(Context context) {
@@ -77,6 +80,7 @@ public class VideoListLayout extends RelativeLayout implements
         mGridView.setOnItemLongClickListener(this);
         mVideoAdapter = new VideoAdapter();
         mGridView.setAdapter(mVideoAdapter);
+        skinManager = SkinManager.instance(mContext);
     }
     
     public void updataList(ArrayList<FileNode> dataList, StorageBean storageBean) {
@@ -355,7 +359,7 @@ public class VideoListLayout extends RelativeLayout implements
            mHolder.mPhotoImageView.setImageResource(R.drawable.image_icon_default);
            if (fileNode.getParseId3() == 1) {
                ImageLoad.instance(mContext).loadBitmap(mHolder.mPhotoImageView,
-                       R.drawable.image_icon_default, fileNode);
+                       skinManager.getDrawable(R.drawable.image_icon_default), fileNode);
            } else {
                ID3Parse.instance().parseID3(position, fileNode, this);
            }
@@ -394,7 +398,7 @@ public class VideoListLayout extends RelativeLayout implements
                         ViewHolder holder = (ViewHolder) childView.getTag();
                         if (holder != null && fileNode.getParseId3() == 1) {
                             ImageLoad.instance(mContext).loadBitmap(holder.mPhotoImageView,
-                                    R.drawable.image_icon_default, fileNode);
+                                    skinManager.getDrawable(R.drawable.image_icon_default), fileNode);
                         }
                     }
                 }

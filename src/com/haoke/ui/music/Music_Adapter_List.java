@@ -1,5 +1,6 @@
 package com.haoke.ui.music;
 
+import com.archermind.skinlib.SkinManager;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.ID3Parse;
 import com.haoke.bean.ImageLoad;
@@ -30,11 +31,13 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
     private int mTyep = 0;//当前模式：0 列表模式，1 编辑模式
     private ListView mListView;
     private String unknown;
+    private SkinManager skinManager;
 
     public Music_Adapter_List(Context context) {
         mContext = context;
         mIF = Media_IF.getInstance();
         unknown = mContext.getResources().getString(R.string.media_unknow);
+        skinManager = SkinManager.instance(context);
     }
     
     public void setListView(ListView listView) {
@@ -93,11 +96,11 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
             Log.v(TAG, "setDate() itemNo=" +itemNo +", mTotal=" +mTotal);
             FileNode fileNode = mIF.getItem(itemNo);
             if (fileNode != null) {
-            	
-            	holder.mImageIcon.setImageResource(R.drawable.media_list_item_music);
+                
+                holder.mImageIcon.setImageResource(R.drawable.media_list_item_music);
                 if (fileNode.getParseId3() == 1) {
                     ImageLoad.instance(mContext).loadBitmap(holder.mImageIcon,
-                            R.drawable.media_list_item_music, fileNode);
+                            skinManager.getDrawable(R.drawable.media_list_item_music), fileNode);
                 } else {
                     ID3Parse.instance().parseID3(position, fileNode, this);
                 }
@@ -154,9 +157,9 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
             int fromDeviceType = fileNode.getFromDeviceType();
             if (fromDeviceType != DeviceType.NULL) {
                 if (fromDeviceType == DeviceType.FLASH) {
-                	buffer.append(mContext.getResources().getString(R.string.collect_from_local));
+                    buffer.append(mContext.getResources().getString(R.string.collect_from_local));
                 } else if (fromDeviceType == DeviceType.USB1) {
-                	buffer.append(mContext.getResources().getString(R.string.collect_from_usb1));
+                    buffer.append(mContext.getResources().getString(R.string.collect_from_usb1));
                 } else if (fromDeviceType == DeviceType.USB2) {
                     buffer.append(mContext.getResources().getString(R.string.collect_from_usb2));
                 }
@@ -219,7 +222,7 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
                 ViewHolder holder = (ViewHolder) childView.getTag();
                 if (holder != null && fileNode.getParseId3() == 1) {
                     ImageLoad.instance(mContext).loadBitmap(holder.mImageIcon,
-                            R.drawable.media_list_item_music, fileNode);
+                            skinManager.getDrawable(R.drawable.media_list_item_music), fileNode);
                     String artist = fileNode.getArtist();
                     String album = fileNode.getAlbum();
                     if (artist == null) {
