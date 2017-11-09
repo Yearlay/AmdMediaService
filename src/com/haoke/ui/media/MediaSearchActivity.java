@@ -40,7 +40,9 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -50,6 +52,9 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
     private String TAG = "MediaSearchActivity";
     public static final String INTENT_KEY_FILE_TYPE = "file_type";
     private EditText mInputEditText;
+    private ImageButton mSearchIcon;
+    private ImageButton mClearButton;
+    private Button mCancelButton;
     private String mInputStr = "";
     private ListView mResultListView;
     private TextView mNotifyText;
@@ -101,8 +106,12 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
         mInputEditText = (EditText) findViewById(R.id.search_input);
         mInputEditText.setOnEditorActionListener(this);
         mInputEditText.addTextChangedListener(this);
-        findViewById(R.id.search_num_clear).setOnClickListener(this);
-        findViewById(R.id.search_cancel).setOnClickListener(this);
+        mSearchIcon = (ImageButton) findViewById(R.id.search_icon);
+        mClearButton = (ImageButton) findViewById(R.id.search_num_clear);
+        mClearButton.setOnClickListener(this);
+        mCancelButton = (Button) findViewById(R.id.search_cancel);
+        mCancelButton.setOnClickListener(this);
+        
         
         mResultListView = (ListView) findViewById(R.id.search_result_list);
         mSearchAdapter = new SearchAdapter();
@@ -126,10 +135,19 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
         }
     }
     
+    private void refreshSkin() {
+        mInputEditText.setBackgroundDrawable(skinManager.getDrawable(R.drawable.search_input_bg));
+        mSearchIcon.setBackgroundDrawable(skinManager.getDrawable(R.drawable.search_icon));
+        mClearButton.setBackgroundDrawable(skinManager.getDrawable(R.drawable.search_num_clear));
+        mCancelButton.setBackgroundDrawable(skinManager.getDrawable(R.drawable.search_cancel_bg));
+        mCancelButton.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
+    }
+    
     @Override
     protected void onResume() {
         super.onResume();
         updateLabel();
+        refreshSkin();
     }
 
     @Override

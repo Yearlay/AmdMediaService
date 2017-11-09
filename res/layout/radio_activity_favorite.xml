@@ -33,7 +33,7 @@
         android:layout_marginTop="80px"
         android:text="编辑"
         android:textSize="30px"
-        android:textColor="@drawable/textcolor_selector"
+        android:textColor="@drawable/text_color_selector"
         android:layout_marginRight="36px"
         android:drawablePadding="10px"
         android:visibility="invisible"
@@ -54,7 +54,7 @@
 	        android:layout_height="wrap_content"
 	        android:layout_width="wrap_content"
 	        android:textSize="30px"
-	        android:textColor="@drawable/textcolor_selector"
+	        android:textColor="@drawable/text_color_selector"
 	        android:text="全选"
 	        />
         <TextView
@@ -63,7 +63,7 @@
 	        android:layout_width="wrap_content"
 	        android:layout_marginLeft="10dp"
 	        android:textSize="30px"
-	        android:textColor="@drawable/textcolor_selector"
+	        android:textColor="@drawable/text_color_selector"
 	        android:text="取消"
 	        />
         <TextView
@@ -72,7 +72,7 @@
 	        android:layout_width="wrap_content"
 	        android:layout_marginLeft="10dp"
 	        android:textSize="30px"
-	        android:textColor="@drawable/textcolor_selector"
+	        android:textColor="@drawable/text_color_selector"
 	        android:text="删除"
 	        />
     </LinearLayout>

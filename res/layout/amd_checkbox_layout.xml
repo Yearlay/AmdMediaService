@@ -20,7 +20,7 @@
         android:singleLine="true"
         android:marqueeRepeatLimit="marquee_forever"
         android:ellipsize="marquee"
-        android:textColor="@drawable/textcolor_selector"
+        android:textColor="@drawable/text_color_selector"
         android:textSize="18dp"
         android:text="TextView" />
 
