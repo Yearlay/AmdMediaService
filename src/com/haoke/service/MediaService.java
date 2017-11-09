@@ -68,6 +68,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     
     private static final String TAG = "MediaService";
     private static MediaService mSelf = null;
+    private MediaServiceBinder mBinder = null;
     private boolean ret;
     
     private Media_IF mMediaIF = null;
@@ -92,6 +93,8 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         mMediaIF.setContext(this);
         mMediaIF.bindCarService();
         mMediaIF.initMedia();
+        
+        mBinder = new MediaServiceBinder(this);
 
         // 发广播通知服务已经启动
         Intent intent = new Intent();
@@ -197,6 +200,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
 
     @Override
     public IBinder onBind(Intent intent) {
+        //return mBinder;
         return null;
     }
 
@@ -234,6 +238,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
                     Log.d(TAG, "refreshWidget refreshMode="+refreshMode);
                     //sendBroadcast(new Intent("main_activity_update_ui"));
                     MediaWidgetProvider.refreshWidget(MediaService.this, refreshMode);
+                    //mBinder.refreshWidget(refreshMode);
                     break;
             }
         };
