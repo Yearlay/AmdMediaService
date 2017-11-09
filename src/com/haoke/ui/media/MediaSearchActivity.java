@@ -197,6 +197,7 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
     
     class SearchAdapter extends BaseAdapter implements ID3Parse.ID3ParseListener {
         class ViewHolder {
+            ImageView mItemBgView;
             TextView mDeviceTypeView;
             ImageView mIconView;
             TextView mTitleView;
@@ -228,7 +229,10 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
             if (convertView == null) {
                 holder = new ViewHolder();
                 convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.music_search_listview_item, null);
+                holder.mItemBgView = (ImageView) convertView.findViewById(R.id.search_item_bg);
+                holder.mItemBgView.setBackgroundDrawable(skinManager.getStateListDrawable(R.drawable.pub_list_short_selector));
                 holder.mDeviceTypeView = (TextView) convertView.findViewById(R.id.music_item_device_type);
+                holder.mDeviceTypeView.setBackgroundColor(skinManager.getColor(R.color.hk_custom_text_p));
                 holder.mIconView = (ImageView) convertView.findViewById(R.id.music_item_icon);
                 holder.mTitleView = (TextView) convertView.findViewById(R.id.music_listitem_title);
                 holder.mArtistView = (TextView) convertView.findViewById(R.id.music_item_text);
@@ -280,13 +284,13 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
                             skinManager.getDrawable(R.drawable.media_list_item_music), fileNode);
                 }
             } else if (fileNode.getFileType() == FileType.VIDEO) {
-                holder.mIconView.setImageResource(R.drawable.image_icon_default);
+                holder.mIconView.setImageDrawable(skinManager.getDrawable(R.drawable.image_icon_default));
                 if (fileNode.getParseId3() == 1) {
                     ImageLoad.instance(MediaSearchActivity.this).loadBitmap(holder.mIconView,
                             skinManager.getDrawable(R.drawable.image_icon_default), fileNode);
                 }
             } else if (fileNode.getFileType() == FileType.IMAGE) {
-                holder.mIconView.setImageResource(R.drawable.image_icon_default);
+                holder.mIconView.setImageDrawable(skinManager.getDrawable(R.drawable.image_icon_default));
                 ImageLoad.instance(getApplicationContext()).loadBitmap(holder.mIconView,
                         skinManager.getDrawable(R.drawable.image_icon_default), fileNode);
             }
