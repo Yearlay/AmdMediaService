@@ -10,6 +10,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.StateListDrawable;
 import android.provider.Settings;
@@ -148,6 +149,35 @@ public class SkinManager {
             e.printStackTrace();
         }
         return stateListDrawable;
+    }
+    
+    public AnimationDrawable getAnimationDrawable(int resId) {
+        return getAnimationDrawable(mContext.getResources().getResourceEntryName(resId));
+    }
+    
+    public AnimationDrawable getAnimationDrawable(String name) {
+    	AnimationDrawable animationDrawable = null;
+        String skinHeadStr = getSkinTheme(mContext.getContentResolver());
+        int remoteSelectorId = 0;
+        try {
+            if (skinHeadStr != null && mRemoteContext != null) {
+                Resources rs = mRemoteContext.getResources();
+                remoteSelectorId = rs.getIdentifier(skinHeadStr + name, "drawable", SKIN_MANAGER_PACKAGE_NAME);
+                if (remoteSelectorId != 0) {
+                    animationDrawable = (AnimationDrawable) AnimationDrawable.createFromXml(rs,
+                            rs.getXml(remoteSelectorId));
+                }
+            }
+            if (remoteSelectorId == 0) {
+                Resources rs = mContext.getResources();
+                int selectorId = rs.getIdentifier(name, "drawable", mContext.getPackageName());
+                animationDrawable = (AnimationDrawable) AnimationDrawable.createFromXml(rs,
+                        rs.getXml(selectorId));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return animationDrawable;
     }
     
     public ColorStateList getColorStateList(int resId) {
