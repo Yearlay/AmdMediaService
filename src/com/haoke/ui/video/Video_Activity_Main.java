@@ -58,6 +58,8 @@ public class Video_Activity_Main extends Activity implements
     private ImageButton mSearchButton;
     private View mEditView;
     private TextView mSelectAllView;
+    private TextView mDeleteView;
+    private TextView mCancelView;
     private TextView mCopyTextView;
     private boolean mPreFlag;
     private boolean mPlaying;
@@ -109,8 +111,10 @@ public class Video_Activity_Main extends Activity implements
         mSearchButton.setOnClickListener(this);
         
         mEditView = findViewById(R.id.list_edit_view);
-        findViewById(R.id.edit_delete).setOnClickListener(this);
-        findViewById(R.id.edit_cancel).setOnClickListener(this);
+        mDeleteView = (TextView) findViewById(R.id.edit_delete);
+        mDeleteView.setOnClickListener(this);
+        mCancelView = (TextView) findViewById(R.id.edit_cancel);
+        mCancelView.setOnClickListener(this);
         mSelectAllView = (TextView) mEditView.findViewById(R.id.edit_all);
         mSelectAllView.setOnClickListener(this);
         mCopyTextView = (TextView) mEditView.findViewById(R.id.copy_to_local);
@@ -228,6 +232,11 @@ public class Video_Activity_Main extends Activity implements
         RadioButton collectRadioButton = (RadioButton) mRadioGroup.findViewById(R.id.video_device_collect);
         collectRadioButton.setTextColor(skinManager.getColorStateList(R.drawable.tab_textcolor_selector));
         collectRadioButton.setBackgroundDrawable(skinManager.getStateListDrawable(R.drawable.tab_backgroud_selector));
+        mSearchButton.setImageDrawable(skinManager.getStateListDrawable(R.drawable.media_search_selector));
+        mSelectAllView.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
+        mDeleteView.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
+        mCancelView.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
+        mCopyTextView.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
     }
 
     @Override

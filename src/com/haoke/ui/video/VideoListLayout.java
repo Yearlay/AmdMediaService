@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -74,7 +75,6 @@ public class VideoListLayout extends RelativeLayout implements
         mEmptyView = (TextView) findViewById(R.id.video_list_empty);
         mLoadingView = findViewById(R.id.loading_layout);
         mGridView = (GridView) findViewById(R.id.video_grid_list);
-        mGridView.setChoiceMode(GridView.CHOICE_MODE_SINGLE);
         mGridView.setSelector(new ColorDrawable(Color.TRANSPARENT));
         mGridView.setOnItemClickListener(this);
         mGridView.setOnItemLongClickListener(this);
@@ -325,6 +325,7 @@ public class VideoListLayout extends RelativeLayout implements
               mHolder = new ViewHolder();
               convertView = LayoutInflater.from(mContext).inflate(R.layout.photo_list_item, null);
               mHolder.mPhotoImageView = (ImageView) convertView.findViewById(R.id.item_photo);
+              mHolder.mPhotoImageView.setBackgroundDrawable(skinManager.getStateListDrawable(R.drawable.image_item_selector));
               mHolder.mItemSelectView = (ImageView) convertView.findViewById(R.id.item_select);
               mHolder.mPhotoName = (HKTextView) convertView.findViewById(R.id.item_filename);
               mHolder.mFromTextView = (TextView) convertView.findViewById(R.id.image_from_text);
@@ -352,14 +353,18 @@ public class VideoListLayout extends RelativeLayout implements
            }
            mHolder.mItemSelectView.setVisibility(isEditMode ? View.VISIBLE : View.GONE);
            if (isEditMode) {
-               mHolder.mItemSelectView.setImageResource(fileNode.isSelected() ?
-                       R.drawable.music_selected_icon : R.drawable.music_selected_nomal);
+               if (fileNode.isSelected()) {
+                   mHolder.mItemSelectView.setImageDrawable(skinManager.getDrawable(R.drawable.music_selected_icon));
+               } else {
+                   mHolder.mItemSelectView.setImageDrawable(skinManager.getDrawable(R.drawable.music_selected_nomal));
+               }
            }
            
-           mHolder.mPhotoImageView.setImageResource(R.drawable.image_icon_default);
+           Drawable defaultDrawable = skinManager.getDrawable(R.drawable.image_icon_default);
+           mHolder.mPhotoImageView.setImageDrawable(defaultDrawable);
            if (fileNode.getParseId3() == 1) {
                ImageLoad.instance(mContext).loadBitmap(mHolder.mPhotoImageView,
-                       skinManager.getDrawable(R.drawable.image_icon_default), fileNode);
+                       defaultDrawable, fileNode);
            } else {
                ID3Parse.instance().parseID3(position, fileNode, this);
            }

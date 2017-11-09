@@ -122,7 +122,6 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
         mLoadingView = findViewById(R.id.loading_layout);
 
         mGridView = (GridView) findViewById(R.id.image_grid_list);
-        mGridView.setChoiceMode(GridView.CHOICE_MODE_SINGLE);
         mGridView.setSelector(new ColorDrawable(Color.TRANSPARENT));
         mGridView.setOnItemClickListener(this);
         mGridView.setOnItemLongClickListener(this);
@@ -328,8 +327,8 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
             } else {
                 mHolder = new ViewHolder();
                 convertView = LayoutInflater.from(mContext).inflate(R.layout.photo_list_item, null);
-                convertView.setBackgroundDrawable(skinManager.getStateListDrawable(R.drawable.image_item_bg));
                 mHolder.mPhotoImageView = (ImageView) convertView.findViewById(R.id.item_photo);
+                mHolder.mPhotoImageView.setBackgroundDrawable(skinManager.getStateListDrawable(R.drawable.image_item_selector));
                 mHolder.mItemSelectView = (ImageView) convertView.findViewById(R.id.item_select);
                 mHolder.mPhotoName = (HKTextView) convertView.findViewById(R.id.item_filename);
                 mHolder.mFromTextView = (TextView) convertView.findViewById(R.id.image_from_text);

@@ -1,11 +1,10 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="@drawable/image_item_selector"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="5dp"
-    android:paddingLeft="5dp"
-    android:paddingRight="5dp"
-    android:paddingTop="5dp" >
+    android:paddingBottom="2dp"
+    android:paddingLeft="2dp"
+    android:paddingRight="2dp"
+    android:paddingTop="2dp" >
 
     <RelativeLayout
         android:layout_width="380px"
@@ -17,6 +16,8 @@
             android:layout_height="198px"
             android:gravity="center"
             android:scaleType="centerCrop"
+            android:padding="3dp"
+            android:background="@drawable/image_item_selector"
             android:src="@drawable/image_icon_default"/>
         
         <ImageView android:id="@+id/item_select"
@@ -32,6 +33,7 @@
             android:background="@color/hk_backgroup_view"
             android:layout_alignBottom="@+id/item_photo"
             android:orientation="vertical"
+            android:padding="3dp"
             android:gravity="center_vertical">
             
             <com.haoke.ui.widget.HKTextView
@@ -57,4 +59,4 @@
     
     </RelativeLayout>
 
-</LinearLayout>
+</RelativeLayout>
