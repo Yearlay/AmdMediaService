@@ -9,6 +9,7 @@ import android.support.v4.view.PagerAdapter;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -42,7 +43,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
     private int mCurLabel = ModeDef.AUDIO;
     private MediaPageChangeListener mPageChangeListener = new MediaPageChangeListener();
     private boolean pressBackToHome = false;
-
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -134,6 +135,24 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
         unregisterReceiver(mReceiver);
     }
     
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        int index = ev.getActionIndex();
+        if (index != 0) {
+            return true;
+        }
+        return super.dispatchTouchEvent(ev);
+    }
+    
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        int index = ev.getActionIndex();
+        if (index != 0) {
+            return true;
+        }
+        return super.onTouchEvent(ev);
+    }
+
     private boolean isShowRadioLayout() {
     	return mViewPager.getCurrentItem() == VIEWPAGER_ID_RADIO;
     }

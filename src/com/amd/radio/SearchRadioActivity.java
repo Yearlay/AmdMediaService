@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -185,6 +186,24 @@ public class SearchRadioActivity extends Activity implements OnClickListener,
 			updateNumButton();
 		}
 	}
+	
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        int index = ev.getActionIndex();
+        if (index != 0) {
+            return true;
+        }
+        return super.dispatchTouchEvent(ev);
+    }
+    
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        int index = ev.getActionIndex();
+        if (index != 0) {
+            return true;
+        }
+        return super.onTouchEvent(ev);
+    }
 	
 	private void updateNumButton() {
 		mButton0.setEnabled(judgeEnable("0"));

@@ -35,6 +35,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -64,7 +65,6 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
     private static final int PROGRESS_DIALOG = 1;
     @Override
     protected Dialog onCreateDialog(int id) {
-        // TODO Auto-generated method stub
         switch(id) {
         case PROGRESS_DIALOG:
             ProgressDialog progressDialog = new ProgressDialog(MediaSearchActivity.this);
@@ -148,6 +148,24 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
         super.onResume();
         updateLabel();
         refreshSkin();
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        int index = ev.getActionIndex();
+        if (index != 0) {
+            return true;
+        }
+        return super.dispatchTouchEvent(ev);
+    }
+    
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        int index = ev.getActionIndex();
+        if (index != 0) {
+            return true;
+        }
+        return super.onTouchEvent(ev);
     }
 
     @Override
