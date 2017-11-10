@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amd.media.MediaInterfaceUtil;
+import com.archermind.skinlib.SkinManager;
 import com.haoke.bean.FileNode;
 import com.haoke.constant.MediaUtil;
 import com.haoke.constant.MediaUtil.CopyState;
@@ -53,6 +54,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     private int mDeviceType = DeviceType.NULL;
     
     private View mLoadingLayout = null;
+    private ImageView mLoadAnimationView;
     private ImageView mLoadImageView;
     private TextView mLoadTextView;
     
@@ -70,6 +72,8 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     private int mType = 0;//当前模式：0 列表模式，1 编辑模式
     private boolean mPlayDefault = false;
     
+    private SkinManager skinManager;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +82,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         getWindow().getDecorView().setSystemUiVisibility(mLayoutProps);
         
         mIF = Media_IF.getInstance();
+        skinManager = SkinManager.instance(getApplicationContext());
         initView();
         
         mIF.initMedia();
@@ -165,6 +170,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     
     private void initView() {
         mLoadingLayout = findViewById(R.id.music_list_layout_loading);
+        mLoadAnimationView = (ImageView) mLoadingLayout.findViewById(R.id.media_loading_imageview);
         mLoadImageView = (ImageView) mLoadingLayout.findViewById(R.id.media_loading_img);
         mLoadTextView = (TextView) mLoadingLayout.findViewById(R.id.media_text);
         
@@ -242,6 +248,12 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             }
             mPlayDefault = false;
         }
+        refreshSkin();
+    }
+    
+    private void refreshSkin() {
+        mListTab.refreshSkin(skinManager);
+        mLoadAnimationView.setImageDrawable(skinManager.getAnimationDrawable(R.drawable.media_loading_anim));
     }
     
     @Override

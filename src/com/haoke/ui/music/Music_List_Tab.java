@@ -5,21 +5,24 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.archermind.skinlib.SkinManager;
 import com.haoke.define.MediaDef.DeviceType;
 import com.haoke.mediaservice.R;
 
 public class Music_List_Tab extends RelativeLayout implements OnClickListener {
-	
+	private boolean initViewFlag;
 	//Tab右侧按钮控制
 	private RelativeLayout mListTabLayout = null;
 	private RelativeLayout mLoadLayout = null;
 	private RelativeLayout mEditTabLayout = null;
+	
+	private ImageView mEditIcon;
+	private TextView mEditTextView;
 	
 	private TextView mAllButton = null;//全选
 	private TextView mCancleButton = null;//取消选择
@@ -60,14 +63,14 @@ public class Music_List_Tab extends RelativeLayout implements OnClickListener {
 	}
 	
 	private void initView() {
-		mListTabLayout = (RelativeLayout) this.findViewById(R.id.music_tab_list_id);
-		mLoadLayout = (RelativeLayout) this.findViewById(R.id.music_tab_loading_id);
-		mEditTabLayout = (RelativeLayout) this.findViewById(R.id.music_tab_edit_id);
+		mListTabLayout = (RelativeLayout) findViewById(R.id.music_tab_list_id);
+		mLoadLayout = (RelativeLayout) findViewById(R.id.music_tab_loading_id);
+		mEditTabLayout = (RelativeLayout) findViewById(R.id.music_tab_edit_id);
 		mListTabLayout.setVisibility(View.VISIBLE);
 		mLoadLayout.setVisibility(View.GONE);
 		
-		mDeviceImageView = (ImageView) this.findViewById(R.id.music_device_image);
-		mDeviceTextView = (TextView) this.findViewById(R.id.music_device_text);
+		mDeviceImageView = (ImageView) findViewById(R.id.music_device_image);
+		mDeviceTextView = (TextView) findViewById(R.id.music_device_text);
 		
 		mAllButton = (TextView) findViewById(R.id.music_edit_all);
 		mCancleButton = (TextView) findViewById(R.id.music_edit_cancle);
@@ -78,9 +81,23 @@ public class Music_List_Tab extends RelativeLayout implements OnClickListener {
 		mDelectButton.setOnClickListener(this);
 		mCopyButton.setOnClickListener(this);
 		
-		mLoadingImageView = (ImageView) this.findViewById(R.id.image_view_loading);
+		mLoadingImageView = (ImageView) findViewById(R.id.image_view_loading);
 		
 		mListTabLayout.setOnClickListener(this);
+		mEditIcon = (ImageView) findViewById(R.id.image_view_edit_id);
+		mEditTextView = (TextView) findViewById(R.id.music_list_edit);
+		initViewFlag = true;
+	}
+	
+	public void refreshSkin(SkinManager skinManager) {
+		if (initViewFlag) {
+			mEditIcon.setImageDrawable(skinManager.getDrawable(R.drawable.music_date_edit));
+			mEditTextView.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
+			mAllButton.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
+			mCancleButton.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
+			mDelectButton.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
+			mCopyButton.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
+		}
 	}
 	
 	public void setLeftName(int type) {
@@ -129,17 +146,9 @@ public class Music_List_Tab extends RelativeLayout implements OnClickListener {
 		if (mLoadLayout.getVisibility() != View.VISIBLE) {
 			mLoadLayout.setVisibility(View.VISIBLE);
 		}
-//		mAnim = AnimationUtils.loadAnimation(mContext, R.anim.list_loading_animator);
-//		mInterpolator = new LinearInterpolator();
-//		mAnim.setInterpolator(mInterpolator);
-//		mLoadingImageView.startAnimation(mAnim);
 	}
 	
 	public void stopTabAnimator() {
-//		if (mLoadingImageView.getAnimation() != null){
-//			mAnim.cancel();
-//			mLoadingImageView.clearAnimation();
-//		}
 		if (mLoadLayout.getVisibility() != View.GONE) {
 			mLoadLayout.setVisibility(View.GONE);
 		}
