@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
@@ -143,6 +144,24 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+    
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        int index = ev.getActionIndex();
+        if (index != 0) {
+            return true;
+        }
+        return super.dispatchTouchEvent(ev);
+    }
+    
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        int index = ev.getActionIndex();
+        if (index != 0) {
+            return true;
+        }
+        return super.onTouchEvent(ev);
     }
 
     private void initFavoriteData() {

@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -277,6 +278,24 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         } else {
             super.onBackPressed();
         }
+    }
+    
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        int index = ev.getActionIndex();
+        if (index != 0) {
+            return true;
+        }
+        return super.dispatchTouchEvent(ev);
+    }
+    
+    @Override
+    public boolean onTouchEvent(MotionEvent ev) {
+        int index = ev.getActionIndex();
+        if (index != 0) {
+            return true;
+        }
+        return super.onTouchEvent(ev);
     }
 
     @Override
