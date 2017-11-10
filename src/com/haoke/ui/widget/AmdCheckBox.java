@@ -1,5 +1,6 @@
 package com.haoke.ui.widget;
 
+import com.archermind.skinlib.SkinManager;
 import com.haoke.mediaservice.R;
 
 import android.content.Context;
@@ -14,9 +15,11 @@ public class AmdCheckBox extends RelativeLayout implements View.OnClickListener 
     private TextView mCheckBoxTextView;
     private ImageView mCheckBoxImageView;
     private boolean mIsChecked;
+    private SkinManager skinManager;
 
     public AmdCheckBox(Context context) {
         super(context);
+        skinManager = SkinManager.instance(context);
         LayoutInflater inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.amd_checkbox_layout, this, true);
@@ -28,7 +31,8 @@ public class AmdCheckBox extends RelativeLayout implements View.OnClickListener 
     }
     
     private void updateImageView() {
-        mCheckBoxImageView.setImageResource(mIsChecked ? R.drawable.item_switch_select : R.drawable.item_switch_no);
+        mCheckBoxImageView.setImageDrawable(skinManager.getDrawable(
+                mIsChecked ? R.drawable.item_switch_select : R.drawable.item_switch_no));
         
     }
     
