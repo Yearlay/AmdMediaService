@@ -1,6 +1,7 @@
 package com.haoke.ui.music;
 
 import com.amd.bt.BT_IF;
+import com.archermind.skinlib.SkinManager;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.ID3Parse;
 import com.haoke.bean.ID3Parse.ID3ParseListener;
@@ -224,6 +225,10 @@ public class Music_Play_Id3 extends LinearLayout implements OnClickListener, ID3
         }
         
         mAlbumView.setOnClickListener(this);
+    }
+    
+    public void refreshSkin(SkinManager skinManager) {
+    	updateId3Info();
     }
     
     @Override

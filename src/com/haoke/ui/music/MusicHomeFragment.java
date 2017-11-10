@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.amd.bt.BTMusic_IF;
 import com.amd.bt.BT_IF;
 import com.amd.bt.BT_Listener;
+import com.archermind.skinlib.SkinManager;
 import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.btjar.main.BTDef.BTFunc;
 import com.haoke.constant.MediaUtil.DeviceType;

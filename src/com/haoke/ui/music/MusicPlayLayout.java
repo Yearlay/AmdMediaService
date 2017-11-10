@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.amd.bt.BTMusic_IF;
 import com.amd.bt.BT_IF;
 import com.amd.media.MediaInterfaceUtil;
+import com.archermind.skinlib.SkinManager;
 import com.haoke.bean.FileNode;
 import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.constant.MediaUtil;
@@ -52,6 +53,9 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 	private int mTextFormat = 1; //1为分秒，2为时分秒
 	
 	private Media_IF mIF = Media_IF.getInstance();
+	
+	private SkinManager sSkinManager;
+	
 	private FileNode mFileNode;
 	public FileNode getFileNode() {
 		return mFileNode;
@@ -138,7 +142,24 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
         mBtnNext = (ImageView) this.findViewById(R.id.media_ctrlbar_next);
         mBtnNext.setOnClickListener(this);
 		
+		sSkinManager = SkinManager.instance(getContext());
+	}
+	
+	private void refreshSkin() {
+		if (sSkinManager == null) {
+			sSkinManager = SkinManager.instance(getContext());
+		}
+		mListImg.setImageDrawable(sSkinManager.getStateListDrawable(R.drawable.all));
+		mBtnPre.setImageDrawable(sSkinManager.getStateListDrawable(R.drawable.pre));
+		mBtnNext.setImageDrawable(sSkinManager.getStateListDrawable(R.drawable.next));
+		updateCtrlBar(); // 更新播放按钮。
 		updateRepeatMode();
+		if (mIF.getScanMode()) {
+			mScanImg.setImageDrawable(sSkinManager.getDrawable(R.drawable.radio_scan_5s));
+		} else {
+			mScanImg.setImageDrawable(sSkinManager.getDrawable(R.drawable.radio_scan_5s_select));
+		}
+		mId3.refreshSkin(sSkinManager);
 	}
 	
 	private void updateCollectIcon() {
@@ -154,9 +175,9 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 			int pos = mIF.getPlayPos();
 			isCollected = mIF.isCollected(pos);
 			if (isCollected) {
-				mSavedImg.setImageResource(R.drawable.media_collect);
+				mSavedImg.setImageDrawable(sSkinManager.getDrawable(R.drawable.media_collect));
 			} else {
-				mSavedImg.setImageResource(R.drawable.media_uncollect);
+				mSavedImg.setImageDrawable(sSkinManager.getDrawable(R.drawable.media_uncollect));
 			}	
 		}
 	}
@@ -201,6 +222,7 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
     	if (mIF.getPlayItem() != null) {
     		mFileNode = mIF.getPlayItem();
     	}
+    	refreshSkin();
 	}
 	
 	@Override
@@ -238,11 +260,11 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 			boolean isCollect = mIF.isCollected(pos);
 			if (isCollect) {
 				mIF.deleteCollectedMusic(pos);
-				mSavedImg.setImageResource(R.drawable.media_uncollect);
+				mSavedImg.setImageDrawable(sSkinManager.getDrawable(R.drawable.media_uncollect));
 			} else {
 				if (AllMediaList.instance(getContext()).getCollectSize(FileType.AUDIO) < MediaUtil.COLLECT_COUNT_MAX) {
             		mIF.collectMusic(pos);
-    				mSavedImg.setImageResource(R.drawable.media_collect);
+    				mSavedImg.setImageDrawable(sSkinManager.getDrawable(R.drawable.media_collect));
             	} else {
 					new AlertDialog.Builder(getContext()).setTitle(R.string.collect_limit_dialog_title)
             		.setMessage(R.string.collect_limit_dialog_message)
@@ -251,7 +273,7 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 						public void onClick(DialogInterface dialog, int which) {
 							AllMediaList.instance(getContext()).deleteOldCollect(FileType.AUDIO);
 							mIF.collectMusic(pos);
-							mSavedImg.setImageResource(R.drawable.media_collect);
+							mSavedImg.setImageDrawable(sSkinManager.getDrawable(R.drawable.media_collect));
 						}
 					})
 					.setNegativeButton(R.string.collect_limit_dialog_cancel, null)
@@ -354,7 +376,7 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 				mTimeHandler.sendEmptyMessageDelayed(MSG_UPDATE_TIME, 200);
 			}
 		}
-		mBtnPP.setImageResource(playState ? R.drawable.pause : R.drawable.play);
+		mBtnPP.setImageDrawable(sSkinManager.getStateListDrawable(playState ? R.drawable.pause : R.drawable.play));
 	}
 	
 	public void updateRepeatMode() {
@@ -364,11 +386,11 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 		}
 		int repeat = mIF.getRepeatMode();
 	    if (repeat == RepeatMode.RANDOM) {
-	    	mModeImg.setImageResource(R.drawable.music_play_nomal);
+	    	mModeImg.setImageDrawable(sSkinManager.getDrawable(R.drawable.music_play_nomal));
 	    } else if (repeat == RepeatMode.ONE) {
-	    	mModeImg.setImageResource(R.drawable.music_play_single);
+	    	mModeImg.setImageDrawable(sSkinManager.getDrawable(R.drawable.music_play_single));
 	    } else if (repeat == RepeatMode.CIRCLE) {
-	    	mModeImg.setImageResource(R.drawable.music_play_cycle);
+	    	mModeImg.setImageDrawable(sSkinManager.getDrawable(R.drawable.music_play_cycle));
 	    }
 	}
 	
@@ -510,12 +532,12 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
         	if (mIF.getPlayState() != PlayState.PLAY) {
         		mIF.setPlayState(PlayState.PLAY);
         	}
-        	mScanImg.setImageResource(R.drawable.radio_scan_5s);
+        	mScanImg.setImageDrawable(sSkinManager.getDrawable(R.drawable.radio_scan_5s));
     	}
     }
     
     private void exitScanMode() {
-    	mScanImg.setImageResource(R.drawable.radio_scan_5s_select);
+    	mScanImg.setImageDrawable(sSkinManager.getDrawable(R.drawable.radio_scan_5s_select));
     	mIF.setScanMode(false);
     	mTimeHandler.removeMessages(MSG_SCAN_MUSIC_CHANGE);
     	mScanStartPos = -1;
