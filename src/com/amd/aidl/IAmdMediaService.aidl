@@ -4,8 +4,8 @@ import com.amd.aidl.IAmdMediaCallBack;
 
 interface IAmdMediaService {
 
-	boolean registerCallBack(int mode, IAmdMediaCallBack callBack);
-	boolean unregisterCallBack(int mode);
+	boolean registerCallBack(String mode, IAmdMediaCallBack callBack);
+	boolean unregisterCallBack(String mode);
 
 	boolean clickMusicPlay();
 	boolean clickMusicPre();

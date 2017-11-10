@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.RemoteException;
 import android.text.TextUtils;
@@ -17,6 +18,7 @@ import com.amd.radio.Radio_IF;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.ID3Parse;
 import com.haoke.bean.ID3Parse.ID3ParseListener;
+import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.define.ModeDef;
 import com.haoke.mediaservice.R;
 import com.haoke.ui.widget.MediaWidgetProvider;
@@ -31,12 +33,14 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
 	private ArrayList<MediaClientEx> mClientList = new ArrayList<MediaClientEx>();
 	private Context mContext;
 	private String mOldId3Info = null;
+	private Bitmap mBtDefBmp = null;
+	private Bitmap mAlbumBitmap = null;
 
 	public static class MediaClientEx {
-		public int mMode = 0;
+		public String mMode = null;
 		public IAmdMediaCallBack mCallBack = null;
 		
-		public MediaClientEx(int mode, IAmdMediaCallBack callBack) {
+		public MediaClientEx(String mode, IAmdMediaCallBack callBack) {
 			mMode = mode;
 			mCallBack = callBack;
 		}
@@ -44,16 +48,18 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
 	
 	public MediaServiceBinder(Context context) {
 		mContext = context;
+		
+		mOldId3Info = context.getResources().getString(R.string.media_appwidget_title_show);
 	}
 	
 	@Override
-	public boolean registerCallBack(int mode, IAmdMediaCallBack callBack)
+	public boolean registerCallBack(String mode, IAmdMediaCallBack callBack)
 			throws RemoteException {
 		Log.d(TAG, "registerCallBack mode = " + mode);
 		synchronized (mClientList) {
 			int size = mClientList.size();
 			for (int i = size - 1; i >= 0; i--) {
-				if (mode == mClientList.get(i).mMode) {
+				if (mode.equals(mClientList.get(i).mMode)) {
 					mClientList.remove(i);
 				}
 			}
@@ -63,12 +69,12 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
 	}
 
 	@Override
-	public boolean unregisterCallBack(int mode) throws RemoteException {
+	public boolean unregisterCallBack(String mode) throws RemoteException {
 		Log.d(TAG, "unregisterCallBack mode = " + mode);
 		synchronized (mClientList) {
 			int size = mClientList.size();
 			for (int i = size - 1; i >= 0; i--) {
-				if (mode == mClientList.get(i).mMode) {
+				if (mode.equals(mClientList.get(i).mMode)) {
 					mClientList.remove(i);
 				}
 			}
@@ -158,8 +164,40 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
 
 	@Override
 	public Bitmap getMusicId3AlbumBmp() throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
+		int source = Media_IF.getCurSource();
+		Bitmap bmp = null;
+        if (source != ModeDef.BT) {
+            if (!(source == ModeDef.AUDIO || source == ModeDef.NULL)) {
+            	if (Media_IF.sLastSource == ModeDef.BT) {
+            		source = ModeDef.BT;
+            	}
+            }
+            if (!(BT_IF.getInstance().getConnState() == BTConnState.CONNECTED)) {
+                source = ModeDef.NULL;
+            }
+        }
+    	if (source == ModeDef.BT) {
+    		if (mBtDefBmp == null) {
+    			mBtDefBmp = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.home1_card_bt_default);
+    		}
+    		bmp = mBtDefBmp;
+        } else if (source == ModeDef.AUDIO || source == ModeDef.NULL) {
+            FileNode fileNode = getFileNode(mContext);
+            if (fileNode != null) {
+                if (fileNode.getParseId3() == 1 && fileNode.getThumbnailPath() != null) {
+                    if (mAlbumBitmap != null) {
+                    	mAlbumBitmap.recycle();
+                    }
+                    mAlbumBitmap = BitmapFactory.decodeFile(fileNode.getThumbnailPath());
+                    bmp = mAlbumBitmap;
+                } else {
+                	bmp = null;
+                }
+            } else {
+                bmp = null;
+            }
+        }
+		return bmp;
 	}
 
 	@Override
@@ -167,13 +205,20 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
 		String unkownStr = mContext.getResources().getString(R.string.media_unknow);
 		String musicTitle  = null;
         String artist  = null;
+        String info = null;
         int source = Media_IF.getCurSource();
+        if (source != ModeDef.BT) {
+            if (!(BT_IF.getInstance().getConnState() == BTConnState.CONNECTED)) {
+                source = ModeDef.NULL;
+            }
+        }
         if (source == ModeDef.BT) {
             musicTitle = BT_IF.getInstance().music_getTitle();
             artist = BT_IF.getInstance().music_getArtist();
             musicTitle = TextUtils.isEmpty(musicTitle) ? unkownStr : musicTitle;
             artist = TextUtils.isEmpty(artist) ? unkownStr : artist;
-            mOldId3Info = musicTitle + " - " + artist;
+            info = musicTitle + " - " + artist;
+            mOldId3Info = info;
         } else if (source == ModeDef.AUDIO || source == ModeDef.NULL) {
             FileNode fileNode = getFileNode(mContext);
             if (fileNode != null) {
@@ -182,10 +227,13 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
             }
             musicTitle = TextUtils.isEmpty(musicTitle) ? unkownStr : musicTitle;
             artist = TextUtils.isEmpty(artist) ? unkownStr : artist;
-            mOldId3Info = musicTitle + " - " + artist;
+            info = musicTitle + " - " + artist;
+            mOldId3Info = info;
+        } else {
+        	info = mOldId3Info;
         }
-		Log.d(TAG, "getMusicId3Info mOldId3Info="+mOldId3Info);
-		return mOldId3Info;
+		Log.d(TAG, "getMusicId3Info info="+info);
+		return info;
 	}
 
 	@Override
@@ -259,7 +307,7 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
 			for (int i = 0; i < mClientList.size(); i++) {
 				MediaClientEx client = mClientList.get(i);
 				IAmdMediaCallBack callBack = client.mCallBack;
-				Log.d(TAG, "dispatchDataToClients mode="+client.mMode+"; ");
+				Log.d(TAG, "dispatchDataToClients mode="+client.mMode+"; id="+id);
 				try {
 					callBack.onDataChange(id, data0, data1);
 				} catch (RemoteException e) {
