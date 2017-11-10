@@ -238,6 +238,7 @@ public class Video_Activity_Main extends Activity implements
         mCancelView.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
         mCopyTextView.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
         mListLayout.refreshSkin();
+        mPlayLayout.refreshSkin();
     }
 
     @Override

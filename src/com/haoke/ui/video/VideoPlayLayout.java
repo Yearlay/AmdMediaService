@@ -22,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amd.media.MediaInterfaceUtil;
+import com.archermind.skinlib.SkinManager;
 import com.haoke.bean.FileNode;
 import com.haoke.constant.MediaUtil;
 import com.haoke.constant.MediaUtil.FileType;
@@ -38,15 +39,22 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     private VideoSurfaceView mVideoView;
     private View mForbiddenView;
     private View mCtrlBar;
+    private ImageView mBackImageView;
+    private ImageView mPreImageView;
+    private ImageView mFastPreImageView;
+    private ImageView mFastNextImageView;
+    private ImageView mNextImageView;
     private ImageView mPlayImageView;
     private ImageView mCollectView;
     private TextView mTitleTextView;
     private VideoPlayTimeSeekBar mTimeSeekBar;
     private View mUnsupportView;
     private Handler mActivityHandler;
-    private  GestureDetector mGestureDetector;
+    private GestureDetector mGestureDetector;
     
     private FileNode mFileNode;
+    
+    private SkinManager skinManager;
     
     public VideoPlayLayout(Context context) {
         super(context);
@@ -84,8 +92,9 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     }
     
     public void updatePlayState(int playState) {
-        mPlayImageView.setImageResource(playState == PlayState.PLAY ?
-                R.drawable.image_pause_icon_selector : R.drawable.image_play_icon_selector);
+        mPlayImageView.setImageDrawable(skinManager.getStateListDrawable(
+                playState == PlayState.PLAY ?
+                R.drawable.image_pause_icon_selector : R.drawable.image_play_icon_selector));
         mTimeSeekBar.updateCurTime();
     }
     
@@ -114,11 +123,16 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         mVideoLayout.setOnTouchListener(this);
         mVideoView = new VideoSurfaceView(mContext);
         mCtrlBar = findViewById(R.id.video_play_ctrlbar);
-        mCtrlBar.findViewById(R.id.video_ctrlbar_list).setOnClickListener(this);
-        mCtrlBar.findViewById(R.id.video_ctrlbar_pre).setOnClickListener(this);
-        mCtrlBar.findViewById(R.id.video_ctrlbar_fastpre).setOnClickListener(this);
-        mCtrlBar.findViewById(R.id.video_ctrlbar_fastnext).setOnClickListener(this);
-        mCtrlBar.findViewById(R.id.video_ctrlbar_next).setOnClickListener(this);
+        mBackImageView = (ImageView) mCtrlBar.findViewById(R.id.video_ctrlbar_list);
+        mBackImageView.setOnClickListener(this);
+        mPreImageView = (ImageView) mCtrlBar.findViewById(R.id.video_ctrlbar_pre);
+        mPreImageView.setOnClickListener(this);
+        mFastPreImageView = (ImageView) mCtrlBar.findViewById(R.id.video_ctrlbar_fastpre);
+        mFastPreImageView.setOnClickListener(this);
+        mFastNextImageView = (ImageView) mCtrlBar.findViewById(R.id.video_ctrlbar_fastnext);
+        mFastNextImageView.setOnClickListener(this);
+        mNextImageView = (ImageView) mCtrlBar.findViewById(R.id.video_ctrlbar_next);
+        mNextImageView.setOnClickListener(this);
         mPlayImageView = (ImageView) mCtrlBar.findViewById(R.id.video_ctrlbar_pp);
         mPlayImageView.setOnClickListener(this);
         mTimeSeekBar = (VideoPlayTimeSeekBar) findViewById(R.id.video_play_time_seekbar);
@@ -129,6 +143,15 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         mForbiddenView = findViewById(R.id.video_play_forbidden);
         mForbiddenView.setOnTouchListener(this);
         mUnsupportView = findViewById(R.id.not_support_text);
+        skinManager = SkinManager.instance(mContext);
+    }
+    
+    public void refreshSkin() {
+        mBackImageView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.image_back_icon_selector));
+        mPreImageView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.image_pre_icon_selector));
+        mFastPreImageView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.video_ctrl_fastpre_selector));
+        mFastNextImageView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.video_ctrl_fastnext_selector));
+        mNextImageView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.image_next_icon_selector));
     }
 
     public void onResume() {
@@ -200,8 +223,9 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
                 break;
             }
             Video_IF.getInstance().changePlayState();
-            mPlayImageView.setImageResource(Video_IF.getInstance().getPlayState() == PlayState.PLAY ?
-                    R.drawable.image_pause_icon_selector : R.drawable.image_play_icon_selector);
+            mPlayImageView.setImageDrawable(skinManager.getStateListDrawable(
+                    Video_IF.getInstance().getPlayState() == PlayState.PLAY ?
+                    R.drawable.image_pause_icon_selector : R.drawable.image_play_icon_selector));
             mTimeSeekBar.updateCurTime();
             break;
         case R.id.video_ctrlbar_fastnext: // 快进
@@ -274,7 +298,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         if (operateValue == OperateListener.OPERATE_COLLECT) {
             if (resultCode == OperateListener.OPERATE_SUCEESS) {
                 if (progress == 100) {
-                    mCollectView.setImageResource(R.drawable.media_collect);
+                    mCollectView.setImageDrawable(skinManager.getDrawable(R.drawable.media_collect));
                 }
             } else {
                 Toast.makeText(mContext, "收藏视频异常", Toast.LENGTH_SHORT).show();
@@ -282,7 +306,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         } else if (operateValue == OperateListener.OPERATE_UNCOLLECT) {
             if (resultCode == OperateListener.OPERATE_SUCEESS) {
                 if (progress == 100) {
-                    mCollectView.setImageResource(R.drawable.media_uncollect);
+                    mCollectView.setImageDrawable(skinManager.getDrawable(R.drawable.media_uncollect));
                 }
             } else {
                 Toast.makeText(mContext, "取消收藏视频异常", Toast.LENGTH_SHORT).show();
@@ -446,8 +470,8 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         }
         boolean showFlag = !mFileNode.isFromCollectTable();
         if (showFlag) {
-            mCollectView.setImageResource(mFileNode.getCollect() == 1 ?
-                    R.drawable.media_collect : R.drawable.media_uncollect);
+            mCollectView.setImageDrawable(skinManager.getDrawable(mFileNode.getCollect() == 1 ?
+                    R.drawable.media_collect : R.drawable.media_uncollect));
         }
         if (mCtrlBar.getVisibility() == View.VISIBLE) {
             mCollectView.setVisibility(showFlag ? View.VISIBLE : View.GONE);
