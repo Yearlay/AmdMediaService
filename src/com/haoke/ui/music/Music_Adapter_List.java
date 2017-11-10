@@ -68,6 +68,8 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
         } else {
             holder = new ViewHolder();
             convertView = LayoutInflater.from(mContext).inflate(R.layout.music_list_item, null);
+            holder.mItemBg = convertView.findViewById(R.id.music_list_item_bg);
+            holder.mItemBg.setBackgroundDrawable(skinManager.getStateListDrawable(R.drawable.music_list_item_selector));
             holder.mSelectBtn = (ImageView) convertView.findViewById(R.id.music_list_item_select);
             holder.mImageIcon = (ImageView) convertView.findViewById(R.id.music_item_icon);
             
@@ -96,8 +98,7 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
             Log.v(TAG, "setDate() itemNo=" +itemNo +", mTotal=" +mTotal);
             FileNode fileNode = mIF.getItem(itemNo);
             if (fileNode != null) {
-                
-                holder.mImageIcon.setImageResource(R.drawable.media_list_item_music);
+                holder.mImageIcon.setImageDrawable(skinManager.getDrawable(R.drawable.media_list_item_music));
                 if (fileNode.getParseId3() == 1) {
                     ImageLoad.instance(mContext).loadBitmap(holder.mImageIcon,
                             skinManager.getDrawable(R.drawable.media_list_item_music), fileNode);
@@ -107,9 +108,9 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
                 // 控制焦点项显示
                 if (isPlayItem(position)) {
                     if (isPlaying(position)) {
-                        holder.mPlayStateImage.setImageResource(R.drawable.music_play_anim);
+                        holder.mPlayStateImage.setImageDrawable(skinManager.getAnimationDrawable(R.drawable.music_play_anim));
                     } else {
-                        holder.mPlayStateImage.setImageResource(R.drawable.music_play_anim_1);
+                        holder.mPlayStateImage.setImageDrawable(skinManager.getDrawable(R.drawable.music_play_anim_1));
                     }
                     holder.mPlayStateImage.setVisibility(View.VISIBLE);
                 } else {
@@ -127,16 +128,16 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
                 
                 //歌曲选中图标状态
                 if (mIF.isCurItemSelected(position)) {
-                    holder.mSelectBtn.setImageResource(R.drawable.music_selected_icon);
+                    holder.mSelectBtn.setImageDrawable(skinManager.getDrawable(R.drawable.music_selected_icon));
                 } else {
-                    holder.mSelectBtn.setImageResource(R.drawable.music_selected_nomal);
+                    holder.mSelectBtn.setImageDrawable(skinManager.getDrawable(R.drawable.music_selected_nomal));
                 }
                 
                 //选中歌曲名状态
                 if (isPlayItem(position) || mIF.isCurItemSelected(position)) {
-                    holder.mTitleText.setTextColor(mContext.getResources().getColor(R.color.hk_custom_text_p));
+                    holder.mTitleText.setTextColor(skinManager.getColor(R.color.hk_custom_text_p));
                 } else {
-                    holder.mTitleText.setTextColor(mContext.getResources().getColor(R.color.hk_custom_text));
+                    holder.mTitleText.setTextColor(skinManager.getColor(R.color.hk_custom_text));
                 }
             } else {
                 Log.e(TAG, "setDate why fileNode is null ?");
@@ -197,6 +198,7 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
     }
 
     public static class ViewHolder {
+    	private View mItemBg;
         private ImageView mSelectBtn;
         private ImageView mImageIcon;//the icon
         private TextView mTitleText;//the nummber
@@ -234,7 +236,6 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
                     holder.mTitleText.setText(fileNode.getTitleEx());
                     holder.mDescripeText.setText(getDescriptionText(fileNode));
                 }
-                
             }
         } catch (Exception e) {
             Log.e(TAG, "onID3ParseComplete position="+position+"; firstChildPosition="+firstChildPosition, e);
