@@ -3,6 +3,7 @@ package com.amd.radio;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import com.archermind.skinlib.SkinManager;
 import com.haoke.mediaservice.R;
 
 import android.content.Context;
@@ -20,6 +21,7 @@ public class Radio_favorite_gridview_adapter extends BaseAdapter {
 	Context mContext ;
 	boolean selectedList[];
 	boolean editMode = false;
+	SkinManager skinManager;
 	
 	public boolean[] getSelectedList() {
 		return selectedList;
@@ -30,6 +32,7 @@ public class Radio_favorite_gridview_adapter extends BaseAdapter {
 		this.mContext = mContext ;
 		selectedList = new boolean[mRadioStationList.size()];
 		Arrays.fill(selectedList, false);
+		skinManager = SkinManager.instance(mContext);
 	}
 	
 	/*
@@ -68,18 +71,18 @@ public class Radio_favorite_gridview_adapter extends BaseAdapter {
 		holder.freq_name.setText(station.getStationName());
 		if (editMode) {
 			if(selectedList[position]){
-				convertView.setBackgroundResource(R.drawable.bac_list_on);  //选中项背景  
-				holder.freq.setTextColor(Color.parseColor("#55AFFE"));
-				holder.select.setImageResource(R.drawable.radio_selected_icon);
+				convertView.setBackground(skinManager.getDrawable(R.drawable.bac_list_on));  //选中项背景  
+				holder.freq.setTextColor(skinManager.getColor(R.color.hk_custom_text_p));
+				holder.select.setImageDrawable(skinManager.getDrawable(R.drawable.music_selected_icon));
 		    }else{  
 		     	holder.freq.setTextColor(Color.parseColor("#FFFFFF"));
-		       	convertView.setBackgroundResource(R.drawable.bac_list_normal);
-		       	holder.select.setImageResource(R.drawable.radio_selected_nomal);
+		       	convertView.setBackground(skinManager.getDrawable(R.drawable.bac_list_normal));
+		       	holder.select.setImageDrawable(skinManager.getDrawable(R.drawable.music_selected_nomal));
 		    }
 			holder.select.setVisibility(View.VISIBLE);
 		} else {
 			holder.freq.setTextColor(Color.parseColor("#FFFFFF"));
-	       	convertView.setBackgroundResource(R.drawable.bac_list_normal);
+	       	convertView.setBackground(skinManager.getDrawable(R.drawable.bac_list_normal));
 			holder.select.setVisibility(View.INVISIBLE);
 		}
 
