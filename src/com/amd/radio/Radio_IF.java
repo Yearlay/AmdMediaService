@@ -222,6 +222,16 @@ public class Radio_IF extends CarService_IF {
 		int band = Band_5.FM1;
 		try {
 			band = mServiceIF.radio_getCurBand();
+			switch (band) {
+			case Band_5.FM1:
+			case Band_5.FM2:
+			case Band_5.FM3:
+				break;
+			case Band_5.AM1:
+			case Band_5.AM2:
+				band = Band_5.FM1;
+				break;
+			}
 		} catch (Exception e) {
 			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
 		}
@@ -232,20 +242,7 @@ public class Radio_IF extends CarService_IF {
 	// 设置波段
 	public void setCurBand() {
 		try {
-			int band = Band_5.FM1;
-			int curBand = getCurBand();
-			switch (curBand) {
-			case Band_5.FM1:
-			case Band_5.FM2:
-			case Band_5.FM3:
-				band = curBand;
-				break;
-
-			case Band_5.AM1:
-			case Band_5.AM2:
-				band = Band_5.FM1;
-				break;
-			}
+			int band = getCurBand();
 			Log.d(TAG, "setCurBand band="+band+"; mServiceIF="+mServiceIF);
 			if (mServiceIF != null) {
 				mServiceIF.radio_setCurBand(band);

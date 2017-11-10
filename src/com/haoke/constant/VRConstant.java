@@ -36,8 +36,8 @@ public class VRConstant {
 		public static final int COMMAND_PLAY_COLLECT_RADIO = 3; // 播放收藏列表的中的电台。
 		public static final int COMMAND_PLAY_PREV_RADIO = 4; // 切换到上一电台（频率小的）
 		public static final int COMMAND_PLAY_NEXT_RADIO = 5; // 切换到下一电台（频率大的）
-		public static final int COMMAND_SEARCH_PREV_RADIO = 6; // 从当前波段向上搜索（频率小的）
-		public static final int COMMAND_SEARCH_NEXT_RADIO = 7; // 从当前波段向下搜索（频率大的）
+		public static final int COMMAND_SEARCH_NEXT_RADIO = 6; // 从当前波段向上搜索（频率大的）
+		public static final int COMMAND_SEARCH_PREV_RADIO = 7; // 从当前波段向下搜索（频率小的）
 		public static final int COMMAND_SCAN_RADIO = 8; // 扫描全波段电台
 		public static final int COMMAND_PLAY_FM_STATION_RADIO = 9; // 切换到调频，如果指定某个电台，会有station参数，需要打开界面
 		public static final int COMMAND_PLAY_AM_STATION_RADIO = 10; // 切换到调幅，如果指定某个电台，会有station参数，需要打开界面

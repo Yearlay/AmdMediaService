@@ -251,7 +251,7 @@ public class MediaWidgetProvider extends AppWidgetProvider {
         setRadioPlayButton(context, remoteViews, source); // 更新收音机的播放按键。
     }
     
-    private void onClickMusicPlayButton(Context context) {
+    public static void onClickMusicPlayButton(Context context) {
         int source = Media_IF.getCurSource();
         if (source == ModeDef.BT) {
             if (BT_IF.getInstance().music_isPlaying()) {
@@ -292,7 +292,7 @@ public class MediaWidgetProvider extends AppWidgetProvider {
         }
     }
     
-    private void onClickMusicPreButton(Context context) {
+    public static void onClickMusicPreButton(Context context) {
         if (Media_IF.getCurSource() == ModeDef.BT) {
             BT_IF.getInstance().music_pre();
         } else if (Media_IF.getCurSource() == ModeDef.AUDIO) {
@@ -327,7 +327,7 @@ public class MediaWidgetProvider extends AppWidgetProvider {
         }
     }
     
-    private void onClickMusicNextButton(Context context) {
+    public static void onClickMusicNextButton(Context context) {
         if (Media_IF.getCurSource() == ModeDef.BT) {
             BT_IF.getInstance().music_next();
         } else if (Media_IF.getCurSource() == ModeDef.AUDIO) {
@@ -363,7 +363,7 @@ public class MediaWidgetProvider extends AppWidgetProvider {
         }
     }
     
-    private void onClickRadioPlayButton() {
+    public static void onClickRadioPlayButton() {
         boolean radioPlay = Radio_IF.getInstance().isEnable();
         Radio_IF.getInstance().exitRescanAndScan5S(true);
         Radio_IF.getInstance().setEnable(!radioPlay);
