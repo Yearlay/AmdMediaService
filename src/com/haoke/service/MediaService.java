@@ -200,8 +200,8 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
 
     @Override
     public IBinder onBind(Intent intent) {
-        //return mBinder;
-        return null;
+        return mBinder;
+        //return null;
     }
 
     @Override
@@ -238,7 +238,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
                     Log.d(TAG, "refreshWidget refreshMode="+refreshMode);
                     //sendBroadcast(new Intent("main_activity_update_ui"));
                     MediaWidgetProvider.refreshWidget(MediaService.this, refreshMode);
-                    //mBinder.refreshWidget(refreshMode);
+                    mBinder.refreshWidget(refreshMode);
                     break;
             }
         };
