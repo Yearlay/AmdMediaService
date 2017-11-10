@@ -140,6 +140,7 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
     }
     
     private void refreshSkin() {
+    	gridView.setSelector(skinManager.getStateListDrawable(R.drawable.radio_listselector));
         mReturnButton.setBackground(skinManager.getStateListDrawable(R.drawable.all_faverite));
         mEditButton.setCompoundDrawablesWithIntrinsicBounds(skinManager.getDrawable(R.drawable.music_date_edit), null, null, null);
         mEditButton.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
