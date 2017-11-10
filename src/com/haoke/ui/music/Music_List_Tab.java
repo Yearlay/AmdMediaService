@@ -18,7 +18,6 @@ public class Music_List_Tab extends RelativeLayout implements OnClickListener {
 	private boolean initViewFlag;
 	//Tab右侧按钮控制
 	private RelativeLayout mListTabLayout = null;
-	private RelativeLayout mLoadLayout = null;
 	private RelativeLayout mEditTabLayout = null;
 	
 	private ImageView mEditIcon;
@@ -31,8 +30,6 @@ public class Music_List_Tab extends RelativeLayout implements OnClickListener {
 	
 	private ImageView mDeviceImageView = null;
 	private TextView mDeviceTextView = null;
-	
-	private ImageView mLoadingImageView = null;
 	
 	private OnClickListener mClickListener = null;
 	private Context mContext = null;
@@ -64,10 +61,8 @@ public class Music_List_Tab extends RelativeLayout implements OnClickListener {
 	
 	private void initView() {
 		mListTabLayout = (RelativeLayout) findViewById(R.id.music_tab_list_id);
-		mLoadLayout = (RelativeLayout) findViewById(R.id.music_tab_loading_id);
 		mEditTabLayout = (RelativeLayout) findViewById(R.id.music_tab_edit_id);
 		mListTabLayout.setVisibility(View.VISIBLE);
-		mLoadLayout.setVisibility(View.GONE);
 		
 		mDeviceImageView = (ImageView) findViewById(R.id.music_device_image);
 		mDeviceTextView = (TextView) findViewById(R.id.music_device_text);
@@ -80,8 +75,6 @@ public class Music_List_Tab extends RelativeLayout implements OnClickListener {
 		mCancleButton.setOnClickListener(this);
 		mDelectButton.setOnClickListener(this);
 		mCopyButton.setOnClickListener(this);
-		
-		mLoadingImageView = (ImageView) findViewById(R.id.image_view_loading);
 		
 		mListTabLayout.setOnClickListener(this);
 		mEditIcon = (ImageView) findViewById(R.id.image_view_edit_id);
@@ -143,15 +136,9 @@ public class Music_List_Tab extends RelativeLayout implements OnClickListener {
 		if (mEditTabLayout.getVisibility() != View.GONE) {
 			mEditTabLayout.setVisibility(View.GONE);
 		}
-		if (mLoadLayout.getVisibility() != View.VISIBLE) {
-			mLoadLayout.setVisibility(View.VISIBLE);
-		}
 	}
 	
 	public void stopTabAnimator() {
-		if (mLoadLayout.getVisibility() != View.GONE) {
-			mLoadLayout.setVisibility(View.GONE);
-		}
 		if (mEditTabLayout.getVisibility() != View.GONE) {
 			mEditTabLayout.setVisibility(View.GONE);
 		}
