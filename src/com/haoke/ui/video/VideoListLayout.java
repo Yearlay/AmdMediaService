@@ -45,6 +45,7 @@ public class VideoListLayout extends RelativeLayout implements
     private GridView mGridView;
     private TextView mEmptyView;
     private View mLoadingView;
+    private ImageView mLoadingImageView;
     private VideoAdapter mVideoAdapter;
     private Handler mActivityHandler;
     private boolean isEditMode;
@@ -74,6 +75,7 @@ public class VideoListLayout extends RelativeLayout implements
         mContext = getContext();
         mEmptyView = (TextView) findViewById(R.id.video_list_empty);
         mLoadingView = findViewById(R.id.loading_layout);
+        mLoadingImageView = (ImageView) mLoadingView.findViewById(R.id.media_loading_imageview);
         mGridView = (GridView) findViewById(R.id.video_grid_list);
         mGridView.setSelector(new ColorDrawable(Color.TRANSPARENT));
         mGridView.setOnItemClickListener(this);
@@ -81,6 +83,10 @@ public class VideoListLayout extends RelativeLayout implements
         mVideoAdapter = new VideoAdapter();
         mGridView.setAdapter(mVideoAdapter);
         skinManager = SkinManager.instance(mContext);
+    }
+    
+    public void refreshSkin() {
+        mLoadingImageView.setImageDrawable(skinManager.getAnimationDrawable(R.drawable.media_loading_anim));
     }
     
     public void updataList(ArrayList<FileNode> dataList, StorageBean storageBean) {

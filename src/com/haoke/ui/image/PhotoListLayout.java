@@ -56,6 +56,7 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
     private GridView mGridView;
     private TextView mEmptyView;
     private View mLoadingView;
+    private ImageView mLoadingImageView;
     private PhotoAdapter mPhotoAdapter;
     private Handler mActivityHandler;
     private boolean isEditMode;
@@ -120,6 +121,7 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
         // 初始化控件
         mEmptyView = (TextView) findViewById(R.id.image_list_empty);
         mLoadingView = findViewById(R.id.loading_layout);
+        mLoadingImageView = (ImageView) mLoadingView.findViewById(R.id.media_loading_imageview);
 
         mGridView = (GridView) findViewById(R.id.image_grid_list);
         mGridView.setSelector(new ColorDrawable(Color.TRANSPARENT));
@@ -132,6 +134,10 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
             refreshView(mCurrentStorageBean);
         }
         skinManager = SkinManager.instance(getContext());
+    }
+    
+    public void refreshSkin() {
+        mLoadingImageView.setImageDrawable(skinManager.getAnimationDrawable(R.drawable.media_loading_anim));
     }
     
     public void dismissDialog() {

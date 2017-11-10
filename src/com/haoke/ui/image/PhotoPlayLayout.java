@@ -154,7 +154,6 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
 
     public void onResume() {
         DebugLog.d("Yearlay", "onResume mCurPosition: " + mCurPosition);
-        refreshSkin();
         if (mPhotoList.size() > 0) {
             mCurPosition = mCurPosition < 0 ? 0 : mCurPosition;
             mCurPosition = mCurPosition >= mPhotoList.size() ? mPhotoList.size() - 1 : mCurPosition; 
@@ -187,7 +186,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
         mViewPager.setOnTouchListener(mTouchListener);
     }
     
-    private void refreshSkin() {
+    public void refreshSkin() {
         mBackImageView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.image_back_icon_selector));
         mPreImageView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.image_pre_icon_selector));
         mNextImageView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.image_next_icon_selector));

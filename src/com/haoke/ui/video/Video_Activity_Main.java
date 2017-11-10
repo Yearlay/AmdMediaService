@@ -214,11 +214,11 @@ public class Video_Activity_Main extends Activity implements
         if (mPlayLayout.getVisibility() == View.VISIBLE) {
             mPlayLayout.onResume();
         }
-        initSkin();
+        refreshSkin();
         super.onResume();
     }
     
-    private void initSkin() {
+    private void refreshSkin() {
         SkinManager skinManager = SkinManager.instance(getApplicationContext());
         RadioButton localRadioButton = (RadioButton) mRadioGroup.findViewById(R.id.video_device_flash);
         localRadioButton.setTextColor(skinManager.getColorStateList(R.drawable.tab_textcolor_selector));
@@ -237,6 +237,7 @@ public class Video_Activity_Main extends Activity implements
         mDeleteView.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
         mCancelView.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
         mCopyTextView.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
+        mListLayout.refreshSkin();
     }
 
     @Override

@@ -5,6 +5,7 @@
     android:layout_height="match_parent" >
 
     <ImageView
+        android:id="@+id/media_loading_imageview"
         android:layout_width="390px"
         android:layout_height="390px"
         android:layout_centerInParent="true"
