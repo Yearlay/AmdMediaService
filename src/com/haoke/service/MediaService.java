@@ -75,9 +75,6 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     private BT_IF mBTIF = null;
     private Radio_IF mRadioIF = null;
     private MediaScanner mScanner;
-    
-    private boolean usb1EjectFlag;
-    private boolean usb2EjectFlag;
 
     public static MediaService getInstance() {
         return mSelf;
@@ -134,62 +131,17 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     }
 
     private void scanOperate(Intent intent) {
-        switch (intent.getIntExtra(ScanType.SCAN_TYPE_KEY, ScanType.SCAN_ALL)) {
-        case ScanType.SCAN_ALL: // 扫描所有已经挂载的磁盘。
-            // mScanner.beginScanningAllStorage();
-            break;
-        case ScanType.SCAN_STORAGE: { // 指定磁盘进行扫描。
-            String devicePath = intent.getStringExtra(ScanType.SCAN_FILE_PATH);
-            if (MediaUtil.DEVICE_PATH_USB_1.equals(devicePath)) {
-                if (usb1EjectFlag) {
-                    mHandler.removeMessages(REMOVE_STORAGE);
-                    usb1EjectFlag = false;
-                } else {
-                    mScanner.beginScanningStorage(devicePath);
-                }
+        switch (intent.getIntExtra(ScanType.SCAN_TYPE_KEY, 0)) {
+            case ScanType.SCAN_STORAGE: // 指定磁盘进行扫描。
+                mScanner.beginScanningStorage(intent.getStringExtra(ScanType.SCAN_FILE_PATH));
+                break;
+            case ScanType.REMOVE_STORAGE:{ // 磁盘拔出的处理过程。
+                mScanner.removeStorage(intent.getStringExtra(ScanType.SCAN_FILE_PATH));
+                break;
             }
-            
-            if (MediaUtil.DEVICE_PATH_USB_2.equals(devicePath)) {
-                if (usb2EjectFlag) {
-                    mHandler.removeMessages(REMOVE_STORAGE);
-                    usb2EjectFlag = false;
-                } else {
-                    mScanner.beginScanningStorage(devicePath);
-                }
-            }
-            
-            if ("/storage/internal_sd".equals(devicePath)) {
-            	mScanner.beginScanningStorage(devicePath);
-            }
-            break;
-        }
-        case ScanType.SCAN_DIRECTORY: // 目前不支持。
-            break;
-        case ScanType.SCAN_FILE: // 目前不支持。
-            break;
-        case ScanType.REMOVE_STORAGE:{ // 磁盘拔出的处理过程。
-            String devicePath = intent.getStringExtra(ScanType.SCAN_FILE_PATH);
-            Message msg = mHandler.obtainMessage(REMOVE_STORAGE, devicePath);
-            mHandler.sendMessageDelayed(msg, 1000);
-            if (MediaUtil.DEVICE_PATH_USB_1.equals(devicePath)) {
-                usb1EjectFlag = true;
-            }
-            if (MediaUtil.DEVICE_PATH_USB_2.equals(devicePath)) {
-                usb2EjectFlag = true;
-            }
-            break;
-        }
         }
     }
     
-    private void showEjectToast(String devicePath) {
-        Toast toast = Toast.makeText(getApplicationContext(),
-                MediaUtil.DEVICE_PATH_USB_1.equals(devicePath) ? "已移除USB设备1" : "已移除USB设备2", Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.CENTER, 0, 0);
-        toast.show();
-    }
-    
-
     @Override
     public void onDestroy() {
         mMediaIF.unregisterModeCallBack(this);
@@ -209,7 +161,6 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         return super.onUnbind(intent);
     }
 
-    public static final int REMOVE_STORAGE = 1;
     public static final int MSG_UPDATE_APPWIDGET_BASE = 100;
     public static final int MSG_UPDATE_APPWIDGET_ALL = MSG_UPDATE_APPWIDGET_BASE + ModeDef.NULL;
     public static final int MSG_UPDATE_APPWIDGET_BT = MSG_UPDATE_APPWIDGET_BASE + ModeDef.BT;
@@ -219,16 +170,6 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         public void handleMessage(Message msg) {
             int what = msg.what;
             switch (what) {
-                case REMOVE_STORAGE:
-                    String devicePath = (String) msg.obj;
-                    if (MediaUtil.DEVICE_PATH_USB_1.equals(devicePath)) {
-                        usb1EjectFlag = false;
-                    }
-                    if (MediaUtil.DEVICE_PATH_USB_2.equals(devicePath)) {
-                        usb2EjectFlag = false;
-                    }
-                    mScanner.removeStorage(devicePath);
-                    break;
                 case MSG_UPDATE_APPWIDGET_ALL:
                 case MSG_UPDATE_APPWIDGET_BT:
                 case MSG_UPDATE_APPWIDGET_AUDIO:

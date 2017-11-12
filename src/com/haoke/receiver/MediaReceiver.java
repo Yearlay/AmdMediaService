@@ -1,7 +1,6 @@
 package com.haoke.receiver;
 
 import com.haoke.constant.MediaUtil.ScanType;
-import com.haoke.define.MediaDef;
 import com.haoke.service.MediaService;
 import com.haoke.util.DebugLog;
 
@@ -22,7 +21,6 @@ public class MediaReceiver extends BroadcastReceiver {
 		String action = intent.getAction();
 		if (action.equals(Intent.ACTION_BOOT_COMPLETED)) {
             DebugLog.i("Yearlay", "MediaReceiver onReceive ACTION_BOOT_COMPLETED");
-            startFileService(context, ScanType.SCAN_ALL, null);
 		} else if (action.equals(Intent.ACTION_MEDIA_MOUNTED)) {
 			DebugLog.d("Yearlay", "MediaReceiver Intent.ACTION_MEDIA_MOUNTED: " + getDataPath(intent));
 			startFileService(context, ScanType.SCAN_STORAGE, getDataPath(intent));

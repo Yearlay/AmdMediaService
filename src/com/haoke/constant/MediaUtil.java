@@ -263,18 +263,13 @@ public class MediaUtil {
     public static class ScanType {
         public static final String SCAN_TYPE_KEY = "scan_type";
         public static final String SCAN_FILE_PATH = "scan_file_path";
-        public static final int SCAN_ALL = 0;
         public static final int SCAN_STORAGE = 1;
-        public static final int SCAN_DIRECTORY = 2;
-        public static final int SCAN_FILE = 3;
-        public static final int REMOVE_STORAGE = 4;
+        public static final int REMOVE_STORAGE = 2;
     }
 
     public static class ScanTaskType {
         public static final int MOUNTED = 0;
         public static final int UNMOUNTED = 1;
-        public static final int DIRECTORY = 2;
-        public static final int FILE = 3;
     }
     
     public static class ScanTask {

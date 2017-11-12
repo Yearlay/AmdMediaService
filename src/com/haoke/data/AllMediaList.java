@@ -407,7 +407,7 @@ public class AllMediaList {
         }
         return storageBean;
     }
-    
+
     public void updateStorageBean(String devicePath, int state) {
         StorageBean storageBean = new StorageBean(devicePath, state);
         mScanStateHash.put(devicePath, storageBean);
