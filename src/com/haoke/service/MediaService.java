@@ -2,20 +2,10 @@ package com.haoke.service;
 
 import com.amd.bt.BT_IF;
 import com.amd.bt.BT_Listener;
-import com.haoke.application.MediaApplication;
-import com.haoke.bean.FileNode;
-import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.btjar.main.BTDef.BTFunc;
 import com.haoke.constant.MediaUtil;
-import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.constant.MediaUtil.ScanState;
 import com.haoke.constant.MediaUtil.ScanType;
-import com.haoke.constant.VRConstant.VRApp;
-import com.haoke.constant.VRConstant.VRImage;
-import com.haoke.constant.VRConstant.VRIntent;
-import com.haoke.constant.VRConstant.VRMusic;
-import com.haoke.constant.VRConstant.VRRadio;
-import com.haoke.constant.VRConstant.VRVideo;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.ModeSwitch;
 import com.haoke.data.PlayStateSharedPreferences;
@@ -24,17 +14,13 @@ import com.haoke.define.McuDef;
 import com.haoke.define.EQDef.EQFunc;
 import com.haoke.define.McuDef.McuFunc;
 import com.haoke.define.McuDef.PowerState;
-import com.haoke.define.MediaDef.DeviceType;
 import com.haoke.define.MediaDef.MediaFunc;
 import com.haoke.define.MediaDef.MediaState;
 import com.haoke.define.MediaDef.PlayState;
-import com.haoke.define.MediaDef.RepeatMode;
 import com.haoke.define.ModeDef;
+import com.haoke.receiver.MediaReceiver;
 import com.haoke.scanner.MediaScanner;
 import com.haoke.scanner.MediaScannerListner;
-import com.haoke.ui.image.Image_Activity_Main;
-import com.haoke.ui.video.Video_Activity_Main;
-import com.haoke.ui.video.Video_IF;
 import com.haoke.ui.widget.MediaWidgetProvider;
 import com.haoke.util.DebugLog;
 import com.haoke.util.Media_CarListener;
@@ -47,14 +33,12 @@ import com.jsbd.util.Meter_IF;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
-import android.widget.Toast;
 
 public class MediaService extends Service implements Media_CarListener, MediaScannerListner,
                 Media_Listener, BT_Listener {
@@ -97,6 +81,8 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         Intent intent = new Intent();
         intent.setAction(GlobalDef.MEDIA_SERVICE_ACTION_REBOOT);
         this.sendBroadcast(intent);
+        
+        registerReceiverInternal();
 
         mMediaIF.registerModeCallBack(this);
         
@@ -414,4 +400,13 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
 
     @Override
     public void setCurInterface(int data) {}
+    
+    private MediaReceiver mMediaReceiver = new MediaReceiver();
+    private void registerReceiverInternal() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_MEDIA_MOUNTED);
+        filter.addAction(Intent.ACTION_MEDIA_EJECT);
+        filter.addDataScheme("file");
+        registerReceiver(mMediaReceiver, filter);
+    }
 }

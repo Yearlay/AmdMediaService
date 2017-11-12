@@ -502,7 +502,7 @@ public class MediaInterfaceUtil {
             if (sWaitUsb1Mounted == 0) {
                 sWaitUsb1Mounted = end;
                 return 1000;
-            } else if (end - sWaitUsb1Mounted > 25000) {
+            } else if (end - sWaitUsb1Mounted > 8000) {
                 Log.d(TAG, "checkSourceFromBoot wait usb1 mounted timeout!");
                 sWaitUsb1Mounted = -1;
             } else {
@@ -521,7 +521,7 @@ public class MediaInterfaceUtil {
             if (sWaitUsb2Mounted == 0) {
                 sWaitUsb2Mounted = end;
                 return 1000;
-            } else if (end - sWaitUsb2Mounted > 25000) {
+            } else if (end - sWaitUsb2Mounted > 8000) {
                 Log.d(TAG, "checkSourceFromBoot wait usb2 mounted timeout!");
                 sWaitUsb2Mounted = -1;
             } else {
