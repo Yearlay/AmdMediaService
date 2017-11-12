@@ -134,21 +134,6 @@ public class MediaDbHelper extends SQLiteOpenHelper {
         deleteTask(fileNode);
     }
     
-    public void updateId3(int deviceType, int fileType, Thread thread) {
-        if (thread.isInterrupted()) {
-            return;
-        }
-        ArrayList<FileNode> fileNodeList = queryMedia(deviceType, fileType,
-                DBConfig.MediaColumns.FIELD_PARSE_ID3 + "=?", new String[]{"0"});
-        for (FileNode fileNode : fileNodeList) {
-            if (thread.isInterrupted()) {
-                return;
-            }
-            MediaUtil.fillMediaId3Info(fileNode);
-            addToNeedToInsertList(new TransactionTask(fileNode, TransactionTask.UPDATE_TASK));
-        }
-    }
-    
     public void updateCollectInfoByFileExist(int fileType) {
         ArrayList<FileNode> collectList = queryCollected(fileType, null, null, true);
         if (collectList.size() > 0) {

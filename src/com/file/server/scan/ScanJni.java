@@ -33,9 +33,6 @@ public class ScanJni {
     }
     
     public void insertToDb(FileNode fileNode) {
-        if (parseId3) {
-            fileNode = MediaUtil.fillMediaId3Info(fileNode);
-        }
         if (DBConfig.isMediaType(fileNode.getFileType())) {
             mMediaDbHelper.addToNeedToInsertList(new TransactionTask(fileNode, TransactionTask.INSERT_TASK));
             mMediaCount++;

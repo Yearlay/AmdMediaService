@@ -2,7 +2,6 @@ package com.haoke.constant;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,17 +12,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import com.haoke.application.MediaApplication;
 import com.haoke.bean.FileNode;
 import com.haoke.define.MediaDef;
-import com.haoke.scanner.MediaDbHelper;
-import com.haoke.util.PingYingTool;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.media.MediaMetadataRetriever;
 import android.os.Environment;
 import android.os.StatFs;
 import android.os.storage.StorageManager;
@@ -295,255 +290,6 @@ public class MediaUtil {
         }
     }
     
-    public static FileNode fillMediaId3Info(FileNode fileNode) {
-        if (fileNode.getFileType() == FileType.AUDIO) {
-            fillAudioId3Info(fileNode);
-        } else if (fileNode.getFileType() == FileType.VIDEO) {
-            fillVideoId3Info(fileNode);
-        } else if (fileNode.getFileType() == FileType.IMAGE) {
-            fillImageId3Info(fileNode);
-        }
-        return fileNode;
-    }
-    
-    public static void fillAudioId3Info(FileNode fileNode) {
-        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        FileInputStream is = null;
-        try {
-            if (fileNode.getFile().exists()) {
-                is = new FileInputStream(fileNode.getFilePath());
-                FileDescriptor fd = is.getFD();
-                retriever.setDataSource(fd);
-                String title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-                if (title != null && !title.equals("")) {
-                    fileNode.setTitle(title);
-                }
-                fileNode.setArtist(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST));
-                fileNode.setAlbum(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM));
-                fileNode.setComposer(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_COMPOSER));
-                fileNode.setGenre(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE));
-                String duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-                if (duration != null && !duration.equals("")) {
-                    fileNode.setDuration(Integer.valueOf(duration));
-                }
-                fileNode.setAlbumPicArray(null);
-                if (title != null) {
-                    String py = PingYingTool.parseString(title);
-                    fileNode.setTitlePY(py);
-                }
-                if (fileNode.getArtist() != null) {
-                    String py = PingYingTool.parseString(fileNode.getArtist());
-                    if (py != null && py.length() > 0) {
-                        py = py.toUpperCase();
-                        fileNode.setArtistPY(py);
-                    }
-                }
-                if (fileNode.getAlbum() != null) {
-                    String py = PingYingTool.parseString(fileNode.getAlbum());
-                    if (py != null && py.length() > 0) {
-                        py = py.toUpperCase();
-                        fileNode.setAlbumPY(py);
-                    }
-                }
-                fileNode.setParseId3(1);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            retriever.release();
-        }
-    }
-    
-    public static void fillVideoId3Info(FileNode fileNode) {
-        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        FileInputStream is = null;
-        try {
-            if (fileNode.getFile().exists()) {
-                is = new FileInputStream(fileNode.getFilePath());
-                FileDescriptor fd = is.getFD();
-                retriever.setDataSource(fd);
-                String title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-                if (title != null && !title.equals("")) {
-                    fileNode.setTitle(title);
-                }
-                String duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-                if (duration != null && !duration.equals("")) {
-                    fileNode.setDuration(Integer.valueOf(duration));
-                }
-                fileNode.setAlbumPicArray(null);
-                if (title != null) {
-                    String py = PingYingTool.parseString(title);
-                    fileNode.setTitlePY(py);
-                }
-                fileNode.setParseId3(1);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            retriever.release();
-        }
-    }
-    
-    public static void fillImageId3Info(FileNode fileNode) {
-        // TODO: 需要完善。
-        // 获取拼音，以及确定key值
-        String title = fileNode.getFileName();
-        if (title != null) {
-            String py = PingYingTool.parseString(title);
-            fileNode.setTitlePY(py);
-        }
-        fileNode.setParseId3(1);
-    }
-    
-    public static Bitmap getThumbnail(FileNode fileNode) {
-        Bitmap bitmap = null;
-        if (fileNode.getFileType() == FileType.AUDIO) {
-            bitmap = getMusicThumbnail(fileNode);
-        } else if (fileNode.getFileType() == FileType.VIDEO) {
-            bitmap = getVideoThumbnail(fileNode);
-        }
-        return bitmap;
-    }
-    
-    private static Bitmap getMusicThumbnail(FileNode fileNode) {
-        Bitmap bitmap = null;
-        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        FileInputStream is = null;
-        try {
-            if (fileNode.getFile().exists()) {
-                is = new FileInputStream(fileNode.getFilePath());
-                FileDescriptor fd = is.getFD();
-                retriever.setDataSource(fd);
-                
-                if (fileNode.getParseId3() == 0) {
-                    String title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-                    if (title != null && !title.equals("")) {
-                        fileNode.setTitle(title);
-                    }
-                    fileNode.setArtist(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST));
-                    fileNode.setAlbum(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM));
-                    fileNode.setComposer(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_COMPOSER));
-                    fileNode.setGenre(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_GENRE));
-                    String duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-                    if (duration != null && !duration.equals("")) {
-                        fileNode.setDuration(Integer.valueOf(duration));
-                    }
-                    fileNode.setAlbumPicArray(null);
-                    if (title != null) {
-                        String py = PingYingTool.parseString(title);
-                        fileNode.setTitlePY(py);
-                    }
-                    if (fileNode.getArtist() != null) {
-                        String py = PingYingTool.parseString(fileNode.getArtist());
-                        if (py != null && py.length() > 0) {
-                            py = py.toUpperCase();
-                            fileNode.setArtistPY(py);
-                        }
-                    }
-                    if (fileNode.getAlbum() != null) {
-                        String py = PingYingTool.parseString(fileNode.getAlbum());
-                        if (py != null && py.length() > 0) {
-                            py = py.toUpperCase();
-                            fileNode.setAlbumPY(py);
-                        }
-                    }
-                    fileNode.setParseId3(1);
-                    
-                    // 更新数据库信息。
-                    Context context = MediaApplication.getInstance().getApplicationContext();
-                    MediaDbHelper.instance(context).update(fileNode);
-                }
-                
-                if (new File(fileNode.getFilePath()).exists()) {
-                    bitmap = BytesToBitmap(retriever.getEmbeddedPicture());
-                }
-                if (bitmap != null) {
-                    bitmap = BitmapScale(bitmap, THUMBNAIL_MUSIC_WIDTH, THUMBNAIL_MUSIC_HEIGHT);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            retriever.release();
-        }
-        return bitmap;
-    }
-    
-    private static Bitmap getVideoThumbnail(FileNode fileNode) {
-        Bitmap bitmap = null;
-        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        FileInputStream is = null;
-        try {
-            if (fileNode.getFile().exists()) {
-                is = new FileInputStream(fileNode.getFilePath());
-                FileDescriptor fd = is.getFD();
-                retriever.setDataSource(fd);
-                if (fileNode.getParseId3() == 0) {
-                    String title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
-                    if (title != null && !title.equals("")) {
-                        fileNode.setTitle(title);
-                    }
-                    String duration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-                    if (duration != null && !duration.equals("")) {
-                        fileNode.setDuration(Integer.valueOf(duration));
-                    }
-                    fileNode.setAlbumPicArray(null);
-                    if (title != null) {
-                        String py = PingYingTool.parseString(title);
-                        fileNode.setTitlePY(py);
-                    }
-                    fileNode.setParseId3(1);
-                    
-                    // 更新数据库信息。
-                    Context context = MediaApplication.getInstance().getApplicationContext();
-                    MediaDbHelper.instance(context).update(fileNode);
-                }
-                
-                if (fileNode.getDuration() > CAPTURE_POSITION) { // 单位是微秒
-                    bitmap = retriever.getFrameAtTime(CAPTURE_POSITION, MediaMetadataRetriever.OPTION_NEXT_SYNC);
-                } else {
-                    bitmap = retriever.getFrameAtTime();
-                }
-                if (bitmap != null) {
-                    bitmap = BitmapScale(bitmap, THUMBNAIL_IMAGE_AND_VIDEO_WIDTH, THUMBNAIL_IMAGE_AND_VIDEO_HEIGHT);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            retriever.release();
-        }
-        return bitmap;
-    }
-    
     public static Bitmap BitmapScale(Bitmap bmp, int width, int height) {
         if (bmp == null)
             return null;
@@ -685,7 +431,6 @@ public class MediaUtil {
                 totalSize += fileNode.getFile().length();
             }
         }
-        File root = Environment.getRootDirectory(); 
         StatFs sf = new StatFs("/mnt/media_rw/internal_sd"); 
         long blockSize = sf.getBlockSize(); 
         long blockCount = sf.getBlockCount(); 
