@@ -268,15 +268,21 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         MediaInterfaceUtil.launchSourceActivity(mode, autoPlay);
     }
     
+    private int mBootWaitTimeOut = 0;
     private void checkLaunchFromBoot() {
         final int ms = MediaInterfaceUtil.checkSourceFromBoot(this);
         if (ms >= 0) {
-            getModeHandler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    checkLaunchFromBoot();
-                }
-            }, ms);
+            if (mBootWaitTimeOut > 80000) {
+                Log.e(TAG, "checkLaunchFromBoot mBootWaitTimeOut="+mBootWaitTimeOut);
+            } else {
+                mBootWaitTimeOut += ms;
+                getModeHandler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        checkLaunchFromBoot();
+                    }
+                }, ms);
+            }
         }
     }
     

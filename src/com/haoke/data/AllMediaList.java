@@ -421,6 +421,26 @@ public class AllMediaList {
     public int getLastDeviceTypeVideo() {
         return PlayStateSharedPreferences.instance(mContext).getLastDeviceTypeVideo();
     }
+   
+    public String getLastPlayPath(int deviceType, int fileType) {
+        String valueStr = PlayStateSharedPreferences.instance(mContext).getPlayTime(deviceType, fileType);
+        if ("".equals(valueStr)) {
+            return null;
+        }
+        String splitStr = PlayStateSharedPreferences.SPLIT_STR;
+        String filePath = valueStr.substring(0, valueStr.indexOf(splitStr));
+        return filePath;
+    }
+    
+    public int getLastPlayTime(int deviceType, int fileType) {
+        String valueStr = PlayStateSharedPreferences.instance(mContext).getPlayTime(deviceType, fileType);
+        if ("".equals(valueStr)) {
+            return -1;
+        }
+        String splitStr = PlayStateSharedPreferences.SPLIT_STR;
+        String playTime = valueStr.substring(valueStr.indexOf(splitStr) + splitStr.length(), valueStr.length());
+        return Integer.valueOf(playTime);
+    }
     
     public FileNode getPlayTime(int deviceType, int fileType) {
         FileNode fileNode = null;

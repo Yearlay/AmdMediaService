@@ -21,6 +21,7 @@ import com.amd.media.AudioFocus.AudioFocusListener;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.StorageBean;
 import com.haoke.btjar.main.BTDef.BTConnState;
+import com.haoke.constant.MediaUtil;
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.ModeSwitch;
@@ -33,6 +34,7 @@ import com.haoke.service.RadioService;
 import com.haoke.ui.media.Media_Activity_Main;
 import com.haoke.ui.music.Music_Activity_List;
 import com.haoke.ui.video.Video_Activity_Main;
+import com.haoke.ui.video.Video_IF;
 import com.haoke.util.Media_IF;
 
 public class MediaInterfaceUtil {
@@ -397,12 +399,19 @@ public class MediaInterfaceUtil {
                 }
             }
             int fileType = (source == ModeDef.AUDIO ? FileType.AUDIO : FileType.VIDEO);
-            boolean playing = true;//allMediaList.getPlayState(fileType);
-            Log.d(TAG, "checkSourceFromBoot LastDeviceType="+sLastDeviceType+"; playing="+playing);
-            if (playing && sLastDeviceType != DeviceType.NULL) {
+            boolean currPlaying = Media_IF.getInstance().isPlayState() || Video_IF.getInstance().isPlayState();
+            boolean lastPlaying = true;//allMediaList.getPlayState(fileType);
+            Log.d(TAG, "checkSourceFromBoot LastDeviceType="+sLastDeviceType+"; lastPlaying="+lastPlaying+"; currPlaying="+currPlaying);
+            if (!currPlaying && lastPlaying && sLastDeviceType != DeviceType.NULL) {
+                if (sLastDeviceType == DeviceType.COLLECT) {
+                    int waitMs = waitUsbMounted(service);
+                    if (waitMs > 0) {
+                        return waitMs;
+                    }
+                }
                 StorageBean storage = allMediaList.getStoragBean(sLastDeviceType);
                 Log.d(TAG, "checkSourceFromBoot storage="+storage);
-                if (storage.isLoadCompleted()) {
+                if (sLastDeviceType == DeviceType.COLLECT || storage.isLoadCompleted()) {
                     ArrayList<FileNode> lists = allMediaList.getMediaList(sLastDeviceType, fileType);
                     int size = lists.size();
                     if (size > 0) {
@@ -434,14 +443,22 @@ public class MediaInterfaceUtil {
                     boolean mounted = storage.isMounted();
                     Log.d(TAG, "checkSourceFromBoot loading mounted="+mounted);
                     if (mounted) {
-                        ms = 500;
-                    } else {
                         long end = System.currentTimeMillis();
                         if (start == -1) {
                             start = end;
                             ms = 500;
                         } else if (end - start > 40000) {
                             Log.d(TAG, "checkSourceFromBoot loading timeout!");
+                        } else {
+                            ms = 500;
+                        }
+                    } else {
+                        long end = System.currentTimeMillis();
+                        if (start == -1) {
+                            start = end;
+                            ms = 500;
+                        } else if (end - start > 40000) {
+                            Log.d(TAG, "checkSourceFromBoot mounting timeout!");
                         } else {
                             ms = 500;
                         }
@@ -467,6 +484,51 @@ public class MediaInterfaceUtil {
         }
         Log.d(TAG, "checkSourceFromBoot source="+source+"; ms="+ms);
         return ms;
+    }
+    
+    private static long sWaitUsb1Mounted = 0;
+    private static long sWaitUsb2Mounted = 0;
+    private static int waitUsbMounted(final MediaService service) {
+        AllMediaList allMediaList = AllMediaList.instance(service);
+        StorageBean storage1 = allMediaList.getStoragBean(DeviceType.USB1);
+        if (sWaitUsb1Mounted == -1) {
+        } else if (storage1.isMounted()) {
+            if (!storage1.isLoadCompleted()) {
+                Log.d(TAG, "checkSourceFromBoot collect must wait usb1 load completed!");
+                return 1000;
+            }
+        } else {
+            long end = System.currentTimeMillis();
+            if (sWaitUsb1Mounted == 0) {
+                sWaitUsb1Mounted = end;
+                return 1000;
+            } else if (end - sWaitUsb1Mounted > 25000) {
+                Log.d(TAG, "checkSourceFromBoot wait usb1 mounted timeout!");
+                sWaitUsb1Mounted = -1;
+            } else {
+                return 1000;
+            }
+        }
+        StorageBean storage2 = allMediaList.getStoragBean(DeviceType.USB2);
+        if (sWaitUsb2Mounted == -1) {
+        } else if (storage2.isMounted()) {
+            if (!storage2.isLoadCompleted()) {
+                Log.d(TAG, "checkSourceFromBoot collect must wait usb2 load completed!");
+                return 1000;
+            }
+        } else {
+            long end = System.currentTimeMillis();
+            if (sWaitUsb2Mounted == 0) {
+                sWaitUsb2Mounted = end;
+                return 1000;
+            } else if (end - sWaitUsb2Mounted > 25000) {
+                Log.d(TAG, "checkSourceFromBoot wait usb2 mounted timeout!");
+                sWaitUsb2Mounted = -1;
+            } else {
+                return 1000;
+            }
+        }
+        return -1;
     }
     
     private static final long BUTTON_CLICK_DELAY = 400;
