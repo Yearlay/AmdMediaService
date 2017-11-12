@@ -20,8 +20,8 @@ JNIEXPORT jstring JNICALL Java_com_file_server_scan_ScanJni_stringFromJni
  * Method:    scanRootPath
  * Signature: (Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_com_file_server_scan_ScanJni_scanRootPath
-  (JNIEnv *, jobject, jstring);
+JNIEXPORT jint JNICALL Java_com_file_server_scan_ScanJni_scanRootPath
+  (JNIEnv *, jobject, jstring, jint);
 
 /*
  * Class:     com_file_server_scan_ScanJni
