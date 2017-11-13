@@ -310,7 +310,7 @@ public class MediaInterfaceUtil {
                 //if (!BT_IF.getInstance().music_isPlaying()) {
                 //    BT_IF.getInstance().music_play();
                 //}
-                //BT_IF.getInstance().music_play();
+                BT_IF.getInstance().music_play();
                 intent.putExtra("autoPlay", true);
             }
             break;

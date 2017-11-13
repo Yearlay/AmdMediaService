@@ -55,6 +55,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     
     private static int tempFreq;
     private Radio_IF mIF;
+    private boolean mAutoPlay = false;
     
     private SkinManager skinManager;
 
@@ -129,9 +130,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     }
     
     public void onNewIntent(int source, boolean autoPlay) {
-        if (autoPlay) {
-            mIF.setEnable(true);
-        }
+        mAutoPlay = autoPlay;
     }
     
     public void onStart() {
@@ -156,7 +155,11 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     }
     
     public void onResume() {
-        Log.d(TAG, "onResume");
+        Log.d(TAG, "onResume mAutoPlay="+mAutoPlay);
+        if (mAutoPlay) {
+            mIF.setEnable(true);
+            mAutoPlay = false;
+        }
         AllMediaList.notifyAllLabelChange(getContext(), R.string.pub_radio);
         mPlayImageView.setImageDrawable(skinManager.getStateListDrawable(mIF.isEnable() ? R.drawable.pause : R.drawable.play));
         updateFreq(mIF.getCurFreq());

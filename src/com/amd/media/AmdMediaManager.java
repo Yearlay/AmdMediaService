@@ -594,8 +594,13 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		mMediaPlayer.setVideoView(surfaceView);
 	}
 
+	// 设置焦点获取
+	private void focusGain() {
+		mMediaPlayer.focusGain();
+	}
+	
 	// 设置焦点丢失
-	public void focusLossed() {
+	private void focusLossed() {
 		mMediaPlayer.focusLossed();
 	}
 
@@ -670,7 +675,12 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 				}
 			}
 		}
-		mPlayState = PlayState.PLAY;
+		
+		if (hasAudioFocus()) {
+			mPlayState = PlayState.PLAY;
+		} else {
+			mPlayState = PlayState.PAUSE;
+		}
 
 		onDataChanged(mMediaMode, MediaFunc.PREPARED,
 				mMediaPlayer.getMediaState(), 0);
@@ -1039,13 +1049,14 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 			if (mComponentName != null) {
 				mAudioManager.registerMediaButtonEventReceiver(mComponentName);
 			}
+			focusGain();
 			break;
 			
 		case PlayState.PAUSE:
-			if (playState == PlayState.STOP) {
-				Log.v(TAG, "HMI------------audioFocusChanged STOP 1");
-				return;
-			}
+//			if (playState == PlayState.STOP) {
+//				Log.v(TAG, "HMI------------audioFocusChanged STOP 1");
+//				return;
+//			}
 			setRecordPlayState(playState);
 			setPlayState(PlayState.PAUSE);
 			focusLossed();
@@ -1056,10 +1067,10 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 			if (mComponentName != null) {
 				mAudioManager.unregisterMediaButtonEventReceiver(mComponentName);
 			}
-			if (playState == PlayState.STOP) {
-				Log.v(TAG, "HMI------------audioFocusChanged STOP 2");
-				return;
-			}
+//			if (playState == PlayState.STOP) {
+//				Log.v(TAG, "HMI------------audioFocusChanged STOP 2");
+//				return;
+//			}
 			setRecordPlayState(PlayState.STOP);
 			setPlayState(PlayState.PAUSE);
 			focusLossed();
