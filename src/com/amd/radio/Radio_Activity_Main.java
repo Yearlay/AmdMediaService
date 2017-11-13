@@ -128,6 +128,12 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
         mIF.scanListChannel();
     }
     
+    public void onNewIntent(int source, boolean autoPlay) {
+        if (autoPlay) {
+            mIF.setEnable(true);
+        }
+    }
+    
     public void onStart() {
         //高德广播
         Intent intent =new Intent();

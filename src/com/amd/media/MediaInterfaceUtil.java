@@ -273,9 +273,10 @@ public class MediaInterfaceUtil {
             intent.setClass(context, Media_Activity_Main.class);
             intent.putExtra("Mode_To_Music", "radio_intent");
             if (autoPlay) {
-                if (!Radio_IF.getInstance().isEnable()) {
-                    Radio_IF.getInstance().setEnable(true);
-                }
+//                if (!Radio_IF.getInstance().isEnable()) {
+//                    Radio_IF.getInstance().setEnable(true);
+//                }
+                intent.putExtra("autoPlay", true);
             }
             break;
         case ModeSwitch.MUSIC_LOCAL_MODE:
@@ -283,7 +284,7 @@ public class MediaInterfaceUtil {
             intent.putExtra("Mode_To_Music", "hddAudio_intent");
             if (autoPlay) {
                 intent.putExtra("play_music", true);
-                checkAndPlayDeviceType(DeviceType.FLASH, FileType.AUDIO);
+//                checkAndPlayDeviceType(DeviceType.FLASH, FileType.AUDIO);
             }
             break;
         case ModeSwitch.MUSIC_USB1_MODE:
@@ -291,7 +292,7 @@ public class MediaInterfaceUtil {
             intent.putExtra("Mode_To_Music", "USB1_intent");
             if (autoPlay) {
                 intent.putExtra("play_music", true);
-                checkAndPlayDeviceType(DeviceType.USB1, FileType.AUDIO);
+//                checkAndPlayDeviceType(DeviceType.USB1, FileType.AUDIO);
             }
             break;
         case ModeSwitch.MUSIC_USB2_MODE:
@@ -299,7 +300,7 @@ public class MediaInterfaceUtil {
             intent.putExtra("Mode_To_Music", "USB2_intent");
             if (autoPlay) {
                 intent.putExtra("play_music", true);
-                checkAndPlayDeviceType(DeviceType.USB2, FileType.AUDIO);
+//                checkAndPlayDeviceType(DeviceType.USB2, FileType.AUDIO);
             }
             break;
         case ModeSwitch.MUSIC_BT_MODE:
@@ -309,7 +310,8 @@ public class MediaInterfaceUtil {
                 //if (!BT_IF.getInstance().music_isPlaying()) {
                 //    BT_IF.getInstance().music_play();
                 //}
-                BT_IF.getInstance().music_play();
+                //BT_IF.getInstance().music_play();
+                intent.putExtra("autoPlay", true);
             }
             break;
         }

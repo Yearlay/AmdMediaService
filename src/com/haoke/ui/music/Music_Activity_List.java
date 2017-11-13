@@ -131,6 +131,13 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         }
         
         mPlayDefault = intent.getBooleanExtra("play_music", false);
+        if (mPlayDefault) {
+            if (mIF.isPlayState() && mIF.getPlayingDevice() == mDeviceType) {
+            } else {
+                mIF.playDefault(mDeviceType, FileType.AUDIO);
+            }
+            mPlayDefault = false;
+        }
     }
     
     private void resetDeviceType() {
@@ -242,13 +249,6 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         }
         AllMediaList.notifyAllLabelChange(getApplicationContext(), labelRes);
         
-        if (mPlayDefault) {
-            if (mIF.isPlayState() && mIF.getPlayingDevice() == mDeviceType) {
-            } else {
-                mIF.playDefault(mDeviceType, FileType.AUDIO);
-            }
-            mPlayDefault = false;
-        }
         refreshSkin();
     }
     
