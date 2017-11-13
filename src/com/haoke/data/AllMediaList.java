@@ -394,6 +394,7 @@ public class AllMediaList {
         
         @Override
         public void onChange(boolean selfChange) {
+            mMediaDbHelper.updateCollectDataFromChangeUseList();
             mMediaDbHelper.notifyCollectChange();
             super.onChange(selfChange);
         }
