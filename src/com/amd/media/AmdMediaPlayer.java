@@ -36,6 +36,7 @@ public class AmdMediaPlayer implements RearViewListener {
 	private int mMediaState = MediaState.IDLE;
 	private SurfaceHolder mSurfaceHolder = null;
 	private int mFileType = FileType.NULL;
+	private boolean mHasFocus = false;
 	
 	public AmdMediaPlayer(Context context) {
 		mContext = context;
@@ -53,9 +54,19 @@ public class AmdMediaPlayer implements RearViewListener {
 		Log.v(TAG, "setFileType fileType=" + fileType);
 		mFileType = fileType;
 	}
+	
+	public boolean hasFocus() {
+		return mHasFocus;
+	}
+	
+	public void focusGain() {
+		Log.v(TAG, "focusGain");
+		mHasFocus = true;
+	}
 
 	public void focusLossed() {
 		Log.v(TAG, "focusLossed");
+		mHasFocus = false;
 		if (mRearView != null) {
 			mRearView.showRearSurface(false);
 		}
@@ -153,13 +164,15 @@ public class AmdMediaPlayer implements RearViewListener {
 		@Override
 		public void onPrepared(MediaPlayer mp) {
 			// TODO Auto-generated method stub
-			Log.v(TAG, "mPreparedListener onPrepared");
+			Log.v(TAG, "mPreparedListener onPrepared mHasFocus="+mHasFocus);
 			synchronized (AmdMediaPlayer.this) {
 				setMediaState(MediaState.PREPARED);
 				if (mListener != null) {
 					mListener.onPrepared();
 				}
-				start();
+				if (mHasFocus) {
+					start();
+				}
 			}
 			Log.v(TAG, "mPreparedListener onPrepared over");
 		}
