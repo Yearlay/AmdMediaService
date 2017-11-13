@@ -18,6 +18,8 @@ import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -36,6 +38,7 @@ import com.haoke.scanner.MediaDbHelper;
 import com.haoke.scanner.MediaDbHelper.TransactionTask;
 import com.haoke.service.MediaService;
 import com.haoke.util.DebugLog;
+import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 
 public class AllMediaList {
     private static final String TAG = "AllMediaList";
@@ -136,6 +139,9 @@ public class AllMediaList {
         registerObserver(UriAddress.URI_COLLECT_AUDIO_ADDR, UriType.COLLECT_AUDIO);
         registerObserver(UriAddress.URI_COLLECT_VIDEO_ADDR, UriType.COLLECT_VIDEO);
         registerObserver(UriAddress.URI_COLLECT_IMAGE_ADDR, UriType.COLLECT_IMAGE);
+        
+        mContext.getContentResolver().registerContentObserver(Settings.System.getUriFor("personal_user_info"),
+                true, new SettingsValueChangeContentObserver(new Handler()));
     }
     
     private void registerObserver(String UriStr, int uriType) {
@@ -346,7 +352,7 @@ public class AllMediaList {
                     }
                     mediaList.clear();
                     if (deviceType == DeviceType.COLLECT) {
-                        mediaList.addAll(mMediaDbHelper.queryCollected(fileType, null, null, false));
+                        mediaList.addAll(mMediaDbHelper.queryCollected(fileType, false));
                     } else {
                         mediaList.addAll(mMediaDbHelper.queryMedia(deviceType, fileType, null, null));
                     }
@@ -377,6 +383,18 @@ public class AllMediaList {
                 DebugLog.e(TAG, "onChange deviceType: " + deviceType + " && fileType: " + fileType);
                 mLocalHandler.obtainMessage(BEGIN_LOAD_THREAD, deviceType, fileType, null).sendToTarget();
             }
+            super.onChange(selfChange);
+        }
+    }
+    
+    public class SettingsValueChangeContentObserver extends ContentObserver {
+        public SettingsValueChangeContentObserver(Handler handler) {
+            super(handler);
+        }
+        
+        @Override
+        public void onChange(boolean selfChange) {
+            mMediaDbHelper.notifyCollectChange();
             super.onChange(selfChange);
         }
     }
@@ -548,6 +566,12 @@ public class AllMediaList {
      * 收藏操作，针对集合对象。
      */
     public void collectMediaFiles(ArrayList<FileNode> dataList, OperateListener listener) {
+        String username = MediaUtil.getUserName(mContext);
+        if (!TextUtils.isEmpty(username)) {
+            for (FileNode fileNode : dataList) {
+                fileNode.setUsername(username);
+            }
+        }
         mLocalHandler.sendMessage(mLocalHandler.obtainMessage(BEGIN_OPERATE_THREAD,
                 new OperateData(OperateListener.OPERATE_COLLECT, dataList, listener)));
     }
@@ -787,7 +811,7 @@ public class AllMediaList {
     }
     
     private void copyToLocalForFileSize(ArrayList<FileNode> list, OperateData operateData, Thread thread) {
-    	int resultCode = OperateListener.OPERATE_SUCEESS;
+        int resultCode = OperateListener.OPERATE_SUCEESS;
         int currentprogress = 0;
         mMediaDbHelper.setStartFlag(true);
         long totalSize = 0;
@@ -893,7 +917,7 @@ public class AllMediaList {
                 handler.sendEmptyMessageDelayed(what, 500);
             }
         } catch (Exception e) {
-        	Log.d(TAG, "notifyUpdateAppWidget sendBroadcast main_activity_update_ui");
+            Log.d(TAG, "notifyUpdateAppWidget sendBroadcast main_activity_update_ui");
             MediaApplication.getInstance().sendBroadcast(new Intent("main_activity_update_ui"));
         }
     }

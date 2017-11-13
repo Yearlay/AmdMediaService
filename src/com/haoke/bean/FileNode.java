@@ -61,6 +61,9 @@ public class FileNode {
     
     private int collect;
     private String collectPath;
+    
+    private String username;
+    
     private int fromDeviceType;
     private boolean updateDBByID;
     private boolean isFromCollectTable;
@@ -106,6 +109,7 @@ public class FileNode {
         collect = node.collect;
         collectPath = node.collectPath;
         thumbnailPath = node.thumbnailPath;
+        username = node.username;
 
         // 其他的数据
         deviceType = node.deviceType;
@@ -148,6 +152,7 @@ public class FileNode {
         collect = Integer.valueOf(cursor.getString(cursor.getColumnIndex(DBConfig.MediaColumns.FIELD_COLLECT)));
         collectPath = cursor.getString(cursor.getColumnIndex(DBConfig.MediaColumns.FIELD_FILE_COLLECT_PATH));
         thumbnailPath = cursor.getString(cursor.getColumnIndex(DBConfig.MediaColumns.FIELD_FILE_THUMBNAIL_PATH));
+        username = cursor.getString(cursor.getColumnIndex(DBConfig.MediaColumns.FIELD_USERNAME));
         
         deviceType = MediaUtil.getDeviceType(filePath);
         fileType = MediaUtil.getMediaType(filePath);
@@ -175,6 +180,7 @@ public class FileNode {
         contentValues.put(DBConfig.MediaColumns.FIELD_COLLECT, collect);
         contentValues.put(DBConfig.MediaColumns.FIELD_FILE_COLLECT_PATH, collectPath);
         contentValues.put(DBConfig.MediaColumns.FIELD_FILE_THUMBNAIL_PATH, thumbnailPath);
+        contentValues.put(DBConfig.MediaColumns.FIELD_USERNAME, username);
         
         return contentValues;
     }
@@ -514,7 +520,15 @@ public class FileNode {
         this.thumbnailPath = mThumbnailPath;
     }
     
-    private boolean unSupportFlag;
+    public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	private boolean unSupportFlag;
     public boolean isUnSupportFlag() {
         return unSupportFlag;
     }

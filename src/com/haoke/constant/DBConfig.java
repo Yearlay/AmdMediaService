@@ -17,7 +17,7 @@ public class DBConfig {
     /**
      * 数据库的版本号：当前是2。
      */
-    public final static int DATABASE_VERSION = 3;
+    public final static int DATABASE_VERSION = 4;
     
     public final static String TABLE_AUDIO = "table_audio";
     public final static String TABLE_VIDEO = "table_video";
@@ -49,6 +49,7 @@ public class DBConfig {
         public final static String FIELD_COLLECT = "collect";// 是否收藏，0：否，1收藏
         public final static String FIELD_FILE_COLLECT_PATH = "collect_path"; // 文件收藏的全路径
         public final static String FIELD_FILE_THUMBNAIL_PATH = "thumbnail_path"; // 缓存的路径。
+        public final static String FIELD_USERNAME = "username";
     }
     
     public static ArrayList<Integer> sDeviceDefaultList = new ArrayList<Integer>();

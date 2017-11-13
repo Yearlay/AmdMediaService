@@ -21,6 +21,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
+import android.text.TextUtils;
 
 public class MediaDbHelper extends SQLiteOpenHelper {
     private static final String TAG = "MediaDbHelper";
@@ -54,7 +55,6 @@ public class MediaDbHelper extends SQLiteOpenHelper {
         db.execSQL(getCreateTableString(DBConfig.TABLE_AUDIO + DeviceType.COLLECT));
         db.execSQL(getCreateTableString(DBConfig.TABLE_VIDEO + DeviceType.COLLECT));
         db.execSQL(getCreateTableString(DBConfig.TABLE_IMAGE + DeviceType.COLLECT));
-        db.execSQL(getCreateTableString(DBConfig.TABLE_SAVE_MUSIC));
     }
     
     private String getCreateTableString(String table) {
@@ -77,7 +77,8 @@ public class MediaDbHelper extends SQLiteOpenHelper {
                 DBConfig.MediaColumns.FIELD_ALBUM_PIC     +" blob,"+
                 DBConfig.MediaColumns.FIELD_COLLECT       +" integer DEFAULT 0," +
                 DBConfig.MediaColumns.FIELD_FILE_COLLECT_PATH + " text," +
-                DBConfig.MediaColumns.FIELD_FILE_THUMBNAIL_PATH + " text" + ")";
+                DBConfig.MediaColumns.FIELD_FILE_THUMBNAIL_PATH + " text," +
+                DBConfig.MediaColumns.FIELD_USERNAME + " text" + ")";
         return sql;
     }
     
@@ -92,7 +93,9 @@ public class MediaDbHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + DBConfig.TABLE_AUDIO + DeviceType.COLLECT);
         db.execSQL("DROP TABLE IF EXISTS " + DBConfig.TABLE_VIDEO + DeviceType.COLLECT);
         db.execSQL("DROP TABLE IF EXISTS " + DBConfig.TABLE_IMAGE + DeviceType.COLLECT);
-        db.execSQL("DROP TABLE IF EXISTS " + DBConfig.TABLE_SAVE_MUSIC);
+        if (oldVersion < 4) {
+            db.execSQL("DROP TABLE IF EXISTS " + DBConfig.TABLE_SAVE_MUSIC);
+        }
         onCreate(db);
     }
 
@@ -135,7 +138,7 @@ public class MediaDbHelper extends SQLiteOpenHelper {
     }
     
     public void updateCollectInfoByFileExist(int fileType) {
-        ArrayList<FileNode> collectList = queryCollected(fileType, null, null, true);
+        ArrayList<FileNode> collectList = queryCollected(fileType, true);
         if (collectList.size() > 0) {
             for (FileNode collectNode : collectList) {
                 if (!collectNode.getFile().exists()) { // 对应的文件不存在的情况。
@@ -169,7 +172,7 @@ public class MediaDbHelper extends SQLiteOpenHelper {
      * @param fileType 类型有音乐，视频和图片。
      */
     public void updateMediaInfoAccordingToCollect(int fileType) {
-        ArrayList<FileNode> collectList = queryCollected(fileType, null, null, false);
+        ArrayList<FileNode> collectList = queryCollected(fileType, false);
         if (collectList.size() > 0) {
             for (FileNode collectNode : collectList) {
                 FileNode mediaNode = new FileNode(collectNode);
@@ -381,7 +384,14 @@ public class MediaDbHelper extends SQLiteOpenHelper {
         return mediaList;
     }
     
-    public ArrayList<FileNode> queryCollected(int fileType, String selection, String[] selectionArgs, boolean allFlag) {
+    public ArrayList<FileNode> queryCollected(int fileType, boolean allFlag) {
+        String username = MediaUtil.getUserName(mContext);
+        String selection = null;
+        String[] selectionArgs = null;
+        if (!TextUtils.isEmpty(username)) {
+            selection = DBConfig.MediaColumns.FIELD_USERNAME + "=?";
+            selectionArgs = new String[]{username};
+        }
         ArrayList<FileNode> collectList = query(DBConfig.getTableName(DeviceType.COLLECT, fileType), selection, selectionArgs, allFlag);
         for (int i = 0; i < collectList.size(); i++) { // 数据库中没有deviceType和fileType，所以需要进行填充。
             collectList.get(i).setDeviceType(DeviceType.COLLECT);
@@ -412,7 +422,7 @@ public class MediaDbHelper extends SQLiteOpenHelper {
                     searchList.addAll(FileNode.matchOperator(list, searchStr));
                 }
             }
-            ArrayList<FileNode> collectList = queryCollected(fileType, null, null, false);
+            ArrayList<FileNode> collectList = queryCollected(fileType, false);
             if (collectList.size() > 0) {
                 searchList.addAll(FileNode.matchOperator(collectList, searchStr));
             }

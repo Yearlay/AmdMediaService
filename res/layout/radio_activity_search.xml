@@ -24,6 +24,7 @@
 	        android:textSize="30px" />
         
         <ImageButton
+            android:id="@+id/search_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@id/search_input"
