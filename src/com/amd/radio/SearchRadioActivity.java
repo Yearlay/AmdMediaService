@@ -26,10 +26,12 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.archermind.skinlib.SkinManager;
 
 // FM: 87.5 ~ 108.0
 public class SearchRadioActivity extends Activity implements OnClickListener,
@@ -46,6 +48,10 @@ public class SearchRadioActivity extends Activity implements OnClickListener,
 	private String mInputStr = "";
 	private ListView mResultListView;
 	private SearchAdapter mSearchAdapter;
+	private ImageButton mSearchClear;
+	private Button mSearchcancel;
+	private ImageButton mSearchIcon;
+	private SkinManager mSkinManager;
 	
 	private Button mButton0;
 	private Button mButton1;
@@ -58,6 +64,9 @@ public class SearchRadioActivity extends Activity implements OnClickListener,
 	private Button mButton8;
 	private Button mButton9;
 	private Button mButtonPoint;
+	private ImageButton mBackButton;
+	private ImageButton mHideButton;
+	private Button mOkButton;
 	
 	
 	@Override
@@ -66,10 +75,40 @@ public class SearchRadioActivity extends Activity implements OnClickListener,
 		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		this.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
 		setContentView(R.layout.radio_activity_search);
+		mSkinManager = SkinManager.instance(getApplicationContext());
 		initView();
-		init();
 	}
 	
+	private void initSkin() {
+		mInputEditText.setBackground(mSkinManager.getDrawable(R.drawable.search_input_bg));
+		
+		mSearchIcon.setBackground(mSkinManager.getDrawable(R.drawable.search_icon));
+		mSearchClear.setBackgroundDrawable(mSkinManager.getDrawable(R.drawable.search_num_clear));
+		
+		mSearchcancel.setBackgroundDrawable(mSkinManager.getDrawable(R.drawable.search_cancel_bg));
+		mSearchcancel.setTextColor(mSkinManager.getColorStateList(R.drawable.text_color_selector));
+		
+		mButton0.setBackground(mSkinManager.getStateListDrawable(R.drawable.search_num_bg));
+		mButton1.setBackground(mSkinManager.getStateListDrawable(R.drawable.search_num_bg));
+		mButton2.setBackground(mSkinManager.getStateListDrawable(R.drawable.search_num_bg));
+		mButton3.setBackground(mSkinManager.getStateListDrawable(R.drawable.search_num_bg));
+		mButton4.setBackground(mSkinManager.getStateListDrawable(R.drawable.search_num_bg));
+		mButton5.setBackground(mSkinManager.getStateListDrawable(R.drawable.search_num_bg));
+		mButton6.setBackground(mSkinManager.getStateListDrawable(R.drawable.search_num_bg));
+		mButton7.setBackground(mSkinManager.getStateListDrawable(R.drawable.search_num_bg));
+		mButton8.setBackground(mSkinManager.getStateListDrawable(R.drawable.search_num_bg));
+		mButton9.setBackground(mSkinManager.getStateListDrawable(R.drawable.search_num_bg));
+		
+		mBackButton.setBackground(mSkinManager.getStateListDrawable(R.drawable.search_num_bg));
+		mBackButton.setImageDrawable(mSkinManager.getDrawable(R.drawable.search_num_back));
+		
+		mHideButton.setBackground(mSkinManager.getStateListDrawable(R.drawable.search_num_bg));
+		mHideButton.setImageDrawable(mSkinManager.getDrawable(R.drawable.search_num_hide));
+		
+		mOkButton.setBackground(mSkinManager.getStateListDrawable(R.drawable.search_num_ok));
+		mButtonPoint.setBackground(mSkinManager.getStateListDrawable(R.drawable.search_num_bg));
+	}
+
 	private void initView() {
 		mNumGroup = (RelativeLayout) findViewById(R.id.search_num_group);
 		mInputEditText = (EditText) findViewById(R.id.search_input);
@@ -77,8 +116,12 @@ public class SearchRadioActivity extends Activity implements OnClickListener,
 		mInputEditText.setInputType(android.text.InputType.TYPE_NULL);
 		mInputEditText.addTextChangedListener(this);
 		mInputEditText.setOnClickListener(this);
-		findViewById(R.id.search_num_clear).setOnClickListener(this);
-		findViewById(R.id.search_cancel).setOnClickListener(this);
+		mSearchIcon = (ImageButton) findViewById(R.id.search_icon);
+		mSearchClear = (ImageButton) findViewById(R.id.search_num_clear);
+		mSearchClear.setOnClickListener(this);
+		mSearchcancel = (Button) findViewById(R.id.search_cancel);
+		mSearchcancel.setOnClickListener(this);
+
 		mButton0 = (Button) findViewById(R.id.search_num_0);
 		mButton0.setOnClickListener(this);
 		mButton1 = (Button) findViewById(R.id.search_num_1);
@@ -101,9 +144,12 @@ public class SearchRadioActivity extends Activity implements OnClickListener,
 		mButton9.setOnClickListener(this);
 		mButtonPoint = (Button) findViewById(R.id.search_num_point);
 		mButtonPoint.setOnClickListener(this);
-		findViewById(R.id.search_num_back).setOnClickListener(this);
-		findViewById(R.id.search_num_hide).setOnClickListener(this);
-		findViewById(R.id.search_num_ok).setOnClickListener(this);
+		mBackButton = (ImageButton) findViewById(R.id.search_num_back);
+		mBackButton.setOnClickListener(this);
+		mHideButton = (ImageButton) findViewById(R.id.search_num_hide);
+		mHideButton.setOnClickListener(this);
+		mOkButton = (Button) findViewById(R.id.search_num_ok);
+		mOkButton.setOnClickListener(this);
 		
 		mResultListView = (ListView) findViewById(R.id.search_result_list);
 		mSearchAdapter = new SearchAdapter();
@@ -116,6 +162,7 @@ public class SearchRadioActivity extends Activity implements OnClickListener,
 	@Override
 	protected void onResume() {
 		super.onResume();
+		initSkin();
 		AllMediaList.notifyAllLabelChange(this, R.string.pub_radio);
 	}
 

@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
+import android.net.Uri;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
@@ -21,7 +22,6 @@ import com.amd.media.AudioFocus.AudioFocusListener;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.StorageBean;
 import com.haoke.btjar.main.BTDef.BTConnState;
-import com.haoke.constant.MediaUtil;
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.ModeSwitch;
@@ -41,6 +41,8 @@ public class MediaInterfaceUtil {
     private static final String TAG = "MediaInterfaceUtil";
     
     private static int sMediaPlayStateRecord = ModeDef.NULL;
+    
+    public static final Uri URI_SKIN = Settings.System.getUriFor("key_skin_3za_g12");
     
     private static AudioFocus mAudioFocus;
     private static boolean sMuteKey_MuteState = false;

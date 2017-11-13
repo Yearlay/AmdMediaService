@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.ContentObserver;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -69,6 +71,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
 
         registerReceiver(mReceiver, new IntentFilter(VRConstant.VRIntent.ACTION_FINISH_MUSIC_RADIO));
         initCurSource();
+        getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, mContentObserver);
         AllMediaList.notifyUpdateAppWidget(ModeDef.NULL);// 通知MediaWidgetProvider更新UI
         Log.d(TAG, "onCreate");
     }
@@ -133,6 +136,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
 		mHomeFragment.onDestroy();
         super.onDestroy();
         unregisterReceiver(mReceiver);
+        getContentResolver().unregisterContentObserver(mContentObserver);
     }
     
     @Override
@@ -402,5 +406,11 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
         }
         super.onBackPressed();
     }
+    
+    private ContentObserver mContentObserver = new ContentObserver(new Handler()) {
+        public void onChange(boolean selfChange) {
+            Log.d(TAG, "onChange skin");
+        };
+    };
 
 }
