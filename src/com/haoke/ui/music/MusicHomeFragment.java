@@ -97,6 +97,14 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 		setCurPlayViewState();
 	}
 	
+	public void onNewIntent(int source, boolean autoPlay) {
+		if (source == ModeDef.BT) {
+			if (autoPlay) {
+				mBTIF.music_play();
+			}
+		}
+	}
+	
 	public void onStart() {
 	}
 	

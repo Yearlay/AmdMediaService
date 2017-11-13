@@ -174,6 +174,10 @@ public class Radio_SimpleSave {
 	@SuppressWarnings("unused")
 	public String getStationName(int freq){
 		String name="";
+		if (true) {
+			// FM中文名暂时做隐藏，不要删除逻辑
+			return name;
+		}
 		try {
 			String mBand = GetBandByFreq(freq);
 			

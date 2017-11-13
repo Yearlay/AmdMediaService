@@ -169,7 +169,9 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
             boolean goPlay = false;
             boolean goHome = false;
             String musicMode = intent.getStringExtra("Mode_To_Music");
-            Log.d(TAG, "initCurSource musicMode="+musicMode);
+            boolean hasAutoPlay = intent.hasExtra("autoPlay");
+            boolean autoPlay = hasAutoPlay ? intent.getBooleanExtra("autoPlay", false) : false;
+            Log.d(TAG, "initCurSource musicMode="+musicMode+"; autoPlay="+autoPlay);
             if ("radio_intent".equals(musicMode)) {
             	source = ModeDef.RADIO;
             	fromIntent = true;
@@ -186,6 +188,13 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
             	goHome = true;
             }
             if (fromIntent) {
+            	if (hasAutoPlay) {
+                	if (source == ModeDef.RADIO) {
+                    	mRadioFragment.onNewIntent(source, autoPlay);
+                	} else {
+                		mHomeFragment.onNewIntent(source, autoPlay);
+                	}
+            	}
             	if (source == ModeDef.BT) {
             		replaceBtMusicFragment();
             	} else if (goPlay) {
