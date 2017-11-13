@@ -5,6 +5,14 @@
     android:layout_height="match_parent"
     tools:context=".Image_Activity_Main" >
     
+    <TextView
+        android:id="@+id/textview_skinmanager"
+        android:layout_marginTop="80px"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="15px"
+        android:text="    "/>
+    
     <RadioGroup
         android:id="@+id/image_tab_group"
         android:layout_width="match_parent"

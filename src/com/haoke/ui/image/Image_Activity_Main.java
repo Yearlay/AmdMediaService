@@ -1,6 +1,5 @@
 package com.haoke.ui.image;
 
-import java.security.spec.MGF1ParameterSpec;
 import java.util.ArrayList;
 
 import android.app.Activity;
@@ -23,6 +22,7 @@ import android.widget.TextView;
 import com.archermind.skinlib.SkinManager;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.StorageBean;
+import com.haoke.constant.DebugConstant;
 import com.haoke.constant.MediaUtil;
 import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.FileType;
@@ -86,6 +86,9 @@ public class Image_Activity_Main extends Activity implements
         mSelectAllView.setOnClickListener(this);
         mCopyTextView = (TextView) mEditView.findViewById(R.id.copy_to_local);
         mCopyTextView.setOnClickListener(this);
+        if (DebugConstant.DEBUG) {
+            findViewById(R.id.textview_skinmanager).setOnClickListener(this);
+        }
         
         registerReceiver(mOperateAppReceiver, new IntentFilter(VRIntent.ACTION_OPERATE_IMAGE));
         
@@ -252,8 +255,24 @@ public class Image_Activity_Main extends Activity implements
             }
         } else if (v.getId() == R.id.copy_to_local) {
             mListLayout.copySelected();
+        } else if (v.getId() == R.id.textview_skinmanager) {
+            clickCount++;
+            if (clickCount % 5 == 0) {
+                try {
+                    Intent intent = new Intent();
+                    String packageName = "com.archermind.skin";
+                    String className = "com.archermind.skin.SkinActivity";
+                    intent.setClassName(packageName, className);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
+    
+    int clickCount;
     
     private void cancelEdit() {
         mListLayout.cancelEdit();
