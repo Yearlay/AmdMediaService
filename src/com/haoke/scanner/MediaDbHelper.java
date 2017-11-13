@@ -54,7 +54,6 @@ public class MediaDbHelper extends SQLiteOpenHelper {
         db.execSQL(getCreateTableString(DBConfig.TABLE_AUDIO + DeviceType.COLLECT));
         db.execSQL(getCreateTableString(DBConfig.TABLE_VIDEO + DeviceType.COLLECT));
         db.execSQL(getCreateTableString(DBConfig.TABLE_IMAGE + DeviceType.COLLECT));
-        db.execSQL(getCreateTableString(DBConfig.TABLE_SAVE_MUSIC));
     }
     
     private String getCreateTableString(String table) {
@@ -77,7 +76,8 @@ public class MediaDbHelper extends SQLiteOpenHelper {
                 DBConfig.MediaColumns.FIELD_ALBUM_PIC     +" blob,"+
                 DBConfig.MediaColumns.FIELD_COLLECT       +" integer DEFAULT 0," +
                 DBConfig.MediaColumns.FIELD_FILE_COLLECT_PATH + " text," +
-                DBConfig.MediaColumns.FIELD_FILE_THUMBNAIL_PATH + " text" + ")";
+                DBConfig.MediaColumns.FIELD_FILE_THUMBNAIL_PATH + " text," +
+                DBConfig.MediaColumns.FIELD_USERNAME + " text" + ")";
         return sql;
     }
     
@@ -92,7 +92,9 @@ public class MediaDbHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + DBConfig.TABLE_AUDIO + DeviceType.COLLECT);
         db.execSQL("DROP TABLE IF EXISTS " + DBConfig.TABLE_VIDEO + DeviceType.COLLECT);
         db.execSQL("DROP TABLE IF EXISTS " + DBConfig.TABLE_IMAGE + DeviceType.COLLECT);
-        db.execSQL("DROP TABLE IF EXISTS " + DBConfig.TABLE_SAVE_MUSIC);
+        if (oldVersion < 4) {
+            db.execSQL("DROP TABLE IF EXISTS " + DBConfig.TABLE_SAVE_MUSIC);
+        }
         onCreate(db);
     }
 

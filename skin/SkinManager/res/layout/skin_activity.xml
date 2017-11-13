@@ -1,17 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/skin_group"
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
-    <RadioButton
-        android:id="@+id/skin_default"
+    <RadioGroup 
+        android:id="@+id/skin_group"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="default_theme" />
+        android:layout_height="wrap_content" >
+        <RadioButton
+            android:id="@+id/skin_default"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="default_theme" />
+        
+        <RadioButton
+            android:id="@+id/skin_one"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="red_theme" />
+    </RadioGroup>
     
-    <RadioButton
-        android:id="@+id/skin_one"
+    <RadioGroup 
+        android:id="@+id/user_group"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="red_theme" />
-</RadioGroup>
+        android:layout_height="wrap_content" >
+        <RadioButton
+            android:id="@+id/user_default"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Default: Leon" />
+        
+        <RadioButton
+            android:id="@+id/user_super"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Super: Fang" />
+        
+        <RadioButton
+            android:id="@+id/user_nico"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Normal: Nico" />
+        
+        <RadioButton
+            android:id="@+id/user_nama"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Normal: Nama" />
+        
+        <RadioButton
+            android:id="@+id/user_other"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Other" />
+    </RadioGroup>
+    
+</LinearLayout>
+

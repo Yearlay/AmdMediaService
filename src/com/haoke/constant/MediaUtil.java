@@ -13,7 +13,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import com.haoke.bean.FileNode;
+import com.haoke.bean.UserInfoBean;
 import com.haoke.define.MediaDef;
+import com.haoke.util.GsonUtil;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -22,6 +24,7 @@ import android.graphics.Matrix;
 import android.os.Environment;
 import android.os.StatFs;
 import android.os.storage.StorageManager;
+import android.provider.Settings;
 import android.util.Log;
 
 public class MediaUtil {
@@ -431,5 +434,11 @@ public class MediaUtil {
         long blockCount = sf.getBlockCount(); 
         long availCount = sf.getAvailableBlocks();
         return (availCount * blockSize - totalSize)  > 5368709120L;
+    }
+    
+    public static String getUserName(Context context) {
+    	String infoStr = Settings.System.getString(context.getContentResolver(),"personal_user_info");
+    	UserInfoBean userInfoBean = (UserInfoBean) GsonUtil.instance().getObjectFromJson(infoStr, UserInfoBean.class);
+    	return userInfoBean.getCurrentUsername();
     }
 }
