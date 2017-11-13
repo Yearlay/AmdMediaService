@@ -10,6 +10,7 @@ import com.haoke.serviceif.CarService_Listener;
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.radio.Radio_IF;
 import com.amd.radio.Radio_CarListener;
+import com.archermind.skinlib.SkinManager;
 
 import android.content.Context;
 import android.content.Intent;
@@ -37,7 +38,10 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     private Context mContext;
     
     private ImageButton mCollectButton;
+    private ImageView mAllImageView;
     private ImageView mPlayImageView;
+    private ImageView mPreImageView;
+    private ImageView mNextImageView;
     private TextView mFreqNumTextView;
     private TextView mFreqNameTextView;
     private TextView mSTTextView;
@@ -51,6 +55,8 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     
     private static int tempFreq;
     private Radio_IF mIF;
+    
+    private SkinManager skinManager;
 
     public Radio_Activity_Main(Context context) {
         super(context);
@@ -73,6 +79,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
         mIF = Radio_IF.getInstance();
         mIF.registerCarCallBack(this);
         mIF.registerModeCallBack(this);
+        skinManager = SkinManager.instance(getContext());
         
         mIF.initFavoriteData(getContext().getApplicationContext());
         Radio_SimpleSave.getInstance().getCurCityStationNameList();
@@ -91,16 +98,19 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
         mFreqNameTextView = (TextView) rootView.findViewById(R.id.radio_fragment_tv_name);
         mSTTextView = (TextView) rootView.findViewById(R.id.radio_fragment_tv_st);
         mSTTextView.setVisibility(mIF.getST() ? View.VISIBLE : View.INVISIBLE);
-        rootView.findViewById(R.id.radio_fragment_all).setOnClickListener(this);
-        rootView.findViewById(R.id.radio_fragment_pre).setOnClickListener(this);
-        rootView.findViewById(R.id.radio_fragment_pre).setOnLongClickListener(this);
-        rootView.findViewById(R.id.radio_fragment_next).setOnClickListener(this);
-        rootView.findViewById(R.id.radio_fragment_next).setOnLongClickListener(this);
+        mAllImageView = (ImageView) rootView.findViewById(R.id.radio_fragment_all);
+        mAllImageView.setOnClickListener(this);
+        mPreImageView = (ImageView) rootView.findViewById(R.id.radio_fragment_pre);
+        mPreImageView.setOnClickListener(this);
+        mPreImageView.setOnLongClickListener(this);
+        mNextImageView = (ImageView) rootView.findViewById(R.id.radio_fragment_next); 
+        mNextImageView.setOnClickListener(this);
+        mNextImageView.setOnLongClickListener(this);
         rootView.findViewById(R.id.radio_fragment_add).setOnClickListener(this);
         rootView.findViewById(R.id.radio_fragment_sub).setOnClickListener(this);
         mPlayImageView = (ImageView) rootView.findViewById(R.id.radio_fragment_pause_play);
         mPlayImageView.setOnClickListener(this);
-        mPlayImageView.setImageResource(mIF.isEnable() ? R.drawable.pause : R.drawable.play);
+        mPlayImageView.setImageDrawable(skinManager.getStateListDrawable(mIF.isEnable() ? R.drawable.pause : R.drawable.play));
         mNextPagerView = (ImageView) rootView.findViewById(R.id.radio_fragment_down);
         mPrePagerView = (ImageView) rootView.findViewById(R.id.radio_fragment_up);
         mNextPagerView.setOnClickListener(this);
@@ -142,11 +152,18 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     public void onResume() {
         Log.d(TAG, "onResume");
         AllMediaList.notifyAllLabelChange(getContext(), R.string.pub_radio);
-        mPlayImageView.setImageResource(mIF.isEnable() ? R.drawable.pause : R.drawable.play);
+        mPlayImageView.setImageDrawable(skinManager.getStateListDrawable(mIF.isEnable() ? R.drawable.pause : R.drawable.play));
         updateFreq(mIF.getCurFreq());
         ModeSwitch.instance().setCurrentMode(mContext, true, ModeSwitch.RADIO_MODE);
         updateAll();
         refreshScanIcon();
+        refreshSkin();
+    }
+    
+    private void refreshSkin() {
+    	mAllImageView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.all));
+    	mPreImageView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.pre));
+    	mNextImageView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.next));
     }
     
     public void onPause() {
@@ -305,9 +322,9 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
         
         boolean isCollected = mIF.isCollected(mContext, data);
         if (isCollected) {
-            mCollectButton.setImageResource(R.drawable.media_collect);
+            mCollectButton.setImageDrawable(skinManager.getDrawable(R.drawable.media_collect));
         } else {
-            mCollectButton.setImageResource(R.drawable.media_uncollect);
+            mCollectButton.setImageDrawable(skinManager.getDrawable(R.drawable.media_uncollect));
         }
         
         if (!isRescanOrScan5S()) {
@@ -319,7 +336,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
      * 播放暂停
      */
     private void updateRadioEnable(boolean enable){
-        mPlayImageView.setImageResource(enable ? R.drawable.pause : R.drawable.play);
+        mPlayImageView.setImageDrawable(skinManager.getStateListDrawable(enable ? R.drawable.pause : R.drawable.play));
     }
     
     /**
@@ -354,14 +371,14 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     @Override
     public void onPageSelected(int arg0) {
         if (arg0 == 0) {
-            mPrePagerView.setImageResource(R.drawable.up_gray);
-            mNextPagerView.setImageResource(R.drawable.down);
+            mPrePagerView.setImageDrawable(skinManager.getDrawable(R.drawable.up_gray));
+            mNextPagerView.setImageDrawable(skinManager.getDrawable(R.drawable.down));
         }else if(arg0 == Data_Common.pager -1){
-            mPrePagerView.setImageResource(R.drawable.up);
-            mNextPagerView.setImageResource(R.drawable.down_gray);
+            mPrePagerView.setImageDrawable(skinManager.getDrawable(R.drawable.up));
+            mNextPagerView.setImageDrawable(skinManager.getDrawable(R.drawable.down_gray));
         }else{
-            mPrePagerView.setImageResource(R.drawable.up);
-            mNextPagerView.setImageResource(R.drawable.down);
+            mPrePagerView.setImageDrawable(skinManager.getDrawable(R.drawable.up));
+            mNextPagerView.setImageDrawable(skinManager.getDrawable(R.drawable.down));
         }
     }
     
@@ -391,11 +408,11 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
             boolean isCollected = mIF.isCollected(mContext, tempFreq);
             if (isCollected) {
                 if (mIF.uncollectFreq(mContext, tempFreq, true)) {
-                    mCollectButton.setImageResource(R.drawable.media_uncollect);
+                    mCollectButton.setImageDrawable(skinManager.getDrawable(R.drawable.media_uncollect));
                 }
             } else {
                 if (mIF.collectFreq(mContext, tempFreq, true)) {
-                    mCollectButton.setImageResource(R.drawable.media_collect);
+                    mCollectButton.setImageDrawable(skinManager.getDrawable(R.drawable.media_collect));
                 }
             }
             return;
@@ -528,7 +545,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
         if (mFreqNumTextView!=null) {
             updateFreq(mIF.getCurFreq());
             mSTTextView.setVisibility(mIF.getST() ? View.VISIBLE : View.INVISIBLE);
-            mPlayImageView.setImageResource(mIF.isEnable() ? R.drawable.pause : R.drawable.play);
+            mPlayImageView.setImageDrawable(skinManager.getStateListDrawable(mIF.isEnable() ? R.drawable.pause : R.drawable.play));
         }
     }
     
@@ -539,21 +556,21 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     
     private void enterScan5S() {
         mIF.setScan();
-        mScan5sView.setImageResource(R.drawable.radio_scan_5s);
+        mScan5sView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.radio_scan_5s));
     }
     
     private boolean exitScan5S() {
-        mScan5sView.setImageResource(R.drawable.radio_scan_5s_select);
+        mScan5sView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.radio_scan_5s_select));
         return mIF.exitScan5S();
     }
     
     private void enterRescan() {
         mIF.scanStore();
-        mRescanView.setImageResource(R.drawable.radio_rescan);
+        mRescanView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.radio_rescan));
     }
     
     private boolean exitRescan() {
-        mRescanView.setImageResource(R.drawable.radio_rescan_select);
+        mRescanView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.radio_rescan_select));
         return mIF.exitRescan();
     }
     
@@ -564,28 +581,28 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     private void isScanStateChange(int data) {
         //data为2表示SCAN[Scan5S]， 为3表示SEARCH[Rescan]
         if (data == 2) {
-            mScan5sView.setImageResource(R.drawable.radio_scan_5s);
-            mRescanView.setImageResource(R.drawable.radio_rescan_select);
+            mScan5sView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.radio_scan_5s));
+            mRescanView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.radio_rescan_select));
         } else if (data == 3) {
-        	mScan5sView.setImageResource(R.drawable.radio_scan_5s_select);
-            mRescanView.setImageResource(R.drawable.radio_rescan);
+        	mScan5sView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.radio_scan_5s_select));
+            mRescanView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.radio_rescan));
         }
         if (data == 0) {
-            mRescanView.setImageResource(R.drawable.radio_rescan_select);
-            mScan5sView.setImageResource(R.drawable.radio_scan_5s_select);
+            mRescanView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.radio_rescan_select));
+            mScan5sView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.radio_scan_5s_select));
         }
     }
     
     private void refreshScanIcon() {
         if (mIF.isRescanState()) {
-            mRescanView.setImageResource(R.drawable.radio_rescan);
+            mRescanView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.radio_rescan));
         } else {
-            mRescanView.setImageResource(R.drawable.radio_rescan_select);
+            mRescanView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.radio_rescan_select));
         }
         if (mIF.isScan5SState()) {
-            mScan5sView.setImageResource(R.drawable.radio_scan_5s);
+            mScan5sView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.radio_scan_5s));
         } else {
-            mScan5sView.setImageResource(R.drawable.radio_scan_5s_select);
+            mScan5sView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.radio_scan_5s_select));
         }
     }
 }

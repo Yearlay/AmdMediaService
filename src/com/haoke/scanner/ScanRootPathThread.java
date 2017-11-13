@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import com.file.server.scan.ScanJni;
 import com.haoke.bean.StorageBean;
 import com.haoke.constant.MediaUtil.DeviceType;
+import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.constant.MediaUtil.ScanState;
 import com.haoke.constant.MediaUtil.ScanTask;
 import com.haoke.constant.MediaUtil.ScanTaskType;
@@ -15,13 +16,10 @@ import com.haoke.util.DebugLog;
 
 // 设备拔出时，必须停止该线程
 public class ScanRootPathThread extends Thread {
-    private static final String TAG = "FileServer";
+    private static final String TAG = "Yearlay";
 
     private MediaScannerListner mScannerListner;
     private MediaDbHelper mMediaDbHelper;
-    private int mFileCount;
-    private int mMediaCount;
-    private long mInsertDbTime;
     
     public void changeScanState(int scanState, int deviceType) {
         if (mScannerListner != null) {
@@ -82,10 +80,6 @@ public class ScanRootPathThread extends Thread {
                 case ScanTaskType.UNMOUNTED:
                     removeStorage(mCurrentDeviceTask);
                     break;
-                case ScanTaskType.DIRECTORY:
-                case ScanTaskType.FILE:
-                    jniScanRootPath(mCurrentDeviceTask.mFilePath, true);
-                    break;
                 default:
                     break;
             }
@@ -100,18 +94,29 @@ public class ScanRootPathThread extends Thread {
         DebugLog.i(TAG, "scanStorage Path: " + scanTask.mFilePath);
         AllMediaList.instance(mMediaDbHelper.getContext()).updateStorageBean(scanTask.mFilePath, StorageBean.FILE_SCANNING);
         changeScanState(ScanState.SCANNING, scanTask.mDeviceType);
+        int mediaCount = 0;
         int scanState = ScanState.IDLE;
         try {
             // TODO：清空数据库表的内容是临时的做法，需要针对重启设备校验文件来设计方案。
-            mMediaDbHelper.clearDeviceData(scanTask.mDeviceType);
-            mMediaDbHelper.setStartFlag(true);
-            jniScanRootPath(scanTask.mFilePath, false);
-            mMediaDbHelper.setStartFlag(false);
+            int imageCount = mMediaDbHelper.queryMedia(scanTask.mDeviceType, FileType.IMAGE, null, null).size();
+            int audioCount = mMediaDbHelper.queryMedia(scanTask.mDeviceType, FileType.AUDIO, null, null).size();
+            int videoCount = mMediaDbHelper.queryMedia(scanTask.mDeviceType, FileType.VIDEO, null, null).size();
+            DebugLog.d(TAG, " Scan check imageCount: " + imageCount
+            		+ " && audioCount: " + audioCount + " && videoCount:" + videoCount);
+            mediaCount = jniScanRootPath(scanTask.mFilePath, 1);
+            if (mediaCount != (imageCount + audioCount + videoCount)) {
+                DebugLog.d(TAG, " Scan check failed; Begin rescan !!!!!");
+                mMediaDbHelper.clearDeviceData(scanTask.mDeviceType);
+                mMediaDbHelper.setStartFlag(true);
+                mediaCount = jniScanRootPath(scanTask.mFilePath, 0);
+                mMediaDbHelper.setStartFlag(false);
+            } else {
+                DebugLog.d(TAG, " Scan check successful!!!");
+            }
         } catch (Exception e) {
             scanState = ScanState.SCAN_ERROR;
             e.printStackTrace();
         }
-        DebugLog.d(TAG, " Scan over, mFileCount : " + mFileCount + ", mMediaCount : " + mMediaCount);
         scanState = (scanState == ScanState.IDLE) ? ScanState.COMPLETED : scanState;
         if (scanState == ScanState.COMPLETED) {
             AllMediaList.instance(mMediaDbHelper.getContext()).updateStorageBean(scanTask.mFilePath, StorageBean.SCAN_COMPLETED);
@@ -123,13 +128,7 @@ public class ScanRootPathThread extends Thread {
     }
 
     private void removeStorage(ScanTask scanTask) {
-        DebugClock debugClock = new DebugClock();
-        // 更新磁盘表信息。
         AllMediaList.instance(mMediaDbHelper.getContext()).updateStorageBean(scanTask.mFilePath, StorageBean.EJECT);
-        if (scanTask.mDeviceType != DeviceType.NULL) {
-            mMediaDbHelper.clearDeviceData(scanTask.mDeviceType);
-        }
-        debugClock.calculateTime(TAG, getClass().getName()+"#removeStorage");
     }
 
     public void interruptTask(String storagePath) {
@@ -147,13 +146,13 @@ public class ScanRootPathThread extends Thread {
         }
     }
 
-    private void jniScanRootPath(String filePath, boolean parseId3) {
+    private int jniScanRootPath(String filePath, int onlyGetMediaSizeFlag) {
         // TODO: 如果是目录重新扫描，应该是需要先删除与这个目录有关的数据库记录的。
         DebugClock debugClock = new DebugClock();
-        ScanJni scanJni = new ScanJni(mMediaDbHelper, parseId3);
-        scanJni.scanRootPath(filePath);
-        mMediaCount = scanJni.mMediaCount;
-        mFileCount = scanJni.mFileCount;
-        debugClock.calculateTime(TAG, getClass().getName()+"#jniScanRootPath" + " InsertDbTime: " + mInsertDbTime );
+        ScanJni scanJni = new ScanJni(mMediaDbHelper);
+        int count = scanJni.scanRootPath(filePath, onlyGetMediaSizeFlag);
+        debugClock.calculateTime(TAG, getClass().getName()+"#jniScanRootPath onlyGetMediaSizeFlag:" + onlyGetMediaSizeFlag);
+        DebugLog.d(TAG, "#jniScanRootPath count:" + count);
+        return count;
     }
 }

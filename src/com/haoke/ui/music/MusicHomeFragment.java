@@ -212,7 +212,7 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 	private void deviceChanged(int deviceType, int state) {
 		boolean flag1 = (mIF.getPlayingDevice() == deviceType);
 		boolean flag2 = false;
-		if (mIF.getPlayingDevice() == DeviceType.COLLECT && mPlayLayout.getFileNode() != null) {
+		if (mPlayLayout != null && mIF.getPlayingDevice() == DeviceType.COLLECT && mPlayLayout.getFileNode() != null) {
 			if (mPlayLayout.getFileNode().getFromDeviceType() == deviceType) {
 				flag2 = true;
 			}

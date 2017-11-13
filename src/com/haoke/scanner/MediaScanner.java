@@ -1,8 +1,6 @@
 
 package com.haoke.scanner;
 
-import java.io.File;
-
 import com.haoke.bean.StorageBean;
 import com.haoke.constant.DBConfig;
 import com.haoke.constant.MediaUtil;
@@ -10,13 +8,12 @@ import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.ScanState;
 import com.haoke.constant.MediaUtil.ScanTaskType;
 import com.haoke.data.AllMediaList;
-import com.haoke.service.MediaService;
 import com.haoke.util.DebugLog;
 
 import android.content.Context;
 
 public class MediaScanner {
-    private final String TAG = "MediaScanner";
+    private final String TAG = "Yearlay";
     private Context mContext;
     private MediaScannerListner mScannerListner;
 
@@ -78,6 +75,7 @@ public class MediaScanner {
      * @param devicePath
      */
     public void removeStorage(String devicePath) {
+        DebugLog.i(TAG, "MediaScanner#removeStorage devicePath: " + devicePath);
         interruptID3ParseThread();
         getScanRootPathThread().interruptTask(devicePath);
         getScanRootPathThread().addDeviceTask(ScanTaskType.UNMOUNTED, devicePath);

@@ -136,7 +136,7 @@
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" >
         </activity>
         
-        <receiver android:name="com.haoke.receiver.MediaReceiver">
+        <!-- <receiver android:name="com.haoke.receiver.MediaReceiver">
             <intent-filter android:priority="1000">
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
@@ -145,7 +145,7 @@
                 <action android:name="android.intent.action.MEDIA_EJECT" />
                 <data android:scheme="file" />
             </intent-filter>
-        </receiver>
+        </receiver> -->
         
         <receiver android:name="com.haoke.receiver.CarServiceReceiver" >
             <intent-filter >

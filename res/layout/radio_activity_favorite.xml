@@ -27,7 +27,7 @@
         android:id="@+id/radio_edit" 
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:drawableLeft="@drawable/radio_edit"
+        android:drawableLeft="@drawable/music_date_edit"
         android:layout_alignParentRight="true"
         android:background="@android:color/transparent"
         android:layout_marginTop="80px"

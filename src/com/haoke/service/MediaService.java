@@ -2,20 +2,10 @@ package com.haoke.service;
 
 import com.amd.bt.BT_IF;
 import com.amd.bt.BT_Listener;
-import com.haoke.application.MediaApplication;
-import com.haoke.bean.FileNode;
-import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.btjar.main.BTDef.BTFunc;
 import com.haoke.constant.MediaUtil;
-import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.constant.MediaUtil.ScanState;
 import com.haoke.constant.MediaUtil.ScanType;
-import com.haoke.constant.VRConstant.VRApp;
-import com.haoke.constant.VRConstant.VRImage;
-import com.haoke.constant.VRConstant.VRIntent;
-import com.haoke.constant.VRConstant.VRMusic;
-import com.haoke.constant.VRConstant.VRRadio;
-import com.haoke.constant.VRConstant.VRVideo;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.ModeSwitch;
 import com.haoke.data.PlayStateSharedPreferences;
@@ -24,17 +14,13 @@ import com.haoke.define.McuDef;
 import com.haoke.define.EQDef.EQFunc;
 import com.haoke.define.McuDef.McuFunc;
 import com.haoke.define.McuDef.PowerState;
-import com.haoke.define.MediaDef.DeviceType;
 import com.haoke.define.MediaDef.MediaFunc;
 import com.haoke.define.MediaDef.MediaState;
 import com.haoke.define.MediaDef.PlayState;
-import com.haoke.define.MediaDef.RepeatMode;
 import com.haoke.define.ModeDef;
+import com.haoke.receiver.MediaReceiver;
 import com.haoke.scanner.MediaScanner;
 import com.haoke.scanner.MediaScannerListner;
-import com.haoke.ui.image.Image_Activity_Main;
-import com.haoke.ui.video.Video_Activity_Main;
-import com.haoke.ui.video.Video_IF;
 import com.haoke.ui.widget.MediaWidgetProvider;
 import com.haoke.util.DebugLog;
 import com.haoke.util.Media_CarListener;
@@ -47,14 +33,12 @@ import com.jsbd.util.Meter_IF;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.text.TextUtils;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
-import android.widget.Toast;
 
 public class MediaService extends Service implements Media_CarListener, MediaScannerListner,
                 Media_Listener, BT_Listener {
@@ -75,9 +59,6 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     private BT_IF mBTIF = null;
     private Radio_IF mRadioIF = null;
     private MediaScanner mScanner;
-    
-    private boolean usb1EjectFlag;
-    private boolean usb2EjectFlag;
 
     public static MediaService getInstance() {
         return mSelf;
@@ -100,6 +81,8 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         Intent intent = new Intent();
         intent.setAction(GlobalDef.MEDIA_SERVICE_ACTION_REBOOT);
         this.sendBroadcast(intent);
+        
+        registerReceiverInternal();
 
         mMediaIF.registerModeCallBack(this);
         
@@ -134,62 +117,17 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     }
 
     private void scanOperate(Intent intent) {
-        switch (intent.getIntExtra(ScanType.SCAN_TYPE_KEY, ScanType.SCAN_ALL)) {
-        case ScanType.SCAN_ALL: // 扫描所有已经挂载的磁盘。
-            // mScanner.beginScanningAllStorage();
-            break;
-        case ScanType.SCAN_STORAGE: { // 指定磁盘进行扫描。
-            String devicePath = intent.getStringExtra(ScanType.SCAN_FILE_PATH);
-            if (MediaUtil.DEVICE_PATH_USB_1.equals(devicePath)) {
-                if (usb1EjectFlag) {
-                    mHandler.removeMessages(REMOVE_STORAGE);
-                    usb1EjectFlag = false;
-                } else {
-                    mScanner.beginScanningStorage(devicePath);
-                }
+        switch (intent.getIntExtra(ScanType.SCAN_TYPE_KEY, 0)) {
+            case ScanType.SCAN_STORAGE: // 指定磁盘进行扫描。
+                mScanner.beginScanningStorage(intent.getStringExtra(ScanType.SCAN_FILE_PATH));
+                break;
+            case ScanType.REMOVE_STORAGE:{ // 磁盘拔出的处理过程。
+                mScanner.removeStorage(intent.getStringExtra(ScanType.SCAN_FILE_PATH));
+                break;
             }
-            
-            if (MediaUtil.DEVICE_PATH_USB_2.equals(devicePath)) {
-                if (usb2EjectFlag) {
-                    mHandler.removeMessages(REMOVE_STORAGE);
-                    usb2EjectFlag = false;
-                } else {
-                    mScanner.beginScanningStorage(devicePath);
-                }
-            }
-            
-            if ("/storage/internal_sd".equals(devicePath)) {
-            	mScanner.beginScanningStorage(devicePath);
-            }
-            break;
-        }
-        case ScanType.SCAN_DIRECTORY: // 目前不支持。
-            break;
-        case ScanType.SCAN_FILE: // 目前不支持。
-            break;
-        case ScanType.REMOVE_STORAGE:{ // 磁盘拔出的处理过程。
-            String devicePath = intent.getStringExtra(ScanType.SCAN_FILE_PATH);
-            Message msg = mHandler.obtainMessage(REMOVE_STORAGE, devicePath);
-            mHandler.sendMessageDelayed(msg, 1000);
-            if (MediaUtil.DEVICE_PATH_USB_1.equals(devicePath)) {
-                usb1EjectFlag = true;
-            }
-            if (MediaUtil.DEVICE_PATH_USB_2.equals(devicePath)) {
-                usb2EjectFlag = true;
-            }
-            break;
-        }
         }
     }
     
-    private void showEjectToast(String devicePath) {
-        Toast toast = Toast.makeText(getApplicationContext(),
-                MediaUtil.DEVICE_PATH_USB_1.equals(devicePath) ? "已移除USB设备1" : "已移除USB设备2", Toast.LENGTH_SHORT);
-        toast.setGravity(Gravity.CENTER, 0, 0);
-        toast.show();
-    }
-    
-
     @Override
     public void onDestroy() {
         mMediaIF.unregisterModeCallBack(this);
@@ -209,7 +147,6 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         return super.onUnbind(intent);
     }
 
-    public static final int REMOVE_STORAGE = 1;
     public static final int MSG_UPDATE_APPWIDGET_BASE = 100;
     public static final int MSG_UPDATE_APPWIDGET_ALL = MSG_UPDATE_APPWIDGET_BASE + ModeDef.NULL;
     public static final int MSG_UPDATE_APPWIDGET_BT = MSG_UPDATE_APPWIDGET_BASE + ModeDef.BT;
@@ -219,16 +156,6 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         public void handleMessage(Message msg) {
             int what = msg.what;
             switch (what) {
-                case REMOVE_STORAGE:
-                    String devicePath = (String) msg.obj;
-                    if (MediaUtil.DEVICE_PATH_USB_1.equals(devicePath)) {
-                        usb1EjectFlag = false;
-                    }
-                    if (MediaUtil.DEVICE_PATH_USB_2.equals(devicePath)) {
-                        usb2EjectFlag = false;
-                    }
-                    mScanner.removeStorage(devicePath);
-                    break;
                 case MSG_UPDATE_APPWIDGET_ALL:
                 case MSG_UPDATE_APPWIDGET_BT:
                 case MSG_UPDATE_APPWIDGET_AUDIO:
@@ -327,15 +254,21 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         MediaInterfaceUtil.launchSourceActivity(mode, autoPlay);
     }
     
+    private int mBootWaitTimeOut = 0;
     private void checkLaunchFromBoot() {
         final int ms = MediaInterfaceUtil.checkSourceFromBoot(this);
         if (ms >= 0) {
-            getModeHandler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    checkLaunchFromBoot();
-                }
-            }, ms);
+            if (mBootWaitTimeOut > 80000) {
+                Log.e(TAG, "checkLaunchFromBoot mBootWaitTimeOut="+mBootWaitTimeOut);
+            } else {
+                mBootWaitTimeOut += ms;
+                getModeHandler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        checkLaunchFromBoot();
+                    }
+                }, ms);
+            }
         }
     }
     
@@ -467,4 +400,13 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
 
     @Override
     public void setCurInterface(int data) {}
+    
+    private MediaReceiver mMediaReceiver = new MediaReceiver();
+    private void registerReceiverInternal() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_MEDIA_MOUNTED);
+        filter.addAction(Intent.ACTION_MEDIA_EJECT);
+        filter.addDataScheme("file");
+        registerReceiver(mMediaReceiver, filter);
+    }
 }

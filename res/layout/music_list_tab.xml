@@ -71,39 +71,6 @@
         
     </RelativeLayout>
     
-    <!-- 加载中 -->
-    <RelativeLayout
-        android:id="@+id/music_tab_loading_id"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:layout_marginRight="30dp"
-        android:visibility="gone"
-        android:gravity="center_vertical" >
-
-        <TextView
-            android:id="@+id/music_list_loading"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:textColor="@color/hk_custom_text"
-            android:textSize="22sp"
-            android:layout_marginRight="10px"
-            android:text="@string/music_edit_load" />
-
-        <ImageView
-            android:id="@+id/image_view_loading"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="10px"
-            android:layout_toLeftOf="@+id/music_list_loading"
-            android:clickable="true"
-            android:src="@drawable/ico_loading_small" />
-    </RelativeLayout>
-    
     <!-- 全选、取消、删除  -->
     <RelativeLayout
         android:id="@+id/music_tab_edit_id"

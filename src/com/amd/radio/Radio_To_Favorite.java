@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.radio.Radio_IF;
+import com.archermind.skinlib.SkinManager;
 import com.haoke.data.AllMediaList;
 import com.haoke.mediaservice.R;
 import com.haoke.ui.widget.CustomDialog;
@@ -23,23 +24,28 @@ import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
 
 public class Radio_To_Favorite extends Activity implements OnClickListener, OnItemClickListener ,OnItemSelectedListener {
-
+	private Button mReturnButton;
     private GridView gridView;
     private TextView loadingView;
     private String TAG = "Radio_To_Favorite";
     private Radio_favorite_gridview_adapter adapter;
     
     private View mEditLayout;
-    private View mEditButton;
+    private Button mEditButton;
     private ArrayList<RadioStation> mFavoriteList = Data_Common.collectAllFreqs;
     private boolean selectAllFlag = false;
-    private TextView selectAll;
+    private TextView mSelectAllTextView;
+    private TextView mCancelTextView;
+    private TextView mDeleteTextView;
     
     private CustomDialog mErrorDialog;
+    
+    private SkinManager skinManager;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +56,7 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
         init();
         initView();
         initFavoriteData();
+        skinManager = SkinManager.instance(getApplicationContext());
         Log.d(TAG, "onCreate");
     }
     
@@ -63,14 +70,17 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
         gridView.setOnItemClickListener(this);
         gridView.setOnItemSelectedListener(this);
         
-        findViewById(R.id.radio_return).setOnClickListener(this);
-        mEditButton = findViewById(R.id.radio_edit);
+        mReturnButton = (Button) findViewById(R.id.radio_return);
+        mReturnButton.setOnClickListener(this);
+        mEditButton = (Button) findViewById(R.id.radio_edit);
         mEditButton.setOnClickListener(this);
         mEditLayout = this.findViewById(R.id.radio_edit_layout);
-        selectAll = (TextView)mEditLayout.findViewById(R.id.radio_edit_select_all);
-        selectAll.setOnClickListener(this);
-        mEditLayout.findViewById(R.id.radio_edit_select_cancel).setOnClickListener(this);
-        mEditLayout.findViewById(R.id.radio_edit_select_del).setOnClickListener(this);
+        mSelectAllTextView = (TextView)mEditLayout.findViewById(R.id.radio_edit_select_all);
+        mSelectAllTextView.setOnClickListener(this);
+        mCancelTextView = (TextView) mEditLayout.findViewById(R.id.radio_edit_select_cancel); 
+        mCancelTextView.setOnClickListener(this);
+        mDeleteTextView = (TextView) mEditLayout.findViewById(R.id.radio_edit_select_del); 
+        mDeleteTextView.setOnClickListener(this);
     }
 
     @Override
@@ -126,6 +136,17 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
     protected void onResume() {
         super.onResume();
         AllMediaList.notifyAllLabelChange(this, R.string.pub_radio);
+        refreshSkin();
+    }
+    
+    private void refreshSkin() {
+    	gridView.setSelector(skinManager.getStateListDrawable(R.drawable.radio_listselector));
+        mReturnButton.setBackground(skinManager.getStateListDrawable(R.drawable.all_faverite));
+        mEditButton.setCompoundDrawablesWithIntrinsicBounds(skinManager.getDrawable(R.drawable.music_date_edit), null, null, null);
+        mEditButton.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
+        mSelectAllTextView.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
+        mCancelTextView.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
+        mDeleteTextView.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
     }
 
     @Override
@@ -207,11 +228,11 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
         if (!selectAllFlag) {
             selectAllFlag = true;
             adapter.selectAll();
-            selectAll.setText("撤销");
+            mSelectAllTextView.setText("撤销");
         } else {
             selectAllFlag = false;
             adapter.unSelectAll();
-            selectAll.setText("全选");
+            mSelectAllTextView.setText("全选");
         }
     }
     

@@ -57,7 +57,8 @@ int judgeMediaType(char *fileName) {
     return TYPE_FILE;
 }
 
-void addToDb(JNIEnv* env, jobject thiz, char *filePath, char *fileName, long fileSize) {
+int addToDb(JNIEnv* env, jobject thiz, char *filePath, char *fileName, long fileSize, int onlyGetMediaSizeFlag) {
+    int ret = 0;
     int fileType = judgeMediaType(fileName);
     char fileNamePY[1024];
     memset(fileNamePY, '\0', sizeof(fileNamePY));
@@ -74,22 +75,27 @@ void addToDb(JNIEnv* env, jobject thiz, char *filePath, char *fileName, long fil
             LOGE("Failed to remove filePath: %s\n", filePath);
         }
     } else if (fileType != TYPE_FILE) {
-        jstring filePathString = (*env)->NewStringUTF(env, filePath);
-        jstring fileNameString = (*env)->NewStringUTF(env, fileName);
-        jstring fileNamePYString = (*env)->NewStringUTF(env, fileNamePY);
-        jint jfileType = (int)fileType;
-        jobject jniMediaBean = (*env) -> NewObject(env, fileNodeClass, mediaBeanID,
-                filePathString, fileNameString, fileNamePYString, jfileType);
-        (*env) -> CallVoidMethod(env, thiz, insertToDbID, jniMediaBean);
-        (*env) -> DeleteLocalRef(env, filePathString);
-        (*env) -> DeleteLocalRef(env, fileNameString);
-        (*env) -> DeleteLocalRef(env, fileNamePYString);
-        (*env) -> DeleteLocalRef(env, jniMediaBean);
+        ret = 1;
+        if (onlyGetMediaSizeFlag != 1) {
+            jstring filePathString = (*env)->NewStringUTF(env, filePath);
+            jstring fileNameString = (*env)->NewStringUTF(env, fileName);
+            jstring fileNamePYString = (*env)->NewStringUTF(env, fileNamePY);
+            jint jfileType = (int)fileType;
+            jobject jniMediaBean = (*env) -> NewObject(env, fileNodeClass, mediaBeanID,
+                    filePathString, fileNameString, fileNamePYString, jfileType);
+            (*env) -> CallVoidMethod(env, thiz, insertToDbID, jniMediaBean);
+            (*env) -> DeleteLocalRef(env, filePathString);
+            (*env) -> DeleteLocalRef(env, fileNameString);
+            (*env) -> DeleteLocalRef(env, fileNamePYString);
+            (*env) -> DeleteLocalRef(env, jniMediaBean);
+        }
     }
+    return ret;
 }
 
-int readFileList(JNIEnv* env, jobject thiz, const char *basePath)
+int readFileList(JNIEnv* env, jobject thiz, const char *basePath, int onlyGetMediaSizeFlag)
 {
+    int mediaCount = 0;
     DIR *dir;
     struct dirent *ptr;
     if (strcmp(basePath, "/mnt/sdcard/collect") == 0 ||
@@ -111,7 +117,7 @@ int readFileList(JNIEnv* env, jobject thiz, const char *basePath)
             strcpy(filePath, basePath);
             strcat(filePath, "/");
             strcat(filePath, ptr->d_name);
-            addToDb(env, thiz, filePath, ptr->d_name, 0);
+            mediaCount += addToDb(env, thiz, filePath, ptr->d_name, 0, onlyGetMediaSizeFlag);
         } else if(ptr->d_type == 10) { // link file
             LOGI("linkName:%s/%s\n",basePath,ptr->d_name);
         } else if(ptr->d_type == 4) {   // dir
@@ -120,7 +126,7 @@ int readFileList(JNIEnv* env, jobject thiz, const char *basePath)
             strcpy(dirFilePath, basePath);
             strcat(dirFilePath, "/");
             strcat(dirFilePath, ptr->d_name);
-            readFileList(env, thiz, dirFilePath);
+            mediaCount += readFileList(env, thiz, dirFilePath, onlyGetMediaSizeFlag);
         } else if(ptr->d_type == 0) {   //unknown
             char fileWhole[1000];
             memset(fileWhole, '\0', sizeof(fileWhole));
@@ -133,16 +139,16 @@ int readFileList(JNIEnv* env, jobject thiz, const char *basePath)
                 continue;
             }
             if(S_ISREG(statbuf.st_mode)){   // file
-                addToDb(env, thiz, fileWhole, ptr->d_name, 0);
+                mediaCount += addToDb(env, thiz, fileWhole, ptr->d_name, 0, onlyGetMediaSizeFlag);
             } else if(S_ISDIR(statbuf.st_mode)){// dir
-                readFileList(env, thiz, fileWhole);
+                mediaCount += readFileList(env, thiz, fileWhole, onlyGetMediaSizeFlag);
             }
         } else {
             LOGE("Other d_type:%d --> linkName:%s/%s\n",ptr->d_type, basePath,ptr->d_name);
         }
     }
     closedir(dir);
-    return 1;
+    return mediaCount;
 }
 
 jstring Java_com_file_server_ScanJni_stringFromJni
@@ -151,8 +157,8 @@ jstring Java_com_file_server_ScanJni_stringFromJni
     return (*env)->NewStringUTF(env, "Hello from scanjni.so !");
 }
 
-void Java_com_file_server_scan_ScanJni_scanRootPath
-    (JNIEnv* env, jobject thiz, jstring rootPath)
+jint Java_com_file_server_scan_ScanJni_scanRootPath
+    (JNIEnv* env, jobject thiz, jstring rootPath, jint onlyGetMediaSizeFlag)
 {
     fileNodeClass = (*env) -> FindClass(env, "com/haoke/bean/FileNode");
     mediaBeanID = (*env) -> GetMethodID(env, fileNodeClass, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V");
@@ -160,8 +166,9 @@ void Java_com_file_server_scan_ScanJni_scanRootPath
     insertToDbID = (*env) -> GetMethodID(env, scanJniClass, "insertToDb", "(Lcom/haoke/bean/FileNode;)V");
 
     const char *basePath = (*env)->GetStringUTFChars(env, rootPath, 0);
-    readFileList(env, thiz, basePath);
+    int count = readFileList(env, thiz, basePath, (int)onlyGetMediaSizeFlag);
     (*env)->ReleaseStringUTFChars(env, rootPath, basePath);
+    return (jint)count;
 }
 
 jstring Java_com_file_server_scan_ScanJni_getPY

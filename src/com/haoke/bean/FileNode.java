@@ -676,7 +676,7 @@ public class FileNode {
     
     private String getMD5Str(FileInputStream is)
             throws NoSuchAlgorithmException, IOException {
-        StringBuilder md5Str = new StringBuilder();;
+        StringBuilder md5Str = new StringBuilder();
         // 生成MD5文件。
         MessageDigest md = MessageDigest.getInstance("MD5");
         long length = 1024;
@@ -686,7 +686,7 @@ public class FileNode {
         byte[] buffer = new byte[(int) length];
         is.read(buffer, 0, buffer.length);
         // 第一步：“1K 文件内容” 生成MD5.
-        String firstMD5 = (new BigInteger(1, md.digest())).toString();
+        String firstMD5 = md.digest(buffer).toString();
         // 第一步：“firstMD5 + 文件名 + 文件长度 + 文件修改时间” 生成MD5.
         String fileInfo = getFileName() + 
                 getFile().length() + "" + getFile().lastModified();
