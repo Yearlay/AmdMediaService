@@ -437,8 +437,14 @@ public class MediaUtil {
     }
     
     public static String getUserName(Context context) {
-    	String infoStr = Settings.System.getString(context.getContentResolver(),"personal_user_info");
-    	UserInfoBean userInfoBean = (UserInfoBean) GsonUtil.instance().getObjectFromJson(infoStr, UserInfoBean.class);
-    	return userInfoBean.getCurrentUsername();
+        String username = "";
+        String infoStr = Settings.System.getString(context.getContentResolver(),"personal_user_info");
+        if (infoStr != null) {
+            UserInfoBean userInfoBean = (UserInfoBean) GsonUtil.instance().getObjectFromJson(infoStr, UserInfoBean.class);
+            if (userInfoBean != null) {
+                username = userInfoBean.getCurrentUsername();
+            }
+        }
+        return username;
     }
 }

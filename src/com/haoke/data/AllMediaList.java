@@ -18,6 +18,7 @@ import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -346,7 +347,7 @@ public class AllMediaList {
                     }
                     mediaList.clear();
                     if (deviceType == DeviceType.COLLECT) {
-                        mediaList.addAll(mMediaDbHelper.queryCollected(fileType, null, null, false));
+                        mediaList.addAll(mMediaDbHelper.queryCollected(fileType, false));
                     } else {
                         mediaList.addAll(mMediaDbHelper.queryMedia(deviceType, fileType, null, null));
                     }
@@ -548,6 +549,12 @@ public class AllMediaList {
      * 收藏操作，针对集合对象。
      */
     public void collectMediaFiles(ArrayList<FileNode> dataList, OperateListener listener) {
+        String username = MediaUtil.getUserName(mContext);
+        if (!TextUtils.isEmpty(username)) {
+            for (FileNode fileNode : dataList) {
+                fileNode.setUsername(username);
+            }
+        }
         mLocalHandler.sendMessage(mLocalHandler.obtainMessage(BEGIN_OPERATE_THREAD,
                 new OperateData(OperateListener.OPERATE_COLLECT, dataList, listener)));
     }
@@ -787,7 +794,7 @@ public class AllMediaList {
     }
     
     private void copyToLocalForFileSize(ArrayList<FileNode> list, OperateData operateData, Thread thread) {
-    	int resultCode = OperateListener.OPERATE_SUCEESS;
+        int resultCode = OperateListener.OPERATE_SUCEESS;
         int currentprogress = 0;
         mMediaDbHelper.setStartFlag(true);
         long totalSize = 0;
@@ -893,7 +900,7 @@ public class AllMediaList {
                 handler.sendEmptyMessageDelayed(what, 500);
             }
         } catch (Exception e) {
-        	Log.d(TAG, "notifyUpdateAppWidget sendBroadcast main_activity_update_ui");
+            Log.d(TAG, "notifyUpdateAppWidget sendBroadcast main_activity_update_ui");
             MediaApplication.getInstance().sendBroadcast(new Intent("main_activity_update_ui"));
         }
     }

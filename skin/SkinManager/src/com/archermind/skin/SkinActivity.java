@@ -105,6 +105,9 @@ public class SkinActivity extends Activity implements OnCheckedChangeListener{
             mNamaUser.setChecked(true);
         } else {
             mOtherUser.setChecked(true);
+            if (usersInfo != null) {
+                mOtherUser.setText(usersInfo.subSequence(0, usersInfo.indexOf(", ")));
+            }
         }
         mUserGroup.setOnCheckedChangeListener(this);
     }
