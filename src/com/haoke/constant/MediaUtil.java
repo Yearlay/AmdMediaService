@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import com.haoke.bean.FileNode;
+import com.haoke.bean.UserBean;
 import com.haoke.bean.UserInfoBean;
 import com.haoke.define.MediaDef;
 import com.haoke.util.GsonUtil;
@@ -446,5 +447,17 @@ public class MediaUtil {
             }
         }
         return username;
+    }
+    
+    public static ArrayList<UserBean> getUserList(Context context) {
+    	ArrayList<UserBean> userList = new ArrayList<UserBean>();
+        String infoStr = Settings.System.getString(context.getContentResolver(),"personal_user_info");
+        if (infoStr != null) {
+            UserInfoBean userInfoBean = (UserInfoBean) GsonUtil.instance().getObjectFromJson(infoStr, UserInfoBean.class);
+            if (userInfoBean != null) {
+                userList = userInfoBean.getUserList();
+            }
+        }
+        return userList;
     }
 }

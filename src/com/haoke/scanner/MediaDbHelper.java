@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.haoke.bean.FileNode;
 import com.haoke.bean.StorageBean;
+import com.haoke.bean.UserBean;
 import com.haoke.constant.DBConfig;
 import com.haoke.constant.MediaUtil;
 import com.haoke.constant.DBConfig.TableName;
@@ -384,8 +385,7 @@ public class MediaDbHelper extends SQLiteOpenHelper {
         return mediaList;
     }
     
-    public ArrayList<FileNode> queryCollected(int fileType, boolean allFlag) {
-        String username = MediaUtil.getUserName(mContext);
+    private ArrayList<FileNode> queryCollected(String username, int fileType, boolean allFlag) {
         String selection = null;
         String[] selectionArgs = null;
         if (!TextUtils.isEmpty(username)) {
@@ -398,6 +398,10 @@ public class MediaDbHelper extends SQLiteOpenHelper {
             collectList.get(i).setFileType(fileType);
         }
         return collectList;
+    }
+    
+    public ArrayList<FileNode> queryCollected(int fileType, boolean allFlag) {
+        return queryCollected(MediaUtil.getUserName(mContext), fileType, allFlag);
     }
     
     /**
@@ -428,5 +432,29 @@ public class MediaDbHelper extends SQLiteOpenHelper {
             }
         }
         return searchList;
+    }
+    
+    private void updateCollectDataFromChangeUseList(ArrayList<UserBean> userList, int fileType) {
+        ArrayList<FileNode> collectList = queryCollected(null, fileType, true);
+        ArrayList<FileNode> deleteList = new ArrayList<FileNode>(collectList);
+        if (collectList.size() > 0 && userList.size() > 0) {
+            for (FileNode fileNode : collectList) {
+                for (UserBean userBean : userList) {
+                    if (userBean.getUsername().equals(fileNode.getUsername())) {
+                        deleteList.remove(fileNode);
+                    }
+                }
+            }
+        }
+        DebugLog.i(TAG, "updateCollectDataFromChangeUseList collectList size: " + collectList.size());
+        DebugLog.i(TAG, "updateCollectDataFromChangeUseList deleteList size: " + deleteList.size());
+        AllMediaList.instance(mContext).uncollectMediaFiles(deleteList, null);
+    }
+    
+    public void updateCollectDataFromChangeUseList() {
+        ArrayList<UserBean> userList = MediaUtil.getUserList(mContext);
+        updateCollectDataFromChangeUseList(userList, FileType.IMAGE);
+        updateCollectDataFromChangeUseList(userList, FileType.AUDIO);
+        updateCollectDataFromChangeUseList(userList, FileType.VIDEO);
     }
 }
