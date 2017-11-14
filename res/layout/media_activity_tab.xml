@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:visibility="visible"
-            android:src="@drawable/top_bar_underlined_p"
+            android:background="@drawable/top_bar_underlined_p"
             />
     </RelativeLayout>
 
