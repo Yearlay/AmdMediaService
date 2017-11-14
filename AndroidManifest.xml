@@ -56,6 +56,7 @@
             android:launchMode="singleTask"
             android:label="@string/pub_media"
             android:icon="@drawable/ic_music"
+            android:taskAffinity="com.amd.music_radio"
         	android:theme="@android:style/Theme.Wallpaper.NoTitleBar" >
 			<intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -71,6 +72,7 @@
             android:launchMode="singleTask"
             android:label="@string/pub_video"
             android:icon="@drawable/ic_video"
+            android:taskAffinity="com.amd.video"
         	android:theme="@android:style/Theme.Wallpaper.NoTitleBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -86,6 +88,7 @@
         
         <activity android:name="com.haoke.ui.music.Music_Activity_List"
             android:launchMode="singleTask"
+            android:taskAffinity="com.amd.music_radio"
         	android:theme="@android:style/Theme.Wallpaper.NoTitleBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -99,6 +102,7 @@
             android:launchMode="singleTask"
             android:label="@string/pub_image"
             android:icon="@drawable/ic_image"
+            android:taskAffinity="com.amd.image"
         	android:theme="@android:style/Theme.Wallpaper.NoTitleBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
