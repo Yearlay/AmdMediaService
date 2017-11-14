@@ -600,7 +600,7 @@ public class Video_Activity_Main extends Activity implements
                 if (mErrorCount >= 5) {
                     mErrorCount = 0;
                     onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
-                } else {
+                } else if (mPlayLayout != null && mPlayLayout.getVisibility() == View.VISIBLE) {
                     if (mPreFlag) {
                         playPre();
                     } else {
