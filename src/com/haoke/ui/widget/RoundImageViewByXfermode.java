@@ -2,6 +2,7 @@ package com.haoke.ui.widget;
 
 import java.lang.ref.WeakReference;
 
+import com.archermind.skinlib.SkinManager;
 import com.haoke.mediaservice.R;
 
 import android.annotation.SuppressLint;
@@ -29,6 +30,7 @@ public class RoundImageViewByXfermode extends ImageView {
 	private Paint mPaint;
 	private Bitmap mMaskBitmap;
 	private WeakReference<Bitmap> mWeakBitmap;
+	private WeakReference<Bitmap> mBottomBitmap;
 	/**
 	 *    * 图片的类型，圆形or圆角   
 	 */
@@ -150,8 +152,7 @@ public class RoundImageViewByXfermode extends ImageView {
 //				Paint paint = new Paint();
 //				paint.setTextSize(20);
 //				paint.setColor(getResources().getColor(R.color.hk_custom_text));
-				Bitmap usbBitmap = BitmapFactory.decodeResource(
-						getContext().getResources(), R.drawable.music_play_icon_bottom);
+				final Bitmap usbBitmap = getBottomBitmap();
 				canvas.drawBitmap(
 						usbBitmap, 12, bitmap.getHeight() - 36, mPaint);
 //				canvas.drawText(getResources().getString(mResId), 
@@ -200,4 +201,28 @@ public class RoundImageViewByXfermode extends ImageView {
 		this.mResId = resId;
 	}
 
+	public void refreshSkin() {
+	    if (mBottomBitmap != null) {
+	        Bitmap temp = mBottomBitmap.get();
+	        if (temp != null && !temp.isRecycled()) {
+	            temp.recycle();
+	            temp = null;
+	            mBottomBitmap.clear();
+	        }
+	    }
+	    Bitmap bmp = SkinManager.instance(getContext()).decodeResource(R.drawable.music_play_icon_bottom);
+	    mBottomBitmap = new WeakReference<Bitmap>(bmp);
+	}
+	
+	private Bitmap getBottomBitmap() {
+	    if (mBottomBitmap != null) {
+            Bitmap temp = mBottomBitmap.get();
+            if (temp != null && !temp.isRecycled()) {
+                return temp;
+            }
+        }
+	    Bitmap bmp = SkinManager.instance(getContext()).decodeResource(R.drawable.music_play_icon_bottom);
+        mBottomBitmap = new WeakReference<Bitmap>(bmp);
+        return bmp;
+	}
 }

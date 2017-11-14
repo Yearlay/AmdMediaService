@@ -8,6 +8,7 @@ import com.haoke.bean.ID3Parse.ID3ParseListener;
 import com.haoke.define.MediaDef.DeviceType;
 import com.haoke.define.ModeDef;
 import com.haoke.mediaservice.R;
+import com.haoke.ui.widget.RoundImageViewByXfermode;
 import com.haoke.util.Media_IF;
 
 import android.content.Context;
@@ -19,7 +20,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,12 +27,12 @@ import android.widget.Toast;
 public class Music_Play_Id3 extends LinearLayout implements OnClickListener, ID3ParseListener {
     private static final String TAG = "Music_Play_Id3";
     
-    private static final String VERSION_INFO = "当前媒体apk版本为 20171112 16:00";
+    private static final String VERSION_INFO = "当前媒体apk版本为 20171114 13:40";
     
     private TextView mTrack;
     private TextView mAlbum;
     
-    private ImageView mAlbumView = null;
+    private RoundImageViewByXfermode mAlbumView = null;
     private TextView mDeviceView;
     private int showVersion = 0;
     
@@ -93,7 +93,7 @@ public class Music_Play_Id3 extends LinearLayout implements OnClickListener, ID3
     
     private Bitmap getDefBitmap() {
         if (mDefaultBitmap == null) {
-            Bitmap defBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.music_play_icon_def);
+            Bitmap defBitmap = SkinManager.instance(getContext()).decodeResource(R.drawable.music_play_icon_def);
             if (defBitmap != null) {
                 mDefaultBitmap = scaleBitmap(defBitmap);
             }
@@ -103,7 +103,7 @@ public class Music_Play_Id3 extends LinearLayout implements OnClickListener, ID3
     
     private Bitmap getDefBTBitmap() {
         if (mDefaultBTBitmap == null) {
-            Bitmap defBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.bt_play_icon_def);
+            Bitmap defBitmap = SkinManager.instance(getContext()).decodeResource(R.drawable.bt_play_icon_def);
             if (defBitmap != null) {
             	mDefaultBTBitmap = scaleBitmap(defBitmap);
             }
@@ -209,7 +209,7 @@ public class Music_Play_Id3 extends LinearLayout implements OnClickListener, ID3
         mTrack = (TextView) this.findViewById(R.id.media_id3_track);
         mAlbum = (TextView) this.findViewById(R.id.media_id3_album);
         
-        mAlbumView = (ImageView) findViewById(R.id.music_play_img_cycle);
+        mAlbumView = (RoundImageViewByXfermode) findViewById(R.id.music_play_img_cycle);
         mDeviceView = (TextView) findViewById(R.id.music_device_type);
         
         if (Media_IF.getInstance().getPlayingDevice() == DeviceType.USB1) {
@@ -228,7 +228,20 @@ public class Music_Play_Id3 extends LinearLayout implements OnClickListener, ID3
     }
     
     public void refreshSkin(SkinManager skinManager) {
-    	updateId3Info();
+        refreshBitmap();
+        updateId3Info();
+        mAlbumView.refreshSkin();
+    }
+    
+    private void refreshBitmap() {
+        if (mDefaultBitmap != null && !mDefaultBitmap.isRecycled()) {
+            mDefaultBitmap.recycle();
+            mDefaultBitmap = null;
+        }
+        if (mDefaultBTBitmap != null && !mDefaultBTBitmap.isRecycled()) {
+            mDefaultBTBitmap.recycle();
+            mDefaultBTBitmap = null;
+        }
     }
     
     @Override
