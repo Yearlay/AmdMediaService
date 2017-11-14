@@ -31,6 +31,7 @@ import com.haoke.data.OperateListener;
 import com.haoke.define.MediaDef.PlayState;
 import com.haoke.mediaservice.R;
 import com.haoke.video.VideoSurfaceView;
+import com.nforetek.bt.res.MsgOutline;
 
 public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener, View.OnClickListener,
         OperateListener, OnTouchListener, OnGestureListener {
@@ -152,6 +153,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         mFastPreImageView.setImageDrawable(skinManager.getDrawable(R.drawable.video_ctrl_fastpre_selector));
         mFastNextImageView.setImageDrawable(skinManager.getDrawable(R.drawable.video_ctrl_fastnext_selector));
         mNextImageView.setImageDrawable(skinManager.getDrawable(R.drawable.image_next_icon_selector));
+        mTimeSeekBar.refreshSkin();
     }
 
     public void onResume() {

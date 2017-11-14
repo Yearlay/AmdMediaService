@@ -1,5 +1,6 @@
 package com.haoke.ui.video;
 
+import com.archermind.skinlib.SkinManager;
 import com.haoke.constant.MediaUtil;
 import com.haoke.define.MediaDef.PlayState;
 import com.haoke.mediaservice.R;
@@ -80,6 +81,7 @@ public class VideoPlayTimeSeekBar extends RelativeLayout implements OnSeekBarCha
     private ImageView showIcon;
     private TextView showText;
     private TextView durationText;
+    private SkinManager skinManager;
     
     private int lastProgress;
 
@@ -116,6 +118,7 @@ public class VideoPlayTimeSeekBar extends RelativeLayout implements OnSeekBarCha
     protected void onFinishInflate() {
         super.onFinishInflate();
         initView();
+        skinManager = SkinManager.instance(getContext());
     }
     
     // 初始化控件
@@ -145,6 +148,12 @@ public class VideoPlayTimeSeekBar extends RelativeLayout implements OnSeekBarCha
         showIcon = (ImageView) findViewById(R.id.toast_show_ico);
         showText = (TextView) findViewById(R.id.toast_show_time);
         durationText = (TextView) findViewById(R.id.toast_show_duration);
+    }
+    
+    public void refreshSkin() {
+        mSeekBar.setThumb(skinManager.getDrawable(R.drawable.video_seekbar_block));
+        mSeekBar.setProgressDrawable(skinManager.getProgressDrawable(R.drawable.video_seekbar_progress));
+        showText.setTextColor(skinManager.getColor(R.color.hk_custom_text_d));
     }
     
     @Override
