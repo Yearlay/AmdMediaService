@@ -15,6 +15,7 @@ import com.archermind.skinlib.SkinManager;
 import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.btjar.main.BTDef.BTFunc;
 import com.haoke.constant.MediaUtil.DeviceType;
+import com.haoke.constant.MediaUtil.MediaFuncEx;
 import com.haoke.define.ModeDef;
 import com.haoke.define.MediaDef.MediaFunc;
 import com.haoke.define.MediaDef.MediaState;
@@ -210,6 +211,9 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 			case MediaFunc.RANDOM_MODE:
 				randomModeChanged(data1); // play-108
 				break;
+			case MediaFuncEx.MEDIA_SCAN_MODE:
+			    scanModeChanged(data1);
+			    break;
 			default:
 				break;
 			}
@@ -299,6 +303,12 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 		if (mPlayLayout != null && mPlayLayout.getVisibility() == View.VISIBLE) {
 			mPlayLayout.updateRepeatMode();
 		}
+	}
+	
+	private void scanModeChanged(int data) {
+	    if (mPlayLayout != null && mPlayLayout.getVisibility() == View.VISIBLE) {
+            mPlayLayout.updateScanMode(data);
+        }
 	}
 
 	// 是否在播放界面

@@ -64,11 +64,11 @@ public class AmdMediaButtonReceiver extends BroadcastReceiver {
         if (source == ModeDef.NULL) {
 //            Media_IF.setCurSource(ModeDef.AUDIO);
             if (playState != PlayState.PLAY) {
-            	Media_IF.getInstance().setPlayState(PlayState.PLAY);
+                Media_IF.getInstance().setPlayState(PlayState.PLAY);
             }
         } else if (source == ModeDef.AUDIO) {
             if (playState != PlayState.PLAY) {
-            	Media_IF.getInstance().setPlayState(PlayState.PLAY);
+                Media_IF.getInstance().setPlayState(PlayState.PLAY);
             }
         } else if (source == ModeDef.VIDEO) {
         	int state = Video_IF.getInstance().getPlayState();
@@ -91,7 +91,8 @@ public class AmdMediaButtonReceiver extends BroadcastReceiver {
             // do nothing
         } else if (source == ModeDef.AUDIO) {
             if (playState == PlayState.PLAY) {
-            	Media_IF.getInstance().setPlayState(PlayState.PAUSE);
+                Media_IF.getInstance().setScanMode(false);
+                Media_IF.getInstance().setPlayState(PlayState.PAUSE);
             }
         } else if (source == ModeDef.VIDEO) {
         	int state = Video_IF.getInstance().getPlayState();
@@ -112,9 +113,11 @@ public class AmdMediaButtonReceiver extends BroadcastReceiver {
 //            Media_IF.setCurSource(ModeDef.AUDIO);
             int playState = Media_IF.getInstance().getPlayState();
             if (playState != PlayState.PLAY) {
-            	Media_IF.getInstance().setPlayState(PlayState.PLAY);
+                Media_IF.getInstance().setScanMode(false);
+                Media_IF.getInstance().setPlayState(PlayState.PLAY);
             }
         } else if (source == ModeDef.AUDIO) {
+            Media_IF.getInstance().setScanMode(false);
             if (!Media_IF.getInstance().playPre()) {
                 Log.d(TAG, "prev mIF.playPre is false");
                 Media_IF.getInstance().setPlayState(PlayState.PLAY);
@@ -136,9 +139,11 @@ public class AmdMediaButtonReceiver extends BroadcastReceiver {
 //            Media_IF.setCurSource(ModeDef.AUDIO);
             int playState = Media_IF.getInstance().getPlayState();
             if (playState != PlayState.PLAY) {
+                Media_IF.getInstance().setScanMode(false);
             	Media_IF.getInstance().setPlayState(PlayState.PLAY);
             }
         } else if (source == ModeDef.AUDIO) {
+            Media_IF.getInstance().setScanMode(false);
             if (!Media_IF.getInstance().playNext()) {
                 Log.d(TAG, "next mIF.playNext is false");
                 Media_IF.getInstance().setPlayState(PlayState.PLAY);

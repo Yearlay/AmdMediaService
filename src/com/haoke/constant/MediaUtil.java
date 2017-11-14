@@ -66,7 +66,10 @@ public class MediaUtil {
         public static final int MEDIA_LIST_UPDATE = 1000;
         
         //拷贝文件
-        public static final int MEDIA_COPY_FILE = 1001; 
+        public static final int MEDIA_COPY_FILE = 1001;
+        
+        //预览模式（播放10秒跳到下一首）
+        public static final int MEDIA_SCAN_MODE = 1002;
     }
     
     public static class CopyState {

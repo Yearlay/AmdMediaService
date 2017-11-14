@@ -568,6 +568,14 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
     	checkScanModeAndGoOn();
     }
     
+    public void updateScanMode(int data) {
+        if (data == 0) {
+            if (mScanStartPos != -1) {
+                exitScanMode();
+            }
+        }
+    }
+    
     private void refreshFromViewPagerMaybePlayBTEx(boolean fragmentVisible) {
     	if (fragmentVisible && getVisibility() == View.VISIBLE) {
 			if (isBTPlay) {

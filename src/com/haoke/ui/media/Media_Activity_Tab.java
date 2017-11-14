@@ -142,7 +142,7 @@ public class Media_Activity_Tab extends RelativeLayout implements OnCheckedChang
         mShowCurPlayUnderLine = underline;
         mViewState = state;
         mCurPlayUnderLineView.setVisibility((underline&&mBtnCurPlay.getVisibility()==VISIBLE) ? View.VISIBLE : View.INVISIBLE);
-        mBtnCurPlay.setImageDrawable(skinManager.getDrawable(playResId));
+        mBtnCurPlay.setImageDrawable(SkinManager.instance(getContext()).getDrawable(playResId));
     }
     
     @Override

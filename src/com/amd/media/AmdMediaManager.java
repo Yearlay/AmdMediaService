@@ -525,7 +525,10 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	
 	// 设置scan模式，每首歌播放10秒
 	public void setScanMode(boolean enable) {
-		mScanMode = enable;
+	    if (mScanMode != enable) {
+	        mScanMode = enable;
+	        onDataChanged(mMediaMode, MediaFuncEx.MEDIA_SCAN_MODE, enable ? 1 : 0, 0);
+        }
 	}
 	
 	// 获取scan模式
@@ -1445,6 +1448,9 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	}
 	
 	private void savePlayTime(FileNode fileNode, int playTime) {
+	    if (fileNode == null) {
+	        return;
+	    }
 		mAllMediaList.savePlayTime(fileNode, playTime);
 		if (fileNode.getFileType() == FileType.AUDIO) {
 			RecordDevicePlay.instance().saveLastPlayDevice(fileNode.getDeviceType());
