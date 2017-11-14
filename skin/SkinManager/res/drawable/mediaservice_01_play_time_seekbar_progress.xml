@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+android:id/background" android:drawable="@drawable/mediaservice_01_media_seekbar_bg_g11" />
+    <item android:id="@+android:id/progress" android:drawable="@drawable/mediaservice_01_media_seekbar_color_g11" />
+</layer-list>

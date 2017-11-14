@@ -160,6 +160,8 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 			mScanImg.setImageDrawable(sSkinManager.getDrawable(R.drawable.radio_scan_5s_select));
 		}
 		mId3.refreshSkin(sSkinManager);
+		mTimeSeekBar.setThumb(sSkinManager.getDrawable(R.drawable.media_seekbar_block_g11));
+		mTimeSeekBar.setProgressDrawable(sSkinManager.getProgressDrawable(R.drawable.play_time_seekbar_progress));
 	}
 	
 	private void updateCollectIcon() {
