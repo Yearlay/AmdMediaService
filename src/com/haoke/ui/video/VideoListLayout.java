@@ -86,7 +86,7 @@ public class VideoListLayout extends RelativeLayout implements
     }
     
     public void refreshSkin() {
-        mLoadingImageView.setImageDrawable(skinManager.getAnimationDrawable(R.drawable.media_loading_anim));
+        mLoadingImageView.setImageDrawable(skinManager.getDrawable(R.drawable.media_loading_anim));
     }
     
     public void updataList(ArrayList<FileNode> dataList, StorageBean storageBean) {
@@ -331,7 +331,7 @@ public class VideoListLayout extends RelativeLayout implements
               mHolder = new ViewHolder();
               convertView = LayoutInflater.from(mContext).inflate(R.layout.photo_list_item, null);
               mHolder.mPhotoImageView = (ImageView) convertView.findViewById(R.id.item_photo);
-              mHolder.mPhotoImageView.setBackgroundDrawable(skinManager.getStateListDrawable(R.drawable.image_item_selector));
+              mHolder.mPhotoImageView.setBackgroundDrawable(skinManager.getDrawable(R.drawable.image_item_selector));
               mHolder.mItemSelectView = (ImageView) convertView.findViewById(R.id.item_select);
               mHolder.mPhotoName = (HKTextView) convertView.findViewById(R.id.item_filename);
               mHolder.mFromTextView = (TextView) convertView.findViewById(R.id.image_from_text);

@@ -92,7 +92,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     }
     
     public void updatePlayState(int playState) {
-        mPlayImageView.setImageDrawable(skinManager.getStateListDrawable(
+        mPlayImageView.setImageDrawable(skinManager.getDrawable(
                 playState == PlayState.PLAY ?
                 R.drawable.image_pause_icon_selector : R.drawable.image_play_icon_selector));
         mTimeSeekBar.updateCurTime();
@@ -147,11 +147,11 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     }
     
     public void refreshSkin() {
-        mBackImageView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.image_back_icon_selector));
-        mPreImageView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.image_pre_icon_selector));
-        mFastPreImageView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.video_ctrl_fastpre_selector));
-        mFastNextImageView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.video_ctrl_fastnext_selector));
-        mNextImageView.setImageDrawable(skinManager.getStateListDrawable(R.drawable.image_next_icon_selector));
+        mBackImageView.setImageDrawable(skinManager.getDrawable(R.drawable.image_back_icon_selector));
+        mPreImageView.setImageDrawable(skinManager.getDrawable(R.drawable.image_pre_icon_selector));
+        mFastPreImageView.setImageDrawable(skinManager.getDrawable(R.drawable.video_ctrl_fastpre_selector));
+        mFastNextImageView.setImageDrawable(skinManager.getDrawable(R.drawable.video_ctrl_fastnext_selector));
+        mNextImageView.setImageDrawable(skinManager.getDrawable(R.drawable.image_next_icon_selector));
     }
 
     public void onResume() {
@@ -223,7 +223,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
                 break;
             }
             Video_IF.getInstance().changePlayState();
-            mPlayImageView.setImageDrawable(skinManager.getStateListDrawable(
+            mPlayImageView.setImageDrawable(skinManager.getDrawable(
                     Video_IF.getInstance().getPlayState() == PlayState.PLAY ?
                     R.drawable.image_pause_icon_selector : R.drawable.image_play_icon_selector));
             mTimeSeekBar.updateCurTime();

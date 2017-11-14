@@ -69,7 +69,7 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
             holder = new ViewHolder();
             convertView = LayoutInflater.from(mContext).inflate(R.layout.music_list_item, null);
             holder.mItemBg = convertView.findViewById(R.id.music_list_item_bg);
-            holder.mItemBg.setBackgroundDrawable(skinManager.getStateListDrawable(R.drawable.music_list_item_selector));
+            holder.mItemBg.setBackgroundDrawable(skinManager.getDrawable(R.drawable.music_list_item_selector));
             holder.mSelectBtn = (ImageView) convertView.findViewById(R.id.music_list_item_select);
             holder.mImageIcon = (ImageView) convertView.findViewById(R.id.music_item_icon);
             
@@ -108,7 +108,7 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
                 // 控制焦点项显示
                 if (isPlayItem(position)) {
                     if (isPlaying(position)) {
-                        holder.mPlayStateImage.setImageDrawable(skinManager.getAnimationDrawable(R.drawable.music_play_anim));
+                        holder.mPlayStateImage.setImageDrawable(skinManager.getDrawable(R.drawable.music_play_anim));
                     } else {
                         holder.mPlayStateImage.setImageDrawable(skinManager.getDrawable(R.drawable.music_play_anim_1));
                     }

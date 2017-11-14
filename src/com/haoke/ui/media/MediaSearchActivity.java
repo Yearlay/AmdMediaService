@@ -248,7 +248,7 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
                 holder = new ViewHolder();
                 convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.music_search_listview_item, null);
                 holder.mItemBgView = (ImageView) convertView.findViewById(R.id.search_item_bg);
-                holder.mItemBgView.setBackgroundDrawable(skinManager.getStateListDrawable(R.drawable.pub_list_short_selector));
+                holder.mItemBgView.setBackgroundDrawable(skinManager.getDrawable(R.drawable.pub_list_short_selector));
                 holder.mDeviceTypeView = (TextView) convertView.findViewById(R.id.music_item_device_type);
                 holder.mDeviceTypeView.setBackgroundColor(skinManager.getColor(R.color.hk_custom_text_p));
                 holder.mIconView = (ImageView) convertView.findViewById(R.id.music_item_icon);

@@ -79,10 +79,10 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 		mCancelButton = (Button) mDialog.findViewById(R.id.pub_dialog_cancel);
 		mRootView.setBackgroundDrawable(skinManager.getDrawable(R.drawable.pub_msgbox_bg1));
 		if (mOkButton != null) {
-			mOkButton.setBackgroundDrawable(skinManager.getStateListDrawable(R.drawable.bd_dialog_button));
+			mOkButton.setBackgroundDrawable(skinManager.getDrawable(R.drawable.bd_dialog_button));
 		}
 		if (mCancelButton != null) {
-			mCancelButton.setBackgroundDrawable(skinManager.getStateListDrawable(R.drawable.bd_dialog_button));
+			mCancelButton.setBackgroundDrawable(skinManager.getDrawable(R.drawable.bd_dialog_button));
 		}
 		setDialogClickListener(mOkButton, this);
 		setDialogClickListener(mCancelButton, this);
@@ -162,10 +162,10 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 		mCancelButton = (Button) mDialog.findViewById(R.id.pub_dialog_cancel);
 		mRootView.setBackgroundDrawable(skinManager.getDrawable(R.drawable.pub_msgbox_bg1));
 		if (mOkButton != null) {
-			mOkButton.setBackgroundDrawable(skinManager.getStateListDrawable(R.drawable.bd_dialog_button));
+			mOkButton.setBackgroundDrawable(skinManager.getDrawable(R.drawable.bd_dialog_button));
 		}
 		if (mCancelButton != null) {
-			mCancelButton.setBackgroundDrawable(skinManager.getStateListDrawable(R.drawable.bd_dialog_button));
+			mCancelButton.setBackgroundDrawable(skinManager.getDrawable(R.drawable.bd_dialog_button));
 		}
 		setDialogClickListener(mDialog.findViewById(R.id.pub_dialog_ok), this);
 		setDialogClickListener(mDialog.findViewById(R.id.pub_dialog_cancel), this);

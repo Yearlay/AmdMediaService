@@ -87,10 +87,10 @@ public class Media_Activity_Tab extends RelativeLayout implements OnCheckedChang
     public void refreshSkin() {
         SkinManager skinManager = SkinManager.instance(getContext());
         mBtnRadio.setTextColor(skinManager.getColorStateList(R.drawable.tab_textcolor_selector));
-        mBtnRadio.setBackgroundDrawable(skinManager.getStateListDrawable(R.drawable.tab_backgroud_selector));
+        mBtnRadio.setBackgroundDrawable(skinManager.getDrawable(R.drawable.tab_backgroud_selector));
         mBtnMusic.setTextColor(skinManager.getColorStateList(R.drawable.tab_textcolor_selector));
-        mBtnMusic.setBackgroundDrawable(skinManager.getStateListDrawable(R.drawable.tab_backgroud_selector));
-        mBtnSearch.setImageDrawable(skinManager.getStateListDrawable(R.drawable.media_search_selector));
+        mBtnMusic.setBackgroundDrawable(skinManager.getDrawable(R.drawable.tab_backgroud_selector));
+        mBtnSearch.setImageDrawable(skinManager.getDrawable(R.drawable.media_search_selector));
     }
     
     @Override

@@ -113,10 +113,10 @@ public class MusicHomeLayout extends LinearLayout implements OnClickListener,
 		Log.d(TAG, "onResume");
 		AllMediaList.notifyAllLabelChange(getContext(), R.string.pub_music);
 		refreshInterface();
-		refreshSkin();
+		//refreshSkin();
 	}
 	
-	private void refreshSkin() {
+	public void refreshSkin() {
 		mLayoutCollect.setBackground(skinManager.getDrawable(R.drawable.music_back_ground));
 		mLayoutFlash.setBackground(skinManager.getDrawable(R.drawable.music_back_ground));
 		mLayoutBT.setBackground(skinManager.getDrawable(R.drawable.music_back_ground));

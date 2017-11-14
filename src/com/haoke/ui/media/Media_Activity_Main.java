@@ -73,6 +73,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
         initCurSource();
         getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, mContentObserver);
         AllMediaList.notifyUpdateAppWidget(ModeDef.NULL);// 通知MediaWidgetProvider更新UI
+        refreshSkin();
         Log.d(TAG, "onCreate");
     }
     
@@ -155,6 +156,12 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
             return true;
         }
         return super.onTouchEvent(ev);
+    }
+    
+    private void refreshSkin() {
+        mActivityTab.refreshSkin();
+        mHomeFragment.refreshSkin();
+        mRadioFragment.refreshSkin();
     }
 
     private boolean isShowRadioLayout() {
@@ -419,6 +426,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
     private ContentObserver mContentObserver = new ContentObserver(new Handler()) {
         public void onChange(boolean selfChange) {
             Log.d(TAG, "onChange skin");
+            refreshSkin();
         };
     };
 

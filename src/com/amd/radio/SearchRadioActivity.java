@@ -88,25 +88,25 @@ public class SearchRadioActivity extends Activity implements OnClickListener,
 		mSearchcancel.setBackgroundDrawable(mSkinManager.getDrawable(R.drawable.search_cancel_bg));
 		mSearchcancel.setTextColor(mSkinManager.getColorStateList(R.drawable.text_color_selector));
 		
-		mButton0.setBackground(mSkinManager.getStateListDrawable(R.drawable.search_num_bg));
-		mButton1.setBackground(mSkinManager.getStateListDrawable(R.drawable.search_num_bg));
-		mButton2.setBackground(mSkinManager.getStateListDrawable(R.drawable.search_num_bg));
-		mButton3.setBackground(mSkinManager.getStateListDrawable(R.drawable.search_num_bg));
-		mButton4.setBackground(mSkinManager.getStateListDrawable(R.drawable.search_num_bg));
-		mButton5.setBackground(mSkinManager.getStateListDrawable(R.drawable.search_num_bg));
-		mButton6.setBackground(mSkinManager.getStateListDrawable(R.drawable.search_num_bg));
-		mButton7.setBackground(mSkinManager.getStateListDrawable(R.drawable.search_num_bg));
-		mButton8.setBackground(mSkinManager.getStateListDrawable(R.drawable.search_num_bg));
-		mButton9.setBackground(mSkinManager.getStateListDrawable(R.drawable.search_num_bg));
+		mButton0.setBackground(mSkinManager.getDrawable(R.drawable.search_num_bg));
+		mButton1.setBackground(mSkinManager.getDrawable(R.drawable.search_num_bg));
+		mButton2.setBackground(mSkinManager.getDrawable(R.drawable.search_num_bg));
+		mButton3.setBackground(mSkinManager.getDrawable(R.drawable.search_num_bg));
+		mButton4.setBackground(mSkinManager.getDrawable(R.drawable.search_num_bg));
+		mButton5.setBackground(mSkinManager.getDrawable(R.drawable.search_num_bg));
+		mButton6.setBackground(mSkinManager.getDrawable(R.drawable.search_num_bg));
+		mButton7.setBackground(mSkinManager.getDrawable(R.drawable.search_num_bg));
+		mButton8.setBackground(mSkinManager.getDrawable(R.drawable.search_num_bg));
+		mButton9.setBackground(mSkinManager.getDrawable(R.drawable.search_num_bg));
 		
-		mBackButton.setBackground(mSkinManager.getStateListDrawable(R.drawable.search_num_bg));
+		mBackButton.setBackground(mSkinManager.getDrawable(R.drawable.search_num_bg));
 		mBackButton.setImageDrawable(mSkinManager.getDrawable(R.drawable.search_num_back));
 		
-		mHideButton.setBackground(mSkinManager.getStateListDrawable(R.drawable.search_num_bg));
+		mHideButton.setBackground(mSkinManager.getDrawable(R.drawable.search_num_bg));
 		mHideButton.setImageDrawable(mSkinManager.getDrawable(R.drawable.search_num_hide));
 		
-		mOkButton.setBackground(mSkinManager.getStateListDrawable(R.drawable.search_num_ok));
-		mButtonPoint.setBackground(mSkinManager.getStateListDrawable(R.drawable.search_num_bg));
+		mOkButton.setBackground(mSkinManager.getDrawable(R.drawable.search_num_ok));
+		mButtonPoint.setBackground(mSkinManager.getDrawable(R.drawable.search_num_bg));
 	}
 
 	private void initView() {

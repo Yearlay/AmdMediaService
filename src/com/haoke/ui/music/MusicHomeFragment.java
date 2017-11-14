@@ -92,6 +92,7 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 				mPlayLayout = (MusicPlayLayout) mPlayLayoutStub.inflate();
 				mPlayLayout.setBTPlayMode(mShowLayout == ShowLayout.BT_PLAY_LAYOUT);
 				mPlayLayout.setVisibility(View.VISIBLE);
+				mPlayLayout.refreshSkin();
 			}
 		}
 		setCurPlayViewState();
@@ -148,6 +149,13 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 	
 	public boolean isBTMusicPlayFragment() {
 		return mShowLayout == ShowLayout.BT_PLAY_LAYOUT;
+	}
+	
+	public void refreshSkin() {
+		mHomeLayout.refreshSkin();
+		if (mPlayLayout != null) {
+			mPlayLayout.refreshSkin();
+		}
 	}
 	
 	private void setCurPlayViewState() {

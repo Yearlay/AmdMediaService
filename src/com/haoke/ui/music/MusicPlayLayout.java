@@ -145,13 +145,13 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 		sSkinManager = SkinManager.instance(getContext());
 	}
 	
-	private void refreshSkin() {
+	public void refreshSkin() {
 		if (sSkinManager == null) {
 			sSkinManager = SkinManager.instance(getContext());
 		}
-		mListImg.setImageDrawable(sSkinManager.getStateListDrawable(R.drawable.all));
-		mBtnPre.setImageDrawable(sSkinManager.getStateListDrawable(R.drawable.pre));
-		mBtnNext.setImageDrawable(sSkinManager.getStateListDrawable(R.drawable.next));
+		mListImg.setImageDrawable(sSkinManager.getDrawable(R.drawable.all));
+		mBtnPre.setImageDrawable(sSkinManager.getDrawable(R.drawable.pre));
+		mBtnNext.setImageDrawable(sSkinManager.getDrawable(R.drawable.next));
 		updateCtrlBar(); // 更新播放按钮。
 		updateRepeatMode();
 		if (mIF.getScanMode()) {
@@ -222,7 +222,7 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
     	if (mIF.getPlayItem() != null) {
     		mFileNode = mIF.getPlayItem();
     	}
-    	refreshSkin();
+    	//refreshSkin();
 	}
 	
 	@Override
@@ -376,7 +376,7 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 				mTimeHandler.sendEmptyMessageDelayed(MSG_UPDATE_TIME, 200);
 			}
 		}
-		mBtnPP.setImageDrawable(sSkinManager.getStateListDrawable(playState ? R.drawable.pause : R.drawable.play));
+		mBtnPP.setImageDrawable(sSkinManager.getDrawable(playState ? R.drawable.pause : R.drawable.play));
 	}
 	
 	public void updateRepeatMode() {

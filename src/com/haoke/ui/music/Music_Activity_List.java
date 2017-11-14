@@ -261,7 +261,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     
     private void refreshSkin() {
         mListTab.refreshSkin(skinManager);
-        mLoadAnimationView.setImageDrawable(skinManager.getAnimationDrawable(R.drawable.media_loading_anim));
+        mLoadAnimationView.setImageDrawable(skinManager.getDrawable(R.drawable.media_loading_anim));
     }
     
     @Override
