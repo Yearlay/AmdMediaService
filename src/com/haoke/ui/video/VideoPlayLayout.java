@@ -28,6 +28,7 @@ import com.haoke.constant.MediaUtil;
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.OperateListener;
+import com.haoke.define.MediaDef.MediaState;
 import com.haoke.define.MediaDef.PlayState;
 import com.haoke.mediaservice.R;
 import com.haoke.video.VideoSurfaceView;
@@ -74,7 +75,8 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         Video_IF.getInstance().setVideoView(mVideoView);
         mTitleTextView.setText(mFileNode.getFileName());
         updateCollectView();
-        if (mFileNode.isSame(Video_IF.getInstance().getPlayItem())) {
+        if (mFileNode.isSame(Video_IF.getInstance().getPlayItem()) &&
+                Video_IF.getInstance().getMediaState() == MediaState.PREPARED) {
             Video_IF.getInstance().setPlayState(PlayState.PLAY);
         } else {
             Video_IF.getInstance().play(mFileNode);
