@@ -61,6 +61,7 @@ public class Media_Activity_Tab extends RelativeLayout implements OnCheckedChang
     private View mBtnLayout;
     private OnClickListener mOnClickListener = null;
     private int mCurSource = -1;
+    SkinManager skinManager;
 
     public Media_Activity_Tab(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -85,12 +86,13 @@ public class Media_Activity_Tab extends RelativeLayout implements OnCheckedChang
     }
     
     public void refreshSkin() {
-        SkinManager skinManager = SkinManager.instance(getContext());
+    	skinManager = SkinManager.instance(getContext());
         mBtnRadio.setTextColor(skinManager.getColorStateList(R.drawable.tab_textcolor_selector));
         mBtnRadio.setBackgroundDrawable(skinManager.getDrawable(R.drawable.tab_backgroud_selector));
         mBtnMusic.setTextColor(skinManager.getColorStateList(R.drawable.tab_textcolor_selector));
         mBtnMusic.setBackgroundDrawable(skinManager.getDrawable(R.drawable.tab_backgroud_selector));
         mBtnSearch.setImageDrawable(skinManager.getDrawable(R.drawable.media_search_selector));
+        mCurPlayUnderLineView.setBackground(skinManager.getDrawable(R.drawable.top_bar_underlined_p));
     }
     
     @Override
@@ -140,7 +142,7 @@ public class Media_Activity_Tab extends RelativeLayout implements OnCheckedChang
         mShowCurPlayUnderLine = underline;
         mViewState = state;
         mCurPlayUnderLineView.setVisibility((underline&&mBtnCurPlay.getVisibility()==VISIBLE) ? View.VISIBLE : View.INVISIBLE);
-        mBtnCurPlay.setImageResource(playResId);
+        mBtnCurPlay.setImageDrawable(skinManager.getDrawable(playResId));
     }
     
     @Override
