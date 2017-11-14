@@ -594,7 +594,7 @@ public class Media_IF extends CarService_IF {
 		}
 	}
 	
-	// 播放指定设备的默认歌曲（在mode切源后调用）
+	// 播放指定设备的默认歌曲（在mode切源后调用），与getPlayDefaultIndex对应
 	public boolean playDefault(int deviceType, int fileType) {
 		try {
 			Log.d(TAG, "playDefault deviceType="+deviceType+"; fileType="+fileType);
@@ -913,6 +913,16 @@ public class Media_IF extends CarService_IF {
 	
 	public FileNode getPlayItem() {
 		return mMediaManager.getPlayItem();
+	}
+	
+	// 获得指定设备默认歌曲编号（在mode切源后调用）, 与playDefault对应
+	public int getPlayDefaultIndex(int deviceType, int fileType) {
+		try {
+			return mMediaManager.getPlayDefaultIndex(deviceType, fileType);
+		} catch (Exception e) {
+			Log.e(TAG, "getPlayDefaultIndex e=" + e);
+		}
+		return -1;
 	}
 	
 	public FileNode getDefaultItem() {

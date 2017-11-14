@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -72,6 +73,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
 
     private int mType = 0;//当前模式：0 列表模式，1 编辑模式
     private boolean mPlayDefault = false;
+    private Handler mHandler = new Handler();
     
     private SkinManager skinManager;
     
@@ -243,11 +245,16 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         AllMediaList.notifyAllLabelChange(getApplicationContext(), labelRes);
         
         if (mPlayDefault) {
-            if (mIF.isPlayState() && mIF.getPlayingDevice() == mDeviceType) {
-            } else {
-                mIF.playDefault(mDeviceType, FileType.AUDIO);
-            }
-            mPlayDefault = false;
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (mIF.isPlayState() && mIF.getPlayingDevice() == mDeviceType) {
+                    } else {
+                        mIF.playDefault(mDeviceType, FileType.AUDIO);
+                    }
+                    mPlayDefault = false;
+                }
+            }, 100);
         }
         refreshSkin();
     }
@@ -266,6 +273,12 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             mProgressDialog.CloseDialog();
             Toast.makeText(this, R.string.file_operate_cancel, Toast.LENGTH_SHORT).show();
         }
+    }
+    
+    @Override
+    protected void onDestroy() {
+        mHandler.removeCallbacksAndMessages(null);
+        super.onDestroy();
     }
     
     @Override
@@ -402,16 +415,16 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
 
     private void onPrepared() {
         // 快速切换曲时，在收到onPrepared()后，mediaState可能已经不是PREPARED状态，需要过滤不处理
-    	if (mIF.getPlayingDevice() == mDeviceType) {
-    		int mediaState = mIF.getMediaState();
-    		if (mediaState != MediaState.PREPARED) {
-    			return;
-    		}
-    		if (isVisibility(mListLayout)) {
-    			updateListWithoutSelection();
+        if (mIF.getPlayingDevice() == mDeviceType) {
+            int mediaState = mIF.getMediaState();
+            if (mediaState != MediaState.PREPARED) {
+                return;
+            }
+            if (isVisibility(mListLayout)) {
+                updateListWithoutSelection();
                 setCurPlaySelection(false);
-    		}
-    	}
+            }
+        }
     }
 
     private void onError() {
@@ -433,7 +446,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     }
     
     private void onPlayStateChange(int data1, int data2) {
-    	if (isVisibility(mListLayout) && mIF.getPlayingDevice() == mDeviceType) {
+        if (isVisibility(mListLayout) && mIF.getPlayingDevice() == mDeviceType) {
             updateListWithoutSelection();
         }
     }
@@ -542,7 +555,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
                 public void OnDialogEvent(int id) {
                     switch (id) {
                     case R.id.pub_dialog_ok:
-                    	if (FileNode.existSameNameFile(audioList)) {
+                        if (FileNode.existSameNameFile(audioList)) {
                             Toast.makeText(Music_Activity_List.this, R.string.copy_file_error_of_same_name,
                                     Toast.LENGTH_SHORT).show();
                         }
@@ -713,7 +726,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         final Runnable checkSelection = new Runnable() {
             @Override
             public void run() {
-            	setCurPlaySelection(false);
+                setCurPlaySelection(false);
             }
         };
 
@@ -730,7 +743,12 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
                 focusNo = 0;
             mListView.setSelection(focusNo);
         } else {
-            mListView.setSelection(0);
+            if (mPlayDefault) {
+                int index = mIF.getPlayDefaultIndex(mDeviceType, FileType.AUDIO);
+                mListView.setSelection(index);
+            } else {
+                mListView.setSelection(0);
+            }
         }
     }
 
