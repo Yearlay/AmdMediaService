@@ -271,14 +271,20 @@ public class AmdMediaPlayer implements RearViewListener {
 	}
 
 	public void pause() {
+	    int mediaState = getMediaState();
 		Log.v(TAG, "pause mMediaPlayer=" + mMediaPlayer + ", mMediaState="
-				+ getMediaState());
+				+ mediaState);
 		synchronized (AmdMediaPlayer.this) {
-			if (getMediaState() == MediaState.PREPARED) {
+			if (mediaState == MediaState.PREPARED) {
 				mMediaPlayer.pause();
 				if (mListener != null) {
 					mListener.onPause();
 				}
+			} else if (mediaState == MediaState.PREPARING) {
+			    reset();
+			    if (mListener != null) {
+                    mListener.onPause();
+                }
 			}
 		}
 	}
