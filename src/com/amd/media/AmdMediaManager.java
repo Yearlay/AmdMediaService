@@ -471,13 +471,18 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		Log.v(TAG, "setPlayState state=" + state);
 		if (state == PlayState.PLAY) {
 			if (mPlayingFileNode != null) {
-				if (requestAudioFocus(true)) {
-					changeSource(mPlayingFileType); // 确保当前源在媒体
-		    		mMediaPlayer.start();
-		    		mPlayState = PlayState.PLAY;
-		    		onDataChanged(mMediaMode, MediaFunc.PLAY_STATE, getPlayState(), 0);
-				} else {
-					Log.e(TAG, "setPlayState requestAudioFocus fail!");
+                if (mMediaPlayer.getMediaState() == MediaState.PREPARED) {
+                    if (requestAudioFocus(true)) {
+                        changeSource(mPlayingFileType); // 确保当前源在媒体
+                        mMediaPlayer.start();
+                        mPlayState = PlayState.PLAY;
+                        onDataChanged(mMediaMode, MediaFunc.PLAY_STATE, getPlayState(), 0);
+                    } else {
+                        Log.e(TAG, "setPlayState requestAudioFocus fail!");
+                    }
+                } else {
+                    setPlayingData(mPlayingFileNode.getDeviceType(), mPlayingFileNode.getFileType(), true);
+                    playOther(mPlayingFileNode, -1);
 				}
 	    	} else {
 	    		FileNode fileNode = getDefaultItem();

@@ -184,6 +184,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         if (mContext == null) {
             return;
         }
+        mHandler.removeMessages(DELAY_PLAY);
         if (Video_IF.getInstance().getPlayState() == PlayState.PLAY) {
             savePlayState = true;
             Video_IF.getInstance().setPlayState(PlayState.PAUSE);
