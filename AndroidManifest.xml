@@ -33,6 +33,9 @@
             <intent-filter android:priority="1000">
                 <action android:name="action.haoke.MEDIASERVICE" />
             </intent-filter>
+            <intent-filter android:priority="1000">
+                <action android:name="com.jsbd.modeswitch.action" />
+            </intent-filter>
         </service>
         
         <service

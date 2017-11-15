@@ -850,6 +850,11 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 			if (deviceType == mPlayingDeviceType && fileType == mPlayingFileType) {
 				setPlayingData(deviceType, fileType, false);
 			}
+			if (mMediaMode == ModeDef.MEDIA && fileType == FileType.AUDIO
+			        && deviceType == mAllMediaList.getLastDeviceType()) {
+			    mPlayMusicFileNode = null;
+			    AllMediaList.notifyUpdateAppWidget(ModeDef.AUDIO);
+			}
 		}
 		
 		@Override
@@ -1196,7 +1201,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 				if (bean.isMounted() && bean.isId3ParseCompleted()) {
 					ArrayList<FileNode> lists = mAllMediaList.getMediaList(deviceType, FileType.AUDIO);
 					if (lists.size() > 0) {
-						int position = 0;
+						int position = -1;
 						FileNode playFileNode = null;
 						if (getPlayingDeviceType() == deviceType) {
 							position = getPlayingPos();

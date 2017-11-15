@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import com.haoke.application.MediaApplication;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.UserBean;
 import com.haoke.bean.UserInfoBean;
@@ -440,16 +441,23 @@ public class MediaUtil {
         return (availCount * blockSize - totalSize)  > 5368709120L;
     }
     
-    public static String getUserName(Context context) {
-        String username = "";
-        String infoStr = Settings.System.getString(context.getContentResolver(),"personal_user_info");
-        if (infoStr != null) {
-            UserInfoBean userInfoBean = (UserInfoBean) GsonUtil.instance().getObjectFromJson(infoStr, UserInfoBean.class);
-            if (userInfoBean != null) {
-                username = userInfoBean.getCurrentUsername();
+    private static String sUserName = null;
+    public static String getUserName() {
+        if (sUserName == null) {
+            Context context = MediaApplication.getInstance();
+            String infoStr = Settings.System.getString(context.getContentResolver(),"personal_user_info");
+            if (infoStr != null) {
+                UserInfoBean userInfoBean = (UserInfoBean) GsonUtil.instance().getObjectFromJson(infoStr, UserInfoBean.class);
+                if (userInfoBean != null) {
+                    sUserName = userInfoBean.getCurrentUsername();
+                }
             }
         }
-        return username;
+        return sUserName == null ? "" : sUserName;
+    }
+    
+    public static void updateUserName() {
+        sUserName = null;
     }
     
     public static ArrayList<UserBean> getUserList(Context context) {

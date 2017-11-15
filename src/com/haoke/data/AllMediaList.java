@@ -394,6 +394,7 @@ public class AllMediaList {
         
         @Override
         public void onChange(boolean selfChange) {
+            MediaUtil.updateUserName();
             mMediaDbHelper.updateCollectDataFromChangeUseList();
             mMediaDbHelper.notifyCollectChange();
             super.onChange(selfChange);
@@ -567,7 +568,7 @@ public class AllMediaList {
      * 收藏操作，针对集合对象。
      */
     public void collectMediaFiles(ArrayList<FileNode> dataList, OperateListener listener) {
-        String username = MediaUtil.getUserName(mContext);
+        String username = MediaUtil.getUserName();
         if (!TextUtils.isEmpty(username)) {
             for (FileNode fileNode : dataList) {
                 fileNode.setUsername(username);

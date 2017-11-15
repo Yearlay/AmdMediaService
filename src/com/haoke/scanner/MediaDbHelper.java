@@ -401,7 +401,7 @@ public class MediaDbHelper extends SQLiteOpenHelper {
     }
     
     public ArrayList<FileNode> queryCollected(int fileType, boolean allFlag) {
-        return queryCollected(MediaUtil.getUserName(mContext), fileType, allFlag);
+        return queryCollected(MediaUtil.getUserName(), fileType, allFlag);
     }
     
     /**
