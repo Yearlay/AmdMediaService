@@ -412,6 +412,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     private BroadcastReceiver mMediaReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            MediaReceiver.isDynamicFlag = true;
             MediaReceiver.onReceiveEx(context, intent);
         }
     };
@@ -420,7 +421,8 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         filter.addAction(Intent.ACTION_MEDIA_MOUNTED);
         filter.addAction(Intent.ACTION_MEDIA_EJECT);
         filter.addDataScheme("file");
+        filter.setPriority(10001);
         registerReceiver(mMediaReceiver, filter);
-        MediaReceiver.isDynamicFlag = true;
+        DebugLog.i("Yearlay", "registerReceiverInternal isDynamicFlag!");
     }
 }

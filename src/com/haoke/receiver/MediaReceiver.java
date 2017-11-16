@@ -19,14 +19,15 @@ public class MediaReceiver extends BroadcastReceiver {
     
     @Override
     public void onReceive(Context context, Intent intent) {
+        DebugLog.i("Yearlay", "onReceive isDynamicFlag : " + isDynamicFlag + "; action="+intent.getAction());
         if (!isDynamicFlag) {
             onReceiveEx(context, intent);
         }
     }
     
     public static void onReceiveEx(Context context, Intent intent) {
-        DebugLog.i("Yearlay", "onReceiveEx isDynamicFlag : " + isDynamicFlag);
         String action = intent.getAction();
+        DebugLog.i("Yearlay", "onReceiveEx isDynamicFlag : " + isDynamicFlag);
         if (action.equals(Intent.ACTION_MEDIA_MOUNTED)) {
             DebugLog.d("Yearlay", "MediaReceiver Intent.ACTION_MEDIA_MOUNTED: " + getDataPath(intent));
             startFileService(context, ScanType.SCAN_STORAGE, getDataPath(intent));

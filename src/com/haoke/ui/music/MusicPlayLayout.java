@@ -91,7 +91,9 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 		} else {
 		    int deviceType = mIF.getPlayingDevice();
 		    int fileType = mIF.getPlayingFileType();
-		    if (mIF.getMediaDevice() != deviceType) {
+		    if (deviceType != DeviceType.NULL &&
+		            mIF.getMediaDevice() != deviceType &&
+		            mIF.getPlayState() != PlayState.STOP) {
 	            mIF.setCurScanner(deviceType, fileType);
 		    }
 		}
