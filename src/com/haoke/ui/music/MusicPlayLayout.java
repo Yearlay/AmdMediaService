@@ -88,6 +88,12 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 		mId3.setBTPlayMode(btModeFlag);
 		if (isBTPlay) {
 			ModeSwitch.instance().setCurrentMode(getContext(), true, ModeSwitch.MUSIC_BT_MODE);
+		} else {
+		    int deviceType = mIF.getPlayingDevice();
+		    int fileType = mIF.getPlayingFileType();
+		    if (mIF.getMediaDevice() != deviceType) {
+	            mIF.setCurScanner(deviceType, fileType);
+		    }
 		}
 		updateId3Info();
 		updateCtrlBar();
