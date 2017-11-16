@@ -108,6 +108,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     @Override
     protected void onStop() {
         super.onStop();
+        Log.d(TAG, "onStop");
         backToList();
     }
     
@@ -221,6 +222,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d(TAG, "onResume");
         if (getIntent() != null && "com.haoke.data.ModeSwitch".equals(getIntent().getAction())) {
             ModeSwitch.instance().setGoingFlag(false);
             //setIntent(null);
@@ -256,6 +258,8 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     @Override
     protected void onPause() {
         super.onPause();
+        Log.d(TAG, "onPause");
+        mPlayDefault = false;
         mIF.unregisterLocalCallBack(this); // 注销服务监听
         if (mProgressDialog != null && mProgressDialog.getDialog() != null &&
                 mProgressDialog.getDialog().isShowing()) {
@@ -266,6 +270,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     
     @Override
     protected void onDestroy() {
+        Log.d(TAG, "onDestroy");
         mHandler.removeCallbacksAndMessages(null);
         super.onDestroy();
     }
@@ -299,7 +304,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
                         }
                     }
                 }
-            }, 100);
+            }, 0);
         }
     }
     

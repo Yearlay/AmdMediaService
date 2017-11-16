@@ -1165,7 +1165,6 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		ArrayList<FileNode> lists = mAllMediaList.getMediaList(deviceType, fileType);
 		if (node == null) {
 			if (lists.size() > 0) {
-				setPlayingData(deviceType, fileType, true);
 				return 0;
 			}
 			Log.v(TAG, "playDefault no song!");
