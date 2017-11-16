@@ -19,6 +19,7 @@ import com.amd.radio.Radio_IF;
 import com.haoke.application.MediaApplication;
 import com.amd.media.AudioFocus;
 import com.amd.media.AudioFocus.AudioFocusListener;
+import com.archermind.skinlib.SkinTheme;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.StorageBean;
 import com.haoke.btjar.main.BTDef.BTConnState;
@@ -42,7 +43,7 @@ public class MediaInterfaceUtil {
     
     private static int sMediaPlayStateRecord = ModeDef.NULL;
     
-    public static final Uri URI_SKIN = Settings.System.getUriFor("key_skin_3za_g12");
+    public static final Uri URI_SKIN = Settings.System.getUriFor(SkinTheme.SKIN_KEY_NAME);
     
     private static AudioFocus mAudioFocus;
     private static boolean sMuteKey_MuteState = false;
