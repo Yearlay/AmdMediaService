@@ -244,18 +244,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         }
         AllMediaList.notifyAllLabelChange(getApplicationContext(), labelRes);
         
-        if (mPlayDefault) {
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    if (mIF.isPlayState() && mIF.getPlayingDevice() == mDeviceType) {
-                    } else {
-                        mIF.playDefault(mDeviceType, FileType.AUDIO);
-                    }
-                    mPlayDefault = false;
-                }
-            }, 100);
-        }
+        playDefault();
         refreshSkin();
     }
     
@@ -290,6 +279,27 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             finish();
         } else {
             super.onBackPressed();
+        }
+    }
+    
+    private void playDefault() {
+        if (mPlayDefault) {
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (mIF.isPlayState() && mIF.getPlayingDevice() == mDeviceType) {
+                        mPlayDefault = false;
+                    } else {
+                        int state = mIF.getScanState(mDeviceType);
+                        if (state == ScanState.SCANNING || state == ScanState.IDLE) {
+                            Log.d(TAG, "onResume mDeviceType:" + mDeviceType + " is scanning!");
+                        } else {
+                            mIF.playDefault(mDeviceType, FileType.AUDIO);
+                            mPlayDefault = false;
+                        }
+                    }
+                }
+            }, 100);
         }
     }
     
@@ -353,6 +363,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
                 if (data1 == mDeviceType && data2 == FileType.AUDIO && mIF.getScanState()==ScanState.COMPLETED_ALL) {
                     Log.d(TAG, "onDataChange MEDIA_LIST_UPDATE data1="+data1+"; data2="+data2);
                     refreshList();
+                    playDefault();
                 }
                 break;
             case MediaUtil.MediaFuncEx.MEDIA_COPY_FILE: //拷贝文件
