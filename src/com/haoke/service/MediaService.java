@@ -32,6 +32,8 @@ import com.amd.radio.Radio_IF;
 import com.jsbd.util.Meter_IF;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
@@ -401,12 +403,18 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     @Override
     public void setCurInterface(int data) {}
     
-    private MediaReceiver mMediaReceiver = new MediaReceiver();
+    private BroadcastReceiver mMediaReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            MediaReceiver.onReceiveEx(context, intent);
+        }
+    };
     private void registerReceiverInternal() {
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_MEDIA_MOUNTED);
         filter.addAction(Intent.ACTION_MEDIA_EJECT);
         filter.addDataScheme("file");
         registerReceiver(mMediaReceiver, filter);
+        MediaReceiver.isDynamicFlag = true;
     }
 }

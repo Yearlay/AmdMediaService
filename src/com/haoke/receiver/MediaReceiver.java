@@ -9,36 +9,34 @@ import android.content.Context;
 import android.content.Intent;
 
 public class MediaReceiver extends BroadcastReceiver {
-	
-	private String getDataPath(Intent intent) {
+    public static boolean isDynamicFlag = false;
+    
+    private static String getDataPath(Intent intent) {
         String datapath = intent.getDataString();
         datapath = datapath.replace("file://", "");
         return datapath;
     }
-	
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		String action = intent.getAction();
-		if (action.equals(Intent.ACTION_BOOT_COMPLETED)) {
-            DebugLog.i("Yearlay", "MediaReceiver onReceive ACTION_BOOT_COMPLETED");
-		} else if (action.equals(Intent.ACTION_MEDIA_MOUNTED)) {
-			DebugLog.d("Yearlay", "MediaReceiver Intent.ACTION_MEDIA_MOUNTED: " + getDataPath(intent));
-			startFileService(context, ScanType.SCAN_STORAGE, getDataPath(intent));
-		} else if (action.equals(Intent.ACTION_MEDIA_EJECT)) {
-			DebugLog.d("Yearlay", "MediaReceiver Intent.ACTION_MEDIA_EJECT: " + getDataPath(intent));
-			startFileService(context, ScanType.REMOVE_STORAGE, getDataPath(intent));
-		} else if (action.equals(Intent.ACTION_MEDIA_UNMOUNTED)) {
-            DebugLog.d("Yearlay", "Intent.ACTION_MEDIA_UNMOUNTED");
-        } else if (action.equals(Intent.ACTION_MEDIA_SCANNER_STARTED)) {
-            DebugLog.d("Yearlay", "Intent.ACTION_MEDIA_SCANNER_STARTED");
-        } else if (action.equals(Intent.ACTION_MEDIA_SCANNER_FINISHED)) {
-            DebugLog.d("Yearlay", "Intent.ACTION_MEDIA_SCANNER_FINISHED");
-        } else if (action.equals(Intent.ACTION_MEDIA_SHARED)) {
-            DebugLog.d("Yearlay", "Intent.ACTION_MEDIA_SHARED");
+    
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        if (!isDynamicFlag) {
+            onReceiveEx(context, intent);
         }
-	}
-	
-	private void startFileService(Context context,
+    }
+    
+    public static void onReceiveEx(Context context, Intent intent) {
+        DebugLog.i("Yearlay", "onReceiveEx isDynamicFlag : " + isDynamicFlag);
+        String action = intent.getAction();
+        if (action.equals(Intent.ACTION_MEDIA_MOUNTED)) {
+            DebugLog.d("Yearlay", "MediaReceiver Intent.ACTION_MEDIA_MOUNTED: " + getDataPath(intent));
+            startFileService(context, ScanType.SCAN_STORAGE, getDataPath(intent));
+        } else if (action.equals(Intent.ACTION_MEDIA_EJECT)) {
+            DebugLog.d("Yearlay", "MediaReceiver Intent.ACTION_MEDIA_EJECT: " + getDataPath(intent));
+            startFileService(context, ScanType.REMOVE_STORAGE, getDataPath(intent));
+        }
+    }
+    
+    private static void startFileService(Context context,
             int scanType, String storagePath) {
         if (storagePath != null) {
             Intent intents = new Intent(context, MediaService.class);
