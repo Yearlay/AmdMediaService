@@ -250,12 +250,13 @@ public class VRInterfaceUtil {
                 launchMusicPlayActivity();
             }
         } else {
-            if (playState
-                    && mMediaIF.getPlayingDevice() == deviceType
+            if (mMediaIF.getPlayingDevice() == deviceType
                     && mMediaIF.getPlayingFileType() == fileType) {
-                mMediaIF.setPlayState(PlayState.PAUSE);
+                if (playState) {
+                    mMediaIF.setPlayState(PlayState.PAUSE);
+                }
+                sendBroadcast(new Intent(VRIntent.ACTION_FINISH_MUSIC_RADIO));
             }
-            sendBroadcast(new Intent(VRIntent.ACTION_FINISH_MUSIC_RADIO));
         }
     }
     

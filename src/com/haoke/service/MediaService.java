@@ -6,7 +6,6 @@ import com.haoke.btjar.main.BTDef.BTFunc;
 import com.haoke.constant.MediaUtil;
 import com.haoke.constant.MediaUtil.ScanState;
 import com.haoke.constant.MediaUtil.ScanType;
-import com.haoke.constant.VRConstant.VRApp;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.ModeSwitch;
 import com.haoke.data.PlayStateSharedPreferences;
