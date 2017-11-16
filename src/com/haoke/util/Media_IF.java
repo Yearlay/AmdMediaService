@@ -2,21 +2,18 @@ package com.haoke.util;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.RemoteException;
-import android.provider.Settings;
 import android.util.Log;
 
 import com.amd.media.AmdMediaManager;
 import com.amd.media.MediaInterfaceUtil;
 import com.haoke.aidl.ICarCallBack;
 import com.haoke.aidl.IMediaCallBack;
-import com.haoke.application.MediaApplication;
 import com.amd.media.AudioFocus;
 import com.haoke.bean.FileNode;
 import com.haoke.aidl.ICarUartCallBack;
 import com.haoke.constant.MediaUtil;
-import com.haoke.define.BTDef.*;
+import com.haoke.data.PlayStateSharedPreferences;
 import com.haoke.define.CMSStatusDef.CMSStatusFuc;
 import com.haoke.define.CMSStatusDef.TrafficRestriction;
 import com.haoke.define.McuDef;
@@ -198,18 +195,18 @@ public class Media_IF extends CarService_IF {
 	public static void resetSource(Context context) {
 		Log.d(TAG, "resetSource");
 		if (!setCurSource(ModeDef.NULL)) {
-			Settings.System.putInt(context.getContentResolver(), "MediaSource", ModeDef.NULL);
+			setSourceToSettings(ModeDef.NULL);
 			sLastSource = ModeDef.NULL;
 			sCurSource = ModeDef.NULL;
 		}
 	}
 	
-	private int getSourceFromSettings() {
-		return Settings.System.getInt(mContext.getContentResolver(), "MediaSource", ModeDef.NULL);
+	private static int getSourceFromSettings() {
+	    return PlayStateSharedPreferences.getSource(ModeDef.NULL);
 	}
 	
-	private boolean setSourceToSettings(int source) {
-		return Settings.System.putInt(mContext.getContentResolver(), "MediaSource", source);
+	private static boolean setSourceToSettings(int source) {
+	    return PlayStateSharedPreferences.saveSource(source);
 	}
 
 	public static int sLastSource = ModeDef.NULL;
@@ -220,8 +217,7 @@ public class Media_IF extends CarService_IF {
 		int lastSource = getCurSource();
 		if (lastSource != source) {
 			try {
-				// return getInstance().mServiceIF.mcu_setCurSource(source);
-				success = getInstance().setSourceToSettings(source);
+				success = setSourceToSettings(source);
 				if (success) {
 					getInstance().sendSouceChange(source);
 					sLastSource = lastSource;
@@ -242,14 +238,8 @@ public class Media_IF extends CarService_IF {
 	// 获取当前源
 	public static int getCurSource() {
 		try {
-//			int source = ModeDef.NULL;
-//			try {
-//				source = getInstance().mServiceIF.mcu_getCurSource();
-//			} catch (Exception e) {
-//				Log.e(TAG, "getCurSource mcu_getCurSource error e="+e);
-//			}
 			if (sCurSource == -1) {
-				sCurSource = getInstance().getSourceFromSettings();
+				sCurSource = getSourceFromSettings();
 			}
 			Log.d(TAG, "getCurSource sCurSource=" + sCurSource);
 			return sCurSource;

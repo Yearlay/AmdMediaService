@@ -1,12 +1,13 @@
 
 package com.haoke.data;
 
+import com.haoke.application.MediaApplication;
 import com.haoke.bean.FileNode;
 import com.haoke.constant.DBConfig;
+import com.haoke.constant.MediaUtil;
 import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.define.MediaDef.RepeatMode;
-import com.haoke.ui.image.Image_Activity_Main;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -19,24 +20,41 @@ public class PlayStateSharedPreferences {
     private static final String LAST_DEVICE_TYPE_VIDEO = "last_device_type_video";
     private static final String LAST_MUSIC_PLAY_STATE = "last_music_play_state";
     private static final String LAST_VIDEO_PLAY_STATE = "last_video_play_state";
+    private static final String KEY_SOURCE = "source";
     
     static PlayStateSharedPreferences mSharedPreferences;
 
     public Context mContext;
+    
+    public static PlayStateSharedPreferences instance() {
+        return instance(null);
+    }
 
     public synchronized static PlayStateSharedPreferences instance(Context context) {
         if (mSharedPreferences == null) {
+            if (context == null) {
+                context = MediaApplication.getInstance();
+            }
             mSharedPreferences = new PlayStateSharedPreferences(context);
         }
         return mSharedPreferences;
     }
     
-    public PlayStateSharedPreferences(Context context) {
+    private PlayStateSharedPreferences(Context context) {
         mContext = context.getApplicationContext();
     }
     
     private SharedPreferences getPreferences() {
-        return mContext.getSharedPreferences(LOGINFO_FILE_NAME, Context.MODE_PRIVATE);
+        String userName = MediaUtil.getUserName();
+        return mContext.getSharedPreferences(LOGINFO_FILE_NAME + "_" + userName, Context.MODE_PRIVATE);
+    }
+    
+    public static boolean saveSource(int source) {
+        return instance().getPreferences().edit().putInt(KEY_SOURCE, source).commit();
+    }
+    
+    public static int getSource(int defSource) {
+        return instance().getPreferences().getInt(KEY_SOURCE, defSource);
     }
 
     public void savePlayTime(FileNode fileNode) {

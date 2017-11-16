@@ -44,6 +44,7 @@ import android.view.KeyEvent;
 
 public class MediaService extends Service implements Media_CarListener, MediaScannerListner,
                 Media_Listener, BT_Listener {
+    public static final String ACTION_MODE_RECORD = "com.jsbd.modeswitch.action";
     public static final String KEY_COMMAND_FROM = "isfrom";
     public static final int VALUE_FROM_SCAN = 1;
     public static final int VALUE_FROM_VR_APP = 2;
@@ -108,11 +109,16 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     public int onStartCommand(Intent intent, int flags, int startId) {
         flags = Service.START_STICKY;
         if (intent != null) {
-            int from = intent.getIntExtra(KEY_COMMAND_FROM, 0);
-            if (from == VALUE_FROM_SCAN) {
-                scanOperate(intent);
+            String action = intent.getAction();
+            if (action != null && ACTION_MODE_RECORD.equals(action)) {
+                MediaInterfaceUtil.checkModeRecord(this, intent);
             } else {
-                VRInterfaceUtil.VRCommand(intent);
+                int from = intent.getIntExtra(KEY_COMMAND_FROM, 0);
+                if (from == VALUE_FROM_SCAN) {
+                    scanOperate(intent);
+                } else {
+                    VRInterfaceUtil.VRCommand(intent);
+                }
             }
         }
         return super.onStartCommand(intent, flags, startId);
