@@ -229,6 +229,8 @@ public class Media_IF extends CarService_IF {
 				}
 				mcuSource = Source.changeToMcuSource(source);
 				getInstance().mServiceIF.mcu_setCurSource(mcuSource);
+				//getInstance().mServiceIF.mcu_setCurSourceEx(
+				//        Source.getDeviceFromSource(source), Source.getTypeFromSource(source));
 			} catch (Exception e) {
 				Log.e(TAG, "setCurSource exception", e);
 			}

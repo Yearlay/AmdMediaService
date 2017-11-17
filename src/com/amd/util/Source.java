@@ -102,37 +102,65 @@ public class Source {
     }
     
     public static int changeToMcuSource(int source) {
-        int newSource = ModeDef.NULL;
-        switch (source) {
-        case NULL:
-            newSource = ModeDef.NULL;
-            break;
-        case RADIO:
-            newSource = ModeDef.RADIO;
-            break;
-        case BT:
-            newSource = ModeDef.BT;
-            break;
-        case AUDIO:
-        case AUDIO_COLLECT:
-        case AUDIO_FLASH:
-        case AUDIO_USB1:
-        case AUDIO_USB2:
-        case AUDIO_USB3:
-        case AUDIO_USB4:
-            newSource = ModeDef.AUDIO;
-            break;
-        case VIDEO:
-        case VIDEO_COLLECT:
-        case VIDEO_FLASH:
-        case VIDEO_USB1:
-        case VIDEO_USB2:
-        case VIDEO_USB3:
-        case VIDEO_USB4:
-            newSource = ModeDef.VIDEO;
-            break;
+        if (isAudioSource(source)) {
+            return ModeDef.AUDIO;
+        } else if (isVideoSource(source)) {
+            return ModeDef.VIDEO;
+        } else if (isRadioSource(source)) {
+            return ModeDef.RADIO;
+        } else if (isBTMusicSource(source)) {
+            return ModeDef.BT;
+        } else {
+            return ModeDef.NULL;
         }
-        return newSource;
+    }
+    
+    /**
+     * 只供Media_IF调用;返回值为com.haoke.define.ModeDef.xx
+     */
+    public static int getDeviceFromSource(int source) {
+        if (isAudioSource(source) || isVideoSource(source)) {
+            int deviceType = isAudioSource(source) ? source - AUDIO : source - VIDEO;
+            int mode = ModeDef.NULL;
+            switch (deviceType) {
+            case DeviceType.COLLECT:
+                mode = ModeDef.FAVOR;
+                break;
+            case DeviceType.FLASH:
+                mode = ModeDef.FLASH;
+                break;
+            case DeviceType.USB1:
+                mode = ModeDef.USB1;
+                break;
+            case DeviceType.USB2:
+                mode = ModeDef.USB2;
+                break;
+            case DeviceType.USB3:
+                mode = ModeDef.USB3;
+                break;
+            case DeviceType.USB4:
+                mode = ModeDef.USB4;
+                break;
+            }
+            return mode;
+        } else if (isRadioSource(source)) {
+            return ModeDef.RADIO;
+        } else if (isBTMusicSource(source)) {
+            return ModeDef.BT;
+        } else {
+            return ModeDef.NULL;
+        }
+    }
+    
+    /**
+     * 只供Media_IF调用;返回值为com.haoke.define.ModeDef.MediaType.xx
+     */
+    public static int getTypeFromSource(int source) {
+        if (isVideoSource(source)) {
+            return com.haoke.define.ModeDef.MediaType.VIDEO;
+        } else {
+            return com.haoke.define.ModeDef.MediaType.AUDIO;
+        }
     }
     
 }
