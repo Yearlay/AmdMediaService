@@ -259,6 +259,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     }
     
     private void launchSourceActivity(int mode, boolean autoPlay) {
+        DebugLog.d(TAG, "launchSourceActivity mode="+mode+"; autoPlay="+autoPlay);
         MediaInterfaceUtil.launchSourceActivity(mode, autoPlay);
     }
     

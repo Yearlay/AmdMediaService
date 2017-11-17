@@ -13,6 +13,10 @@ public class VRConstant {
 		public static final int OPERATOR_BT = 3;    // 蓝牙音乐，播放蓝牙音乐，进入蓝牙音乐界面。
 		public static final int OPERATOR_RADIO = 4; // 收音机，播放电台，进入收音机播放界面。
 		public static final int OPERATOR_COLLECT = 22; // 收藏音乐，播放收藏歌曲，进入收藏音乐播放界面。
+		public static final int OPERATOR_FLASH = 32;   // 本地音乐，打开并播放本地音乐，如果有关闭指令则关闭本地音乐和播放界面
+		public static final int OPERATOR_USB = 33;     // U盘音乐，先判断设备存在状态，然后再判断哪个设备有歌曲，然后打开设备播放，如果有关闭指令则关闭当前的音乐和播放界面
+		public static final int OPERATOR_USB1 = 34;    // USB1音乐，打开并播放USB1音乐，如果有关闭指令则关闭USB1音乐和播放界面
+		public static final int OPERATOR_USB2 = 35;    // USB2音乐，打开并播放USB2音乐，如果有关闭指令则关闭USB2音乐和播放界面
 	}
 	
 	public static class VRMusic {

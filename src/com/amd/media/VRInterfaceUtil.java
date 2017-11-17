@@ -108,6 +108,18 @@ public class VRInterfaceUtil {
             case VRApp.OPERATOR_COLLECT:
                 operateCollect(yesOperate);
                 break;
+            case VRApp.OPERATOR_FLASH:
+                operateFlash(yesOperate);
+                break;
+            case VRApp.OPERATOR_USB:
+                operateUSB(yesOperate);
+                break;
+            case VRApp.OPERATOR_USB1:
+                operateUSB1(yesOperate);
+                break;
+            case VRApp.OPERATOR_USB2:
+                operateUSB2(yesOperate);
+                break;
             default:
                 break;
             }
@@ -192,27 +204,59 @@ public class VRInterfaceUtil {
     
     private void operateCollect(boolean yesOperate) {
         // 收藏音乐，播放收藏歌曲，进入收藏音乐播放界面。
-        int playState = mMediaIF.getPlayState();
-        DebugLog.d(TAG, "operateCollect yesOperate="+yesOperate+"; playState="+playState);
+        operateDeviceMusic(DeviceType.COLLECT, yesOperate);
+    }
+    
+    private void operateFlash(boolean yesOperate) {
+        // 本地音乐，打开并播放本地音乐，如果有关闭指令则关闭本地音乐和播放界面
+        operateDeviceMusic(DeviceType.FLASH, yesOperate);
+    }
+
+    private void operateUSB(boolean yesOperate) {
+        // U盘音乐，先判断设备存在状态，然后再判断哪个设备有歌曲，然后打开设备播放，如果有关闭指令则关闭当前的音乐和播放界面
+        int size = mMediaIF.getMediaListSize(DeviceType.USB1, FileType.AUDIO);
+        if (size > 0) {
+            operateUSB1(yesOperate);
+        } else {
+            operateUSB2(yesOperate);
+        }
+        DebugLog.d(TAG, "operateUSB size="+size);
+    }
+    
+    private void operateUSB1(boolean yesOperate) {
+        // USB1音乐，打开并播放USB1音乐，如果有关闭指令则关闭USB1音乐和播放界面
+        operateDeviceMusic(DeviceType.USB1, yesOperate);
+    }
+
+    private void operateUSB2(boolean yesOperate) {
+        // USB2音乐，打开并播放USB2音乐，如果有关闭指令则关闭USB2音乐和播放界面
+        operateDeviceMusic(DeviceType.USB2, yesOperate);
+    }
+    
+    private void operateDeviceMusic(int deviceType, boolean yesOperate) {
+        boolean playState = mMediaIF.isPlayState();
+        int fileType = FileType.AUDIO;
+        DebugLog.d(TAG, "operateDeviceMusic deviceType="+deviceType+"; yesOperate="+yesOperate+"; playState="+playState);
         if (yesOperate) {
-            int size = mMediaIF.getMediaListSize(DeviceType.COLLECT, FileType.AUDIO);
+            int size = mMediaIF.getMediaListSize(deviceType, fileType);
             if (size != 0) {
-                if (mMediaIF.getPlayingDevice() != DeviceType.COLLECT
-                        || mMediaIF.getPlayingFileType() != FileType.AUDIO) {
-                    mMediaIF.setCurScanner(DeviceType.COLLECT, FileType.AUDIO);
-                    mMediaIF.play(0);
-                } else if (playState != PlayState.PLAY) {
+                if (mMediaIF.getPlayingDevice() != deviceType
+                        || mMediaIF.getPlayingFileType() != fileType) {
+                    mMediaIF.setCurScanner(deviceType, fileType);
+                    mMediaIF.playDefault(deviceType, fileType);
+                } else if (!playState) {
                     mMediaIF.setPlayState(PlayState.PLAY);
                 }
                 launchMusicPlayActivity();
             }
         } else {
-            if (playState == PlayState.PLAY
-                    && mMediaIF.getPlayingDevice() == DeviceType.COLLECT
-                    && mMediaIF.getPlayingFileType() == FileType.AUDIO) {
-                mMediaIF.setPlayState(PlayState.PAUSE);
+            if (mMediaIF.getPlayingDevice() == deviceType
+                    && mMediaIF.getPlayingFileType() == fileType) {
+                if (playState) {
+                    mMediaIF.setPlayState(PlayState.PAUSE);
+                }
+                sendBroadcast(new Intent(VRIntent.ACTION_FINISH_MUSIC_RADIO));
             }
-            sendBroadcast(new Intent(VRIntent.ACTION_FINISH_MUSIC_RADIO));
         }
     }
     
