@@ -27,6 +27,8 @@ import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.ModeSwitch;
+import com.haoke.define.ModeDef;
+import com.haoke.define.ModeDef.MediaType;
 import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.service.BTMusicService;
@@ -550,26 +552,28 @@ public class MediaInterfaceUtil {
     }
     
     private static final String KEY_MODE_RECORD_USER_NAME = "username";//用户
-    private static final String KEY_MODE_RECORD_SOURCE = "source"; //源
+    private static final String KEY_MODE_RECORD_SOURCE = "source"; //源,source源,参见ModeDef里面的定义，默认为Modef.RADIO;假如为蓝牙音乐，则前提为蓝牙已连接
+    private static final String KEY_MODE_RECORD_TYPE = "type"; //类型, 参见MediaType.xx里面的定义，  若为VIDEO，则忽略Display参数，进入视频界面
     private static final String KEY_MODE_RECORD_DISPLAY = "display"; //是否显示界面
-    private static final int SOURCE_RADIO = 0;    //播放收音机（默认的源）
-    private static final int SOURCE_MUSIC = 1;    //播放音乐
-    private static final int SOURCE_BTMUSIC = 2;  //播放蓝牙音乐
-    private static final int SOURCE_VIDEO = 3;    //播放视频（视频忽略display参数，进入视频界面）
     private static final int DISPLAY_OFF = 0;     //后台播放（默认后台）
     private static final int DISPLAY_ON = 1;      //需要播放并显示界面
     private static int sModeRecordWaitTimeOut = 0;
+    private static long sRunStart = -1;
+    private static int sRunDeviceType = -1;
     public static void checkModeRecord(MediaService service, Intent intent) {
         String username = intent.getStringExtra(KEY_MODE_RECORD_USER_NAME);
-        int source = intent.getIntExtra(KEY_MODE_RECORD_SOURCE, SOURCE_RADIO);
+        int source = intent.getIntExtra(KEY_MODE_RECORD_SOURCE, ModeDef.RADIO);
+        int type = intent.getIntExtra(KEY_MODE_RECORD_TYPE, MediaType.AUDIO);
         int display = intent.getIntExtra(KEY_MODE_RECORD_DISPLAY, DISPLAY_OFF);
-        checkModeRecordInternal(service, username, source, display);
+        int ourSource = Source.changeToOurSource(source, type);
+        Log.d(TAG, "checkModeRecord source="+source+"; type="+type+"; display="+display+"; ourSource="+ourSource);
+        checkModeRecordInternal(service, username, ourSource, display);
     }
     
     private static void checkModeRecordInternal(
             final MediaService service, final String username, 
-            final int source, final int display) {
-        final int ms = checkModeRecordInternalEx(service, username, source, display);
+            final int ourSource, final int display) {
+        final int ms = checkModeRecordInternalEx(service, username, ourSource, display);
         if (ms >= 0) {
             if (sModeRecordWaitTimeOut > 80000) {
                 Log.e(TAG, "checkModeRecordInternal sModeRecordWaitTimeOut="+sModeRecordWaitTimeOut);
@@ -578,7 +582,7 @@ public class MediaInterfaceUtil {
                 service.getModeHandler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        checkModeRecordInternal(service, username, source, display);
+                        checkModeRecordInternal(service, username, ourSource, display);
                     }
                 }, ms);
             }
@@ -587,7 +591,7 @@ public class MediaInterfaceUtil {
     
     private static int checkModeRecordInternalEx(
             final MediaService service, final String username, 
-            final int source, final int display) {
+            final int ourSource, final int display) {
         if (BTMusicService.getInstance() == null || RadioService.getInstance() == null) {
             Log.d(TAG, "checkModeRecordInternalEx BTMusicService or RadioService not startup!");
             return 200;
@@ -612,7 +616,7 @@ public class MediaInterfaceUtil {
         //}
         
         int ms = -1;
-        if (source == SOURCE_RADIO) {
+        if (Source.isRadioSource(ourSource)) {
             if (!Radio_IF.getInstance().isEnable()) {
                 if (Media_IF.getMute()) {
                     Media_IF.cancelMute();
@@ -622,39 +626,49 @@ public class MediaInterfaceUtil {
             if (display == DISPLAY_ON) {
                 launchSourceActivity(ModeSwitch.RADIO_MODE, false);
             }
-        } else if (source == SOURCE_MUSIC || source == SOURCE_VIDEO) {
-            AllMediaList allMediaList = AllMediaList.instance(service);
-            if (sLastDeviceType == -1) {
-                if (source == SOURCE_MUSIC) {
-                    sLastDeviceType = allMediaList.getLastDeviceType();
-                } else {
-                    sLastDeviceType = allMediaList.getLastDeviceTypeVideo();
+        } else if (Source.isBTMusicSource(ourSource)) {
+            BT_IF btIF = BT_IF.getInstance();
+            int state = btIF.getConnState();
+            if (state == BTConnState.DISCONNECTED) {
+                
+            } else if (state == BTConnState.CONNECTED) {
+                if (Media_IF.getMute()) {
+                    Media_IF.cancelMute();
+                }
+                BT_IF.getInstance().music_play();
+                if (display == DISPLAY_ON) {
+                    launchSourceActivity(ModeSwitch.MUSIC_BT_MODE, false);
                 }
             }
-            int fileType = (source == SOURCE_MUSIC ? FileType.AUDIO : FileType.VIDEO);
+        } else if (Source.isAudioSource(ourSource) || Source.isVideoSource(ourSource)) {
+            AllMediaList allMediaList = AllMediaList.instance(service);
+            if (sRunDeviceType == -1) {
+                sRunDeviceType = Source.getDeviceType(ourSource);
+            }
+            int fileType = (Source.isAudioSource(ourSource) ? FileType.AUDIO : FileType.VIDEO);
             boolean currPlaying = Media_IF.getInstance().isPlayState() || Video_IF.getInstance().isPlayState();
             boolean lastPlaying = true;//allMediaList.getPlayState(fileType);
-            Log.d(TAG, "checkModeRecordInternalEx LastDeviceType="+sLastDeviceType+"; lastPlaying="+lastPlaying+"; currPlaying="+currPlaying);
-            if (!currPlaying && lastPlaying && sLastDeviceType != DeviceType.NULL) {
-                if (sLastDeviceType == DeviceType.COLLECT) {
+            Log.d(TAG, "checkModeRecordInternalEx sRunDeviceType="+sRunDeviceType+"; lastPlaying="+lastPlaying+"; currPlaying="+currPlaying);
+            if (!currPlaying && lastPlaying && sRunDeviceType != DeviceType.NULL) {
+                if (sRunDeviceType == DeviceType.COLLECT) {
                     int waitMs = waitUsbMounted(service);
                     if (waitMs > 0) {
                         return waitMs;
                     }
                 }
-                StorageBean storage = allMediaList.getStoragBean(sLastDeviceType);
+                StorageBean storage = allMediaList.getStoragBean(sRunDeviceType);
                 Log.d(TAG, "checkModeRecordInternalEx storage="+storage);
-                if (sLastDeviceType == DeviceType.COLLECT || storage.isLoadCompleted()) {
-                    ArrayList<FileNode> lists = allMediaList.getMediaList(sLastDeviceType, fileType);
+                if (sRunDeviceType == DeviceType.COLLECT || storage.isLoadCompleted()) {
+                    ArrayList<FileNode> lists = allMediaList.getMediaList(sRunDeviceType, fileType);
                     int size = lists.size();
                     if (size > 0) {
-                        FileNode lastFileNode = allMediaList.getPlayTime(sLastDeviceType, fileType);
+                        FileNode lastFileNode = allMediaList.getPlayTime(sRunDeviceType, fileType);
                         if (lastFileNode != null) {
                             if (Media_IF.getMute()) {
                                 Media_IF.cancelMute();
                             }
                             if (fileType == FileType.AUDIO) {
-                                checkAndPlayDeviceType(sLastDeviceType, fileType);
+                                checkAndPlayDeviceType(sRunDeviceType, fileType);
                                 if (display == DISPLAY_ON) {
                                     launchMusicPlayActivity(service);
                                 }
@@ -672,20 +686,20 @@ public class MediaInterfaceUtil {
                     Log.d(TAG, "checkModeRecordInternalEx loading mounted="+mounted);
                     if (mounted) {
                         long end = System.currentTimeMillis();
-                        if (start == -1) {
-                            start = end;
+                        if (sRunStart == -1) {
+                            sRunStart = end;
                             ms = 500;
-                        } else if (end - start > 40000) {
+                        } else if (end - sRunStart > 40000) {
                             Log.d(TAG, "checkModeRecordInternalEx loading timeout!");
                         } else {
                             ms = 500;
                         }
                     } else {
                         long end = System.currentTimeMillis();
-                        if (start == -1) {
-                            start = end;
+                        if (sRunStart == -1) {
+                            sRunStart = end;
                             ms = 500;
-                        } else if (end - start > 40000) {
+                        } else if (end - sRunStart > 40000) {
                             Log.d(TAG, "checkModeRecordInternalEx mounting timeout!");
                         } else {
                             ms = 500;
@@ -693,22 +707,8 @@ public class MediaInterfaceUtil {
                     }
                 }
             }
-        } else if (source == SOURCE_BTMUSIC) {
-            BT_IF btIF = BT_IF.getInstance();
-            int state = btIF.getConnState();
-            if (state == BTConnState.DISCONNECTED) {
-                
-            } else if (state == BTConnState.CONNECTED) {
-                if (Media_IF.getMute()) {
-                    Media_IF.cancelMute();
-                }
-                BT_IF.getInstance().music_play();
-                if (display == DISPLAY_ON) {
-                    launchSourceActivity(ModeSwitch.MUSIC_BT_MODE, false);
-                }
-            }
         }
-        Log.d(TAG, "checkModeRecordInternalEx source="+source+"; ms="+ms);
+        Log.d(TAG, "checkModeRecordInternalEx ourSource="+ourSource+"; ms="+ms);
         return ms;
     }
 }
