@@ -985,9 +985,9 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		// 判断是否通知MCU切源
 		int source = Source.NULL;
 		if (fileType == FileType.AUDIO) {
-			source = Source.AUDIO + deviceType;
+			source = Source.getAudioSource(deviceType);
 		} else if (fileType == FileType.VIDEO) {
-			source = Source.VIDEO + deviceType;
+			source = Source.getVideoSource(deviceType);
 		} else {
 			return;
 		}
@@ -995,8 +995,8 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	}
 	
 	/**
-	 * 切换播放源，参数为 {@link com.haoke.define.ModeDef} <p>
-	 * eg. {@link com.haoke.define.ModeDef#VIDEO}
+	 * 切换播放源，参数为 {@link com.amd.util.Source} <p>
+	 * eg. {@link com.amd.util.Source#RADIO}
 	 */
 	public void sourceChanged(int source) {
 		Log.v(TAG, "sourceChanged source=" + source);

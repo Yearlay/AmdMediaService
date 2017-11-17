@@ -92,7 +92,7 @@ public class Radio_CarCallBack {
 		}
 
 		int curMode = Radio_IF.getInstance().getMode();
-		if (mode == curMode || mode == com.haoke.define.ModeDef.MCU || mode == com.haoke.define.ModeDef.BT) {
+		if (mode == curMode || Source.isMcuMode(mode) || Source.isBTMode(mode)) {
 			Log.v(TAG, "HMI------------onDataChange mode=" + mode + ", func="
 					+ func + ", data=" + data);
 			Message message = mHandler.obtainMessage();

@@ -62,7 +62,6 @@ public class AmdMediaButtonReceiver extends BroadcastReceiver {
         boolean btPlaying = BT_IF.getInstance().music_isPlaying();
         Log.d(TAG, "play source="+source+"; playState="+playState+"; btPlaying="+btPlaying);
         if (source == Source.NULL) {
-//            Media_IF.setCurSource(ModeDef.AUDIO);
             if (playState != PlayState.PLAY) {
                 Media_IF.getInstance().setPlayState(PlayState.PLAY);
             }
@@ -110,7 +109,6 @@ public class AmdMediaButtonReceiver extends BroadcastReceiver {
         int source = Media_IF.getCurSource();
         Log.d(TAG, "prev source="+source);
         if (source == Source.NULL) {
-//            Media_IF.setCurSource(ModeDef.AUDIO);
             int playState = Media_IF.getInstance().getPlayState();
             if (playState != PlayState.PLAY) {
                 Media_IF.getInstance().setScanMode(false);

@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import com.amd.util.Source;
 import com.haoke.serviceif.CarService_Listener;
 
 public class Media_CarCallBack {
@@ -81,8 +82,8 @@ public class Media_CarCallBack {
 		}
 
 		int curMode = Media_IF.getInstance().getMode();
-		if (mode == curMode || mode == com.haoke.define.ModeDef.MCU 
-		        || mode == com.haoke.define.ModeDef.BT || mode == com.haoke.define.ModeDef.EQ) {
+		if (mode == curMode || Source.isMcuMode(mode)
+		        || Source.isBTMode(mode) || Source.isEQMode(mode)) {
 			Log.v(TAG, "HMI------------onDataChange mode=" + mode + ", func="
 					+ func + ", data=" + data);
 			Message message = mHandler.obtainMessage();

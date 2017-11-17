@@ -193,7 +193,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     
     @Override
     public void onCarDataChange(int mode, int func, int data) {
-        if (mode == com.haoke.define.ModeDef.MCU && func == McuFunc.KEY) {
+        if (Source.isMcuMode(mode) && func == McuFunc.KEY) {
             int keyState = data >> 8;
             int keyCode = data & 0xFF;
             if (keyState == McuDef.KeyState.PRESS_RELEASED) {
@@ -205,7 +205,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
                 }
             }
         }
-        if (mode == com.haoke.define.ModeDef.MCU) {
+        if (Source.isMcuMode(mode)) {
             Log.v(TAG, "onCarDataChange MCU func=" + func + ", data=" + data);
             switch (func) {
             case McuFunc.SOURCE:
@@ -223,7 +223,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
                 break;
             }
             
-        } else if (mode == com.haoke.define.ModeDef.EQ) {
+        } else if (Source.isEQMode(mode)) {
             if (func == EQFunc.MUTE) {
                 if (data == 0) {  //取消静音
                     MediaInterfaceUtil.cancelMuteRecordPlayState(KeyEvent.KEYCODE_MUTE);
@@ -336,7 +336,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     @Override
     public void onBTDataChange(int mode, int func, int data) { // 目的是给仪表发送信息。
         boolean needToSend = false;
-        if (mode == com.haoke.define.ModeDef.BT) {
+        if (Source.isBTMode(mode)) {
             switch (func) {
             case BTFunc.MUSIC_PLAY_STATE://400
                 needToSend = mBTIF.music_isPlaying();

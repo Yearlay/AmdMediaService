@@ -347,7 +347,7 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 	@Override
 	public void onBTDataChange(int mode, int func, int data) {
 		Log.d(TAG, "onBTDataChange mode="+mode+"; func="+func+"; data="+data);
-		if (mode == com.haoke.define.ModeDef.BT) {
+		if (Source.isBTMode(mode)) {
 			switch (func) {
 			case BTFunc.CONN_STATE://101
 				onBTStateChange(data);

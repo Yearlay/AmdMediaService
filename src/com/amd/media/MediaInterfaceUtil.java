@@ -383,7 +383,6 @@ public class MediaInterfaceUtil {
         }
         
         int ms = -1;
-        //int source = ModeDef.NULL;
         final int source = Media_IF.getCurSource();
         if (Source.isRadioSource(source)) {
             if (!Radio_IF.getInstance().isEnable()) {
@@ -599,7 +598,7 @@ public class MediaInterfaceUtil {
             return 200;
         }
         
-        //AllMediaList.notifyUpdateAppWidget(ModeDef.NULL);
+        //AllMediaList.notifyUpdateAppWidgetByAll();
         
         //null为carmanager没有收到mcu给的信号，true为断B+起来，false为断acc休眠起来
         //final Boolean power = Media_IF.getInstance().isFirstPower();

@@ -5,11 +5,9 @@ import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import com.haoke.application.MediaApplication;
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.constant.MediaUtil.MediaState;
 import com.haoke.video.RearView;
-import com.haoke.video.RearViewListener;
 import com.haoke.video.VideoSurfaceView;
 
 import android.content.Context;
@@ -23,7 +21,7 @@ import android.view.SurfaceHolder;
 /**
  * 本类实现MediaPlayer方法封装
  */
-public class AmdMediaPlayer implements RearViewListener {
+public class AmdMediaPlayer {
 
 	private final String TAG = this.getClass().getSimpleName();
 	private Context mContext = null;
@@ -37,13 +35,6 @@ public class AmdMediaPlayer implements RearViewListener {
 	
 	public AmdMediaPlayer(Context context) {
 		mContext = context;
-
-		Context app = MediaApplication.getInstance().getApplicationContext();
-		mRearView = new RearView(com.haoke.define.ModeDef.MEDIA, app);
-		mRearView.registerListener(this);
-
-		
-		
 		renew();
 	}
 
@@ -474,29 +465,4 @@ public class AmdMediaPlayer implements RearViewListener {
 		}
 	}
 
-	@Override
-	public void rearSurfaceChanged(SurfaceHolder holder, int format, int w,
-			int h) {
-		// TODO Auto-generated method stub
-		if (getMediaState() == MediaState.PREPARED) {
-			// mMediaPlayer.setRearDisplay(holder);
-		}
-	}
-
-	@Override
-	public void rearSurfaceCreated(SurfaceHolder holder) {
-		// TODO Auto-generated method stub
-		if (getMediaState() == MediaState.PREPARED) {
-			// mMediaPlayer.setRearDisplay(holder);
-		}
-	}
-
-	@Override
-	public void rearSurfaceDestroyed(SurfaceHolder arg0) {
-		// TODO Auto-generated method stub
-		// mMediaPlayer.setRearDisplay(null);
-	}
-	
-	
-	
 }

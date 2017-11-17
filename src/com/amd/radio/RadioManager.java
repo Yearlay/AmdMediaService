@@ -113,14 +113,14 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 
 	@Override
 	public void onCarDataChange(int mode, int func, int data) {
-		if (mode == com.haoke.define.ModeDef.MCU) {
+		if (Source.isMcuMode(mode)) {
 			Log.v(TAG, "onCarDataChange MCU func=" + func + ", data=" + data);
 			switch (func) {
 			case McuFunc.SOURCE:
 				break;
 			}
 
-		} else if (mode == com.haoke.define.ModeDef.RADIO) {
+		} else if (Source.isRadioMode(mode)) {
 			switch (func) {
 			case RadioFunc.STATE:
 				mIF.isScanStateChange(data);

@@ -118,7 +118,7 @@ public class BTMusicManager implements CarService_Listener,
 	@Override
 	public void onCarDataChange(int mode, int func, int data) {
 		Log.v(TAG, "onCarDataChange mode=" + mode + ", func=" + func + ", data=" + data);
-		if (mode == com.haoke.define.ModeDef.MCU) {
+		if (Source.isMcuMode(mode)) {
 			switch (func) {
 			case McuFunc.SOURCE:
 				sourceChanged(data);
@@ -159,7 +159,7 @@ public class BTMusicManager implements CarService_Listener,
 
 	@Override
 	public void onBTDataChange(int mode, int func, int data) {
-		if (mode == com.haoke.define.ModeDef.BT) {
+		if (Source.isBTMode(mode)) {
 			switch (func) {
 			case BTFunc.CONN_STATE:
 				if (data == BTConnState.DISCONNECTED) {

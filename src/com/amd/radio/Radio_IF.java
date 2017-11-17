@@ -42,7 +42,7 @@ public class Radio_IF extends CarService_IF {
 			@Override
 			public void onDataChange(int mode, int func, int data)
 					throws RemoteException {
-				if (mode == com.haoke.define.ModeDef.MCU && func == McuFunc.SOURCE) {
+				if (Source.isMcuMode(mode) && func == McuFunc.SOURCE) {
 				} else {
 					mCarCallBack.onDataChange(mode, func, data);
 				}

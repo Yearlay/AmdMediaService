@@ -9,7 +9,7 @@ public class Source {
     public static final int RADIO = 1;
     public static final int BT = 2;
     
-    public static final int AUDIO = 100;
+    private static final int AUDIO = 100;
     public static final int AUDIO_COLLECT = AUDIO + DeviceType.COLLECT;
     public static final int AUDIO_FLASH = AUDIO + DeviceType.FLASH;
     public static final int AUDIO_USB1 = AUDIO + DeviceType.USB1;
@@ -18,7 +18,7 @@ public class Source {
     public static final int AUDIO_USB4 = AUDIO + DeviceType.USB4;
     private static final int AUDIO_MAX = 199;
     
-    public static final int VIDEO = 200;
+    private static final int VIDEO = 200;
     public static final int VIDEO_COLLECT = VIDEO + DeviceType.COLLECT;
     public static final int VIDEO_FLASH = VIDEO + DeviceType.FLASH;
     public static final int VIDEO_USB1 = VIDEO + DeviceType.USB1;
@@ -38,6 +38,10 @@ public class Source {
         return false;
     }
     
+    public static int getAudioSource(int deviceType) {
+        return AUDIO + deviceType;
+    }
+    
     public static boolean isVideoSource() {
         return isVideoSource(Media_IF.getCurSource());
     }
@@ -47,6 +51,10 @@ public class Source {
             return true;
         }
         return false;
+    }
+    
+    public static int getVideoSource(int deviceType) {
+        return VIDEO + deviceType;
     }
     
     public static boolean isBTMusicSource() {
@@ -59,6 +67,26 @@ public class Source {
     
     public static boolean setBTMusicSource() {
         return Media_IF.setCurSource(Source.BT);
+    }
+    
+    public static boolean isMcuMode(int mode) {
+        return mode == com.haoke.define.ModeDef.MCU;
+    }
+    
+    public static boolean isBTMode(int mode) {
+        return mode == com.haoke.define.ModeDef.BT;
+    }
+    
+    public static boolean isBTMusicMode(int mode) {
+        return mode == com.haoke.define.ModeDef.BTMUSIC;
+    }
+    
+    public static boolean isEQMode(int mode) {
+        return mode == com.haoke.define.ModeDef.EQ;
+    }
+    
+    public static boolean isRadioMode(int mode) {
+        return mode == com.haoke.define.ModeDef.RADIO;
     }
     
     public static boolean isRadioSource() {

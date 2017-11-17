@@ -495,7 +495,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     @Override
     public void onCarDataChange(int mode, int func, int data) {
         Log.d(TAG, "onCarDataChange mode = " + mode + " , func = " + func + " , data = " + data);
-        if (mode == com.haoke.define.ModeDef.MCU) {
+        if (Source.isMcuMode(mode)) {
             switch (func) {
             case McuFunc.SOURCE:
                 sourceChanged(data);

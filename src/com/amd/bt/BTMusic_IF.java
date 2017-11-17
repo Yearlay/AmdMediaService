@@ -5,6 +5,7 @@ import android.media.AudioManager;
 import android.os.RemoteException;
 import android.util.Log;
 
+import com.amd.util.Source;
 import com.haoke.aidl.ICarCallBack;
 import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.define.McuDef.KeyCode;
@@ -31,7 +32,7 @@ public class BTMusic_IF extends CarService_IF {
 			@Override
 			public void onDataChange(int mode, int func, int data)
 					throws RemoteException {
-				if (mode == com.haoke.define.ModeDef.MCU && func == McuFunc.SOURCE) {
+				if (Source.isMcuMode(mode) && func == McuFunc.SOURCE) {
 				} else {
 					mCarCallBack.onDataChange(mode, func, data);
 				}

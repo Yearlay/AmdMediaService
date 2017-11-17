@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import com.amd.util.Source;
 import com.haoke.serviceif.CarService_Listener;
 
 public class BTMusic_CarCallBack {
@@ -77,7 +78,7 @@ public class BTMusic_CarCallBack {
 			return;
 		}
 
-		if (mode == com.haoke.define.ModeDef.MCU/*暂时无用 || mode == ModeDef.BT*/) {
+		if (Source.isMcuMode(mode)) {
 			Log.v(TAG, "HMI------------onDataChange mode=" + mode + ", func="
 					+ func + ", data=" + data);
 			Message message = mHandler.obtainMessage();
