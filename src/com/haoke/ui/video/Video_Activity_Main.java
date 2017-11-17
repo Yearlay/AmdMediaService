@@ -195,7 +195,8 @@ public class Video_Activity_Main extends Activity implements
     @Override
     public void onStart() {
         super.onStart();
-        Log.v(TAG, "HMI------------onStart");
+        AllMediaList.sCarSpeed = Video_IF.getCarSpeed();
+        Log.v(TAG, "HMI------------onStart sCarSpeed: " + AllMediaList.sCarSpeed);
         mIF.registerModeCallBack(this);
         mIF.registerCarCallBack(this); // 注册服务监听
         mIF.registerLocalCallBack(this); // 注册服务监听
@@ -658,7 +659,7 @@ public class Video_Activity_Main extends Activity implements
     public void onCarDataChange(int mode, int func, int data) {}
     @Override
     public void onUartDataChange(int mode, int len, byte[] datas) {
-        if (datas.length > 8) {
+        if (datas.length > 8 && mPlayLayout != null) {
             int data3 = datas[3] & 0xFF;
             int data4 = datas[4] & 0xFF;
             int data5 = datas[5] & 0xFF;
@@ -668,17 +669,14 @@ public class Video_Activity_Main extends Activity implements
                 speedData = speedData | datas[7];
                 float speed = (float) (speedData & 0xFFFF) / 100;
                 
-                if (speed >= 20.0f && AllMediaList.sCarSpeed < 20.0f && mPlayLayout != null) { // 加速超过20km/h
-                    DebugLog.d("Yearlay", "onUartDataChange 0D 00 2D show ForbiddenView current speed: " + speed
-                            + " && And Last speed: " + AllMediaList.sCarSpeed);
-                    mPlayLayout.checkSpeedAndRefreshView(speed);
-                }
-                if (speed < 20.0f && AllMediaList.sCarSpeed >= 20.0f && mPlayLayout != null) { // 减速低于20km/h
-                    DebugLog.d("Yearlay", "onUartDataChange 0D 00 2D hide ForbiddenView current speed: " + speed
-                            + " && And Last speed: " + AllMediaList.sCarSpeed);
-                    mPlayLayout.checkSpeedAndRefreshView(speed);
-                }
                 AllMediaList.sCarSpeed = speed;
+                DebugLog.d("Yearlay", "onUartDataChange 0D 00 2D current speed: " + speed);
+                if (speed >= 20.0f && !mPlayLayout.isShowForbiddenView()) { // 加速超过20km/h
+                    mPlayLayout.checkSpeedAndRefreshView(speed);
+                }
+                if (speed < 20.0f && mPlayLayout.isShowForbiddenView()) { // 减速低于20km/h
+                    mPlayLayout.checkSpeedAndRefreshView(speed);
+                }
             }
         }
     }

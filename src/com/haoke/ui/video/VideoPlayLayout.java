@@ -31,6 +31,7 @@ import com.haoke.data.OperateListener;
 import com.haoke.define.MediaDef.MediaState;
 import com.haoke.define.MediaDef.PlayState;
 import com.haoke.mediaservice.R;
+import com.haoke.util.DebugLog;
 import com.haoke.video.VideoSurfaceView;
 import com.nforetek.bt.res.MsgOutline;
 
@@ -196,7 +197,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         mVideoLayout.removeAllViews();
         mVideoLayout.addView(mVideoView);
         if (checkSpeed) {
-            checkSpeedAndRefreshView(Video_IF.getCarSpeed());
+            checkSpeedAndRefreshView(AllMediaList.sCarSpeed);
         }
     }
 
@@ -457,6 +458,14 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         return true;
     }
     
+    public boolean isShowForbiddenView() {
+        boolean showFlag = false;
+        if (mForbiddenView != null) {
+            showFlag = mForbiddenView.getVisibility() == View.VISIBLE;
+        }
+        return showFlag;
+    }
+    
     public void checkSpeedAndRefreshView(float speed) {
         boolean showForbiddenViewFlag = false;
         try {
@@ -465,6 +474,11 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
             showForbiddenViewFlag = (sysLimitFlag && speedLimitFlag);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        if (showForbiddenViewFlag) {
+            DebugLog.d("Yearlay", "show Forbidden View... speed : " + speed);
+        } else {
+            DebugLog.d("Yearlay", "hide Forbidden View... speed : " + speed);
         }
         mForbiddenView.setVisibility(showForbiddenViewFlag ? View.VISIBLE : View.GONE);
     }
