@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amd.media.MediaInterfaceUtil;
+import com.amd.util.Source;
 import com.archermind.skinlib.SkinManager;
 import com.haoke.bean.FileNode;
 import com.haoke.constant.MediaUtil;
@@ -28,14 +29,13 @@ import com.haoke.constant.MediaUtil.CopyState;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.ModeSwitch;
 import com.haoke.define.GlobalDef;
-import com.haoke.define.ModeDef;
-import com.haoke.define.MediaDef.DeleteState;
-import com.haoke.define.MediaDef.DeviceType;
-import com.haoke.define.MediaDef.FileType;
-import com.haoke.define.MediaDef.MediaFunc;
-import com.haoke.define.MediaDef.MediaState;
-import com.haoke.define.MediaDef.RepeatMode;
-import com.haoke.define.MediaDef.ScanState;
+import com.haoke.constant.MediaUtil.DeleteState;
+import com.haoke.constant.MediaUtil.DeviceType;
+import com.haoke.constant.MediaUtil.FileType;
+import com.haoke.constant.MediaUtil.MediaFunc;
+import com.haoke.constant.MediaUtil.MediaState;
+import com.haoke.constant.MediaUtil.RepeatMode;
+import com.haoke.constant.MediaUtil.ScanState;
 import com.haoke.mediaservice.R;
 import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
@@ -364,14 +364,14 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             case MediaFunc.DELETE_FILE://7 歌曲删除状态
                 updateDeleteState(data1, data2);
                 break;
-            case MediaUtil.MediaFuncEx.MEDIA_LIST_UPDATE: //列表有更新
+            case MediaUtil.MediaFunc.MEDIA_LIST_UPDATE: //列表有更新
                 if (data1 == mDeviceType && data2 == FileType.AUDIO && mIF.getScanState()==ScanState.COMPLETED_ALL) {
                     Log.d(TAG, "onDataChange MEDIA_LIST_UPDATE data1="+data1+"; data2="+data2);
                     refreshList();
                     playDefault();
                 }
                 break;
-            case MediaUtil.MediaFuncEx.MEDIA_COPY_FILE: //拷贝文件
+            case MediaUtil.MediaFunc.MEDIA_COPY_FILE: //拷贝文件
                 updateCopyState(data1, data2);
                 break;
             }
@@ -385,11 +385,10 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         if (scanState == ScanState.SCANNING || scanState == ScanState.IDLE) { // 扫描中
             showLoadingLayout();
         } else {//离开扫描页面，需要关闭定时器
-            if (scanState == ScanState.NO_DEVICE
+            if (scanState == ScanState.NO_MEDIA_STORAGE
                     || scanState == ScanState.SCAN_ERROR) { // 无设备
                 showNodeviceLayout();
-            } else if (scanState == ScanState.COMPLETED_PART
-                    || scanState == ScanState.COMPLETED_ALL) { // 扫描完成
+            } else if (scanState == ScanState.COMPLETED_ALL) { // 扫描完成
                 showListLayout();
                 refreshList();
             }
@@ -689,7 +688,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             if (index == mIF.getPlayIndex() 
                     && mIF.getPlayingDevice() == mIF.getMediaDevice()
                     && mIF.getPlayingFileType() == mIF.getMediaFileType()
-                    && mIF.getCurSource() == ModeDef.AUDIO) {
+                    && Source.isAudioSource()) {
                 mIF.setInterface(1);//回播放界面
             } else {
                 mIF.play(position);

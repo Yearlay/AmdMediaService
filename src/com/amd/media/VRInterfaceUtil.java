@@ -2,16 +2,18 @@ package com.amd.media;
 
 import com.amd.bt.BT_IF;
 import com.amd.radio.Radio_IF;
+import com.amd.util.Source;
 import com.haoke.application.MediaApplication;
 import com.haoke.bean.FileNode;
 import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.constant.MediaUtil.FileType;
+
 import static com.haoke.constant.VRConstant.*;
+
 import com.haoke.data.ModeSwitch;
-import com.haoke.define.ModeDef;
-import com.haoke.define.MediaDef.DeviceType;
-import com.haoke.define.MediaDef.PlayState;
-import com.haoke.define.MediaDef.RepeatMode;
+import com.haoke.constant.MediaUtil.DeviceType;
+import com.haoke.constant.MediaUtil.PlayState;
+import com.haoke.constant.MediaUtil.RepeatMode;
 import com.haoke.ui.image.Image_Activity_Main;
 import com.haoke.ui.video.Video_Activity_Main;
 import com.haoke.ui.video.Video_IF;
@@ -132,7 +134,6 @@ public class VRInterfaceUtil {
         DebugLog.d(TAG, "operateMusic yesOperate="+yesOperate+"; playState="+playState);
         if (yesOperate) {
             if (playState != PlayState.PLAY) {
-                // Media_IF.setCurSource(ModeDef.AUDIO);
                 mMediaIF.setPlayState(PlayState.PLAY);
             }
             launchMusicPlayActivity();
@@ -320,7 +321,7 @@ public class VRInterfaceUtil {
         int playState = mMediaIF.getPlayState();
         int source = Media_IF.getCurSource();
         DebugLog.d(TAG, "commandCollectMode playState="+playState+"; source="+source);
-        if (source == ModeDef.AUDIO) {
+        if (Source.isAudioSource(source)) {
             mMediaIF.collectMusic(mMediaIF.getPlayItem());
         }
     }
@@ -330,7 +331,7 @@ public class VRInterfaceUtil {
         int playState = mMediaIF.getPlayState();
         int source = Media_IF.getCurSource();
         DebugLog.d(TAG, "commandUnCollectMode playState="+playState+"; source="+source);
-        if (source == ModeDef.AUDIO) {
+        if (Source.isAudioSource(source)) {
             mMediaIF.deleteCollectedMusic(mMediaIF.getPlayItem());
         }
     }

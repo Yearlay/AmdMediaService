@@ -7,12 +7,12 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.amd.util.Source;
 import com.haoke.application.MediaApplication;
 import com.haoke.bean.FileNode;
 import com.haoke.data.AllMediaList;
-import com.haoke.define.MediaDef.DeviceType;
-import com.haoke.define.MediaDef.FileType;
-import com.haoke.define.ModeDef;
+import com.haoke.constant.MediaUtil.DeviceType;
+import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.util.Media_IF;
 
 public class RecordDevicePlay {
@@ -66,7 +66,7 @@ public class RecordDevicePlay {
 	}
 	
 	public void sourceChanged(int source) {
-		if (source != ModeDef.AUDIO) {
+		if (Source.isAudioSource(source)) {
 			clearLastPlayDevice();
 		}
 	}

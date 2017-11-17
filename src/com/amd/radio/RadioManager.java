@@ -5,14 +5,14 @@ import android.util.Log;
 
 import com.amd.media.AudioFocus.AudioFocusListener;
 import com.haoke.define.McuDef.McuFunc;
-import com.haoke.define.MediaDef.PlayState;
+import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.define.RadioDef.RadioFunc;
-import com.haoke.define.ModeDef;
 import com.haoke.service.RadioService;
 import com.haoke.serviceif.CarService_Listener;
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.radio.Radio_CarListener;
 import com.amd.radio.Radio_IF;
+import com.amd.util.Source;
 
 public class RadioManager implements Radio_CarListener, CarService_Listener,
 		AudioFocusListener {
@@ -45,7 +45,6 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 	
 	@Override
 	public void onServiceConn() {
-		// TODO Auto-generated method stub
 		Log.v(TAG, "HMI------------onServiceConn source=" + mIF.getCurSource());
 	}
 
@@ -101,7 +100,7 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 			mIF.setEnable(false);
 			break;
 		case PlayState.STOP:
-			MediaInterfaceUtil.resetMediaPlayStateRecord(ModeDef.RADIO);
+			//MediaInterfaceUtil.resetMediaPlayStateRecord(Source.RADIO);
 //			if (!enable) {
 //				Log.v(TAG, "HMI------------audioFocusChanged STOP 2");
 //				return;
@@ -114,33 +113,20 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 
 	@Override
 	public void onCarDataChange(int mode, int func, int data) {
-		if (mode == ModeDef.MCU) {
+		if (mode == com.haoke.define.ModeDef.MCU) {
 			Log.v(TAG, "onCarDataChange MCU func=" + func + ", data=" + data);
 			switch (func) {
 			case McuFunc.SOURCE:
 				break;
 			}
 
-		} else if (mode == ModeDef.RADIO) {
+		} else if (mode == com.haoke.define.ModeDef.RADIO) {
 			switch (func) {
 			case RadioFunc.STATE:
 				mIF.isScanStateChange(data);
 				break;
 			}
 		}
-//		else if (mode == ModeDef.BT) { // 通话开始或结束，声音需要处理
-//			Log.v(TAG, "onCarDataChange BT func=" + func + ", data=" + data);
-//			Log.v(TAG, "onCarDataChange BT source=" + mIF.getCurSource());
-//
-//			if (func == BTFunc.CALL_STATE) {
-//				if (mIF.getCurSource() == mIF.getMode()) { // 处于当前源
-//					if (data == BTCallState.IDLE) { // 打完电话，需要再切下通道，避免没声音
-//						Log.v(TAG, "onCarDataChange openAvio");
-//						audioFocusChanged(PlayState.PLAY);
-//					}
-//				}
-//			}
-//		}
 	}
 
 	@Override

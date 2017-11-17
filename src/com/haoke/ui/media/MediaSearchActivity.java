@@ -12,7 +12,7 @@ import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.LoadListener;
 import com.haoke.data.SearchListener;
-import com.haoke.define.MediaDef.DeviceType;
+import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.mediaservice.R;
 import com.haoke.ui.image.Image_Activity_Main;
 import com.haoke.ui.video.Video_Activity_Main;

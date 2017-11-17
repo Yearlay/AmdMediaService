@@ -1,12 +1,12 @@
 package com.haoke.ui.music;
 
 import com.amd.bt.BT_IF;
+import com.amd.util.Source;
 import com.archermind.skinlib.SkinManager;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.ID3Parse;
 import com.haoke.bean.ID3Parse.ID3ParseListener;
-import com.haoke.define.MediaDef.DeviceType;
-import com.haoke.define.ModeDef;
+import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.mediaservice.R;
 import com.haoke.ui.widget.RoundImageViewByXfermode;
 import com.haoke.util.Media_IF;
@@ -172,7 +172,7 @@ public class Music_Play_Id3 extends LinearLayout implements OnClickListener, ID3
             mDeviceView.setText(R.string.media_usb2_tab);
         } else if (fileNode.getDeviceType() == DeviceType.FLASH) {
             mDeviceView.setText(R.string.media_flash_tab);
-        } else if (Media_IF.getCurSource() == ModeDef.BT) {
+        } else if (Source.isBTMusicSource()) {
             mDeviceView.setText(R.string.pub_bt);
         } else {
             mDeviceView.setText(R.string.media_collect_tab);
@@ -218,7 +218,7 @@ public class Music_Play_Id3 extends LinearLayout implements OnClickListener, ID3
             mDeviceView.setText(R.string.media_usb2_tab);
         } else if (Media_IF.getInstance().getPlayingDevice() == DeviceType.FLASH) {
             mDeviceView.setText(R.string.media_flash_tab);
-        } else if (Media_IF.getCurSource() == ModeDef.BT) {
+        } else if (Source.isBTMusicSource()) {
             mDeviceView.setText(R.string.pub_bt);
         } else {
             mDeviceView.setText(R.string.media_collect_tab);

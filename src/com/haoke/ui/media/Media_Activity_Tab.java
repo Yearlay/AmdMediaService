@@ -1,7 +1,6 @@
 package com.haoke.ui.media;
 
 import com.archermind.skinlib.SkinManager;
-import com.haoke.define.ModeDef;
 import com.haoke.mediaservice.R;
 
 import android.content.Context;
@@ -19,17 +18,17 @@ public class Media_Activity_Tab extends RelativeLayout implements OnCheckedChang
         mOnClickListener = listener;
     }
 
-    public void setCurSource(int source) {
-        if (mCurSource == source) {
+    public void setCurSource(int mode) {
+        if (mCurMode == mode) {
             return;
         }
-        mCurSource = source;
+        mCurMode = mode;
         View view = null;
-        switch (source) {
-        case ModeDef.RADIO:
+        switch (mode) {
+        case Media_Activity_Main.MODE_RADIO:
             view = mBtnRadio;
             break;
-        case ModeDef.AUDIO:
+        case Media_Activity_Main.MODE_AUDIO:
             view = mBtnMusic;
             break;
         default:
@@ -60,7 +59,7 @@ public class Media_Activity_Tab extends RelativeLayout implements OnCheckedChang
     private View mCurPlayUnderLineView;
     private View mBtnLayout;
     private OnClickListener mOnClickListener = null;
-    private int mCurSource = -1;
+    private int mCurMode = -1;
     SkinManager skinManager;
 
     public Media_Activity_Tab(Context context, AttributeSet attrs) {

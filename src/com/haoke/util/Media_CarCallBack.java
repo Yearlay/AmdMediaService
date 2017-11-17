@@ -8,7 +8,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import com.haoke.define.ModeDef;
 import com.haoke.serviceif.CarService_Listener;
 
 public class Media_CarCallBack {
@@ -82,7 +81,8 @@ public class Media_CarCallBack {
 		}
 
 		int curMode = Media_IF.getInstance().getMode();
-		if (mode == curMode || mode == ModeDef.MCU || mode == ModeDef.BT || mode == ModeDef.EQ) {
+		if (mode == curMode || mode == com.haoke.define.ModeDef.MCU 
+		        || mode == com.haoke.define.ModeDef.BT || mode == com.haoke.define.ModeDef.EQ) {
 			Log.v(TAG, "HMI------------onDataChange mode=" + mode + ", func="
 					+ func + ", data=" + data);
 			Message message = mHandler.obtainMessage();
@@ -114,7 +114,7 @@ public class Media_CarCallBack {
 		if (mUartCallBackHandler == null) {
 			return;
 		}
-		if (datas.length >0 && mode == ModeDef.MCU_UART) {
+		if (datas.length >0 && mode == com.haoke.define.ModeDef.MCU_UART) {
 			Message message = mUartCallBackHandler.obtainMessage();
 			message.what = mode; // 模式ID
 			message.arg1 = len; // 功能ID

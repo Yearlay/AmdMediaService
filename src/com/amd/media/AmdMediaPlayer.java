@@ -6,11 +6,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import com.haoke.application.MediaApplication;
-import com.amd.media.AudioFocus;
-import com.amd.media.AudioFocus.AudioFocusListener;
-import com.haoke.define.MediaDef.FileType;
-import com.haoke.define.MediaDef.MediaState;
-import com.haoke.define.MediaDef.PlayState;
+import com.haoke.constant.MediaUtil.FileType;
+import com.haoke.constant.MediaUtil.MediaState;
 import com.haoke.video.RearView;
 import com.haoke.video.RearViewListener;
 import com.haoke.video.VideoSurfaceView;

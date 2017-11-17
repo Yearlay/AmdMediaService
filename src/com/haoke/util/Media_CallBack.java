@@ -3,8 +3,7 @@ package com.haoke.util;
 import java.util.ArrayList;
 
 import com.haoke.data.AllMediaList;
-import com.haoke.define.ModeDef;
-import com.haoke.define.MediaDef.MediaFunc;
+import com.haoke.constant.MediaUtil.MediaFunc;
 
 import android.annotation.SuppressLint;
 import android.os.Handler;
@@ -101,9 +100,7 @@ public class Media_CallBack {
 						func == MediaFunc.PREPARED ||
 						func == MediaFunc.PLAY_STATE ||
 						func == MediaFunc.PLAY_OVER) {
-					if (mode == ModeDef.MEDIA) {
-						AllMediaList.notifyUpdateAppWidget(ModeDef.AUDIO);
-					}
+				    AllMediaList.notifyUpdateAppWidgetByAudio();
 				}
 			}
 		}

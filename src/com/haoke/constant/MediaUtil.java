@@ -16,7 +16,7 @@ import com.haoke.application.MediaApplication;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.UserBean;
 import com.haoke.bean.UserInfoBean;
-import com.haoke.define.MediaDef;
+import com.haoke.constant.MediaUtil;
 import com.haoke.util.GsonUtil;
 
 import android.content.Context;
@@ -58,10 +58,51 @@ public class MediaUtil {
     public static String LOCAL_COPY_DIR = DEVICE_PATH_FLASH + "/media";
     
     /**
-     * 媒体功能ID【扩展】
-     * {@link MediaDef.MediaFunc}
+     * 媒体功能ID
      */
-    public static class MediaFuncEx {
+    public static class MediaFunc {
+        
+        /** 扫描状态改变 value:1 */
+        public static final int SCAN_STATE = 1;
+        /** 单个id3扫描完成 value:2 */
+        public static final int SCAN_ID3_SINGLE_OVER = 2;
+        /** 部分id3扫描完成 value:3 */
+        public static final int SCAN_ID3_PART_OVER = 3;
+        /** 全部id3扫描完成 value:4 */
+        public static final int SCAN_ID3_ALL_OVER = 4;
+        /** 单个图片扫描完成 value:5 */
+        public static final int SCAN_THUMBNAIL_SINGLE_OVER = 5;
+        /** 全部图片扫描完成 value:6 */
+        public static final int SCAN_THUMBNAIL_ALL_OVER = 6;
+        /** 删除文件 value:7 */
+        public static final int DELETE_FILE = 7;
+        /** 外部设备改变 value:8 */
+        public static final int DEVICE_CHANGED = 8;
+        /** 收藏文件动作 value:8 */
+        public static final int COLLECT_FILE = 9;
+
+        // HKMedia
+        /** 播放准备中 value:100 */
+        public static final int PREPARING = 100;
+        /** 播放准备就绪 value:101 */
+        public static final int PREPARED = 101;
+        /** 播放完成 value:102 */
+        public static final int COMPLETION = 102;
+        /** 播放进度完成 value:103 */
+        public static final int SEEK_COMPLETION = 103;
+        /** 播放出错 value:104 */
+        public static final int ERROR = 104;
+        /** 播放结束 value:105 */
+        public static final int PLAY_OVER = 105;
+        /** 播放状态改变 value:106 */
+        public static final int PLAY_STATE = 106;
+        /** 播放循环模式改变 value:107 */
+        public static final int REPEAT_MODE = 107;
+        /** 播放随机模式改变 value:108 */
+        public static final int RANDOM_MODE = 108;
+        
+        /** 当前播放器类型 硬解或软解 value:11 */
+        public static final int PLAY_TYPE = 11;
         
         //当前设备媒体有更新
         public static final int MEDIA_LIST_UPDATE = 1000;
@@ -100,16 +141,93 @@ public class MediaUtil {
         public static final byte USB3 = 5;
         /** USB 插槽4设备 value:6 */
         public static final byte USB4 = 6;
-        /**  相机设备 value:10 */
-        public static final byte CAMERA = 10;
-        /** 亿连设备 value:11 */
-        public static final byte ELINK = 11;
-        /** IPOD设备 value:12 */
-        public static final byte IPOD = 12;
         /** 本地存储设备 value:13 */
         public static final byte FLASH = 13;
-        /** 收藏设备 value:13 */
+        /** 收藏设备 value:19 */
         public static final byte COLLECT = 19;
+    }
+    
+    /**
+     * 媒体设备状态
+     */
+    public class MediaState {
+        /** 空闲状态 value:0 */
+        public static final int IDLE = 0;
+        /** 准备中 value:0 */
+        public static final int PREPARING = 1;
+        /** 准备完成 value:0 */
+        public static final int PREPARED = 2;
+        /** 媒体文件出错 value:0 */
+        public static final int ERROR = 3;
+    }
+
+    /**
+     * 媒体播放状态
+     */
+    public class PlayState {
+        /** 播放 value:0 */
+        public static final int PLAY = 0;
+        /** 暂停 value:1 */
+        public static final int PAUSE = 1;
+        /** 停止 value:2 */
+        public static final int STOP = 2;
+        /** 上一首 value:3 */
+        public static final int PREV = 3;
+        /** 下一首 value:4 */
+        public static final int NEXT = 4;
+    }
+
+    /**
+     * 循环播放模式
+     */
+    public class RepeatMode {
+        /** 关闭循环模式 value:1 */
+        public static final int OFF = 0;
+        /** 单曲循环 value:1 */
+        public static final int ONE = 1;
+        /** 列表循环 value:1 */
+        public static final int CIRCLE = 2;
+        /** 列表随机 value:1 */
+        public static final int RANDOM = 3;
+    }
+
+    /**
+     * 随机播放模式
+     */
+    public class RandomMode {
+        /** 打开随机播放 value:0 */
+        public static final int OFF = 0;
+        /** 关闭随机播放 value:1 */
+        public static final int ON = 1;
+    }
+
+    /**
+     * 文件删除状态
+     */
+    public class DeleteState {
+        /** 文件删除中 value:0 */
+        public static final int DELETING = 0;
+        /** 文件删除失败 value:1 */
+        public static final int FAIL = 1;
+        /** 文件删除成功 value:2 */
+        public static final int SUCCESS = 2;
+    }
+    
+    /**
+     * 当前使用的播放器类型 硬解或软解
+     */
+    public class PlayType {
+        /** 当前使用硬解播放视频 value:0 */
+        public static final int PLAY_MEDIA = 0;
+        /** 当前使用软解播放视频 value:1 */
+        public static final int PLAY_VITAMIO = 1;
+    }
+    
+    public static class UpdateWidget {
+        public static final int ALL = 0;
+        public static final int RADIO = 1;
+        public static final int AUDIO = 2;
+        public static final int BTMUSIC = 3;
     }
     
     // 根据设备类型来获取路径

@@ -11,7 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.archermind.skinlib.SkinManager;
-import com.haoke.define.MediaDef.DeviceType;
+import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.mediaservice.R;
 
 public class Music_List_Tab extends RelativeLayout implements OnClickListener {

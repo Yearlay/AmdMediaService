@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.amd.bt.BTMusic_IF;
 import com.amd.bt.BT_IF;
 import com.amd.media.MediaInterfaceUtil;
+import com.amd.util.Source;
 import com.archermind.skinlib.SkinManager;
 import com.haoke.bean.FileNode;
 import com.haoke.btjar.main.BTDef.BTConnState;
@@ -27,10 +28,9 @@ import com.haoke.constant.MediaUtil;
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.ModeSwitch;
-import com.haoke.define.MediaDef.DeviceType;
-import com.haoke.define.MediaDef.PlayState;
-import com.haoke.define.MediaDef.RepeatMode;
-import com.haoke.define.ModeDef;
+import com.haoke.constant.MediaUtil.DeviceType;
+import com.haoke.constant.MediaUtil.PlayState;
+import com.haoke.constant.MediaUtil.RepeatMode;
 import com.haoke.mediaservice.R;
 import com.haoke.util.Media_IF;
 
@@ -63,8 +63,6 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 	
 	public boolean isWillShowState() {
 		if (isBTPlay) {
-			//int source = mIF.getCurSource();
-			//if (source != ModeDef.BT) {
 			if(BT_IF.getInstance().getConnState() != BTConnState.CONNECTED) {
 				return false;
 			}
@@ -588,10 +586,10 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
     	if (fragmentVisible && getVisibility() == View.VISIBLE) {
 			if (isBTPlay) {
 				BT_IF btIF = BT_IF.getInstance();
-				int source = BTMusic_IF.getInstance().getCurSource();
+				int source = Media_IF.getCurSource();
 				boolean btPlaying = btIF.music_isPlaying();
 				Log.d(TAG, "refreshFromViewPagerMaybePlayBT source="+source+"; btPlaying="+btPlaying);
-				if (source != ModeDef.BT) {
+				if (!Source.isBTMusicSource(source)) {
 					if (btPlaying) {
 						btIF.music_play();
 					}

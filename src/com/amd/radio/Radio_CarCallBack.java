@@ -7,8 +7,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
+import com.amd.util.Source;
 import com.haoke.data.AllMediaList;
-import com.haoke.define.ModeDef;
 import com.haoke.define.RadioDef.RadioFunc;
 import com.haoke.serviceif.CarService_Listener;
 
@@ -31,7 +31,7 @@ public class Radio_CarCallBack {
 
 			listener.onServiceConn();
 		}
-		AllMediaList.notifyUpdateAppWidget(ModeDef.RADIO);//收音机绑定成功，需要通知桌面媒体框
+		AllMediaList.notifyUpdateAppWidgetByRadio();//收音机绑定成功，需要通知桌面媒体框
 	}
 
 	public void registerCarCallBack(CarService_Listener listener) {
@@ -92,7 +92,7 @@ public class Radio_CarCallBack {
 		}
 
 		int curMode = Radio_IF.getInstance().getMode();
-		if (mode == curMode || mode == ModeDef.MCU || mode == ModeDef.BT) {
+		if (mode == curMode || mode == com.haoke.define.ModeDef.MCU || mode == com.haoke.define.ModeDef.BT) {
 			Log.v(TAG, "HMI------------onDataChange mode=" + mode + ", func="
 					+ func + ", data=" + data);
 			Message message = mHandler.obtainMessage();
@@ -122,7 +122,7 @@ public class Radio_CarCallBack {
 	                || func == RadioFunc.STATE // 表示收音播放状态发生改变
 	                || func == RadioFunc.ENABLE // 表示收音Enable状态发生改变
 	                || func == RadioFunc.CUR_CH /* 表示当前台发生变化 */ ) {
-	            AllMediaList.notifyUpdateAppWidget(ModeDef.RADIO);
+	            AllMediaList.notifyUpdateAppWidgetByRadio();
 	        }
 		}
 	}

@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,12 +19,12 @@ import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.constant.VRConstant;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.ModeSwitch;
-import com.haoke.define.ModeDef;
 import com.haoke.mediaservice.R;
 import com.haoke.ui.music.MusicHomeFragment;
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.radio.Radio_Activity_Main;
 import com.amd.radio.SearchRadioActivity;
+import com.amd.util.Source;
 import com.haoke.ui.widget.MyViewPaper;
 import com.haoke.ui.widget.MyViewPaper.OnPageChangeListener;
 import com.haoke.util.Media_IF;
@@ -33,16 +32,19 @@ import com.haoke.util.Media_IF;
 public class Media_Activity_Main extends Activity implements OnClickListener {
     private static final String TAG = "Media_Activity_Main";
     private int mLayoutProps = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
-    private Media_IF mMediaIF;
     private Media_Activity_Tab mActivityTab = null;
     private Radio_Activity_Main mRadioFragment = null;
     private MusicHomeFragment mHomeFragment = null;
     private MyViewPaper mViewPager = null;
     private View mSearchButton;
-//    private ArrayList<Fragment> mFragList = null;
+    
     private final int VIEWPAGER_ID_RADIO = 0;
     private final int VIEWPAGER_ID_MUSIC = 1;
-    private int mCurLabel = ModeDef.AUDIO;
+    
+    public static final int MODE_RADIO = 1;
+    public static final int MODE_AUDIO = 2;
+    public static final int MODE_BTMUSIC = 3;
+    
     private MediaPageChangeListener mPageChangeListener = new MediaPageChangeListener();
     private boolean pressBackToHome = false;
     
@@ -52,7 +54,6 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
         setContentView(R.layout.media_activity_main);
         getWindow().getDecorView().setSystemUiVisibility(mLayoutProps);
         
-        mMediaIF = Media_IF.getInstance();
         mActivityTab = (Media_Activity_Tab) findViewById(R.id.media_activity_tab);
         mActivityTab.setClickListener(this);
 //        mFragList = new ArrayList<Fragment>();
@@ -72,7 +73,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
         registerReceiver(mReceiver, new IntentFilter(VRConstant.VRIntent.ACTION_FINISH_MUSIC_RADIO));
         initCurSource();
         getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, mContentObserver);
-        AllMediaList.notifyUpdateAppWidget(ModeDef.NULL);// 通知MediaWidgetProvider更新UI
+        AllMediaList.notifyUpdateAppWidgetByAll();// 通知MediaWidgetProvider更新UI
         refreshSkin();
         Log.d(TAG, "onCreate");
     }
@@ -171,6 +172,14 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
 	private void initCurSource() {
         Intent intent = getIntent();
         int source = Media_IF.getCurSource();
+        int mode = MODE_RADIO;
+        if (Source.isRadioSource(source)) {
+            mode = MODE_RADIO;
+        } else if (Source.isAudioSource(source)) {
+            mode = MODE_AUDIO;
+        } else if (Source.isBTMusicSource(source)) {
+            mode = MODE_BTMUSIC;
+        }
         if (intent != null) {
             boolean fromIntent = false;
             boolean goPlay = false;
@@ -180,29 +189,29 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
             boolean autoPlay = hasAutoPlay ? intent.getBooleanExtra("autoPlay", false) : false;
             Log.d(TAG, "initCurSource musicMode="+musicMode+"; autoPlay="+autoPlay);
             if ("radio_intent".equals(musicMode)) {
-            	source = ModeDef.RADIO;
+                mode = MODE_RADIO;
             	fromIntent = true;
             } else if ("btMusic_intent".equals(musicMode)) {
-            	source = ModeDef.BT;
+                mode = MODE_BTMUSIC;
             	fromIntent = true;
             } else if ("music_play_intent".equals(musicMode)) {
-            	source = ModeDef.AUDIO;
+                mode = MODE_AUDIO;
             	fromIntent = true;
             	goPlay = true;
             } else if ("music_main_home".equals(musicMode)) {
-            	source = ModeDef.AUDIO;
+                mode = MODE_AUDIO;
             	fromIntent = true;
             	goHome = true;
             }
             if (fromIntent) {
             	if (hasAutoPlay) {
-                	if (source == ModeDef.RADIO) {
-                    	mRadioFragment.onNewIntent(source, autoPlay);
+                	if (mode == MODE_RADIO) {
+                    	mRadioFragment.onNewIntent(mode, autoPlay);
                 	} else {
-                		mHomeFragment.onNewIntent(source, autoPlay);
+                		mHomeFragment.onNewIntent(mode, autoPlay);
                 	}
             	}
-            	if (source == ModeDef.BT) {
+            	if (mode == MODE_BTMUSIC) {
             		replaceBtMusicFragment();
             	} else if (goPlay) {
             		goPlay(false, true);
@@ -210,34 +219,34 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
             		goHome();
             	}
             } else {
-            	if (source == ModeDef.AUDIO || source == ModeDef.BT) {
+            	if (mode == MODE_AUDIO || mode == MODE_BTMUSIC) {
             		if (true || mViewPager.getCurrentItem() == VIEWPAGER_ID_MUSIC) {
                 		goPlay(false, true);
             		}
             	}
             }
         }
-        setCurSource(source, false);
+        setCurSource(mode, false);
         if (intent != null && "com.haoke.data.ModeSwitch".equals(intent.getAction())) {
             pressBackToHome = true;
         }
     }
     
-    private void setCurSource(int curSource) {
-        setCurSource(curSource, true);
+    private void setCurSource(int mode) {
+        setCurSource(mode, true);
     }
 
-    private void setCurSource(int curSource, boolean smoothScroll) {
-        int tabSource = ModeDef.AUDIO;
+    private void setCurSource(int mode, boolean smoothScroll) {
+        int tabSource = MODE_AUDIO;
         int tabItem = VIEWPAGER_ID_MUSIC;
-        if (curSource == ModeDef.RADIO) {//3 收音
-        	tabSource = ModeDef.RADIO;
+        if (mode == MODE_RADIO) {//3 收音
+        	tabSource = MODE_RADIO;
         	tabItem = VIEWPAGER_ID_RADIO;
-        } else if (curSource == ModeDef.AUDIO || curSource == ModeDef.BT) {//5、1  我的音乐
-        	tabSource = ModeDef.AUDIO;
+        } else if (mode == MODE_AUDIO || mode == MODE_BTMUSIC) {//5、1  我的音乐
+        	tabSource = MODE_AUDIO;
         	tabItem = VIEWPAGER_ID_MUSIC;
         } else { // 默认进入音乐
-        	tabSource = ModeDef.AUDIO;
+        	tabSource = MODE_AUDIO;
         	tabItem = VIEWPAGER_ID_MUSIC;
         }
         Log.d(TAG, "setCurSource tabSource="+tabSource+"; tabItem="+tabItem);
@@ -247,7 +256,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
         mViewPager.setOnPageChangeListener(mPageChangeListener);
         if (mViewPager.getCurrentItem() == VIEWPAGER_ID_RADIO) {
             mSearchButton.setVisibility(View.VISIBLE);
-        } else if (curSource == ModeDef.BT || mHomeFragment.isBTMusicPlayFragment()) {
+        } else if (mode == MODE_BTMUSIC || mHomeFragment.isBTMusicPlayFragment()) {
             mSearchButton.setVisibility(View.INVISIBLE);
         } else {
             mSearchButton.setVisibility(View.VISIBLE);
@@ -365,13 +374,13 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
         @Override public void onPageScrolled(int arg0, float arg1, int arg2) {}
         @Override
         public void onPageSelected(int arg0) {
-            int source = ModeDef.NULL;
+            int source = -1;
             switch (arg0) {
             case 0:
-                source = ModeDef.RADIO;
+                source = MODE_RADIO;
                 break;
             case 1:
-                source = ModeDef.AUDIO;
+                source = MODE_AUDIO;
                 break;
             default:
                 return;
@@ -385,9 +394,9 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
         int id = view.getId();
         Log.d(TAG, "onClick id="+id);
         if (id == R.id.media_tab_radio) {
-            setCurSource(ModeDef.RADIO);
+            setCurSource(MODE_RADIO);
         } else if (id == R.id.media_tab_music) {
-            setCurSource(ModeDef.AUDIO);
+            setCurSource(MODE_AUDIO);
         } else if (id == R.id.search_button) {
             if (mViewPager.getCurrentItem() == VIEWPAGER_ID_RADIO) {
                 startActivity(new Intent(this, SearchRadioActivity.class));

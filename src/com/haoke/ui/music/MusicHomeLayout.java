@@ -22,9 +22,9 @@ import com.haoke.bean.StorageBean;
 import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.LoadListener;
-import com.haoke.define.MediaDef.DeviceType;
-import com.haoke.define.MediaDef.FileType;
-import com.haoke.define.MediaDef.ScanState;
+import com.haoke.constant.MediaUtil.DeviceType;
+import com.haoke.constant.MediaUtil.FileType;
+import com.haoke.constant.MediaUtil.ScanState;
 import com.haoke.mediaservice.R;
 import com.haoke.ui.media.Media_Activity_Main;
 import com.haoke.ui.widget.CustomDialog;
@@ -226,8 +226,8 @@ public class MusicHomeLayout extends LinearLayout implements OnClickListener,
     private void refreshInterface() {
         mHistoryTextView.setText(BT_IF.getInstance().getConnState() == BTConnState.DISCONNECTED ?
                 R.string.music_scan_bt_free : R.string.bt_connect_success);
-        deviceChanged(DeviceType.USB1, Media_IF.getInstance().getScanState(DeviceType.USB1) == ScanState.NO_DEVICE);
-        deviceChanged(DeviceType.USB2, Media_IF.getInstance().getScanState(DeviceType.USB2) == ScanState.NO_DEVICE);
+        deviceChanged(DeviceType.USB1, Media_IF.getInstance().getScanState(DeviceType.USB1) == ScanState.NO_MEDIA_STORAGE);
+        deviceChanged(DeviceType.USB2, Media_IF.getInstance().getScanState(DeviceType.USB2) == ScanState.NO_MEDIA_STORAGE);
 	}
     
     private void startBTFragment() {

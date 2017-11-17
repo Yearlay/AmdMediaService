@@ -1,7 +1,7 @@
 package com.amd.media;
 
 import com.amd.radio.Radio_IF;
-import static com.haoke.define.MediaDef.RepeatMode.CIRCLE;
+import static com.haoke.constant.MediaUtil.RepeatMode.CIRCLE;
 import com.haoke.util.Media_IF;
 
 import android.content.BroadcastReceiver;

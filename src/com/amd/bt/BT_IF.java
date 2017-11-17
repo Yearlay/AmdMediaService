@@ -5,14 +5,14 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import com.amd.media.MediaInterfaceUtil;
+import com.amd.util.Source;
 import com.haoke.aidl.IBTCallBack;
 import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.btjar.main.BTDef.BTDeviceState;
 import com.haoke.btjar.main.BTDef.BTOnOffState;
 import com.haoke.btjar.main.BTDef.BTPairState;
 import com.haoke.btjar.main.BTDef.BTSearchState;
-import com.haoke.define.ModeDef;
-import com.haoke.define.MediaDef.PlayState;
+import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.service.BTMusicService;
 import com.haoke.serviceif.BTService_IF;
 import com.haoke.serviceif.BTService_Listener;
@@ -25,7 +25,7 @@ public class BT_IF extends BTService_IF {
 	private boolean mServiceConn = false;
 
 	public BT_IF() {
-		mMode = ModeDef.BTMUSIC;
+		mMode = com.haoke.define.ModeDef.BTMUSIC;
 		mBTCallBack = new BT_CallBack();
 
 		// 以下处理服务回调
@@ -33,7 +33,6 @@ public class BT_IF extends BTService_IF {
 			@Override
 			public void onDataChange(int mode, int func, int data)
 					throws RemoteException {
-				// TODO Auto-generated method stub
 				mBTCallBack.onDataChange(mode, func, data);
 			}
 		};
@@ -48,7 +47,7 @@ public class BT_IF extends BTService_IF {
 	}
 	
 	private void setBTSource() {
-		BTMusic_IF.getInstance().setCurSource(ModeDef.BT);
+		Source.setBTMusicSource();
 	}
 
 	// 设置上下文

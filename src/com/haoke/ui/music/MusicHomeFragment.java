@@ -11,15 +11,14 @@ import android.widget.Toast;
 import com.amd.bt.BTMusic_IF;
 import com.amd.bt.BT_IF;
 import com.amd.bt.BT_Listener;
+import com.amd.util.Source;
 import com.archermind.skinlib.SkinManager;
 import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.btjar.main.BTDef.BTFunc;
 import com.haoke.constant.MediaUtil.DeviceType;
-import com.haoke.constant.MediaUtil.MediaFuncEx;
-import com.haoke.define.ModeDef;
-import com.haoke.define.MediaDef.MediaFunc;
-import com.haoke.define.MediaDef.MediaState;
-import com.haoke.define.MediaDef.PlayState;
+import com.haoke.constant.MediaUtil.MediaFunc;
+import com.haoke.constant.MediaUtil.MediaState;
+import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.mediaservice.R;
 import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
@@ -100,7 +99,7 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 	}
 	
 	public void onNewIntent(int source, boolean autoPlay) {
-		if (source == ModeDef.BT) {
+		if (Source.isBTMusicSource(source)) {
 			if (autoPlay) {
 				mBTIF.music_play();
 			}
@@ -163,9 +162,9 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 		boolean isAudioMusicPlayFragment = mShowLayout == ShowLayout.AUDIO_PLAY_LAYOUT;
 		boolean isBtMusicPlayFragment = mShowLayout == ShowLayout.BT_PLAY_LAYOUT;
 		boolean isHomeFragment = mShowLayout == ShowLayout.HOME_LAYOUT;
-		int source = mIF.getCurSource();
-		boolean isAudioMusicPlay = (source == ModeDef.AUDIO && mIF.getPlayState() == PlayState.PLAY);
-		boolean isBTMusicPlay = (source == ModeDef.BT && mBTIF.music_isPlaying());
+		int source = Media_IF.getCurSource();
+		boolean isAudioMusicPlay = (Source.isAudioSource(source) && mIF.getPlayState() == PlayState.PLAY);
+		boolean isBTMusicPlay = (Source.isBTMusicSource(source) && mBTIF.music_isPlaying());
 		//Activity activity = getActivity();
 		if (mContext instanceof com.haoke.ui.media.Media_Activity_Main) {
 			((com.haoke.ui.media.Media_Activity_Main)mContext).setCurPlayViewState(
@@ -211,7 +210,7 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 			case MediaFunc.RANDOM_MODE:
 				randomModeChanged(data1); // play-108
 				break;
-			case MediaFuncEx.MEDIA_SCAN_MODE:
+			case MediaFunc.MEDIA_SCAN_MODE:
 			    scanModeChanged(data1);
 			    break;
 			default:
@@ -328,11 +327,11 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 	public void goPlay(boolean toast, boolean noPlayGoHome) {
 		int playState = mIF.getPlayState();
 		boolean btPlaying = mBTIF.music_isPlaying();
-		int curSource = mIF.getCurSource();
+		int curSource = Media_IF.getCurSource();
 		// 更新界面状态
-		if (curSource == ModeDef.AUDIO && playState != PlayState.STOP) {
+		if (Source.isAudioSource(curSource) && playState != PlayState.STOP) {
 			changeShowLayout(ShowLayout.AUDIO_PLAY_LAYOUT);
-		} else if (curSource == ModeDef.BT && btPlaying) {
+		} else if (Source.isBTMusicSource(curSource) && btPlaying) {
 			changeShowLayout(ShowLayout.BT_PLAY_LAYOUT);
 		} else {
 			Log.e(TAG, "goPlay no song playing!");
@@ -348,7 +347,7 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 	@Override
 	public void onBTDataChange(int mode, int func, int data) {
 		Log.d(TAG, "onBTDataChange mode="+mode+"; func="+func+"; data="+data);
-		if (mode == ModeDef.BT) {
+		if (mode == com.haoke.define.ModeDef.BT) {
 			switch (func) {
 			case BTFunc.CONN_STATE://101
 				onBTStateChange(data);
@@ -390,7 +389,7 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 			if (data == BTConnState.CONNECTED) {
 				mBtConnected = true;
 			}
-			if (Media_IF.getCurSource() != ModeDef.BT) {
+			if (!Source.isBTMusicSource()) {
 				
 			} else if (data == BTConnState.CONNECTED) {
 				if (mShowLayout != ShowLayout.BT_PLAY_LAYOUT) {

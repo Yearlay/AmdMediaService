@@ -3,18 +3,13 @@ package com.amd.bt;
 import java.util.ArrayList;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import com.haoke.application.MediaApplication;
-import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.btjar.main.BTDef.BTFunc;
 import com.haoke.data.AllMediaList;
-import com.haoke.define.ModeDef;
 import com.haoke.serviceif.BTService_Listener;
-import com.haoke.util.Media_IF;
 
 public class BT_CallBack {
 
@@ -108,23 +103,8 @@ public class BT_CallBack {
 			}
 			if (func == BTFunc.MUSIC_PLAY_STATE ||
 					func == BTFunc.MUSIC_ID3_UPDATE) {
-				AllMediaList.notifyUpdateAppWidget(ModeDef.BT);
+				AllMediaList.notifyUpdateAppWidgetByBTMusic();
 			}
-//			if (func == BTFunc.CONN_STATE) {
-//				if (data == BTConnState.DISCONNECTED &&
-//						Media_IF.getCurSource() == ModeDef.BT) {
-//					Intent intent = new Intent("main_activity_update_ui");
-//					intent.putExtra("bt_disconnect", true);
-//					MediaApplication.getInstance().sendBroadcast(intent);
-//				}
-//				
-//				if (data == BTConnState.CONNECTED &&
-//						Media_IF.getCurSource() != ModeDef.BT) {
-//					Intent intent = new Intent("main_activity_update_ui");
-//					intent.putExtra("bt_connected", true);
-//					MediaApplication.getInstance().sendBroadcast(intent);
-//				}
-//			}
 		}
 	}
 }

@@ -8,9 +8,8 @@ import com.amd.media.AmdMediaManager;
 import com.amd.media.MediaInterfaceUtil;
 import com.haoke.aidl.IMediaCallBack;
 import com.haoke.bean.FileNode;
-import com.haoke.define.MediaDef.MediaState;
-import com.haoke.define.MediaDef.PlayState;
-import com.haoke.define.ModeDef;
+import com.haoke.constant.MediaUtil.MediaState;
+import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.serviceif.CarService_Listener;
 import com.haoke.util.Media_CallBack;
 import com.haoke.util.Media_CarListener;
@@ -23,7 +22,7 @@ class VideoManager extends AmdMediaManager {
 	public VideoManager() {
 		super();
 		TAG = "VideoManager";
-		mMediaMode = ModeDef.VIDEO;
+		mMediaMode = MEDIA_MODE_VIDEO;
 		mComponentName = new ComponentName(mContext, VideoMediaButtonReceiver.class); 
 	}
 }
@@ -84,7 +83,7 @@ public class Video_IF {
 
 	// 注销本地服务回调（模块相关变化）
 	public void unregisterLocalCallBack(Media_Listener listener) {
-		mMediaCallBack.registerMediaCallBack(listener);
+		mMediaCallBack.unregisterMediaCallBack(listener);
 	}
 	
 	public int getMode() {

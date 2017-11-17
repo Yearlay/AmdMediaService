@@ -14,10 +14,9 @@ import com.haoke.define.McuDef;
 import com.haoke.define.EQDef.EQFunc;
 import com.haoke.define.McuDef.McuFunc;
 import com.haoke.define.McuDef.PowerState;
-import com.haoke.define.MediaDef.MediaFunc;
-import com.haoke.define.MediaDef.MediaState;
-import com.haoke.define.MediaDef.PlayState;
-import com.haoke.define.ModeDef;
+import com.haoke.constant.MediaUtil.MediaFunc;
+import com.haoke.constant.MediaUtil.MediaState;
+import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.receiver.MediaReceiver;
 import com.haoke.scanner.MediaScanner;
 import com.haoke.scanner.MediaScannerListner;
@@ -29,6 +28,7 @@ import com.haoke.util.Media_Listener;
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.media.VRInterfaceUtil;
 import com.amd.radio.Radio_IF;
+import com.amd.util.Source;
 import com.jsbd.util.Meter_IF;
 
 import android.app.Service;
@@ -156,10 +156,10 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     }
 
     public static final int MSG_UPDATE_APPWIDGET_BASE = 100;
-    public static final int MSG_UPDATE_APPWIDGET_ALL = MSG_UPDATE_APPWIDGET_BASE + ModeDef.NULL;
-    public static final int MSG_UPDATE_APPWIDGET_BT = MSG_UPDATE_APPWIDGET_BASE + ModeDef.BT;
-    public static final int MSG_UPDATE_APPWIDGET_AUDIO = MSG_UPDATE_APPWIDGET_BASE + ModeDef.AUDIO;
-    public static final int MSG_UPDATE_APPWIDGET_RADIO = MSG_UPDATE_APPWIDGET_BASE + ModeDef.RADIO;
+    public static final int MSG_UPDATE_APPWIDGET_ALL = MSG_UPDATE_APPWIDGET_BASE + MediaUtil.UpdateWidget.ALL;
+    public static final int MSG_UPDATE_APPWIDGET_BT = MSG_UPDATE_APPWIDGET_BASE + MediaUtil.UpdateWidget.BTMUSIC;
+    public static final int MSG_UPDATE_APPWIDGET_AUDIO = MSG_UPDATE_APPWIDGET_BASE + MediaUtil.UpdateWidget.AUDIO;
+    public static final int MSG_UPDATE_APPWIDGET_RADIO = MSG_UPDATE_APPWIDGET_BASE + MediaUtil.UpdateWidget.RADIO;
     private Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {
             int what = msg.what;
@@ -193,7 +193,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     
     @Override
     public void onCarDataChange(int mode, int func, int data) {
-        if (mode == ModeDef.MCU && func == McuFunc.KEY) {
+        if (mode == com.haoke.define.ModeDef.MCU && func == McuFunc.KEY) {
             int keyState = data >> 8;
             int keyCode = data & 0xFF;
             if (keyState == McuDef.KeyState.PRESS_RELEASED) {
@@ -205,7 +205,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
                 }
             }
         }
-        if (mode == ModeDef.MCU) {
+        if (mode == com.haoke.define.ModeDef.MCU) {
             Log.v(TAG, "onCarDataChange MCU func=" + func + ", data=" + data);
             switch (func) {
             case McuFunc.SOURCE:
@@ -223,20 +223,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
                 break;
             }
             
-        } else if (mode == ModeDef.BT) { // 通话开始或结束，声音需要处理
-            int source = mMediaIF.getCurSource();
-            
-            Log.v(TAG, "onCarDataChange BT func=" + func + ", data=" + data + "; source="+source);
-            
-            /*if (func == BTFunc.CALL_STATE) {
-                if (source == ModeDef.AUDIO || source == ModeDef.VIDEO) { // 处于当前源
-                    if (data == BTCallState.IDLE) { // 打完电话，需要再切下通道，避免没声音
-                        Log.v(TAG, "onCarDataChange openAvio");
-                        mMediaIF.audioFocusChanged(PlayState.PLAY);
-                    }
-                }
-            }*/
-        } else if (mode == ModeDef.EQ) {
+        } else if (mode == com.haoke.define.ModeDef.EQ) {
             if (func == EQFunc.MUTE) {
                 if (data == 0) {  //取消静音
                     MediaInterfaceUtil.cancelMuteRecordPlayState(KeyEvent.KEYCODE_MUTE);
@@ -349,7 +336,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     @Override
     public void onBTDataChange(int mode, int func, int data) { // 目的是给仪表发送信息。
         boolean needToSend = false;
-        if (mode == ModeDef.BT) {
+        if (mode == com.haoke.define.ModeDef.BT) {
             switch (func) {
             case BTFunc.MUSIC_PLAY_STATE://400
                 needToSend = mBTIF.music_isPlaying();

@@ -20,13 +20,14 @@ import com.haoke.bean.FileNode;
 import com.haoke.bean.ID3Parse;
 import com.haoke.bean.ID3Parse.ID3ParseListener;
 import com.haoke.btjar.main.BTDef.BTConnState;
+import com.haoke.constant.MediaUtil;
 import com.haoke.constant.MediaUtil.FileType;
-import com.haoke.define.MediaDef.PlayState;
-import com.haoke.define.ModeDef;
+import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.mediaservice.R;
 import com.haoke.util.DebugLog;
 import com.haoke.util.Media_IF;
 import com.amd.radio.Radio_IF;
+import com.amd.util.Source;
 
 public class MediaWidgetProvider extends AppWidgetProvider {
 
@@ -43,11 +44,11 @@ public class MediaWidgetProvider extends AppWidgetProvider {
     
     private static void setLabelInfo(Context context, RemoteViews remoteViews, int source) {
         int strId = R.string.launcher_card_media;
-        if (source == ModeDef.RADIO) {
+        if (Source.isRadioSource(source)) {
             strId = R.string.pub_radio;
-        } else if (source == ModeDef.BT) {
+        } else if (Source.isBTMusicSource(source)) {
             strId = R.string.pub_bt;
-        } else if (source == ModeDef.AUDIO) {
+        } else if (Source.isAudioSource(source)) {
             strId = R.string.launcher_card_media;
         }
         String title = context.getResources().getString(strId);
@@ -58,10 +59,10 @@ public class MediaWidgetProvider extends AppWidgetProvider {
         String unkownStr = context.getResources().getString(R.string.media_unknow);
         String musicTitle  = null;
         String artist  = null;
-        if (source == ModeDef.BT) {
+        if (Source.isBTMusicSource(source)) {
             musicTitle = BT_IF.getInstance().music_getTitle();
             artist = BT_IF.getInstance().music_getArtist();
-        } else if (source == ModeDef.AUDIO || source == ModeDef.NULL) {
+        } else if (Source.isAudioSource(source) || source == Source.NULL) {
             FileNode fileNode = getFileNode(context);
             if (fileNode != null) {
                 musicTitle = fileNode.getTitleEx();
@@ -78,9 +79,9 @@ public class MediaWidgetProvider extends AppWidgetProvider {
     private static Bitmap mBitmap;
     
     private static void setShowImage(Context context, RemoteViews remoteViews, int source) {
-    	if (source == ModeDef.BT) {
+    	if (Source.isBTMusicSource(source)) {
             remoteViews.setImageViewResource(R.id.widget_media_icon, R.drawable.home1_card_bt_default);
-        } else if (source == ModeDef.AUDIO || source == ModeDef.NULL) {
+        } else if (Source.isAudioSource(source) || source == Source.NULL) {
             FileNode fileNode = getFileNode(context);
             if (fileNode != null) {
                 if (fileNode.getParseId3() == 1 && fileNode.getThumbnailPath() != null) {
@@ -102,10 +103,10 @@ public class MediaWidgetProvider extends AppWidgetProvider {
     private static void setMusicPlayButton(Context context, RemoteViews remoteViews, int source) {
         int resPlayId = R.drawable.main_home1_card_music_play_selector;
         int resPauseId = R.drawable.main_home1_card_music_pause_selector;
-        if (source == ModeDef.BT) {
+        if (Source.isBTMusicSource(source)) {
             remoteViews.setImageViewResource(R.id.widget_music_btn_play,
                     BT_IF.getInstance().music_isPlaying() ? resPauseId : resPlayId);
-        } else if (source == ModeDef.AUDIO) {
+        } else if (Source.isAudioSource(source)) {
             remoteViews.setImageViewResource(R.id.widget_music_btn_play,
                     Media_IF.getInstance().getPlayState() == PlayState.PLAY ? resPauseId : resPlayId);
         } else {
@@ -114,7 +115,7 @@ public class MediaWidgetProvider extends AppWidgetProvider {
     }
     
     private static void setRadioPlayButton(Context context, RemoteViews remoteViews, int source) {
-        if (source == ModeDef.RADIO && Radio_IF.getInstance().isEnable()) {
+        if (Source.isRadioSource(source) && Radio_IF.getInstance().isEnable()) {
             remoteViews.setImageViewResource(R.id.widget_radio_btn_play,
                     R.drawable.main_home1_card_radio_pause_selector);
         } else {
@@ -153,7 +154,7 @@ public class MediaWidgetProvider extends AppWidgetProvider {
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.media_widget_provider);
         setonClickPendding(context, remoteViews);
-        setAllInfo(context, remoteViews, ModeDef.NULL);
+        setAllInfo(context, remoteViews, Source.NULL);
         updateAppWidgets(context, remoteViews);
         super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
@@ -195,17 +196,12 @@ public class MediaWidgetProvider extends AppWidgetProvider {
         }
         if ("main_activity_update_ui".equals(intent.getAction())) {
             if (intent.getBooleanExtra("bt_disconnect", false)) {
-                if (Media_IF.getCurSource() == ModeDef.BT) {
-                    Media_IF.setCurSource(ModeDef.NULL);
-                }
-            }
-            if (intent.getBooleanExtra("bt_connected", false)) {
-                if (Media_IF.getCurSource() != ModeDef.AUDIO) {
-                    // Media_IF.setCurSource(ModeDef.BT);
+                if (Source.isBTMusicSource()) {
+                    Media_IF.setCurSource(Source.NULL);
                 }
             }
             RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.media_widget_provider);
-            setAllInfo(context, remoteViews, ModeDef.NULL);
+            setAllInfo(context, remoteViews, Source.NULL);
             updateAppWidgets(context, remoteViews);
         }
         super.onReceive(context, intent);
@@ -231,20 +227,25 @@ public class MediaWidgetProvider extends AppWidgetProvider {
     private static void setAllInfo(Context context, RemoteViews remoteViews, int refreshMode) {
         int source = Media_IF.getCurSource();
         DebugLog.d("Yearlay", "setAllInfo source: " + source + "; refreshMode="+refreshMode);
-        if (refreshMode == ModeDef.BT || refreshMode == ModeDef.RADIO || refreshMode == ModeDef.AUDIO || refreshMode == ModeDef.NULL) {
+        if (refreshMode == MediaUtil.UpdateWidget.BTMUSIC 
+                || refreshMode == MediaUtil.UpdateWidget.RADIO 
+                || refreshMode == MediaUtil.UpdateWidget.AUDIO 
+                || refreshMode == MediaUtil.UpdateWidget.ALL) {
             setLabelInfo(context, remoteViews, source); // 更新Label信息。
         }
-        if (refreshMode == ModeDef.BT || refreshMode == ModeDef.AUDIO || refreshMode == ModeDef.NULL) {
+        if (refreshMode == MediaUtil.UpdateWidget.BTMUSIC 
+                || refreshMode == MediaUtil.UpdateWidget.AUDIO 
+                || refreshMode == MediaUtil.UpdateWidget.ALL) {
             int sourceEx = source;
-            if (source != ModeDef.BT && refreshMode == ModeDef.BT) {
+            if (!Source.isBTMusicSource(source) && refreshMode == MediaUtil.UpdateWidget.BTMUSIC) {
                 if (!(BT_IF.getInstance().getConnState() == BTConnState.CONNECTED)) {
-                    sourceEx = ModeDef.NULL;
+                    sourceEx = Source.NULL;
                 }
             }
             setMusicInfo(context, remoteViews, sourceEx); // 更新Music（蓝牙音乐或我的音乐）的信息。
             setShowImage(context, remoteViews, sourceEx); // 更新Music（蓝牙显示为默认，我的音乐显示专辑图）显示的图片。
         }
-        if (true || refreshMode == ModeDef.RADIO || refreshMode == ModeDef.NULL) {
+        if (true || refreshMode == MediaUtil.UpdateWidget.RADIO || refreshMode == MediaUtil.UpdateWidget.ALL) {
             setRadioInfo(context, remoteViews);
         }
         setMusicPlayButton(context, remoteViews, source); // 更新音乐的播放按键。
@@ -253,7 +254,7 @@ public class MediaWidgetProvider extends AppWidgetProvider {
     
     public static void onClickMusicPlayButton(Context context) {
         int source = Media_IF.getCurSource();
-        if (source == ModeDef.BT) {
+        if (Source.isBTMusicSource(source)) {
             if (BT_IF.getInstance().music_isPlaying()) {
                 BT_IF.getInstance().music_pause();
                 BT_IF.getInstance().setRecordPlayState(PlayState.PAUSE);
@@ -261,21 +262,16 @@ public class MediaWidgetProvider extends AppWidgetProvider {
                 BT_IF.getInstance().music_play();
                 BT_IF.getInstance().setRecordPlayState(PlayState.PLAY);
             }
-        } else if (source == ModeDef.AUDIO) {
+        } else if (Source.isAudioSource(source)) {
             if (getFileNode(context) != null) {
                 Media_IF.getInstance().changePlayState();
             } else {
                 Toast.makeText(context, R.string.no_media_can_play, Toast.LENGTH_SHORT).show();
             }
         } else {
-            if (Media_IF.getCurSource() == ModeDef.RADIO) {
-                Radio_IF.getInstance().setEnable(false);
-            }
-            if (Media_IF.sLastSource == ModeDef.BT) {
-                // Media_IF.setCurSource(ModeDef.BT);
+            if (Source.isBTMusicSource(Media_IF.sLastSource)) {
                 BT_IF.getInstance().music_play();
             } else {
-                // Media_IF.setCurSource(ModeDef.AUDIO);
                 if (Media_IF.getInstance().getPlayingFileType() == FileType.AUDIO) {
                     // 只有是音乐的情况下，才会播放。
                     Media_IF.getInstance().setPlayState(PlayState.PLAY);
@@ -293,9 +289,9 @@ public class MediaWidgetProvider extends AppWidgetProvider {
     }
     
     public static void onClickMusicPreButton(Context context) {
-        if (Media_IF.getCurSource() == ModeDef.BT) {
+        if (Source.isBTMusicSource()) {
             BT_IF.getInstance().music_pre();
-        } else if (Media_IF.getCurSource() == ModeDef.AUDIO) {
+        } else if (Source.isAudioSource()) {
             FileNode fileNode = getFileNode(context);
             if (fileNode != null) {
                 boolean ret = Media_IF.getInstance().playPre();
@@ -306,14 +302,9 @@ public class MediaWidgetProvider extends AppWidgetProvider {
                 Toast.makeText(context, R.string.no_media_can_play, Toast.LENGTH_SHORT).show();
             }
         } else {
-            if (Media_IF.getCurSource() == ModeDef.RADIO) {
-                Radio_IF.getInstance().setEnable(false);
-            }
-            if (Media_IF.sLastSource == ModeDef.BT) {
-                //Media_IF.setCurSource(ModeDef.BT);
+            if (Source.isBTMusicSource(Media_IF.sLastSource)) {
                 BT_IF.getInstance().music_play();
             } else {
-                //Media_IF.setCurSource(ModeDef.AUDIO);
                 FileNode fileNode = getFileNode(context);
                 if (fileNode != null) {
                     Media_IF.getInstance().setAudioDevice(fileNode.getDeviceType());
@@ -328,9 +319,9 @@ public class MediaWidgetProvider extends AppWidgetProvider {
     }
     
     public static void onClickMusicNextButton(Context context) {
-        if (Media_IF.getCurSource() == ModeDef.BT) {
+        if (Source.isBTMusicSource()) {
             BT_IF.getInstance().music_next();
-        } else if (Media_IF.getCurSource() == ModeDef.AUDIO) {
+        } else if (Source.isAudioSource()) {
             FileNode fileNode = getFileNode(context);
             if (fileNode != null) {
                 boolean ret = Media_IF.getInstance().playNext();
@@ -341,17 +332,11 @@ public class MediaWidgetProvider extends AppWidgetProvider {
                 Toast.makeText(context, R.string.no_media_can_play, Toast.LENGTH_SHORT).show();
             }
         } else {
-            if (Media_IF.getCurSource() == ModeDef.RADIO) {
-                Radio_IF.getInstance().setEnable(false);
-            }
-            if (Media_IF.sLastSource == ModeDef.BT) {
-                // Media_IF.setCurSource(ModeDef.BT);
+            if (Source.isBTMusicSource(Media_IF.sLastSource)) {
                 BT_IF.getInstance().music_play();
             } else {
-                // Media_IF.setCurSource(ModeDef.AUDIO);
                 FileNode fileNode = getFileNode(context);
                 if (fileNode != null) {
-                    // Media_IF.setCurSource(ModeDef.AUDIO);
                     Media_IF.getInstance().setAudioDevice(fileNode.getDeviceType());
                     if (!Media_IF.getInstance().playNext()) {
                         Media_IF.getInstance().changePlayState();

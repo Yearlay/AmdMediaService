@@ -13,29 +13,26 @@ import com.haoke.aidl.IMediaCallBack;
 import com.haoke.application.MediaApplication;
 import com.amd.media.AudioFocus;
 import com.amd.media.AudioFocus.AudioFocusListener;
+import com.amd.util.Source;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.ID3Parse;
 import com.haoke.bean.StorageBean;
 import com.haoke.constant.MediaUtil;
 import com.haoke.constant.MediaUtil.CopyState;
-import com.haoke.constant.MediaUtil.MediaFuncEx;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.LoadListener;
 import com.haoke.data.OperateListener;
-import com.haoke.define.MediaDef.DeleteState;
-import com.haoke.define.MediaDef.DeviceType;
-import com.haoke.define.MediaDef.FileType;
-import com.haoke.define.MediaDef.MediaFunc;
-import com.haoke.define.MediaDef.MediaState;
-import com.haoke.define.MediaDef.PlayState;
-import com.haoke.define.MediaDef.RandomMode;
-import com.haoke.define.MediaDef.RepeatMode;
-import com.haoke.define.MediaDef.ScanState;
-import com.haoke.define.ModeDef;
+import com.haoke.constant.MediaUtil.DeleteState;
+import com.haoke.constant.MediaUtil.DeviceType;
+import com.haoke.constant.MediaUtil.FileType;
+import com.haoke.constant.MediaUtil.MediaFunc;
+import com.haoke.constant.MediaUtil.MediaState;
+import com.haoke.constant.MediaUtil.PlayState;
+import com.haoke.constant.MediaUtil.RandomMode;
+import com.haoke.constant.MediaUtil.RepeatMode;
+import com.haoke.constant.MediaUtil.ScanState;
 import com.haoke.service.MediaClient;
-import com.haoke.service.MediaService;
 import com.haoke.spectrum.Spectrum;
-import com.haoke.util.DebugLog;
 import com.haoke.util.Media_IF;
 import com.haoke.video.VideoSurfaceView;
 
@@ -48,7 +45,9 @@ import android.os.RemoteException;
 import android.util.Log;
 
 public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListener {
-
+    public static final int MEDIA_MODE_AUDIO = 1;
+    public static final int MEDIA_MODE_VIDEO = 2;
+    
 	protected String TAG = "AmdMediaManager";
 	protected Context mContext = null;
 	private AmdMediaPlayer mMediaPlayer = null;
@@ -62,7 +61,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	
 	private boolean mIsPlayDefault = false;
 	
-    private int mCurSource = ModeDef.NULL;
+    private int mCurSource = Source.NULL;
     
     private AllMediaList mAllMediaList;
 
@@ -88,7 +87,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	private AudioManager mAudioManager;
 	protected ComponentName mComponentName;
 	
-	protected int mMediaMode = ModeDef.MEDIA;
+	protected int mMediaMode = MEDIA_MODE_AUDIO;
 	private boolean mPrevFlag = false;
 
 	public AmdMediaManager() {
@@ -341,7 +340,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		if (mPlayingDeviceType == DeviceType.NULL || mPlayingFileType == FileType.NULL) {
 			setPlayingData(node.getDeviceType(), node.getFileType(), true);
 		}
-		changeSource(mPlayingFileType);
+		changeSource(mPlayingDeviceType, mPlayingFileType);
 		if (mPlayingFileType == FileType.AUDIO && mRepeatMode == RepeatMode.RANDOM) { // 随机开
 			mRandomListPos = changeIndexToRandomPos(mPlayingPos);
 		}
@@ -473,7 +472,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 			if (mPlayingFileNode != null) {
                 if (mMediaPlayer.getMediaState() == MediaState.PREPARED) {
                     if (requestAudioFocus(true)) {
-                        changeSource(mPlayingFileType); // 确保当前源在媒体
+                        changeSource(mPlayingDeviceType, mPlayingFileType); // 确保当前源在媒体
                         mMediaPlayer.start();
                         mPlayState = PlayState.PLAY;
                         onDataChanged(mMediaMode, MediaFunc.PLAY_STATE, getPlayState(), 0);
@@ -532,7 +531,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	public void setScanMode(boolean enable) {
 	    if (mScanMode != enable) {
 	        mScanMode = enable;
-	        onDataChanged(mMediaMode, MediaFuncEx.MEDIA_SCAN_MODE, enable ? 1 : 0, 0);
+	        onDataChanged(mMediaMode, MediaFunc.MEDIA_SCAN_MODE, enable ? 1 : 0, 0);
         }
 	}
 	
@@ -845,15 +844,15 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 			if (deviceType == mDeviceType && fileType == mFileType) {
 				Log.d(TAG, "mLoadListener onLoadCompleted MEDIA_LIST_UPDATE");
 				loadData();
-				onDataChanged(mMediaMode, MediaUtil.MediaFuncEx.MEDIA_LIST_UPDATE, deviceType, fileType);
+				onDataChanged(mMediaMode, MediaUtil.MediaFunc.MEDIA_LIST_UPDATE, deviceType, fileType);
 			}
 			if (deviceType == mPlayingDeviceType && fileType == mPlayingFileType) {
 				setPlayingData(deviceType, fileType, false);
 			}
-			if (mMediaMode == ModeDef.MEDIA && fileType == FileType.AUDIO
+			if (mMediaMode == MEDIA_MODE_AUDIO && fileType == FileType.AUDIO
 			        && deviceType == mAllMediaList.getLastDeviceType()) {
 			    mPlayMusicFileNode = null;
-			    AllMediaList.notifyUpdateAppWidget(ModeDef.AUDIO);
+			    AllMediaList.notifyUpdateAppWidgetByAudio();
 			}
 		}
 		
@@ -884,7 +883,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 					}
 				}
 			}
-			if (storageBean.isId3ParseCompleted() && mMediaMode == ModeDef.MEDIA) {
+			if (storageBean.isId3ParseCompleted() && mMediaMode == MEDIA_MODE_AUDIO) {
 				RecordDevicePlay.instance().checkUsbPlay(storageBean.getDeviceType());
 			}
 		}
@@ -982,21 +981,17 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	/**
 	 * 只供播放时，文件类型的改变
 	 */
-	private void changeSource(int fileType) {
+	private void changeSource(int deviceType, int fileType) {
 		// 判断是否通知MCU切源
-		int source = ModeDef.NULL;
+		int source = Source.NULL;
 		if (fileType == FileType.AUDIO) {
-			source = ModeDef.AUDIO;
+			source = Source.AUDIO + deviceType;
 		} else if (fileType == FileType.VIDEO) {
-			source = ModeDef.VIDEO;
+			source = Source.VIDEO + deviceType;
 		} else {
 			return;
 		}
 		Media_IF.setCurSource(source);
-//		if (mCurSource != source) {
-//			mCurSource = source;
-//			com.haoke.util.Media_IF.setCurSource(mCurSource);
-//		}
 	}
 	
 	/**
@@ -1006,20 +1001,6 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	public void sourceChanged(int source) {
 		Log.v(TAG, "sourceChanged source=" + source);
 		RecordDevicePlay.instance().sourceChanged(source);
-//		if (source == ModeDef.IMAGE) {
-//			return;
-//		}
-//		if (source != ModeDef.AUDIO && source != ModeDef.VIDEO) {
-//			mCurSource = ModeDef.NULL;
-////			if (getPlayState() == PlayState.PLAY) {
-////				Log.v(TAG, "sourceChanged setPlayState PAUSE");
-////				setPlayState(PlayState.PAUSE); // 暂停播放
-////			}
-//		}
-//		if (source != ModeDef.AUDIO && source != ModeDef.VIDEO 
-//				&& source != ModeDef.IMAGE ) {
-//			mCurSource = source;
-//		}
 	}
 	
 	private boolean hasAudioFocus() {
@@ -1076,7 +1057,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 			break;
 			
 		case PlayState.STOP:
-			MediaInterfaceUtil.resetMediaPlayStateRecord(mPlayingFileType == FileType.AUDIO ? ModeDef.AUDIO : ModeDef.VIDEO);
+			//MediaInterfaceUtil.resetMediaPlayStateRecord(mPlayingFileType == FileType.AUDIO ? Source.AUDIO : Source.VIDEO);
 			if (mComponentName != null) {
 				mAudioManager.unregisterMediaButtonEventReceiver(mComponentName);
 			}
@@ -1101,7 +1082,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
         int state = storageBean.getState();
         switch (state) {
         case StorageBean.EJECT:
-        	returnVal = ScanState.NO_DEVICE;
+        	returnVal = ScanState.NO_MEDIA_STORAGE;
         	break;
         case StorageBean.MOUNTED:
         	returnVal = ScanState.IDLE;
@@ -1335,17 +1316,17 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
             }
         }
         if (selectedList.size() > 0) {
-        	onDataChanged(mMediaMode, MediaFuncEx.MEDIA_COPY_FILE, CopyState.COPYING, -1);
+        	onDataChanged(mMediaMode, MediaFunc.MEDIA_COPY_FILE, CopyState.COPYING, -1);
         	OperateListener listener = new OperateListener() {
     			@Override
     			public void onOperateCompleted(int operateValue, int progress,
     					int resultCode) {
-    				onDataChanged(mMediaMode, MediaFuncEx.MEDIA_COPY_FILE, CopyState.COPYING, progress);
+    				onDataChanged(mMediaMode, MediaFunc.MEDIA_COPY_FILE, CopyState.COPYING, progress);
     				if (progress == 100) {
     					if (resultCode == 0) {
-    						onDataChanged(mMediaMode, MediaFuncEx.MEDIA_COPY_FILE, CopyState.SUCCESS, 0);
+    						onDataChanged(mMediaMode, MediaFunc.MEDIA_COPY_FILE, CopyState.SUCCESS, 0);
     					} else {
-    						onDataChanged(mMediaMode, MediaFuncEx.MEDIA_COPY_FILE, CopyState.FAIL, 0);
+    						onDataChanged(mMediaMode, MediaFunc.MEDIA_COPY_FILE, CopyState.FAIL, 0);
     					}
     				}
     			}
@@ -1395,7 +1376,6 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 				IMediaCallBack callBack = clientList.get(i).mCallBack;
 				try {
 					callBack.onDataChange(mode, func, data0, data1);
-					
 				} catch (RemoteException e) {
 					Log.e(TAG, "dispatchDataToClients e=" + e.getMessage());
 					Log.e(TAG, "dispatchDataToClients clientList.remove mode="

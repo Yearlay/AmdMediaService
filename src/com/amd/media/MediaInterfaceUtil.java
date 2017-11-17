@@ -16,6 +16,7 @@ import android.view.KeyEvent;
 import com.amd.bt.BTMusic_IF;
 import com.amd.bt.BT_IF;
 import com.amd.radio.Radio_IF;
+import com.amd.util.Source;
 import com.haoke.application.MediaApplication;
 import com.amd.media.AudioFocus;
 import com.amd.media.AudioFocus.AudioFocusListener;
@@ -26,9 +27,8 @@ import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.ModeSwitch;
-import com.haoke.define.ModeDef;
-import com.haoke.define.MediaDef.DeviceType;
-import com.haoke.define.MediaDef.PlayState;
+import com.haoke.constant.MediaUtil.DeviceType;
+import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.service.BTMusicService;
 import com.haoke.service.MediaService;
 import com.haoke.service.RadioService;
@@ -41,7 +41,7 @@ import com.haoke.util.Media_IF;
 public class MediaInterfaceUtil {
     private static final String TAG = "MediaInterfaceUtil";
     
-    private static int sMediaPlayStateRecord = ModeDef.NULL;
+    //private static int sMediaPlayStateRecord = Source.NULL;
     
     public static final Uri URI_SKIN = Settings.System.getUriFor(SkinTheme.SKIN_KEY_NAME);
     
@@ -49,16 +49,16 @@ public class MediaInterfaceUtil {
     private static boolean sMuteKey_MuteState = false;
     private static boolean sPowerKey_MuteState = false;
     
-    public static void resetMediaPlayStateRecord(int source) {
+    /*public static void resetMediaPlayStateRecord(int source) {
         Log.d(TAG, "resetMediaPlayStateRecord old is "+sMediaPlayStateRecord + "; caller is "+source);
         if (source == sMediaPlayStateRecord) {
-            sMediaPlayStateRecord = ModeDef.NULL;
+            sMediaPlayStateRecord = Source.NULL;
         }
     }
     
     public static void resetMediaPlayStateRecord() {
         Log.d(TAG, "resetMediaPlayStateRecord old is "+sMediaPlayStateRecord );
-        sMediaPlayStateRecord = ModeDef.NULL;
+        sMediaPlayStateRecord = Source.NULL;
     }
     
     private static void setMediaPlayStateRecord(int source) {
@@ -68,7 +68,7 @@ public class MediaInterfaceUtil {
     
     public static int getMediaPlayStateRecord() {
         return sMediaPlayStateRecord;
-    }
+    }*/
     
     private static boolean hasAudioFocus() {
         boolean ret = false;
@@ -102,33 +102,33 @@ public class MediaInterfaceUtil {
             }
             return;
         }
-        resetMediaPlayStateRecord(); 
+        /*resetMediaPlayStateRecord(); 
         boolean mute = Media_IF.getMute();
         if (mute) {
             int source = Media_IF.getCurSource();
-            if (source == ModeDef.RADIO) {
+            if (Source.isRadioSource(source)) {
                 if (Radio_IF.getInstance().isEnable()) {
                     setMediaPlayStateRecord(source);
                     Radio_IF.getInstance().setEnable(false);
                 }
-            } else if (source == ModeDef.AUDIO) {
+            } else if (Source.isAudioSource(source)) {
                 if (Media_IF.getInstance().isPlayState()) {
                     setMediaPlayStateRecord(source);
                     Media_IF.getInstance().setPlayState(PlayState.PAUSE);
                 }
-            } else if (source == ModeDef.VIDEO) {
+            } else if (Source.isVideoSource(source)) {
                 if (Media_IF.getInstance().isPlayState()) {
                     setMediaPlayStateRecord(source);
                     Media_IF.getInstance().setPlayState(PlayState.PAUSE);
                 }
-            } else if (source == ModeDef.BT) {
+            } else if (Source.isBTMusicSource(source)) {
                 if (BT_IF.getInstance().music_isPlaying()) {
                     setMediaPlayStateRecord(source);
                     BT_IF.getInstance().music_pause();
                 }
             }
         }
-        Log.d(TAG, "setMute mute="+mute+"; sMediaPlayStateRecord="+sMediaPlayStateRecord);
+        Log.d(TAG, "setMute mute="+mute+"; sMediaPlayStateRecord="+sMediaPlayStateRecord);*/
     }
     
     public static void cancelMuteRecordPlayState(int key) {
@@ -150,21 +150,21 @@ public class MediaInterfaceUtil {
             }
             return;
         }
-        int source = getMediaPlayStateRecord();
-        if (source != ModeDef.NULL) {
-            if (source == ModeDef.RADIO) {
+        /*int source = getMediaPlayStateRecord();
+        if (source != Source.NULL) {
+            if (Source.isRadioSource(source)) {
                 Radio_IF.getInstance().setEnable(true);
-            } else if (source == ModeDef.AUDIO) {
+            } else if (Source.isAudioSource(source)) {
                 Media_IF.getInstance().setPlayState(PlayState.PLAY);
-            } else if (source == ModeDef.VIDEO) {
+            } else if (Source.isVideoSource(source)) {
                 Media_IF.getInstance().setPlayState(PlayState.PLAY);
-            } else if (source == ModeDef.BT) {
+            } else if (Source.isBTMusicSource(source)) {
                 if (BT_IF.getInstance().getConnState() == BTConnState.CONNECTED) {
                     BT_IF.getInstance().music_play();
                 }
             }
             resetMediaPlayStateRecord();
-        }
+        }*/
     }
     
     private static AudioFocusListener mAudioFocusListener = new AudioFocusListener() {
@@ -369,7 +369,7 @@ public class MediaInterfaceUtil {
             return 200;
         }
         
-        AllMediaList.notifyUpdateAppWidget(ModeDef.NULL);
+        AllMediaList.notifyUpdateAppWidgetByAll();
         
         //null为carmanager没有收到mcu给的信号，true为断B+起来，false为断acc休眠起来
         final Boolean power = Media_IF.getInstance().isFirstPower();
@@ -385,7 +385,7 @@ public class MediaInterfaceUtil {
         int ms = -1;
         //int source = ModeDef.NULL;
         final int source = Media_IF.getCurSource();
-        if (source == ModeDef.RADIO) {
+        if (Source.isRadioSource(source)) {
             if (!Radio_IF.getInstance().isEnable()) {
                 if (Media_IF.getMute()) {
                     Media_IF.cancelMute();
@@ -395,16 +395,16 @@ public class MediaInterfaceUtil {
             if (!isNaviApp(service)) {
                 launchSourceActivity(ModeSwitch.RADIO_MODE, false);
             }
-        } else if (source == ModeDef.AUDIO || source == ModeDef.VIDEO) {
+        } else if (Source.isAudioSource(source) || Source.isVideoSource(source)) {
             AllMediaList allMediaList = AllMediaList.instance(service);
             if (sLastDeviceType == -1) {
-                if (source == ModeDef.AUDIO) {
+                if (Source.isAudioSource(source)) {
                     sLastDeviceType = allMediaList.getLastDeviceType();
                 } else {
                     sLastDeviceType = allMediaList.getLastDeviceTypeVideo();
                 }
             }
-            int fileType = (source == ModeDef.AUDIO ? FileType.AUDIO : FileType.VIDEO);
+            int fileType = (Source.isAudioSource(source) ? FileType.AUDIO : FileType.VIDEO);
             boolean currPlaying = Media_IF.getInstance().isPlayState() || Video_IF.getInstance().isPlayState();
             boolean lastPlaying = true;//allMediaList.getPlayState(fileType);
             Log.d(TAG, "checkSourceFromBoot LastDeviceType="+sLastDeviceType+"; lastPlaying="+lastPlaying+"; currPlaying="+currPlaying);
@@ -423,29 +423,29 @@ public class MediaInterfaceUtil {
                     if (size > 0) {
                         FileNode lastFileNode = allMediaList.getPlayTime(sLastDeviceType, fileType);
                         if (lastFileNode != null) {
-                            if (source == ModeDef.AUDIO) {
+                            if (Source.isAudioSource(source)) {
                                 if (Media_IF.getMute()) {
                                     Media_IF.cancelMute();
                                 }
                                 checkAndPlayDeviceType(sLastDeviceType, fileType);
                             }
                             if (!isNaviApp(service)) {
-                                if (source == ModeDef.AUDIO) {
+                                if (Source.isAudioSource(source)) {
                                     launchMusicPlayActivity(service);
                                 } else {
                                     launchVideoPlayActivity(service, lastFileNode);
                                 }
                             }
                         } else {
-                            //TODO song not exist
+                            // song not exist
                             Log.d(TAG, "checkSourceFromBoot song not exist!");
                         }
                     } else {
-                        //TODO device has no song
+                        // device has no song
                         Log.d(TAG, "checkSourceFromBoot device has no song");
                     }
                 } else {
-                    //TODO loading
+                    // loading
                     boolean mounted = storage.isMounted();
                     Log.d(TAG, "checkSourceFromBoot loading mounted="+mounted);
                     if (mounted) {
@@ -471,7 +471,7 @@ public class MediaInterfaceUtil {
                     }
                 }
             }
-        } else if (source == ModeDef.BT) {
+        } else if (Source.isBTMusicSource(source)) {
             BT_IF btIF = BT_IF.getInstance();
             int state = btIF.getConnState();
             if (state == BTConnState.DISCONNECTED) {

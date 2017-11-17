@@ -7,7 +7,7 @@ import com.haoke.constant.DBConfig;
 import com.haoke.constant.MediaUtil;
 import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.FileType;
-import com.haoke.define.MediaDef.RepeatMode;
+import com.haoke.constant.MediaUtil.RepeatMode;
 
 import android.content.Context;
 import android.content.SharedPreferences;

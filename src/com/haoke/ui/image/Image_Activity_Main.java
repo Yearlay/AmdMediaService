@@ -30,7 +30,7 @@ import com.haoke.constant.VRConstant.VRIntent;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.LoadListener;
 import com.haoke.data.PlayStateSharedPreferences;
-import com.haoke.define.MediaDef.PlayState;
+import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.mediaservice.R;
 import com.haoke.ui.media.MediaSearchActivity;
 import com.haoke.ui.widget.CustomDialog;

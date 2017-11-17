@@ -2,7 +2,7 @@ package com.amd.media;
 
 import java.util.ArrayList;
 
-import com.haoke.define.MediaDef.PlayState;
+import com.haoke.constant.MediaUtil.PlayState;
 
 import android.content.Context;
 import android.media.AudioManager;

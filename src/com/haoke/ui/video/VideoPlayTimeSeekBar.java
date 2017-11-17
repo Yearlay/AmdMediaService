@@ -2,7 +2,7 @@ package com.haoke.ui.video;
 
 import com.archermind.skinlib.SkinManager;
 import com.haoke.constant.MediaUtil;
-import com.haoke.define.MediaDef.PlayState;
+import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.mediaservice.R;
 import com.haoke.util.Media_IF;
 

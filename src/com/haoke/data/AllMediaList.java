@@ -21,7 +21,6 @@ import android.os.Message;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.haoke.application.MediaApplication;
 import com.haoke.bean.FileNode;
@@ -32,13 +31,10 @@ import com.haoke.constant.DBConfig.UriAddress;
 import com.haoke.constant.DBConfig.UriType;
 import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.FileType;
-import com.haoke.define.ModeDef;
-import com.haoke.mediaservice.R;
 import com.haoke.scanner.MediaDbHelper;
 import com.haoke.scanner.MediaDbHelper.TransactionTask;
 import com.haoke.service.MediaService;
 import com.haoke.util.DebugLog;
-import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 
 public class AllMediaList {
     private static final String TAG = "AllMediaList";
@@ -203,8 +199,7 @@ public class AllMediaList {
         for (LoadListener listener : mLoadListenerList) {
             listener.onScanStateChange(storageBean);
         }
-        notifyUpdateAppWidget(ModeDef.AUDIO);
-//        mContext.sendBroadcast(new Intent("main_activity_update_ui"));
+        notifyUpdateAppWidgetByAudio();
         if (storageBean.isId3ParseCompleted() || !storageBean.isMounted()) {
             storageBean.setLoadCompleted(true);
         }
@@ -909,6 +904,22 @@ public class AllMediaList {
         Intent intent = new Intent("action.topstack.appname"); 
         intent.putExtra("data",title);
         context.sendBroadcast(intent); 
+    }
+    
+    public static void notifyUpdateAppWidgetByAll() {
+        notifyUpdateAppWidget(MediaUtil.UpdateWidget.ALL);
+    }
+
+    public static void notifyUpdateAppWidgetByRadio() {
+        notifyUpdateAppWidget(MediaUtil.UpdateWidget.RADIO);
+    }
+
+    public static void notifyUpdateAppWidgetByAudio() {
+        notifyUpdateAppWidget(MediaUtil.UpdateWidget.AUDIO);
+    }
+
+    public static void notifyUpdateAppWidgetByBTMusic() {
+        notifyUpdateAppWidget(MediaUtil.UpdateWidget.BTMUSIC);
     }
     
     public static void notifyUpdateAppWidget(int refreshMode) {

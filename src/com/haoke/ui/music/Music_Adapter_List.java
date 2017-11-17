@@ -1,12 +1,13 @@
 package com.haoke.ui.music;
 
+import com.amd.util.Source;
 import com.archermind.skinlib.SkinManager;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.ID3Parse;
 import com.haoke.bean.ImageLoad;
 import com.haoke.bean.ID3Parse.ID3ParseListener;
 import com.haoke.constant.MediaUtil.DeviceType;
-import com.haoke.define.MediaDef.PlayState;
+import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.mediaservice.R;
 import com.haoke.util.Media_IF;
 
@@ -248,7 +249,7 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
             FileNode fileNode = mIF.getItem(position);
             if (fileNode != null) {
                 if (fileNode.getDeviceType() == mIF.getPlayingDevice() &&
-                        mIF.getCurSource() == com.haoke.define.ModeDef.AUDIO) {
+                        Source.isAudioSource()) {
                     val = true;
                 }
             } else {

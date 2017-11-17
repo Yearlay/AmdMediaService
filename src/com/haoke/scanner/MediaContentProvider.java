@@ -1,7 +1,7 @@
 package com.haoke.scanner;
 
 import com.haoke.constant.DBConfig;
-import com.haoke.define.MediaDef.DeviceType;
+import com.haoke.constant.MediaUtil.DeviceType;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;

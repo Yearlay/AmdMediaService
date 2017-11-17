@@ -10,6 +10,7 @@ import com.amd.media.MediaInterfaceUtil;
 import com.haoke.aidl.ICarCallBack;
 import com.haoke.aidl.IMediaCallBack;
 import com.amd.media.AudioFocus;
+import com.amd.util.Source;
 import com.haoke.bean.FileNode;
 import com.haoke.aidl.ICarUartCallBack;
 import com.haoke.constant.MediaUtil;
@@ -18,14 +19,13 @@ import com.haoke.define.CMSStatusDef.CMSStatusFuc;
 import com.haoke.define.CMSStatusDef.TrafficRestriction;
 import com.haoke.define.McuDef;
 import com.haoke.define.McuDef.McuFunc;
-import com.haoke.define.MediaDef.DeviceType;
-import com.haoke.define.MediaDef.FileType;
-import com.haoke.define.MediaDef.MediaState;
-import com.haoke.define.MediaDef.PlayState;
-import com.haoke.define.MediaDef.RandomMode;
-import com.haoke.define.MediaDef.RepeatMode;
-import com.haoke.define.MediaDef.ScanState;
-import com.haoke.define.ModeDef;
+import com.haoke.constant.MediaUtil.DeviceType;
+import com.haoke.constant.MediaUtil.FileType;
+import com.haoke.constant.MediaUtil.MediaState;
+import com.haoke.constant.MediaUtil.PlayState;
+import com.haoke.constant.MediaUtil.RandomMode;
+import com.haoke.constant.MediaUtil.RepeatMode;
+import com.haoke.constant.MediaUtil.ScanState;
 import com.haoke.serviceif.CarService_IF;
 import com.haoke.serviceif.CarService_Listener;
 import com.haoke.video.VideoSurfaceView;
@@ -49,19 +49,19 @@ public class Media_IF extends CarService_IF {
 	private boolean mServiceConn = false;
 
 	public Media_IF() {
-		mMode = ModeDef.MEDIA;
+		mMode = com.haoke.define.ModeDef.MEDIA;
 		
 		mMediaManager = new AmdMediaManager();
 		
 		mCarCallBack = new Media_CarCallBack();
-		mMediaCallBack = new Media_CallBack(mMode);
+		mMediaCallBack = new Media_CallBack(mMediaManager.getMediaMode());
 
 		// 以下处理服务回调
 		mICallBack = new ICarCallBack.Stub() {
 			@Override
 			public void onDataChange(int mode, int func, int data)
 					throws RemoteException {
-				if (mode == ModeDef.MCU && func == McuFunc.SOURCE) {
+				if (mode == com.haoke.define.ModeDef.MCU && func == McuFunc.SOURCE) {
 				} else {
 					mCarCallBack.onDataChange(mode, func, data);
 				}
@@ -99,7 +99,7 @@ public class Media_IF extends CarService_IF {
 
 	// 获取模式
 	public int getMode() {
-		return mMode;
+		return mMediaManager.getMediaMode();
 	}
 
 	// 服务已经绑定成功，需要刷新动作
@@ -152,7 +152,7 @@ public class Media_IF extends CarService_IF {
 	
 	//禁止UI层调用
 	public void sendSouceChange(int source) {
-		mCarCallBack.onDataChange(ModeDef.MCU, McuFunc.SOURCE, source);
+		mCarCallBack.onDataChange(com.haoke.define.ModeDef.MCU, McuFunc.SOURCE, source);
 		com.amd.bt.BTMusic_IF.getInstance().sendSouceChange(source);
 		com.amd.radio.Radio_IF.getInstance().sendSouceChange(source);
 	}
@@ -194,26 +194,27 @@ public class Media_IF extends CarService_IF {
 	
 	public static void resetSource(Context context) {
 		Log.d(TAG, "resetSource");
-		if (!setCurSource(ModeDef.NULL)) {
-			setSourceToSettings(ModeDef.NULL);
-			sLastSource = ModeDef.NULL;
-			sCurSource = ModeDef.NULL;
+		if (!setCurSource(Source.NULL)) {
+			setSourceToSettings(Source.NULL);
+			sLastSource = Source.NULL;
+			sCurSource = Source.NULL;
 		}
 	}
 	
 	private static int getSourceFromSettings() {
-	    return PlayStateSharedPreferences.getSource(ModeDef.NULL);
+	    return PlayStateSharedPreferences.getSource(Source.NULL);
 	}
 	
 	private static boolean setSourceToSettings(int source) {
 	    return PlayStateSharedPreferences.saveSource(source);
 	}
 
-	public static int sLastSource = ModeDef.NULL;
+	public static int sLastSource = Source.NULL;
 	private static int sCurSource = -1;
 	// 设置当前源
 	public static boolean setCurSource(int source) {
 		boolean success = false;
+		int mcuSource = com.haoke.define.ModeDef.NULL;
 		int lastSource = getCurSource();
 		if (lastSource != source) {
 			try {
@@ -222,15 +223,16 @@ public class Media_IF extends CarService_IF {
 					getInstance().sendSouceChange(source);
 					sLastSource = lastSource;
 					sCurSource = source;
-					if (source == ModeDef.NULL && sLastSource == ModeDef.BT) {
-						sLastSource = ModeDef.NULL;
+					if (source == Source.NULL && Source.isBTMusicSource(sLastSource)) {
+						sLastSource = Source.NULL;
 					}
 				}
+				mcuSource = Source.changeToMcuSource(source);
 				getInstance().mServiceIF.mcu_setCurSource(source);
 			} catch (Exception e) {
 				Log.e(TAG, "setCurSource exception", e);
 			}
-			DebugLog.d(TAG, "setCurSource from: " + lastSource + " && to: " + source + "; success=" + success);
+			DebugLog.d(TAG, "setCurSource from: " + lastSource + " && to: " + source + "; success=" + success + "; mcuSource="+mcuSource);
 		}
 		return success;
 	}
@@ -246,7 +248,7 @@ public class Media_IF extends CarService_IF {
 		} catch (Exception e) {
 			Log.e(TAG, "getCurSource error e="+e);
 		}
-		return ModeDef.NULL;
+		return Source.NULL;
 	}
 	
 	public static boolean getMute() {
@@ -344,7 +346,7 @@ public class Media_IF extends CarService_IF {
 	// 初始化媒体
 	public void initMedia() {
 		try {
-			mMediaManager.initMedia(mMode, mIMediaCallBack);
+			mMediaManager.initMedia(mMediaManager.getMediaMode(), mIMediaCallBack);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -932,14 +934,10 @@ public class Media_IF extends CarService_IF {
 	
 	public void sourceChanged(int source) {
 		mMediaManager.sourceChanged(source);
-		if (source != ModeDef.VIDEO) {
+		if (Source.isVideoSource(source)) {
 			finishVideoActivity();
 		}
 	}
-	
-//	public void audioFocusChanged(int state) {
-//		mMediaManager.audioFocusChanged(state);
-//	}
 	
 	public int getMediaListSize(int deviceType, int fileType) {
 		return mMediaManager.getMediaListSize(deviceType, fileType);
@@ -968,7 +966,7 @@ public class Media_IF extends CarService_IF {
 				mServiceIF.sendToDashbroad(data);
 			}
 		} catch (Exception e) {
-			Log.e(TAG, Log.getStackTraceString(e));
+			Log.e(TAG, "sendToDashbroad", e);
 		}
 	}
 	//-------------------------------仪表接口结束-----------------------------

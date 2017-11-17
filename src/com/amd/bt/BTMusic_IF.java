@@ -7,7 +7,6 @@ import android.util.Log;
 
 import com.haoke.aidl.ICarCallBack;
 import com.haoke.btjar.main.BTDef.BTConnState;
-import com.haoke.define.ModeDef;
 import com.haoke.define.McuDef.KeyCode;
 import com.haoke.define.McuDef.KeyState;
 import com.haoke.define.McuDef.McuFunc;
@@ -24,7 +23,7 @@ public class BTMusic_IF extends CarService_IF {
 	private boolean mServiceConn = false;
 
 	public BTMusic_IF() {
-		mMode = ModeDef.BTMUSIC;
+		mMode = com.haoke.define.ModeDef.BTMUSIC;
 		mCarCallBack = new BTMusic_CarCallBack();
 		
 		// 以下处理服务回调
@@ -32,7 +31,7 @@ public class BTMusic_IF extends CarService_IF {
 			@Override
 			public void onDataChange(int mode, int func, int data)
 					throws RemoteException {
-				if (mode == ModeDef.MCU && func == McuFunc.SOURCE) {
+				if (mode == com.haoke.define.ModeDef.MCU && func == McuFunc.SOURCE) {
 				} else {
 					mCarCallBack.onDataChange(mode, func, data);
 				}
@@ -98,7 +97,7 @@ public class BTMusic_IF extends CarService_IF {
 	
 	//禁止UI层调用
 	public void sendSouceChange(int source) {
-		mCarCallBack.onDataChange(ModeDef.MCU, McuFunc.SOURCE, source);
+		mCarCallBack.onDataChange(com.haoke.define.ModeDef.MCU, McuFunc.SOURCE, source);
 	}
 	
 	private boolean hasAudioFocus() {
@@ -125,24 +124,12 @@ public class BTMusic_IF extends CarService_IF {
 	
 	// 设置当前源
 	public boolean setCurSource(int source) {
-		try {
-			return Media_IF.setCurSource(source);
-//			return mServiceIF.mcu_setCurSource(source);
-        } catch (Exception e) {
-    		Log.e(TAG, "HMI------------interface e="+e.getMessage());
-        }	
-		return false;
+	    return Media_IF.setCurSource(source);
 	}
 
 	// 获取当前源
 	public int getCurSource() {
-		try {
-			return Media_IF.getCurSource();
-//			return mServiceIF.mcu_getCurSource();
-        } catch (Exception e) {
-    		Log.e(TAG, "HMI------------interface e="+e.getMessage());
-        }	
-		return ModeDef.NULL;
+	    return Media_IF.getCurSource();
 	}
 	
 	// 获取蓝牙连接状态

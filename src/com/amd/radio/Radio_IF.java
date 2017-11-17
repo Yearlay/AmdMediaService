@@ -11,8 +11,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.amd.media.MediaInterfaceUtil;
+import com.amd.util.Source;
 import com.haoke.aidl.ICarCallBack;
-import com.haoke.define.ModeDef;
 import com.haoke.define.McuDef.McuFunc;
 import com.haoke.define.RadioDef.Area;
 import com.haoke.define.RadioDef.Band_5;
@@ -34,7 +34,7 @@ public class Radio_IF extends CarService_IF {
     private boolean isRescan = false;
 	
 	public Radio_IF() {
-		mMode = ModeDef.RADIO;
+		mMode = com.haoke.define.ModeDef.RADIO;
 		mCarCallBack = new Radio_CarCallBack();
 
 		// 以下处理服务回调
@@ -42,7 +42,7 @@ public class Radio_IF extends CarService_IF {
 			@Override
 			public void onDataChange(int mode, int func, int data)
 					throws RemoteException {
-				if (mode == ModeDef.MCU && func == McuFunc.SOURCE) {
+				if (mode == com.haoke.define.ModeDef.MCU && func == McuFunc.SOURCE) {
 				} else {
 					mCarCallBack.onDataChange(mode, func, data);
 				}
@@ -108,29 +108,17 @@ public class Radio_IF extends CarService_IF {
 	
 	//禁止UI层调用
 	public void sendSouceChange(int source) {
-		mCarCallBack.onDataChange(ModeDef.MCU, McuFunc.SOURCE, source);
+		mCarCallBack.onDataChange(com.haoke.define.ModeDef.MCU, McuFunc.SOURCE, source);
 	}
 
 	// 设置当前源
 	public boolean setCurSource(int source) {
-		try {
-//			Log.d(TAG, "setCurSource source="+source);
-			return Media_IF.setCurSource(source);
-		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
-		}
-		return false;
+	    return Media_IF.setCurSource(source);
 	}
 
 	// 获取当前源
 	public int getCurSource() {
-		try {
-			return Media_IF.getCurSource();
-//			return mServiceIF.mcu_getCurSource();
-		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
-		}
-		return ModeDef.NULL;
+	    return Media_IF.getCurSource();
 	}
 
 	// 设置当前音频焦点
@@ -183,7 +171,7 @@ public class Radio_IF extends CarService_IF {
 		boolean enable = false;
 		int source = getCurSource();
 		try {
-			if (source == ModeDef.RADIO) {
+			if (Source.isRadioSource(source)) {
 				enable = mServiceIF.radio_isEnable();
 			}
 		} catch (Exception e) {
@@ -652,7 +640,7 @@ public class Radio_IF extends CarService_IF {
 	}
 	
 	private void setRadioSource() {
-		setCurSource(ModeDef.RADIO);
+		Source.setRadioSource();
 	}
 	
 	private RadioDatabaseHelper dbHelper;
@@ -896,7 +884,7 @@ public class Radio_IF extends CarService_IF {
             	setEnable(false);
             }
             if (data == 0) {
-            	if ((getCurSource() == ModeDef.RADIO) && !enable) {
+            	if (Source.isRadioSource() && !enable) {
                 	setEnable(true);
             	}
             	isRescan = false;

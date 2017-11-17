@@ -2,7 +2,6 @@ package com.amd.radio;
 
 import com.haoke.data.AllMediaList;
 import com.haoke.data.ModeSwitch;
-import com.haoke.define.ModeDef;
 import com.haoke.define.McuDef.McuFunc;
 import com.haoke.define.RadioDef.RadioFunc;
 import com.haoke.mediaservice.R;
@@ -10,6 +9,7 @@ import com.haoke.serviceif.CarService_Listener;
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.radio.Radio_IF;
 import com.amd.radio.Radio_CarListener;
+import com.amd.util.Source;
 import com.archermind.skinlib.SkinManager;
 
 import android.content.Context;
@@ -486,7 +486,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     }
     
     private void sourceChanged(int source) {
-        if (source == ModeDef.AUDIO || source == ModeDef.VIDEO || source == ModeDef.BT) {
+        if (Source.isAudioSource(source) || Source.isVideoSource(source) || Source.isBTMusicSource(source)) {
             mIF.exitRescanAndScan5S(true);
         }
     }
@@ -495,7 +495,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     @Override
     public void onCarDataChange(int mode, int func, int data) {
         Log.d(TAG, "onCarDataChange mode = " + mode + " , func = " + func + " , data = " + data);
-        if (mode == ModeDef.MCU) {
+        if (mode == com.haoke.define.ModeDef.MCU) {
             switch (func) {
             case McuFunc.SOURCE:
                 sourceChanged(data);

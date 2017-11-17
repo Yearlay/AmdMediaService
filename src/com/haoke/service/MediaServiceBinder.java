@@ -15,11 +15,12 @@ import com.amd.aidl.IAmdMediaCallBack;
 import com.amd.aidl.IAmdMediaService;
 import com.amd.bt.BT_IF;
 import com.amd.radio.Radio_IF;
+import com.amd.util.Source;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.ID3Parse;
 import com.haoke.bean.ID3Parse.ID3ParseListener;
 import com.haoke.btjar.main.BTDef.BTConnState;
-import com.haoke.define.ModeDef;
+import com.haoke.constant.MediaUtil;
 import com.haoke.mediaservice.R;
 import com.haoke.ui.widget.MediaWidgetProvider;
 import com.haoke.util.DebugLog;
@@ -135,11 +136,11 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
 	public String getMediaLabel() throws RemoteException {
         int strId = R.string.launcher_card_media;
         int source = Media_IF.getCurSource();
-        if (source == ModeDef.RADIO) {
+        if (Source.isRadioSource(source)) {
             strId = R.string.pub_radio;
-        } else if (source == ModeDef.BT) {
+        } else if (Source.isBTMusicSource(source)) {
             strId = R.string.pub_bt;
-        } else if (source == ModeDef.AUDIO) {
+        } else if (Source.isAudioSource(source)) {
             strId = R.string.launcher_card_media;
         }
         String title = mContext.getResources().getString(strId);
@@ -151,9 +152,9 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
 	public boolean isPlayingMusic() throws RemoteException {
 		int source = Media_IF.getCurSource();
 		boolean isPlaying = false;
-		if (source == ModeDef.BT) {
+		if (Source.isBTMusicSource(source)) {
 			isPlaying = BT_IF.getInstance().music_isPlaying();
-		} else if (source == ModeDef.AUDIO) {
+		} else if (Source.isAudioSource(source)) {
 			isPlaying = Media_IF.getInstance().isPlayState();
 		} else {
 			isPlaying = false;
@@ -166,22 +167,22 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
 	public Bitmap getMusicId3AlbumBmp() throws RemoteException {
 		int source = Media_IF.getCurSource();
 		Bitmap bmp = null;
-        if (source != ModeDef.BT) {
-            if (!(source == ModeDef.AUDIO || source == ModeDef.NULL)) {
-            	if (Media_IF.sLastSource == ModeDef.BT) {
-            		source = ModeDef.BT;
+        if (!Source.isBTMusicSource(source)) {
+            if (!(Source.isAudioSource(source) || source == Source.NULL)) {
+            	if (Source.isBTMusicSource(Media_IF.sLastSource)) {
+            		source = Media_IF.sLastSource;
             	}
             }
             if (!(BT_IF.getInstance().getConnState() == BTConnState.CONNECTED)) {
-                source = ModeDef.NULL;
+                source = Source.NULL;
             }
         }
-    	if (source == ModeDef.BT) {
+    	if (Source.isBTMusicSource(source)) {
     		if (mBtDefBmp == null) {
     			mBtDefBmp = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.home1_card_bt_default);
     		}
     		bmp = mBtDefBmp;
-        } else if (source == ModeDef.AUDIO || source == ModeDef.NULL) {
+        } else if (Source.isAudioSource(source) || source == Source.NULL) {
             FileNode fileNode = getFileNode(mContext);
             if (fileNode != null) {
                 if (fileNode.getParseId3() == 1 && fileNode.getThumbnailPath() != null) {
@@ -207,19 +208,19 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
         String artist  = null;
         String info = null;
         int source = Media_IF.getCurSource();
-        if (source != ModeDef.BT) {
+        if (!Source.isBTMusicSource(source)) {
             if (!(BT_IF.getInstance().getConnState() == BTConnState.CONNECTED)) {
-                source = ModeDef.NULL;
+                source = Source.NULL;
             }
         }
-        if (source == ModeDef.BT) {
+        if (Source.isBTMusicSource(source)) {
             musicTitle = BT_IF.getInstance().music_getTitle();
             artist = BT_IF.getInstance().music_getArtist();
             musicTitle = TextUtils.isEmpty(musicTitle) ? unkownStr : musicTitle;
             artist = TextUtils.isEmpty(artist) ? unkownStr : artist;
             info = musicTitle + " - " + artist;
             mOldId3Info = info;
-        } else if (source == ModeDef.AUDIO || source == ModeDef.NULL) {
+        } else if (Source.isAudioSource(source) || source == Source.NULL) {
             FileNode fileNode = getFileNode(mContext);
             if (fileNode != null) {
                 musicTitle = fileNode.getTitleEx();
@@ -324,11 +325,12 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
     	int id = ID_NULL;
     	int data0 = 0;
     	String data1 = null;
-    	if (refreshMode == ModeDef.NULL) {
+    	if (refreshMode == MediaUtil.UpdateWidget.ALL) {
     		id = ID_ALL;
-    	} else if (refreshMode == ModeDef.AUDIO || refreshMode == ModeDef.BT) {
+    	} else if (refreshMode == MediaUtil.UpdateWidget.AUDIO 
+    	        || refreshMode == MediaUtil.UpdateWidget.BTMUSIC) {
     		id = ID_MUSIC_ALL;
-    	} else if (refreshMode == ModeDef.RADIO) {
+    	} else if (refreshMode == MediaUtil.UpdateWidget.RADIO) {
     		id = ID_RADIO_ALL;
     	}
     	if (id != ID_NULL) {
