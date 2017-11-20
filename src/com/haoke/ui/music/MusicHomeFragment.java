@@ -2,7 +2,6 @@ package com.haoke.ui.music;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
@@ -12,7 +11,6 @@ import com.amd.bt.BTMusic_IF;
 import com.amd.bt.BT_IF;
 import com.amd.bt.BT_Listener;
 import com.amd.util.Source;
-import com.amd.util.SkinManager;
 import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.btjar.main.BTDef.BTFunc;
 import com.haoke.constant.MediaUtil.DeviceType;
@@ -22,6 +20,7 @@ import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.mediaservice.R;
 import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
+import com.haoke.util.DebugLog;
 import com.haoke.util.Media_IF;
 import com.haoke.util.Media_Listener;
 
@@ -48,14 +47,14 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
     
     public MusicHomeFragment(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
-		Log.d(TAG, "MusicHomeFragment init");
+		DebugLog.d(TAG, "MusicHomeFragment init");
 	}
     
     @Override
     protected void onFinishInflate() {
     	super.onFinishInflate();
 		mContext = getContext();
-		Log.d(TAG, "onFinishInflate mContext="+mContext);
+		DebugLog.d(TAG, "onFinishInflate mContext="+mContext);
 		mIF = Media_IF.getInstance();
 		mIF.initMedia();
 		mBTIF = BT_IF.getInstance();
@@ -78,7 +77,7 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 	private ShowLayout mShowLayout = ShowLayout.HOME_LAYOUT;
 	
 	private void changeShowLayout(ShowLayout showLayout) {
-		Log.d(TAG, "changeShowLayout showLayout="+showLayout+"; mShowLayout="+mShowLayout+"; mPlayLayout="+mPlayLayout);
+	    DebugLog.d(TAG, "changeShowLayout showLayout="+showLayout+"; mShowLayout="+mShowLayout+"; mPlayLayout="+mPlayLayout);
 		mShowLayout = showLayout;
 		if (mShowLayout == ShowLayout.HOME_LAYOUT) {
 			mHomeLayout.setVisibility(View.VISIBLE);
@@ -113,7 +112,7 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
     }
 
 	public void onResume() {
-		Log.d(TAG, "onResume mShowLayout="+mShowLayout+"; isShow="+isShow);
+	    DebugLog.d(TAG, "onResume mShowLayout="+mShowLayout+"; isShow="+isShow);
 		isShow = true;
 		if (mPlayLayout != null) {
 			if (mPlayLayout.getVisibility() == View.VISIBLE) {
@@ -134,7 +133,7 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 	}
 
 	public void onPause() {
-		Log.d(TAG, "onPause");
+	    DebugLog.d(TAG, "onPause");
 		isShow = false;
 		if (mPlayLayout!=null) {
 			mPlayLayout.onPause();
@@ -180,14 +179,14 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 	@Override public void setCurInterface(int data) {}
 	@Override
 	public void onDataChange(int mode, int func, int data1, int data2) {
-		Log.d(TAG, "onDataChange mode="+mode+"; func="+func+"; data1="+data1+"; data2="+data2);
+	    DebugLog.d(TAG, "onDataChange mode="+mode+"; func="+func+"; data1="+data1+"; data2="+data2);
 		if (mode == mIF.getMode()) {
 			switch (func) {
 			case MediaFunc.DEVICE_CHANGED://8 data1=deviceType, data2=isExist ? 1 : 0
 				deviceChanged(data1, data2);
 				break;
 			case MediaFunc.SCAN_STATE://1
-				onDeviceOut();
+				onScanStateChanged(data1);
 				break;
 			case MediaFunc.PREPARING:
 				onPreparing();
@@ -246,8 +245,22 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 		setCurPlayViewState();
 	}
 	
-	private void onDeviceOut() {
-		Log.v(TAG, "onDeviceOut() playState= " + mIF.getPlayState());
+	private void onScanStateChanged(int data) {
+	    if (data == 1) {
+	        DebugLog.v(TAG, "onScanStateChanged() scanning!");
+	    } else if (data == 8) {
+	        DebugLog.v(TAG, "onScanStateChanged() scanning all over!");
+	        postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    if (Source.isAudioSource(Media_IF.getCurSource()) &&
+                            mIF.getPlayState() != PlayState.STOP &&
+                            mIF.getMediaState() == MediaState.PREPARED && isShow) {
+                        changeShowLayout(ShowLayout.AUDIO_PLAY_LAYOUT);
+                    }
+                }
+            }, 1000);
+	    }
 	}
 	
 	private void onPreparing() {
@@ -335,7 +348,7 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 		} else if (Source.isBTMusicSource(curSource) && btPlaying) {
 			changeShowLayout(ShowLayout.BT_PLAY_LAYOUT);
 		} else {
-			Log.e(TAG, "goPlay no song playing!");
+		    DebugLog.e(TAG, "goPlay no song playing!");
 			if (toast) {
 				Toast.makeText(mContext, "没有歌曲在播放！", Toast.LENGTH_SHORT).show();
 			}
@@ -347,7 +360,7 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 
 	@Override
 	public void onBTDataChange(int mode, int func, int data) {
-		Log.d(TAG, "onBTDataChange mode="+mode+"; func="+func+"; data="+data);
+	    DebugLog.d(TAG, "onBTDataChange mode="+mode+"; func="+func+"; data="+data);
 		if (Source.isBTMode(mode)) {
 			switch (func) {
 			case BTFunc.CONN_STATE://101
@@ -376,7 +389,7 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 	}
 
 	private void onBTStateChange(int data) {//蓝牙连接状态
-		Log.d(TAG, "onBTStateChange data="+data);
+	    DebugLog.d(TAG, "onBTStateChange data="+data);
 		mHomeLayout.setBTConnectedState(data);
 		if (data == BTConnState.DISCONNECTED) {
 			if (mShowLayout == ShowLayout.BT_PLAY_LAYOUT) {
