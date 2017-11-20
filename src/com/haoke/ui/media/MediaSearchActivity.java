@@ -3,7 +3,7 @@ package com.haoke.ui.media;
 import java.util.ArrayList;
 
 import com.amd.media.MediaInterfaceUtil;
-import com.archermind.skinlib.SkinManager;
+import com.amd.util.SkinManager;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.ID3Parse;
 import com.haoke.bean.ImageLoad;

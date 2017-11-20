@@ -21,7 +21,7 @@ import com.amd.bt.BTMusic_IF;
 import com.amd.bt.BT_IF;
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.util.Source;
-import com.archermind.skinlib.SkinManager;
+import com.amd.util.SkinManager;
 import com.haoke.bean.FileNode;
 import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.constant.MediaUtil;

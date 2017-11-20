@@ -31,7 +31,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.archermind.skinlib.SkinManager;
+import com.amd.util.SkinManager;
 
 // FM: 87.5 ~ 108.0
 public class SearchRadioActivity extends Activity implements OnClickListener,

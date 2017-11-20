@@ -1,4 +1,6 @@
-package com.archermind.skinlib;
+package com.amd.util;
+
+import java.util.HashMap;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -21,6 +23,11 @@ import android.util.Log;
 import android.view.Gravity;
 
 public class SkinManager {
+    public static final String SKIN_KEY_NAME = "bd_theme_color";
+    
+    public static final int SKIN_DEFAULT = 0;
+    public static final int SKIN_ONE = 1;    // 红色主题。
+    
     private static final String TAG = "SkinManager";
     private static final String SKIN_MANAGER_PACKAGE_NAME = "com.archermind.skin";
     private static SkinManager sManager;
@@ -33,6 +40,15 @@ public class SkinManager {
     
     private String mAppTag;
     
+    private static HashMap<String, String> sAppTagHashMap = new HashMap<String, String>();
+    static {
+        sAppTagHashMap.put("com.haoke.mediaservice", "mediaservice");
+    }
+    
+    public static String getAppTag(String packageName) {
+        return sAppTagHashMap.get(packageName);
+    }
+    
     public static SkinManager instance(Context context) {
         if (sManager == null) {
             sManager = new SkinManager(context.getApplicationContext());
@@ -44,7 +60,7 @@ public class SkinManager {
         try {
             mContext = context;
             mResources = mContext.getResources();
-            mAppTag = SkinTheme.getAppTag(context.getPackageName());
+            mAppTag = getAppTag(context.getPackageName());
             mRemoteContext = context.createPackageContext(SKIN_MANAGER_PACKAGE_NAME, Context.CONTEXT_IGNORE_SECURITY);
             mRemoteResources = mRemoteContext.getResources();
         } catch (NameNotFoundException e) {
@@ -53,9 +69,9 @@ public class SkinManager {
     }
 
     private String getSkinTheme(ContentResolver contentResolver) {
-        int skinValue = Settings.System.getInt(contentResolver, SkinTheme.SKIN_KEY_NAME, SkinTheme.SKIN_DEFAULT);
+        int skinValue = Settings.System.getInt(contentResolver, SKIN_KEY_NAME, SKIN_DEFAULT);
         String skinStr = null;
-        if (skinValue != SkinTheme.SKIN_DEFAULT) {
+        if (skinValue != SKIN_DEFAULT) {
             skinStr = String.format(mAppTag + "_%02d_", skinValue);
         }
         

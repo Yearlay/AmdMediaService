@@ -23,7 +23,7 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.GridView;
 import android.widget.TextView;
 
-import com.archermind.skinlib.SkinManager;
+import com.amd.util.SkinManager;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.ImageLoad;
 import com.haoke.bean.StorageBean;

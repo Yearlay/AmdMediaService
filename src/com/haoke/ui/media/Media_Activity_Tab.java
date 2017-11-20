@@ -1,6 +1,6 @@
 package com.haoke.ui.media;
 
-import com.archermind.skinlib.SkinManager;
+import com.amd.util.SkinManager;
 import com.haoke.mediaservice.R;
 
 import android.content.Context;

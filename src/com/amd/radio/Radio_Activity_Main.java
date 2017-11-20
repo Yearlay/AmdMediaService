@@ -10,7 +10,7 @@ import com.amd.media.MediaInterfaceUtil;
 import com.amd.radio.Radio_IF;
 import com.amd.radio.Radio_CarListener;
 import com.amd.util.Source;
-import com.archermind.skinlib.SkinManager;
+import com.amd.util.SkinManager;
 
 import android.content.Context;
 import android.content.Intent;

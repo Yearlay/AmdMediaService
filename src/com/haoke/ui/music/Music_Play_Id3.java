@@ -2,7 +2,7 @@ package com.haoke.ui.music;
 
 import com.amd.bt.BT_IF;
 import com.amd.util.Source;
-import com.archermind.skinlib.SkinManager;
+import com.amd.util.SkinManager;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.ID3Parse;
 import com.haoke.bean.ID3Parse.ID3ParseListener;

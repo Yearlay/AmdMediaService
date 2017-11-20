@@ -17,7 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.amd.bt.BT_IF;
-import com.archermind.skinlib.SkinManager;
+import com.amd.util.SkinManager;
 import com.haoke.bean.StorageBean;
 import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.data.AllMediaList;
