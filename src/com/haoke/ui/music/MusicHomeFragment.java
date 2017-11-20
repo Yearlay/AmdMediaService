@@ -243,6 +243,7 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 			} 
 		}
 		mHomeLayout.deviceChanged(deviceType, state == 0);
+		setCurPlayViewState();
 	}
 	
 	private void onDeviceOut() {
