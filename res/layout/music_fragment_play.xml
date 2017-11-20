@@ -112,6 +112,6 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="36px"
         android:layout_marginTop="30dp"
-        android:src="@drawable/radio_scan_5s_select"
+        android:src="@drawable/radio_scan_5s_pressed"
         android:layout_below="@id/music_play_mode" />
 </com.haoke.ui.music.MusicPlayLayout>
