@@ -31,27 +31,21 @@ import com.haoke.constant.VRConstant.VRIntent;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.LoadListener;
 import com.haoke.data.PlayStateSharedPreferences;
-import com.haoke.constant.MediaUtil.MediaFunc;
-import com.haoke.constant.MediaUtil.MediaState;
 import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.mediaservice.R;
-import com.haoke.serviceif.CarService_Listener;
 import com.haoke.ui.media.MediaSearchActivity;
 import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
 import com.haoke.util.DebugLog;
 import com.haoke.util.Media_CarListener;
 import com.haoke.util.Media_IF;
-import com.haoke.util.Media_Listener;
 import com.haoke.window.HKWindowManager;
 
 public class Video_Activity_Main extends Activity implements
-        CarService_Listener, Media_Listener, OnClickListener,
-        LoadListener, OnCheckedChangeListener, Media_CarListener{
+        OnClickListener, LoadListener, OnCheckedChangeListener, Media_CarListener{
 
     private final String TAG = this.getClass().getSimpleName();
     private int mLayoutProps = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
-    private Video_IF mIF;
     private VideoListLayout mListLayout;
     private VideoPlayLayout mPlayLayout;
     
@@ -84,11 +78,7 @@ public class Video_Activity_Main extends Activity implements
         
         getWindow().getDecorView().setSystemUiVisibility(mLayoutProps);
         
-        mIF = Video_IF.getInstance();
-        mIF.registerCarCallBack(this); // 注册服务监听
-        mIF.registerLocalCallBack(this); // 注册服务监听
-        mIF.bindCarService();
-        mIF.initMedia();
+        Media_IF.getInstance().bindCarService();
         mPreferences = PlayStateSharedPreferences.instance(getApplicationContext());
         
         mListLayout = (VideoListLayout) findViewById(R.id.video_list_layout);
@@ -157,6 +147,7 @@ public class Video_Activity_Main extends Activity implements
     }
 
     public void updateDevice(final int deviceType) {
+    	Media_IF.getInstance().setCurScanner(deviceType, FileType.VIDEO);
         int checkId = R.id.video_device_flash;
         if (deviceType == DeviceType.USB1) {
             checkId = R.id.video_device_usb1;
@@ -197,10 +188,7 @@ public class Video_Activity_Main extends Activity implements
         super.onStart();
         AllMediaList.sCarSpeed = Video_IF.getCarSpeed();
         Log.v(TAG, "HMI------------onStart sCarSpeed: " + AllMediaList.sCarSpeed);
-        mIF.registerModeCallBack(this);
-        mIF.registerCarCallBack(this); // 注册服务监听
-        mIF.registerLocalCallBack(this); // 注册服务监听
-        mIF.setCurScanner(getCurrentDeviceType(), FileType.VIDEO);
+        Media_IF.getInstance().registerModeCallBack(this);
         updateDevice(getCurrentDeviceType());
     }
     
@@ -257,16 +245,14 @@ public class Video_Activity_Main extends Activity implements
     public void onStop() {
         Log.v(TAG, "HMI------------onStop");
         super.onStop();
-        mIF.unregisterModeCallBack(this);
-        mIF.unregisterCarCallBack(this); // 注销服务监听
-        mIF.unregisterLocalCallBack(this); // 注销服务监听
+        Media_IF.getInstance().unregisterModeCallBack(this);
     }
 
     @Override
     public void onDestroy() {
         Log.v(TAG, "HMI------------onDestroy");
         super.onDestroy();
-        Media_IF.getInstance().setVideoActivity(null);
+        //Media_IF.getInstance().setVideoActivity(null);
         AllMediaList.instance(getApplicationContext()).unRegisterLoadListener(this);
         unregisterReceiver(mOperateAppReceiver);
     }
@@ -288,86 +274,6 @@ public class Video_Activity_Main extends Activity implements
         }
         return super.onTouchEvent(ev);
     }
-
-    // ------------------------------回调函数 start------------------------------
-    // 车载服务重连回调
-    @Override
-    public void onServiceConn() {
-        mIF.registerCarCallBack(this); // 注册服务监听
-        mIF.registerLocalCallBack(this); // 注册服务监听
-    }
-
-    @Override public void setCurInterface(int data) {}
-
-    @Override
-    public void onDataChange(int mode, int func, int data1, int data2) {
-        Log.v(TAG, "HMI------------onDataChange func= " + func+",mode="+mode);
-        if (mode == mIF.getMode()) {
-            switch (func) {
-            case MediaFunc.DEVICE_CHANGED:
-            case MediaFunc.SCAN_STATE:
-            case MediaFunc.SCAN_ID3_SINGLE_OVER:
-            case MediaFunc.SCAN_ID3_PART_OVER:
-            case MediaFunc.SCAN_ID3_ALL_OVER:
-            case MediaFunc.SCAN_THUMBNAIL_SINGLE_OVER:
-            case MediaFunc.SCAN_THUMBNAIL_ALL_OVER:
-                break;
-            case MediaFunc.PREPARING:
-                break;
-            case MediaFunc.PREPARED:
-                onPrepared();
-                break;
-            case MediaFunc.COMPLETION:
-                onCompletion();
-                break;
-            case MediaFunc.SEEK_COMPLETION:
-                onSeekCompletion();
-                break;
-            case MediaFunc.ERROR:
-                onError();
-                break;
-            case MediaFunc.PLAY_OVER:
-                onPlayOver();
-                break;
-            case MediaFunc.PLAY_STATE:
-            case MediaFunc.REPEAT_MODE:
-            case MediaFunc.RANDOM_MODE:
-                if (mPlayLayout.getVisibility() == View.VISIBLE) {
-                    mPlayLayout.updatePlayState(mIF.getPlayState());
-                }
-                break;
-            }
-        }
-    }
-
-    private void onPrepared() {
-        Log.v(TAG, "HMI------------onPrepared");
-        // 快速切换曲时，在收到onPrepared()后，mediaState可能已经不是PREPARED状态，需要过滤不处理
-        int mediaState = mIF.getMediaState();
-        if (mediaState != MediaState.PREPARED) {
-            return;
-        }
-        if (mPlayLayout.getVisibility() == View.VISIBLE) {
-            mPlayLayout.updatePlayState(mIF.getPlayState());
-        }
-        mPlayLayout.updateTimeBar();
-        mErrorCount = 0;
-        
-        FileNode fileNode = mIF.getPlayItem();
-        int position = 0;
-        if (fileNode != null && mVideoList.size() > 0) {
-            for (; position < mVideoList.size(); position++) {
-                if (mVideoList.get(position).isSame(fileNode)) {
-                    break;
-                }
-            }
-        }
-        updateCurPosition(position);
-    }
-
-    private void onCompletion() {}
-
-    private void onSeekCompletion() {}
 
     private int mErrorCount;
     private void onError() {
@@ -405,7 +311,6 @@ public class Video_Activity_Main extends Activity implements
     
     private void touchEvent(int deviceType) {
         mPreferences.saveVideoDeviceType(deviceType);
-        mIF.setCurScanner(deviceType, FileType.VIDEO);
         updateDevice(deviceType);
     }
     
@@ -512,24 +417,22 @@ public class Video_Activity_Main extends Activity implements
                     if (!mPlaying) {
                         onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
                     }
-                    mIF.play(mPreferences.getVideoCurrentPosition());
-                    mPlayLayout.updatePlayState(mIF.getPlayState());
+                    mPlayLayout.playDefault();
                     break;
                 case VRIntent.PAUSE_VIDEO:
-                    mIF.setPlayState(PlayState.PAUSE);
-                    mPlayLayout.updatePlayState(mIF.getPlayState());
+                    mPlayLayout.getVideoController().getVideoView().pause();
                     break;
                 case VRIntent.PRE_VIDEO:
                     if (!mPlaying) {
                         onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
                     }
-                    playPre();
+                    mPlayLayout.getVideoController().playPre();
                     break;
                 case VRIntent.NEXT_VIDEO:
                     if (!mPlaying) {
                         onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
                     }
-                    playNext();
+                    mPlayLayout.getVideoController().playNext();
                     break;
                 default:
                     break;
@@ -546,8 +449,6 @@ public class Video_Activity_Main extends Activity implements
     public static final int SWITCH_TO_PLAY_FRAGMENT = 1;
     public static final int CLICK_LIST_ITEM = 2;
     public static final int LONG_CLICK_LIST_ITEM = 3;
-    public static final int PLAY_PRE = 4;
-    public static final int PLAY_NEXT = 5;
     public static final int HIDE_UNSUPPORT_VIEW = 6;
     private Handler mHandler = new Handler() {
         @Override
@@ -584,14 +485,6 @@ public class Video_Activity_Main extends Activity implements
                     mListLayout.beginEdit();
                 }
                 break;
-            case PLAY_PRE:
-                mPreFlag = true;
-                playPre();
-                break;
-            case PLAY_NEXT:
-                mPreFlag = false;
-                playNext();
-                break;
             case HIDE_UNSUPPORT_VIEW:
                 mErrorCount++;
                 DebugLog.d(TAG, "HIDE_UNSUPPORT_VIEW mErrorCount: " + mErrorCount);
@@ -602,11 +495,15 @@ public class Video_Activity_Main extends Activity implements
                     mErrorCount = 0;
                     onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
                 } else if (mPlayLayout != null && mPlayLayout.getVisibility() == View.VISIBLE) {
-                    if (mPreFlag) {
-                        playPre();
-                    } else {
-                        playNext();
-                    }
+                    try {
+                    	if (mPreFlag) {
+                    		mPlayLayout.getVideoController().playPre();
+                    	} else {
+                    		mPlayLayout.getVideoController().playNext();
+                    	}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
                     mPlayLayout.updateVideoLayout(true);
                 }
                 break;
@@ -635,24 +532,6 @@ public class Video_Activity_Main extends Activity implements
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
             getWindow().getDecorView().setSystemUiVisibility(mLayoutProps);
         }
-    }
-
-    private void playPre() {
-        mCurPosition--;
-        mCurPosition = (mCurPosition < 0) ? mVideoList.size() - 1 : mCurPosition;
-        mPlayLayout.updateVideoLayout(true);
-        FileNode fileNode = mVideoList.get(mCurPosition);
-        mPlayLayout.setFileNode(fileNode);
-        mIF.play(fileNode);
-    }
-
-    private void playNext() {
-        mCurPosition++;
-        mCurPosition = (mCurPosition >= mVideoList.size()) ? 0 : mCurPosition;
-        mPlayLayout.updateVideoLayout(true);
-        FileNode fileNode = mVideoList.get(mCurPosition);
-        mPlayLayout.setFileNode(fileNode);
-        mIF.play(fileNode);
     }
 
     @Override

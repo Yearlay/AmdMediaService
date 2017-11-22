@@ -39,7 +39,7 @@ public class VideoPlayTimeSeekBar extends RelativeLayout implements OnSeekBarCha
         if (mCanUpdate == false)
             return;
         
-        int total = mIF.getDuration();
+        int total = videoController.getDuration();
         mSeekBar.setMax(total);
 		setTotalTime(total);
         updateCurTime();
@@ -52,19 +52,25 @@ public class VideoPlayTimeSeekBar extends RelativeLayout implements OnSeekBarCha
         if (mCanUpdate == false)
             return;
 
-        int time = mIF.getPosition();
+        int time = videoController.getPosition();
         mSeekBar.setProgress(time);
 		setCurrTime(time);
 		mTimeHandler.removeMessages(MSG_UPDATE_TIME);
-		if (mIF.getPlayState() == PlayState.PLAY) {
+		if (videoController.isPlayState()) {
 			mTimeHandler.sendEmptyMessageDelayed(MSG_UPDATE_TIME, 200);
 		}
     }
+    
+    public void setVideoController(VideoPlayController vc){
+    	videoController = vc;
+    	
+    }
+    
     // ------------------------------外部接口 end------------------------------
 
     // 内部变量
     private static final String TAG = "VideoPlayTimeSeekBar";
-    private Video_IF mIF;
+    //private Video_IF mIF;
     private SeekBar mSeekBar;
     public SeekBar getSeekBar() {
 		return mSeekBar;
@@ -82,12 +88,13 @@ public class VideoPlayTimeSeekBar extends RelativeLayout implements OnSeekBarCha
     private TextView showText;
     private TextView durationText;
     private SkinManager skinManager;
+    private VideoPlayController videoController;
     
     private int lastProgress;
 
     public VideoPlayTimeSeekBar(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mIF = Video_IF.getInstance();
+        //mIF = Video_IF.getInstance();
     }
     
     public void showTrackView(boolean isFastPre, int position) {
@@ -97,14 +104,17 @@ public class VideoPlayTimeSeekBar extends RelativeLayout implements OnSeekBarCha
         } else {
             positionStr = MediaUtil.TimeFormat(position);
         }
+        Log.e("luke","----position: " + position + " , " + positionStr);
         showText.setText(positionStr);
-        int duration = Video_IF.getInstance().getDuration();
+        int duration = videoController.getDuration();
         String durationStr = null;
         if (duration > 3600) {
         	durationStr  = MediaUtil.TimeFormat_HMS(duration);
         } else {
         	durationStr = MediaUtil.TimeFormat(duration);
         }
+        
+        Log.e("luke","----duration: " + duration + " , " + durationStr);
         durationText.setText(" / " + durationStr);
         showIcon.setImageResource(isFastPre ? R.drawable.video_ctrl_fastpre : R.drawable.video_ctrl_fastnext);
         mSeekBar.setProgress(position);
@@ -187,7 +197,7 @@ public class VideoPlayTimeSeekBar extends RelativeLayout implements OnSeekBarCha
 		super.setVisibility(visibility);
 		mTimeHandler.removeMessages(MSG_UPDATE_TIME);
 		if (visibility == View.VISIBLE) {
-			if (mIF.getPlayState() == PlayState.PLAY) {
+			if (videoController.isPlayState()) {
 				mTimeHandler.sendEmptyMessageDelayed(MSG_UPDATE_TIME, 200);
 			}
 		}
@@ -203,7 +213,7 @@ public class VideoPlayTimeSeekBar extends RelativeLayout implements OnSeekBarCha
 			removeMessages(what);
 			switch (msg.what) {
 			case MSG_UPDATE_TIME:
-				int time = mIF.getPosition();
+				int time = videoController.getPosition();
 		        mSeekBar.setProgress(time);
 				setCurrTime(time);
 				if (getVisibility() == View.VISIBLE) {
@@ -212,7 +222,7 @@ public class VideoPlayTimeSeekBar extends RelativeLayout implements OnSeekBarCha
 				break;
 			case MSG_SEEKBAR_CHANGE:
 				int progress = mSeekBar.getProgress();
-				mIF.setPosition(progress);
+				videoController.setPosition(progress);
 				setCurrTime(progress);
 				break;
 			case MSG_HIDE_TRACK_VIEW:
@@ -231,7 +241,7 @@ public class VideoPlayTimeSeekBar extends RelativeLayout implements OnSeekBarCha
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
 		mTimeHandler.sendEmptyMessage(MSG_SEEKBAR_CHANGE);
-		if (mIF.getPlayState() == PlayState.PLAY) {
+		if (videoController.isPlayState()) {
 			mTimeHandler.sendEmptyMessage(MSG_UPDATE_TIME);
 		}
 		isTracking = false;
@@ -262,6 +272,7 @@ public class VideoPlayTimeSeekBar extends RelativeLayout implements OnSeekBarCha
         } else if (mTextFormat == 2) {
         	string = MediaUtil.TimeFormat_HMS(total);
         }
+		Log.e("luke","setTotalTime: " + total + " , " + string);
 		mDurationTextView.setText(string);
 	}
 	
@@ -272,6 +283,7 @@ public class VideoPlayTimeSeekBar extends RelativeLayout implements OnSeekBarCha
         } else if (mTextFormat == 2) {
         	string = MediaUtil.TimeFormat_HMS(time);
         }
+		Log.e("luke","setCurrTime: " + time + " , " + string);
 		mCurTimeTextView.setText(string);
 		if (isTracking) {
 			showTrackView(lastProgress > time, time);

@@ -411,7 +411,7 @@ public class FileNode {
         });
     }
     
-    private int playTime;
+    private int playTime = 0;
 
     public int getPlayTime() {
         return playTime;

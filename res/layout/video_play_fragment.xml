@@ -6,19 +6,19 @@
     android:layout_height="match_parent" >
     
     <!-- 视频布局框 -->
-    <RelativeLayout
+    <com.haoke.ui.video.MyVideoView
 	    android:id="@+id/video_play_layout"
 	    android:layout_width="match_parent"
 	    android:layout_height="match_parent"
-	    android:background="@android:color/black" >
-	</RelativeLayout>
+	    android:background="@android:color/transparent" />
+
 	
     <!-- 全透明遮罩（不加此图，音量条不会消失） -->
-    <ImageView
+    <!-- ImageView
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
 	    android:layout_alignParentBottom="true"
-	    android:background="@drawable/pub_transparent_bg" />
+	    android:background="@drawable/pub_transparent_bg" /-->
     
     <!-- 视频警告 -->
     <include layout="@layout/video_play_forbidden_layout" />
