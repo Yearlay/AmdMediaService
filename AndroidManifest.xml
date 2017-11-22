@@ -119,16 +119,6 @@
             </intent-filter>
         </activity>
         
-        <!-- Add the AppWidgetProvider -->
-        <receiver android:name="com.haoke.ui.widget.MediaWidgetProvider" >
-            <intent-filter>
-				<action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-				<action android:name="main_activity_update_ui" />
-			</intent-filter>
-			<meta-data android:name="android.appwidget.provider"
-				android:resource="@xml/media_widget_provider_config" />
-        </receiver>
-        
         <activity android:name="com.amd.radio.Radio_To_Favorite"
             android:theme="@android:style/Theme.Wallpaper.NoTitleBar" >
         </activity>
