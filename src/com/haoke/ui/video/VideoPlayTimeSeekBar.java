@@ -1,6 +1,6 @@
 package com.haoke.ui.video;
 
-import com.archermind.skinlib.SkinManager;
+import com.amd.util.SkinManager;
 import com.haoke.constant.MediaUtil;
 import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.mediaservice.R;

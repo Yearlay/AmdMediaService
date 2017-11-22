@@ -2,7 +2,7 @@ package com.haoke.ui.widget;
 
 import java.lang.ref.WeakReference;
 
-import com.archermind.skinlib.SkinManager;
+import com.amd.util.SkinManager;
 import com.haoke.mediaservice.R;
 
 import android.annotation.SuppressLint;

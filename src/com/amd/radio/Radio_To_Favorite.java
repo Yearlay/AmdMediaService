@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.radio.Radio_IF;
-import com.archermind.skinlib.SkinManager;
+import com.amd.util.SkinManager;
 import com.haoke.data.AllMediaList;
 import com.haoke.mediaservice.R;
 import com.haoke.ui.widget.CustomDialog;

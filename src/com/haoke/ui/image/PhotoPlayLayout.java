@@ -4,7 +4,7 @@ import haoke.ui.util.HKViewPager;
 
 import java.util.ArrayList;
 
-import com.archermind.skinlib.SkinManager;
+import com.amd.util.SkinManager;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.ImageLoad;
 import com.haoke.constant.MediaUtil;

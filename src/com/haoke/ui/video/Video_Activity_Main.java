@@ -21,7 +21,7 @@ import android.widget.TextView;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
 import com.amd.media.MediaInterfaceUtil;
-import com.archermind.skinlib.SkinManager;
+import com.amd.util.SkinManager;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.StorageBean;
 import com.haoke.constant.MediaUtil;

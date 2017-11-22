@@ -1,7 +1,6 @@
 package com.archermind.skin;
 
 import com.archermind.skin.R;
-import com.archermind.skinlib.SkinTheme;
 
 import android.app.Activity;
 import android.app.ActivityManagerNative;
@@ -81,12 +80,12 @@ public class SkinActivity extends Activity implements OnCheckedChangeListener{
     protected void onResume() {
         super.onResume();
         
-        int skinValue = Settings.System.getInt(getContentResolver(), SkinTheme.SKIN_KEY_NAME, -1);
+        int skinValue = Settings.System.getInt(getContentResolver(), "bd_theme_color", -1);
         switch (skinValue) {
-            case SkinTheme.SKIN_DEFAULT:
+            case 0:
                 mSkinDefalut.setChecked(true);
                 break;
-            case SkinTheme.SKIN_ONE:
+            case 1:
                 mSkinOne.setChecked(true);
                 break;
             default:
@@ -116,13 +115,13 @@ public class SkinActivity extends Activity implements OnCheckedChangeListener{
     public void onCheckedChanged(RadioGroup radioGroup, int checkID) {
         switch (checkID) {
             case R.id.skin_default:
-                Toast.makeText(getApplicationContext(), "Skin theme: " + SkinTheme.SKIN_DEFAULT, Toast.LENGTH_SHORT).show();
-                Settings.System.putInt(getContentResolver(), SkinTheme.SKIN_KEY_NAME, SkinTheme.SKIN_DEFAULT);
+                Toast.makeText(getApplicationContext(), "Skin theme: 0", Toast.LENGTH_SHORT).show();
+                Settings.System.putInt(getContentResolver(), "bd_theme_color", 0);
                 switchMcc(460);
                 break;
             case R.id.skin_one:
-                Toast.makeText(getApplicationContext(), "Skin theme: " + SkinTheme.SKIN_ONE, Toast.LENGTH_SHORT).show();
-                Settings.System.putInt(getContentResolver(), SkinTheme.SKIN_KEY_NAME, SkinTheme.SKIN_ONE);
+                Toast.makeText(getApplicationContext(), "Skin theme: 1", Toast.LENGTH_SHORT).show();
+                Settings.System.putInt(getContentResolver(), "bd_theme_color", 1);
                 switchMcc(454);
                 break;
                 

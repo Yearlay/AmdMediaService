@@ -172,7 +172,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
                     int refreshMode = what - MSG_UPDATE_APPWIDGET_BASE;
                     Log.d(TAG, "refreshWidget refreshMode="+refreshMode);
                     //sendBroadcast(new Intent("main_activity_update_ui"));
-                    MediaWidgetProvider.refreshWidget(MediaService.this, refreshMode);
+                    // MediaWidgetProvider.refreshWidget(MediaService.this, refreshMode);
                     mBinder.refreshWidget(refreshMode);
                     break;
             }

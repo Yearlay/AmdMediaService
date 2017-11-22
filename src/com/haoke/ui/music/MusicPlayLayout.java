@@ -21,7 +21,7 @@ import com.amd.bt.BTMusic_IF;
 import com.amd.bt.BT_IF;
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.util.Source;
-import com.archermind.skinlib.SkinManager;
+import com.amd.util.SkinManager;
 import com.haoke.bean.FileNode;
 import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.constant.MediaUtil;
@@ -161,9 +161,9 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 		updateCtrlBar(); // 更新播放按钮。
 		updateRepeatMode();
 		if (mIF.getScanMode()) {
-			mScanImg.setImageDrawable(sSkinManager.getDrawable(R.drawable.radio_scan_5s));
+			mScanImg.setImageDrawable(sSkinManager.getDrawable(R.drawable.radio_scan_5s_normal));
 		} else {
-			mScanImg.setImageDrawable(sSkinManager.getDrawable(R.drawable.radio_scan_5s_select));
+			mScanImg.setImageDrawable(sSkinManager.getDrawable(R.drawable.radio_scan_5s_pressed));
 		}
 		mId3.refreshSkin(sSkinManager);
 		mTimeSeekBar.setThumb(sSkinManager.getDrawable(R.drawable.media_seekbar_block_g11));
@@ -540,12 +540,12 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
         	if (mIF.getPlayState() != PlayState.PLAY) {
         		mIF.setPlayState(PlayState.PLAY);
         	}
-        	mScanImg.setImageDrawable(sSkinManager.getDrawable(R.drawable.radio_scan_5s));
+        	mScanImg.setImageDrawable(sSkinManager.getDrawable(R.drawable.radio_scan_5s_normal));
     	}
     }
     
     private void exitScanMode() {
-    	mScanImg.setImageDrawable(sSkinManager.getDrawable(R.drawable.radio_scan_5s_select));
+    	mScanImg.setImageDrawable(sSkinManager.getDrawable(R.drawable.radio_scan_5s_pressed));
     	mIF.setScanMode(false);
     	mTimeHandler.removeMessages(MSG_SCAN_MUSIC_CHANGE);
     	mScanStartPos = -1;

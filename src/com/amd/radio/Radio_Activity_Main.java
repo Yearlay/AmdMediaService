@@ -10,7 +10,7 @@ import com.amd.media.MediaInterfaceUtil;
 import com.amd.radio.Radio_IF;
 import com.amd.radio.Radio_CarListener;
 import com.amd.util.Source;
-import com.archermind.skinlib.SkinManager;
+import com.amd.util.SkinManager;
 
 import android.content.Context;
 import android.content.Intent;
@@ -565,21 +565,21 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     
     private void enterScan5S() {
         mIF.setScan();
-        mScan5sView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_scan_5s));
+        mScan5sView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_scan_5s_normal));
     }
     
     private boolean exitScan5S() {
-        mScan5sView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_scan_5s_select));
+        mScan5sView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_scan_5s_pressed));
         return mIF.exitScan5S();
     }
     
     private void enterRescan() {
         mIF.scanStore();
-        mRescanView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_rescan));
+        mRescanView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_rescan_normal));
     }
     
     private boolean exitRescan() {
-        mRescanView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_rescan_select));
+        mRescanView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_rescan_pressed));
         return mIF.exitRescan();
     }
     
@@ -590,28 +590,28 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     private void isScanStateChange(int data) {
         //data为2表示SCAN[Scan5S]， 为3表示SEARCH[Rescan]
         if (data == 2) {
-            mScan5sView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_scan_5s));
-            mRescanView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_rescan_select));
+            mScan5sView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_scan_5s_normal));
+            mRescanView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_rescan_pressed));
         } else if (data == 3) {
-        	mScan5sView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_scan_5s_select));
-            mRescanView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_rescan));
+            mScan5sView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_scan_5s_pressed));
+            mRescanView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_rescan_normal));
         }
         if (data == 0) {
-            mRescanView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_rescan_select));
-            mScan5sView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_scan_5s_select));
+            mRescanView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_rescan_pressed));
+            mScan5sView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_scan_5s_pressed));
         }
     }
     
     private void refreshScanIcon() {
         if (mIF.isRescanState()) {
-            mRescanView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_rescan));
+            mRescanView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_rescan_normal));
         } else {
-            mRescanView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_rescan_select));
+            mRescanView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_rescan_pressed));
         }
         if (mIF.isScan5SState()) {
-            mScan5sView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_scan_5s));
+            mScan5sView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_scan_5s_normal));
         } else {
-            mScan5sView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_scan_5s_select));
+            mScan5sView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_scan_5s_pressed));
         }
     }
 }

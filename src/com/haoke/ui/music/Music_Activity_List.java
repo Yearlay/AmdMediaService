@@ -22,7 +22,7 @@ import android.widget.Toast;
 
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.util.Source;
-import com.archermind.skinlib.SkinManager;
+import com.amd.util.SkinManager;
 import com.haoke.bean.FileNode;
 import com.haoke.constant.MediaUtil;
 import com.haoke.constant.MediaUtil.CopyState;
