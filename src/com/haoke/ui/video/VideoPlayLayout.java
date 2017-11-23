@@ -62,6 +62,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     private Handler mActivityHandler;
     private GestureDetector mGestureDetector;
     
+    private boolean mNextPlay = true;
     private FileNode mFileNode;
     
     private SkinManager skinManager;
@@ -97,6 +98,14 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     public void setUnsupportViewShow(boolean showFlag) {
         if (mUnsupportView != null) {
             mUnsupportView.setVisibility(showFlag ? View.VISIBLE : View.GONE);
+        }
+        
+        if(!showFlag) {
+        	if(mNextPlay){
+        		mVideoController.playNext();
+        	}else {
+        		mVideoController.playPre();
+        	}
         }
     }
     
@@ -140,6 +149,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         		Log.e("luke","----onPrepared!!");
         		//videoView.setBackgroundColor(0xff000000);
         		
+        		Video_Activity_Main.mErrorCount = 0;
         		FileNode temp =  mVideoController.getPlayFileNode();
         		try{
         			if(temp != null){
@@ -236,9 +246,8 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         
         if (savePlayState) { // 如果在onPause的时候有保存这个状态。
             savePlayState = false;
-            //if (mFileNode != null && mFileNode.isSame(Video_IF.getInstance().getPlayItem())) {
-                mHandler.sendEmptyMessageDelayed(DELAY_PLAY, 1000);
-            //}
+            mHandler.sendEmptyMessageDelayed(DELAY_PLAY, 1000);
+
         }
         updateVideoLayout(true);
         if (!mVideoController.isPlayState()) {
@@ -250,7 +259,6 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
 
     public void onPause() {
     	Log.e("luke","------VideoPlayLayout onPause");
-        //Video_IF.getInstance().setVideoShow(false);
         if (mContext == null) {
             return;
         }
@@ -263,10 +271,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     }
 
     public void updateVideoLayout(boolean checkSpeed) {
-        //mVideoLayout.removeAllViews();
-        //mVideoLayout.addView(mVideoView);
     	Log.e("luke","----updateVideoLayout!!");
-    	//mVideoController.getVideoView().start();
         mVideoController.getVideoView().setVisibility(View.VISIBLE);
         if (checkSpeed) {
             checkSpeedAndRefreshView(AllMediaList.sCarSpeed);
@@ -286,9 +291,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
             if (MediaInterfaceUtil.mediaCannotPlay()) {
                 break;
             }
-/*            if (mActivityHandler != null) {
-                mActivityHandler.sendEmptyMessage(Video_Activity_Main.PLAY_PRE);
-            }*/
+            mNextPlay = false;
             mVideoController.playPre();
             break;
         case R.id.video_ctrlbar_fastpre:  // 快退
@@ -324,9 +327,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
             if (MediaInterfaceUtil.mediaCannotPlay()) {
                 break;
             }
-/*            if (mActivityHandler != null) {
-                mActivityHandler.sendEmptyMessage(Video_Activity_Main.PLAY_NEXT);
-            }*/
+            mNextPlay = true;
             mVideoController.playNext();
             break;
         case R.id.collect_video:

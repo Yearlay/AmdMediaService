@@ -283,7 +283,7 @@ public class VideoPlayTimeSeekBar extends RelativeLayout implements OnSeekBarCha
         } else if (mTextFormat == 2) {
         	string = MediaUtil.TimeFormat_HMS(time);
         }
-		Log.e("luke","setCurrTime: " + time + " , " + string);
+		//Log.e("luke","setCurrTime: " + time + " , " + string);
 		mCurTimeTextView.setText(string);
 		if (isTracking) {
 			showTrackView(lastProgress > time, time);

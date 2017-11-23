@@ -56,7 +56,6 @@ public class Video_Activity_Main extends Activity implements
     private TextView mDeleteView;
     private TextView mCancelView;
     private TextView mCopyTextView;
-    private boolean mPreFlag;
     private boolean mPlaying;
 
     public PlayStateSharedPreferences mPreferences;
@@ -274,8 +273,7 @@ public class Video_Activity_Main extends Activity implements
         }
         return super.onTouchEvent(ev);
     }
-
-    private int mErrorCount;
+    
     private void onError() {
         if (mPlayLayout != null && mPlayLayout.getVisibility() == View.VISIBLE) {
             mPlayLayout.setUnsupportViewShow(true);
@@ -450,6 +448,7 @@ public class Video_Activity_Main extends Activity implements
     public static final int CLICK_LIST_ITEM = 2;
     public static final int LONG_CLICK_LIST_ITEM = 3;
     public static final int HIDE_UNSUPPORT_VIEW = 6;
+    public static int mErrorCount = 0;
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -494,18 +493,8 @@ public class Video_Activity_Main extends Activity implements
                 if (mErrorCount >= 5) {
                     mErrorCount = 0;
                     onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
-                } else if (mPlayLayout != null && mPlayLayout.getVisibility() == View.VISIBLE) {
-                    try {
-                    	if (mPreFlag) {
-                    		mPlayLayout.getVideoController().playPre();
-                    	} else {
-                    		mPlayLayout.getVideoController().playNext();
-                    	}
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-                    mPlayLayout.updateVideoLayout(true);
                 }
+                    //mPlayLayout.updateVideoLayout(true);
                 break;
             default:
                 break;
