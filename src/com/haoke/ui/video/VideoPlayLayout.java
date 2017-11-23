@@ -165,12 +165,14 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
 			@Override
 			public boolean onError(MediaPlayer arg0, int arg1, int arg2) {
 				// TODO Auto-generated method stub
+				Log.e("luke","-----------setOnErrorListener");
 		        if (getVisibility() == View.VISIBLE) {
+		        	Log.e("luke","send error message!!!");
 		            setUnsupportViewShow(true);
 		            mActivityHandler.removeMessages(Video_Activity_Main.HIDE_UNSUPPORT_VIEW);
 		            mActivityHandler.sendEmptyMessageDelayed(Video_Activity_Main.HIDE_UNSUPPORT_VIEW, 1000);
 		        }
-				return false;
+				return true;
 			}
         	
         });
@@ -180,6 +182,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
 			@Override
 			public void onCompletion(MediaPlayer arg0) {
 				// TODO Auto-generated method stub
+				Log.e("luke","setOnCompletionListener");
 				updateTimeBar();
 				mVideoController.playNext();
 			}
@@ -253,13 +256,10 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         }
         mHandler.removeMessages(DELAY_PLAY);
         mVideoController.stopRecordTimer();
-        //if (Video_IF.getInstance().getPlayState() == PlayState.PLAY) {
-            savePlayState = true;
-            //Video_IF.getInstance().setPlayState(PlayState.PAUSE);
-        //}
-        //mVideoLayout.removeAllViews();
-            mVideoController.getVideoView().pause();
-            mVideoController.getVideoView().setVisibility(View.INVISIBLE);
+        savePlayState = true;
+
+        mVideoController.getVideoView().pause();
+        mVideoController.getVideoView().setVisibility(View.INVISIBLE);
     }
 
     public void updateVideoLayout(boolean checkSpeed) {
