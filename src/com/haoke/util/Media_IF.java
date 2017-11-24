@@ -217,25 +217,27 @@ public class Media_IF extends CarService_IF {
 		int mcuSource = com.haoke.define.ModeDef.NULL;
 		int lastSource = getCurSource();
 		if (lastSource != source) {
-			try {
-				success = setSourceToSettings(source);
-				if (success) {
-					getInstance().sendSouceChange(source);
-					sLastSource = lastSource;
-					sCurSource = source;
-					if (source == Source.NULL && Source.isBTMusicSource(sLastSource)) {
-						sLastSource = Source.NULL;
-					}
-				}
-				mcuSource = Source.changeToMcuSource(source);
-				getInstance().mServiceIF.mcu_setCurSource(mcuSource);
-				//getInstance().mServiceIF.mcu_setCurSourceEx(
-				//        Source.getDeviceFromSource(source), Source.getTypeFromSource(source));
-			} catch (Exception e) {
-				Log.e(TAG, "setCurSource exception", e);
-			}
-			DebugLog.d(TAG, "setCurSource from: " + lastSource + " && to: " + source + "; success=" + success + "; mcuSource="+mcuSource);
-		}
+            try {
+                success = setSourceToSettings(source);
+                if (success) {
+                    getInstance().sendSouceChange(source);
+                    sLastSource = lastSource;
+                    sCurSource = source;
+                    if (source == Source.NULL && Source.isBTMusicSource(sLastSource)) {
+                        sLastSource = Source.NULL;
+                    }
+                }
+                mcuSource = Source.changeToMcuSource(source);
+                // getInstance().mServiceIF.mcu_setCurSource(mcuSource);
+                int exSource = Source.getDeviceFromSource(source);
+                int exType = Source.getTypeFromSource(source);
+                getInstance().mServiceIF.mcu_setCurSourceEx(exSource, exType);
+                DebugLog.d(TAG, "mcu_setCurSourceEx exSource: " + exSource + " && exType: " + exType);
+            } catch (Exception e) {
+                DebugLog.e(TAG, "setCurSource exception: " + e);
+            }
+            DebugLog.d(TAG, "setCurSource from: " + lastSource + " && to: " + source + "; success=" + success + "; mcuSource="+mcuSource);
+        }
 		return success;
 	}
 
