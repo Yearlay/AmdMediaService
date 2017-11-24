@@ -25,11 +25,14 @@ import com.haoke.service.MediaClient;
 import com.haoke.util.Media_IF;
 
 import android.content.Context;
+import android.graphics.drawable.AnimationDrawable;
 import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.VideoView;
 
 public class VideoPlayController {
@@ -37,6 +40,8 @@ public class VideoPlayController {
 	private static final String TAG = "VideoPlayController";
     public static final int MEDIA_MODE_AUDIO = 1;
     public static final int MEDIA_MODE_VIDEO = 2;
+    
+    public static boolean isVideoPlaying = false;
 	
 	protected Context mContext = null;
 	private MyVideoView mVideView;
@@ -56,6 +61,9 @@ public class VideoPlayController {
 	
 	private AudioFocus mAudioFocus;
 	
+	private AnimationDrawable mLoading;
+	private VideoPlayLayout videoLayout;
+	
 	
 	//private boolean mVideoShow = false;
 	
@@ -72,6 +80,14 @@ public class VideoPlayController {
 		mAllMediaList = AllMediaList.instance(mContext);
 		mAllMediaList.registerLoadListener(mLoadListener);
 		mAudioFocus = new AudioFocus(mContext);
+	}
+	
+	public void setLoadingImage(AnimationDrawable animation){
+		mLoading = animation;
+	}
+	
+	public void setVideoPlayLayout(VideoPlayLayout layout){
+		videoLayout = layout;
 	}
 	
     private LoadListener mLoadListener = new LoadListener() {
@@ -300,7 +316,17 @@ public class VideoPlayController {
 
 	}
 	
-	public static boolean setCurSource(int source) {
+	public static boolean setCurSource(int deviceType) {
+		int source = Source.NULL;
+		if (deviceType == DeviceType.FLASH) {
+			source = Source.VIDEO_FLASH;
+		} else if (deviceType == DeviceType.USB1) {
+			source = Source.VIDEO_USB1;
+		} else if (deviceType == DeviceType.USB2) {
+			source = Source.VIDEO_USB2;
+		} else if (deviceType == DeviceType.COLLECT) {
+			source = Source.VIDEO_COLLECT;
+		}
 		return Media_IF.setCurSource(source);
 	}
 
@@ -341,6 +367,15 @@ public class VideoPlayController {
 	
 	public VideoView getVideoView(){
 		return mVideView;		
+	}
+	
+	public void playOrPause(boolean playOrPause) {
+		if (playOrPause) {
+			mVideView.start();
+		} else {
+			mVideView.pause();
+		}
+		isVideoPlaying = playOrPause;
 	}
 	
 	/**
@@ -405,7 +440,7 @@ public class VideoPlayController {
 		}*/
 		
 
-		Log.v(TAG, "playOther  mCurPlayVideoIndex: " + mCurPlayVideoIndex + "; mCurFileNode: " + mCurFileNode);
+		//Log.v(TAG, "playOther  mCurPlayVideoIndex: " + mCurPlayVideoIndex + "; mCurFileNode: " + mCurFileNode);
 		
 		if (mPlayingDeviceType == DeviceType.NULL || mPlayingFileType == FileType.NULL) {
 			setPlayingData(node.getDeviceType(), node.getFileType(), true);
@@ -423,16 +458,24 @@ public class VideoPlayController {
 		boolean returnVal = mMediaPlayer.setDataSource(path);*/
 		
 		resetMediaPlayer();
+		Log.e("luke","----playOther  VideoView set video patch: " + path );
+		mLoading.setVisible(true, true);
+		mLoading.start();
+		mVideView.setVideoPath(path);  //主要的耗时操作
+		//videoLayout.onResume();
 		
-		Log.v(TAG,"Playing: " + node + " ,-------Time: " + node.getPlayTime());
+		Log.v("luke","Play done ,waiting OnPrepare " + " ,----Time: " + node.getPlayTime() + "  ,filesize: " + node.getFile().length());
+		//mVideView.setVisibility(View.VISIBLE);
 		
-		mVideView.setVideoPath(path);
 		//mVideView.seekTo(node.getPlayTime());
 		//mVideView.start();
 		//startRecordTimer();
 //		if (returnVal) {
 //			onDataChanged(mMediaMode, MediaFunc.PLAY_STATE, PlayState.PLAY, 0);
 //		}
+		mLoading.setVisible(false, false);
+		mLoading.stop();
+		setCurSource(node.getDeviceType());
 		return true;
 	}
 	
@@ -461,7 +504,7 @@ public class VideoPlayController {
 	}
 	
 	public boolean play(FileNode fileNode) {
-		Log.v(TAG, "play Video fileNode=" + fileNode);
+		Log.v("luke", "play Video fileNode=" + fileNode);
 		int deviceType = fileNode.getDeviceType();
 		int fileType = fileNode.getFileType();
 		if (deviceType == DeviceType.USB1 || deviceType == DeviceType.USB2 ||
@@ -607,13 +650,48 @@ public class VideoPlayController {
 		}
 	}
 	
+	public Handler getControllerHandler(){
+		return mHandler;
+	}
+	
     private static final int MSG_DELAY_PLAYTIME = 3000;
     private static final int MSG_SAVE_PLAYTIME = 1;
     private static final int MSG_SAVE_PLAYSTATE = 2;
     private static final int MSG_PARSE_ID3_INFO = 3;
+    public static final int MSG_PLAY = 1001;
+    public static final int MSG_PAUSE = 1002;
+    public static final int MSG_PREPLAY = 1003;
+    public static final int MSG_NEXTPLAY = 1004;
+    
     private Handler mHandler = new Handler() {
     	public void handleMessage(android.os.Message msg) {
     		switch (msg.what) {
+			case MSG_PLAY: 
+				Log.d(TAG, "mHandler MSG_PLAY");
+				if(mVideView != null && isPlayState()){
+					playOrPause(true);
+				}
+				break;
+				
+			case MSG_PAUSE:
+				Log.d(TAG, "mHandler MSG_PAUSE");
+				if(mVideView != null && isPlayState()){
+					playOrPause(false);
+				}
+				break;
+    		
+			case MSG_PREPLAY:
+				Log.d(TAG, "mHandler MSG_PREPLAY");
+				if(mVideView != null && isPlayState()){
+					playPre();
+				}
+				break;
+			case MSG_NEXTPLAY:
+				Log.d(TAG, "mHandler MSG_NEXTPLAY");
+				if(mVideView != null && isPlayState()){
+					playNext();
+				}
+				break;
 			case MSG_SAVE_PLAYTIME:
 				int time = getPosition();
 				savePlayTime(getPlayFileNode(), time);

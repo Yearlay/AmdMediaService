@@ -111,6 +111,7 @@ public class Video_Activity_Main extends Activity implements
         mCopyTextView.setOnClickListener(this);
 
         // Media_IF.getInstance().setVideoActivity(this);
+        registerReceiver(mPlayLayout.getVideoLayoutReciver(), new IntentFilter(Intent.ACTION_MEDIA_BUTTON));
         
         registerReceiver(mOperateAppReceiver, new IntentFilter(VRIntent.ACTION_OPERATE_VIDEO));
         
@@ -185,7 +186,7 @@ public class Video_Activity_Main extends Activity implements
     @Override
     public void onStart() {
         super.onStart();
-        AllMediaList.sCarSpeed = Video_IF.getCarSpeed();
+        AllMediaList.sCarSpeed = Media_IF.getCarSpeed();
         Log.v(TAG, "HMI------------onStart sCarSpeed: " + AllMediaList.sCarSpeed);
         Media_IF.getInstance().registerModeCallBack(this);
         updateDevice(getCurrentDeviceType());
@@ -252,8 +253,10 @@ public class Video_Activity_Main extends Activity implements
         Log.v(TAG, "HMI------------onDestroy");
         super.onDestroy();
         //Media_IF.getInstance().setVideoActivity(null);
+        unregisterReceiver(mPlayLayout.getVideoLayoutReciver());
         AllMediaList.instance(getApplicationContext()).unRegisterLoadListener(this);
         unregisterReceiver(mOperateAppReceiver);
+        
     }
     
     @Override
@@ -418,7 +421,7 @@ public class Video_Activity_Main extends Activity implements
                     mPlayLayout.playDefault();
                     break;
                 case VRIntent.PAUSE_VIDEO:
-                    mPlayLayout.getVideoController().getVideoView().pause();
+                    mPlayLayout.getVideoController().playOrPause(false);
                     break;
                 case VRIntent.PRE_VIDEO:
                     if (!mPlaying) {
@@ -458,6 +461,7 @@ public class Video_Activity_Main extends Activity implements
                 onChangeFragment(msg.what);
                 break;
             case CLICK_LIST_ITEM:
+            	Log.e("luke","-----item click, playing!!!!");
                 if (mListLayout.isEditMode()) {
                     mListLayout.selectItem(msg.arg1);
                     if (AllMediaList.checkSelected(Video_Activity_Main.this, mVideoList)) {

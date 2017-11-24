@@ -36,8 +36,8 @@ import com.haoke.service.MediaService;
 import com.haoke.service.RadioService;
 import com.haoke.ui.media.Media_Activity_Main;
 import com.haoke.ui.music.Music_Activity_List;
+import com.haoke.ui.video.VideoPlayController;
 import com.haoke.ui.video.Video_Activity_Main;
-import com.haoke.ui.video.Video_IF;
 import com.haoke.util.Media_IF;
 
 public class MediaInterfaceUtil {
@@ -406,7 +406,7 @@ public class MediaInterfaceUtil {
                 }
             }
             int fileType = (Source.isAudioSource(source) ? FileType.AUDIO : FileType.VIDEO);
-            boolean currPlaying = Media_IF.getInstance().isPlayState() || Video_IF.getInstance().isPlayState();
+            boolean currPlaying = Media_IF.getInstance().isPlayState() || VideoPlayController.isVideoPlaying;
             boolean lastPlaying = true;//allMediaList.getPlayState(fileType);
             Log.d(TAG, "checkSourceFromBoot LastDeviceType="+sLastDeviceType+"; lastPlaying="+lastPlaying+"; currPlaying="+currPlaying);
             if (!currPlaying && lastPlaying && sLastDeviceType != DeviceType.NULL) {
@@ -646,7 +646,7 @@ public class MediaInterfaceUtil {
                 sRunDeviceType = Source.getDeviceType(ourSource);
             }
             int fileType = (Source.isAudioSource(ourSource) ? FileType.AUDIO : FileType.VIDEO);
-            boolean currPlaying = Media_IF.getInstance().isPlayState() || Video_IF.getInstance().isPlayState();
+            boolean currPlaying = Media_IF.getInstance().isPlayState() || VideoPlayController.isVideoPlaying;
             boolean lastPlaying = true;//allMediaList.getPlayState(fileType);
             Log.d(TAG, "checkModeRecordInternalEx sRunDeviceType="+sRunDeviceType+"; lastPlaying="+lastPlaying+"; currPlaying="+currPlaying);
             if (!currPlaying && lastPlaying && sRunDeviceType != DeviceType.NULL) {

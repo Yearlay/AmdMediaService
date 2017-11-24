@@ -16,7 +16,6 @@ import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.constant.MediaUtil.RepeatMode;
 import com.haoke.ui.image.Image_Activity_Main;
 import com.haoke.ui.video.Video_Activity_Main;
-import com.haoke.ui.video.Video_IF;
 import com.haoke.util.DebugLog;
 import com.haoke.util.Media_IF;
 
@@ -154,7 +153,6 @@ public class VRInterfaceUtil {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         } else {
-            Video_IF.getInstance().setRecordPlayState(PlayState.PAUSE);
             Intent intent = new Intent(VRIntent.ACTION_OPERATE_VIDEO);
             intent.putExtra(VRIntent.KEY_VIDEO, VRIntent.FINISH_VIDEO);
             sendBroadcast(intent);

@@ -5,8 +5,12 @@ import java.util.ArrayList;
 import haoke.ui.util.OnHKTouchListener;
 import haoke.ui.util.TOUCH_ACTION;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.drawable.AnimationDrawable;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
@@ -18,6 +22,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnGestureListener;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -37,7 +42,9 @@ import com.haoke.data.OperateListener;
 import com.haoke.data.PlayStateSharedPreferences;
 import com.haoke.constant.MediaUtil.MediaState;
 import com.haoke.constant.MediaUtil.PlayState;
+import com.haoke.constant.VRConstant.VRIntent;
 import com.haoke.mediaservice.R;
+import com.haoke.ui.image.Image_Activity_Main;
 import com.haoke.util.DebugLog;
 import com.haoke.video.VideoSurfaceView;
 import com.nforetek.bt.res.MsgOutline;
@@ -59,8 +66,10 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     private TextView mTitleTextView;
     private VideoPlayTimeSeekBar mTimeSeekBar;
     private View mUnsupportView;
+    private ImageView mLoading;
     private Handler mActivityHandler;
     private GestureDetector mGestureDetector;
+    
     
     private boolean mNextPlay = true;
     private FileNode mFileNode;
@@ -87,8 +96,11 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         mFileNode = fileNode;
         mTitleTextView.setText(mFileNode.getFileName());
         updateCollectView();
-        mVideoController.play(mFileNode);
         updateVideoLayout(true);
+        slaverShow(true);
+        Log.e("luke","------setFileNode: " + mFileNode.toString());
+        mVideoController.play(mFileNode);
+        
         if (mCtrlBar.getVisibility() == View.VISIBLE) {
             mHandler.removeMessages(HIDE_CTRL);
             mHandler.sendEmptyMessageDelayed(HIDE_CTRL, DELAY_TIME);
@@ -140,7 +152,8 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         mVideoController = new VideoPlayController(mVideoView);
         
         mGestureDetector = new GestureDetector(this);
-        
+        mLoading = (ImageView) findViewById(R.id.loading_image);
+        mVideoController.setLoadingImage((AnimationDrawable)(mLoading.getBackground()));
         
         mVideoView.setOnTouchListener(this);
         mVideoView.setOnPreparedListener(new OnPreparedListener() {
@@ -157,16 +170,15 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         				//mVideoController.startRecordTimer();
         				Log.e("luke","------onPrepared getPlayTime: " + temp.getPlayTime());
         				//mVideoController.play(temp);
-        				mVideoController.getVideoView().start();
+        				mVideoController.playOrPause(true);
         				mVideoController.setPosition(temp.getPlayTime());
         			}
         		
         		}catch (Exception e) {
         			Log.e("luke","--" + e.toString());
         		}
-        		
         		updateTimeBar();
-        		
+        		VideoPlayController.isVideoPlaying = true;
         	}
         });
         
@@ -188,10 +200,9 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         });
         
         mVideoView.setOnCompletionListener(new OnCompletionListener(){
-
 			@Override
 			public void onCompletion(MediaPlayer arg0) {
-				// TODO Auto-generated method stub
+				VideoPlayController.isVideoPlaying = false;
 				Log.e("luke","setOnCompletionListener");
 				updateTimeBar();
 				mVideoController.playNext();
@@ -223,8 +234,74 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         mForbiddenView = findViewById(R.id.video_play_forbidden);
         mForbiddenView.setOnTouchListener(this);
         mUnsupportView = findViewById(R.id.not_support_text);
+        mVideoController.setVideoPlayLayout(this);
+        //registerReceiver(mBroadcastReceiver, new IntentFilter(VRIntent.ACTION_OPERATE_VIDEO));
+        
         skinManager = SkinManager.instance(mContext);
     }
+    
+    public BroadcastReceiver getVideoLayoutReciver(){
+    	return mBroadcastReceiver;
+    }
+    
+	//系统按键处理
+    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            Log.d("luke", "onReceive action="+action);
+            if (MediaInterfaceUtil.mediaCannotPlay()) {
+                return;
+            }
+            if (Intent.ACTION_MEDIA_BUTTON.equals(action)) {
+                KeyEvent event = (KeyEvent) intent
+                        .getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+                if (event == null || event.getAction() != KeyEvent.ACTION_UP) {
+                    return;
+                }
+                int keycode = event.getKeyCode();
+                Log.d("luke", "onReceive keycode="+keycode);
+                switch (keycode) {
+                case KeyEvent.KEYCODE_MEDIA_PLAY: //126
+                    if (!Image_Activity_Main.isPlayImage(context) && mVideoController !=null) {
+                        //play();
+                    	if(mVideoController.getVideoView().getVisibility() == View.VISIBLE) {
+                    		mVideoController.playOrPause(true);
+                    	}
+                    }
+                    break;
+                case KeyEvent.KEYCODE_MEDIA_PAUSE: //127
+                    if (!Image_Activity_Main.isPlayImage(context) && mVideoController !=null) {
+                        //pause();
+                    	//zanting
+                    	if(mVideoController.getVideoView().getVisibility() == View.VISIBLE){
+                    		mVideoController.playOrPause(false);
+                    	}
+                    }
+                    break;
+                case KeyEvent.KEYCODE_MEDIA_PREVIOUS: //88
+                    //prev();
+                	//上一个
+                	if(mVideoController !=null){
+                		if(mVideoController.getVideoView().getVisibility() == View.VISIBLE) {
+                			mVideoController.playPre();
+                		}
+                	}
+                    break;
+                case KeyEvent.KEYCODE_MEDIA_NEXT: //87
+                    //next();
+                	//下一个
+                	if(mVideoController !=null){
+                		if(mVideoController.getVideoView().getVisibility() == View.VISIBLE){
+                			mVideoController.playNext();
+                		}
+                	}
+                    break;
+                }
+            }
+        }
+    };
+    
     
     public void refreshSkin() {
         mBackImageView.setImageDrawable(skinManager.getDrawable(R.drawable.image_back_icon_selector));
@@ -266,8 +343,8 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         mVideoController.stopRecordTimer();
         savePlayState = true;
 
-        mVideoController.getVideoView().pause();
         mVideoController.getVideoView().setVisibility(View.INVISIBLE);
+        mVideoController.playOrPause(false);
     }
 
     public void updateVideoLayout(boolean checkSpeed) {
@@ -310,11 +387,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
             mPlayImageView.setImageDrawable(skinManager.getDrawable(
             		!playing ?
                     R.drawable.image_pause_icon_selector : R.drawable.image_play_icon_selector));
-            if(playing){
-            	mVideoController.getVideoView().pause();
-            } else {
-            	mVideoController.getVideoView().start();
-            }
+            mVideoController.playOrPause(!playing);
             mTimeSeekBar.updateCurTime();
             break;
         case R.id.video_ctrlbar_fastnext: // 快进
