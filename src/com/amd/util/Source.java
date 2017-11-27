@@ -162,7 +162,7 @@ public class Source {
         int base = (type == MediaType.AUDIO) ? AUDIO : VIDEO;
         if (source == ModeDef.RADIO) {
             our = RADIO;
-        } else if (source == ModeDef.BT) {
+        } else if (source == ModeDef.BT || source == ModeDef.BTMUSIC) {
             our = BT;
         } else if (source == ModeDef.USB1) {
             our = base + DeviceType.USB1;
