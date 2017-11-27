@@ -265,7 +265,11 @@ public class Video_Activity_Main extends Activity implements
         if (index != 0) {
             return true;
         }
-        return super.dispatchTouchEvent(ev);
+        try {
+            return super.dispatchTouchEvent(ev);
+        } catch (Exception e) {
+        }
+        return true;
     }
     
     @Override
