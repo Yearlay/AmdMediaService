@@ -406,8 +406,8 @@ public class Video_Activity_Main extends Activity implements
         }
         updateCurPosition(position);
         FileNode fileNode = mVideoList.get(mCurPosition);
-        onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
         mPlayLayout.setFileNode(fileNode);
+        onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
     }
     
     private BroadcastReceiver mOperateAppReceiver = new BroadcastReceiver() {
