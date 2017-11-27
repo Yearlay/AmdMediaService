@@ -642,11 +642,9 @@ public class MediaInterfaceUtil {
             }
         } else if (Source.isAudioSource(ourSource) || Source.isVideoSource(ourSource)) {
             AllMediaList allMediaList = AllMediaList.instance(service);
-            if (sRunDeviceType == -1) {
-                sRunDeviceType = Source.getDeviceType(ourSource);
-            }
+            sRunDeviceType = Source.getDeviceType(ourSource);
             int fileType = (Source.isAudioSource(ourSource) ? FileType.AUDIO : FileType.VIDEO);
-            boolean currPlaying = Media_IF.getInstance().isPlayState() || VideoPlayController.isVideoPlaying;
+            boolean currPlaying = false; //Media_IF.getInstance().isPlayState() || VideoPlayController.isVideoPlaying;
             boolean lastPlaying = true;//allMediaList.getPlayState(fileType);
             Log.d(TAG, "checkModeRecordInternalEx sRunDeviceType="+sRunDeviceType+"; lastPlaying="+lastPlaying+"; currPlaying="+currPlaying);
             if (!currPlaying && lastPlaying && sRunDeviceType != DeviceType.NULL) {

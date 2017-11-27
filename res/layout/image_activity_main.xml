@@ -22,7 +22,7 @@
         android:gravity="center"
         android:orientation="horizontal" > 
         
-        <RadioButton
+        <com.amd.widget.BeepRadioButton
             android:id="@+id/image_device_flash"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -35,7 +35,7 @@
             android:textSize="22sp"
             android:text="@string/media_flash_tab" />
         
-        <RadioButton
+        <com.amd.widget.BeepRadioButton
             android:id="@+id/image_device_usb1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -48,7 +48,7 @@
             android:textSize="22sp"
             android:text="@string/media_usb1_tab" />
         
-        <RadioButton
+        <com.amd.widget.BeepRadioButton
             android:id="@+id/image_device_usb2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -61,7 +61,7 @@
             android:textSize="22sp"
             android:text="@string/media_usb2_tab" />
         
-        <RadioButton
+        <com.amd.widget.BeepRadioButton
             android:id="@+id/image_device_collect"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

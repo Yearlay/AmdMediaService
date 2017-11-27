@@ -39,7 +39,7 @@
         android:gravity="center"
         android:orientation="horizontal" >
         
-        <RadioButton
+        <com.amd.widget.BeepRadioButton
             android:id="@+id/media_tab_net_music"
             android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
@@ -53,7 +53,7 @@
 	        android:text="@string/pub_net_music"
 	        android:visibility="gone"
             />
-        <RadioButton
+        <com.amd.widget.BeepRadioButton
             android:id="@+id/media_tab_net_radio"
             android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
@@ -67,7 +67,7 @@
 	        android:text="@string/pub_net_radio"
 	        android:visibility="gone"
             />
-        <RadioButton
+        <com.amd.widget.BeepRadioButton
             android:id="@+id/media_tab_radio"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
@@ -80,7 +80,7 @@
 	        android:textSize="22sp"
 	        android:text="@string/pub_radio"
             />
-        <RadioButton
+        <com.amd.widget.BeepRadioButton
             android:id="@+id/media_tab_music"
             android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
