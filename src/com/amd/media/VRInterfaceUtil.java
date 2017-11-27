@@ -395,18 +395,18 @@ public class VRInterfaceUtil {
     
     private void commandCollectRadio() {
         // 收藏当前播放电台。
-        if (mRadioIF.isEnable()) {
+//        if (mRadioIF.isEnable()) {
             int freq = mRadioIF.getCurFreq();
             mRadioIF.collectFreq(MediaApplication.getInstance(), freq, true);
-        }
+//        }
     }
     
     private void commandUnCollectRadio() {
         // 取消收藏当前播放电台。
-        if (mRadioIF.isEnable()) {
+//        if (mRadioIF.isEnable()) {
             int freq = mRadioIF.getCurFreq();
             mRadioIF.uncollectFreq(MediaApplication.getInstance(), freq, true);
-        }
+//        }
     }
     
     private void vrImageOperate(Intent vrIntent) {
