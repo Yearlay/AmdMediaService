@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -45,6 +46,7 @@ import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.constant.VRConstant.VRIntent;
 import com.haoke.mediaservice.R;
 import com.haoke.ui.image.Image_Activity_Main;
+import com.haoke.util.DebugClock;
 import com.haoke.util.DebugLog;
 import com.haoke.video.VideoSurfaceView;
 import com.nforetek.bt.res.MsgOutline;
@@ -99,7 +101,6 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         updateVideoLayout(true);
         slaverShow(true);
         Log.e("luke","------setFileNode: " + mFileNode.toString());
-        mVideoController.play(mFileNode);
         
         if (mCtrlBar.getVisibility() == View.VISIBLE) {
             mHandler.removeMessages(HIDE_CTRL);
@@ -131,9 +132,6 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     public void updateTimeBar() {
         FileNode fileNode = mVideoController.getPlayFileNode();
         if (fileNode != null) {
-            if (!fileNode.isSame(mFileNode)) {
-                mFileNode = fileNode;
-            }
             mTitleTextView.setText(fileNode.getFileName());
         }
         mTimeSeekBar.updateTimeInfo();
@@ -153,7 +151,6 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         
         mGestureDetector = new GestureDetector(this);
         mLoading = (ImageView) findViewById(R.id.loading_image);
-        mVideoController.setLoadingImage((AnimationDrawable)(mLoading.getBackground()));
         
         mVideoView.setOnTouchListener(this);
         mVideoView.setOnPreparedListener(new OnPreparedListener() {
@@ -179,6 +176,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         		}
         		updateTimeBar();
         		VideoPlayController.isVideoPlaying = true;
+        		mLoading.setVisibility(View.GONE);
         	}
         });
         
@@ -194,6 +192,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
 		            mActivityHandler.removeMessages(Video_Activity_Main.HIDE_UNSUPPORT_VIEW);
 		            mActivityHandler.sendEmptyMessageDelayed(Video_Activity_Main.HIDE_UNSUPPORT_VIEW, 1000);
 		        }
+		        mLoading.setVisibility(View.GONE);
 				return true;
 			}
         	
@@ -330,6 +329,13 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         if (!mVideoController.isPlayState()) {
             slaverShow(true);
         }
+        
+        if (mFileNode != null) {
+            mLoading.setVisibility(View.VISIBLE);
+            mHandler.removeMessages(PLAY_DELAY);
+            Message message = mHandler.obtainMessage(PLAY_DELAY, mFileNode);
+            mHandler.sendMessage(message);
+        }
     }
     
     private boolean savePlayState = false;
@@ -348,11 +354,13 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     }
 
     public void updateVideoLayout(boolean checkSpeed) {
-    	Log.e("luke","----updateVideoLayout!!");
+        DebugClock debugClock = new DebugClock();
         mVideoController.getVideoView().setVisibility(View.VISIBLE);
+        debugClock.calculateTime("luke", "updateVideoLayout setVisibility");
         if (checkSpeed) {
             checkSpeedAndRefreshView(AllMediaList.sCarSpeed);
         }
+        debugClock.calculateTime("luke", "updateVideoLayout checkSpeedAndRefreshView");
     }
 
     @Override
@@ -520,6 +528,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     private static final int HIDE_CTRL = 1;
     private static final int DELAY_PLAY = 2;
     private static final int END_SCROLL = 3;
+    private static final int PLAY_DELAY = 4;
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -534,6 +543,9 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
                 break;
             case END_SCROLL:
                 mTimeSeekBar.onStopTrackingTouch(mTimeSeekBar.getSeekBar());
+                break;
+            case PLAY_DELAY:
+                mVideoController.play((FileNode) msg.obj);
                 break;
             default:
                 break;

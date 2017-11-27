@@ -149,6 +149,6 @@
         android:layout_centerVertical="true"
         android:gravity="center"
         android:visibility="invisible"
-        android:background ="@drawable/file_operate_loading_anim" />
+        android:src ="@drawable/file_operate_loading_anim" />
 
 </com.haoke.ui.video.VideoPlayLayout>

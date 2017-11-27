@@ -22,6 +22,7 @@ import com.haoke.constant.MediaUtil.ScanState;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.LoadListener;
 import com.haoke.service.MediaClient;
+import com.haoke.util.DebugClock;
 import com.haoke.util.Media_IF;
 
 import android.content.Context;
@@ -61,7 +62,6 @@ public class VideoPlayController {
 	
 	private AudioFocus mAudioFocus;
 	
-	private AnimationDrawable mLoading;
 	private VideoPlayLayout videoLayout;
 	
 	
@@ -80,10 +80,6 @@ public class VideoPlayController {
 		mAllMediaList = AllMediaList.instance(mContext);
 		mAllMediaList.registerLoadListener(mLoadListener);
 		mAudioFocus = new AudioFocus(mContext);
-	}
-	
-	public void setLoadingImage(AnimationDrawable animation){
-		mLoading = animation;
 	}
 	
 	public void setVideoPlayLayout(VideoPlayLayout layout){
@@ -170,6 +166,7 @@ public class VideoPlayController {
 	}
 	
 	public void resetMediaPlayer() {
+	    DebugClock debugClock = new DebugClock();
 		try {
 			//if (mMediaPlayer.getMediaState() == MediaState.PREPARED) {
 				mVideView.stopPlayback();
@@ -180,6 +177,7 @@ public class VideoPlayController {
 		} catch (Exception e) {
 			Log.e(TAG, "resetMediaPlayer e=" + e);
 		}
+		debugClock.calculateTime(TAG, "resetMediaPlayer");
 	}
 	
 	private void loadData() {
@@ -371,6 +369,7 @@ public class VideoPlayController {
 	
 	public void playOrPause(boolean playOrPause) {
 		if (playOrPause) {
+		    requestAudioFocus(true);
 			mVideView.start();
 		} else {
 			mVideView.pause();
@@ -453,15 +452,15 @@ public class VideoPlayController {
 /*		if (node.getFileType() == FileType.AUDIO) {
 			mPlayMusicFileNode = node;
 		}*/
-		String path = node.getFilePath(); // 获得播放路径
+		final String path = node.getFilePath(); // 获得播放路径
 /*		mMediaPlayer.setFileType(mPlayingFileType);
 		boolean returnVal = mMediaPlayer.setDataSource(path);*/
 		
 		resetMediaPlayer();
 		Log.e("luke","----playOther  VideoView set video patch: " + path );
-		mLoading.setVisible(true, true);
-		mLoading.start();
+		DebugClock debugClock = new DebugClock();
 		mVideView.setVideoPath(path);  //主要的耗时操作
+		debugClock.calculateTime(TAG, "mVideView setVideoPath");
 		//videoLayout.onResume();
 		
 		Log.v("luke","Play done ,waiting OnPrepare " + " ,----Time: " + node.getPlayTime() + "  ,filesize: " + node.getFile().length());
@@ -473,8 +472,6 @@ public class VideoPlayController {
 //		if (returnVal) {
 //			onDataChanged(mMediaMode, MediaFunc.PLAY_STATE, PlayState.PLAY, 0);
 //		}
-		mLoading.setVisible(false, false);
-		mLoading.stop();
 		setCurSource(node.getDeviceType());
 		return true;
 	}
