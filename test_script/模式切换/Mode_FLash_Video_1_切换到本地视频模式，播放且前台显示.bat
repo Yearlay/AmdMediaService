@@ -1,0 +1,1 @@
+adb shell am startservice -a "com.jsbd.modeswitch.action" --es username Leon --ei source 32 --ei type 1 --ei display 1
