@@ -121,11 +121,12 @@ public class MusicHomeLayout extends LinearLayout implements OnClickListener,
 		mLayoutCollect.setBackground(skinManager.getDrawable(R.drawable.music_back_ground));
 		mLayoutFlash.setBackground(skinManager.getDrawable(R.drawable.music_back_ground));
 		mLayoutBT.setBackground(skinManager.getDrawable(R.drawable.music_back_ground));
-		mCollectIcon.setBackground(skinManager.getDrawable(R.drawable.music_save));
-		mFlashIcon.setBackground(skinManager.getDrawable(R.drawable.music_local));
-		mBTIcon.setBackground(skinManager.getDrawable(R.drawable.music_scan_bt));
-		mUSB1Icon.setBackground(skinManager.getDrawable(R.drawable.music_scan_usb));
-		mUSB2Icon.setBackground(skinManager.getDrawable(R.drawable.music_scan_usb));
+		refreshUsbBackground();
+//		mCollectIcon.setBackground(skinManager.getDrawable(R.drawable.music_save));
+//		mFlashIcon.setBackground(skinManager.getDrawable(R.drawable.music_local));
+//		mBTIcon.setBackground(skinManager.getDrawable(R.drawable.music_scan_bt));
+//		mUSB1Icon.setBackground(skinManager.getDrawable(R.drawable.music_scan_usb));
+//		mUSB2Icon.setBackground(skinManager.getDrawable(R.drawable.music_scan_usb));
 	}
 
     @Override
@@ -158,20 +159,29 @@ public class MusicHomeLayout extends LinearLayout implements OnClickListener,
         }
     }
     
-    public void deviceChanged(int deviceType, boolean noDevice) {
+    private void refreshUsbBackground() {
+        refreshUsbBackground(DeviceType.USB1, Media_IF.getInstance().getScanState(DeviceType.USB1) == ScanState.NO_MEDIA_STORAGE);
+        refreshUsbBackground(DeviceType.USB2, Media_IF.getInstance().getScanState(DeviceType.USB2) == ScanState.NO_MEDIA_STORAGE);
+    }
+    
+    private void refreshUsbBackground(int deviceType, boolean noDevice) {
         if (deviceType == DeviceType.USB1) {
-        	if (noDevice) {
-        		mLayoutUsb1.setBackground(skinManager.getDrawable(R.drawable.music_back_ground_gray));
-        	} else {
-        		mLayoutUsb1.setBackground(skinManager.getDrawable(R.drawable.music_back_ground));
-        	}
+            if (noDevice) {
+                mLayoutUsb1.setBackground(skinManager.getDrawable(R.drawable.music_back_ground_gray));
+            } else {
+                mLayoutUsb1.setBackground(skinManager.getDrawable(R.drawable.music_back_ground));
+            }
         } else if (deviceType == DeviceType.USB2) {
-        	if (noDevice) {
-        		mLayoutUsb2.setBackground(skinManager.getDrawable(R.drawable.music_back_ground_gray));
-        	} else {
-        		mLayoutUsb2.setBackground(skinManager.getDrawable(R.drawable.music_back_ground));
-        	}
+            if (noDevice) {
+                mLayoutUsb2.setBackground(skinManager.getDrawable(R.drawable.music_back_ground_gray));
+            } else {
+                mLayoutUsb2.setBackground(skinManager.getDrawable(R.drawable.music_back_ground));
+            }
         }
+    }
+    
+    public void deviceChanged(int deviceType, boolean noDevice) {
+        refreshUsbBackground(deviceType, noDevice);
         mHandler.removeMessages(GET_COLLECT_SIZE);
         mHandler.sendEmptyMessageDelayed(GET_COLLECT_SIZE, 100);
     }
