@@ -17,7 +17,7 @@
             
         <EditText
 	        android:id="@+id/search_input"
-	        android:layout_width="wrap_content"
+	        android:layout_width="695dp"
 	        android:layout_height="wrap_content"
 	        android:imeOptions="actionSearch"
 	        android:singleLine="true"
@@ -25,6 +25,8 @@
 	        android:background="@drawable/search_input_bg"
 	        android:textColor="@android:color/white"
 	        android:textSize="30px"
+	        android:maxLength="31"
+	        android:paddingRight="50dip"
 	        android:hint="@string/search_media_input_empty" />
         
         <ImageButton
