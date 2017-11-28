@@ -176,6 +176,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
         mPlayImageView.setImageDrawable(skinManager.getDrawable(mIF.isEnable() ? R.drawable.pause : R.drawable.play));
         updateFreq(mIF.getCurFreq());
         refreshScanIcon();
+        onPageSelected(viewPager.getCurrentItem());
     }
     
     public void onPause() {
