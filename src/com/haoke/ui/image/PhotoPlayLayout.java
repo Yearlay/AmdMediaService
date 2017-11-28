@@ -81,6 +81,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     private SkinManager skinManager;
     
     public void setPlayState(int playState) {
+    	DebugLog.d("Yearlay","setPlayState: " + playState);
         mPlayState = playState;
         mPreFlag = false;
         if (mViewPager != null) {
@@ -217,6 +218,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
             break;
         case R.id.image_ctrlbar_pre:
             preImage();
+            setPlayState(PlayState.PAUSE);
             break;
         case R.id.image_ctrlbar_pp:
             mPlayState = (mPlayState == PlayState.PLAY) ? PlayState.PAUSE : PlayState.PLAY;
@@ -224,6 +226,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
             break;
         case R.id.image_ctrlbar_next:
             nextImage();
+            setPlayState(PlayState.PAUSE);
             break;
         case R.id.image_ctrlbar_turnr:
             View photoView = getCurPhotoView();
@@ -232,6 +235,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
                 photoView.setRotation(-90f + rotation);
                 checkPlayStatus(); // 重新计时
             }
+            setPlayState(PlayState.PAUSE);
             break;
         case R.id.collect_image:
             collectOrUncollect();
@@ -394,12 +398,19 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     // 图片缩放回调 OnMatrixChangedListener
     @Override
     public void onMatrixChanged(RectF rect) {
+    	DebugLog.d("Yearlay","onMatrixChanged: " + rect.toString());
         checkPlayStatus(); // 重新计时
+/*        if(rect.top != 0){
+        	setPlayState(PlayState.PAUSE);
+        } else {
+        	setPlayState(PlayState.PLAY);
+        }*/
     }
 
     // 图片点击回调 OnPhotoTapListener
     @Override
     public void onPhotoTap(View view, float x, float y) {
+    	DebugLog.d("Yearlay","onPhotoTap");
         slaverShow(mCtrlBar.getVisibility() != View.VISIBLE);
         checkPlayStatus(); // 重新计时
     }
@@ -627,4 +638,18 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
             return false;
         }
     };
+
+	@Override
+	public void OnScaleChanged(float scaleFactor, float focusX, float focusY) {
+		// TODO Auto-generated method stub
+		DebugLog.d("Yearlay","OnScaleChanged Scale: " + scaleFactor + "  ,focusX: " + focusX + "  ,focusY: " + focusY);
+		setPlayState(PlayState.PAUSE);
+	}
+
+	@Override
+	public void onPhotoDoubleTap(MotionEvent ev) {
+		// TODO Auto-generated method stub
+		DebugLog.d("Yearlay","onPhotoDoubleTap");
+		setPlayState(PlayState.PAUSE);
+	}
 }

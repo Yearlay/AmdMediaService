@@ -306,6 +306,8 @@ public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
 			} else {
 				zoomTo(mMinScale, x, y);
 			}
+			mPhotoTapListener.onPhotoDoubleTap(ev);
+			
 		} catch (ArrayIndexOutOfBoundsException e) {
 			// Can sometimes happen when getX() and getY() is called
 		}
@@ -404,6 +406,7 @@ public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
 					focusX, focusY));
 		}
 
+	    mMatrixChangeListener.OnScaleChanged(scaleFactor, focusX, focusY);
 		if (hasDrawable(getImageView())
 				&& (getScale() < mMaxScale || scaleFactor < 1f)) {
 			mSuppMatrix.postScale(scaleFactor, scaleFactor, focusX, focusY);
@@ -818,6 +821,8 @@ public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
 		 *            - Rectangle displaying the Drawable's new bounds.
 		 */
 		void onMatrixChanged(RectF rect);
+		
+		void OnScaleChanged(float scaleFactor, float focusX, float focusY);
 	}
 
 	/**
@@ -843,6 +848,8 @@ public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
 		 *            percentage of the Drawable height.
 		 */
 		void onPhotoTap(View view, float x, float y);
+		
+		void onPhotoDoubleTap(MotionEvent ev);
 	}
 
 	/**
