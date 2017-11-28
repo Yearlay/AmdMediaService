@@ -99,4 +99,6 @@
     <string name="music_delect_error">Delected fail</string>
     <string name="music_delect_ok">Delete the Selected songs now?</string>
     <string name="music_delect_empty">Please choose the songs</string>
+    
+    <string name="bt_permission">There is no access to Bluetooth media permissions.\n Please make sure that the Bluetooth media permissions are opened at the end of the cell phone.</string>
 </resources>

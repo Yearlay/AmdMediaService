@@ -40,6 +40,7 @@ public class MusicHomeLayout extends LinearLayout implements OnClickListener,
 	private TextView mLocalTextView = null;
 	private TextView mHistoryTextView = null;
 	private CustomDialog mRetryDialog = null;
+	private CustomDialog mPermissionDialog = null;
 	private View mLayoutCollect;
 	private View mLayoutFlash;
 	private View mLayoutBT;
@@ -144,6 +145,7 @@ public class MusicHomeLayout extends LinearLayout implements OnClickListener,
 	@Override
 	protected void onDetachedFromWindow() {
 		closeRetyDialog();
+		closeBTPermissionDialog();
 		AllMediaList.instance(getContext()).unRegisterLoadListener(this);
 		super.onDetachedFromWindow();
 	}
@@ -233,6 +235,8 @@ public class MusicHomeLayout extends LinearLayout implements OnClickListener,
     private void startBTFragment() {
         if (BT_IF.getInstance().getConnState() == BTConnState.DISCONNECTED) {
             showRetryDialog();
+        } else if (!BT_IF.getInstance().getAgreementState()) {
+            showBTPermissionDialog();
         } else {
             Activity activity = (Activity) getContext();
             if (activity instanceof Media_Activity_Main) {
@@ -268,6 +272,20 @@ public class MusicHomeLayout extends LinearLayout implements OnClickListener,
         if (mRetryDialog != null) {
             mRetryDialog.CloseDialog();
             mRetryDialog = null;
+        }
+    }
+    
+    private void showBTPermissionDialog() {
+        if (mPermissionDialog == null) {
+            mPermissionDialog = new CustomDialog();
+        }
+        mPermissionDialog.ShowDialog(getContext(), DIALOG_TYPE.ONE_BTN, R.string.bt_permission);
+    }
+    
+    private void closeBTPermissionDialog() {
+        if (mPermissionDialog != null) {
+            mPermissionDialog.CloseDialog();
+            mPermissionDialog = null;
         }
     }
     

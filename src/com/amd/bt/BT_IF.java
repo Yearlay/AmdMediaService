@@ -19,7 +19,7 @@ import com.haoke.serviceif.BTService_Listener;
 
 public class BT_IF extends BTService_IF {
 
-	private final String TAG = this.getClass().getSimpleName();
+	private static final String TAG = "AMD_BT_IF";
 	private static BT_IF mSelf = null;
 	private BT_CallBack mBTCallBack = null;
 	private boolean mServiceConn = false;
@@ -316,6 +316,19 @@ public class BT_IF extends BTService_IF {
 			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
 		}
 		return BTConnState.DISCONNECTED;
+	}
+	
+	// 获取连接协议状态（跟getConnState的返回值一个定义）
+	public boolean getAgreementState() {
+	    try {
+	        int avrcp = mServiceIF.getAvrcpState();
+	        int a2dp = mServiceIF.getA2dpState();
+	        Log.d(TAG, "getAgreementState avrcp="+avrcp+"; a2dp="+a2dp);
+            return (avrcp == BTConnState.CONNECTED) && (a2dp == BTConnState.CONNECTED);
+        } catch (Exception e) {
+            Log.e(TAG, "getAgreementState e=" + e.getMessage());
+        }
+	    return false;
 	}
 
 	// 搜索外部设备
