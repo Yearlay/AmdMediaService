@@ -1,0 +1,75 @@
+VR_test/
+	VRApp测试/
+		VRApp_01_播放当前音乐，并打开音乐播放界面.bat	--PASS
+		VRApp_02_停止播放当前音乐，并关闭音乐播放界面.bat	--PASS
+		VRApp_03_播放当前视频，并打开视频播放界面.bat	--PASS
+		VRApp_04_停止播放当前视频，并关闭视频播放界面.bat	--PASS
+		VRApp_05_播放当前图片，并打开图片播放界面.bat	--PASS
+		VRApp_06_停止播放当前图片，并关闭图片播放界面.bat	--PASS
+		VRApp_07_（蓝牙已连接）播放蓝牙音乐，并打开蓝牙音乐播放界面.bat	--PASS
+		VRApp_08_（蓝牙已连接）停止播放蓝牙音乐，并关闭蓝牙音乐播放界面.bat	--PASS
+		VRApp_09_播放收音机，并打开收音机界面.bat	--PASS
+		VRApp_10_停止播放收音机，并关闭收音机界面.bat	--PASS
+		VRApp_11_播放收藏音乐，并打开音乐播放界面.bat	--PASS
+		VRApp_12_停止播放收藏音乐，并关闭音乐播放界面.bat	--PASS
+		VRApp_13_播放本地音乐，并打开音乐播放界面.bat	--PASS
+		VRApp_14_停止播放本地音乐，并关闭音乐播放界面.bat	--PASS
+		VRApp_15_播放USB音乐，并打开音乐播放界面.bat	--PASS
+		VRApp_16_停止播放USB音乐，并关闭音乐播放界面.bat	--PASS
+		VRApp_17_播放USB1音乐，并打开音乐播放界面.bat	--PASS
+		VRApp_18_停止播放USB1音乐，并关闭音乐播放界面.bat	--PASS
+		VRApp_19_播放USB2音乐，并打开音乐播放界面.bat	--PASS
+		VRApp_20_停止播放USB2音乐，并关闭音乐播放界面.bat	--PASS
+
+	VRImage测试/
+		VRImage_01_（图片界面）播放图片幻灯片.bat	--PASS
+		VRImage_02_（幻灯片播放界面，播放中）停止播放图片幻灯片.bat	--PASS
+		VRImage_03_（幻灯片播放界面）预览上一张图片.bat	--PASS
+		VRImage_04_（幻灯片播放界面）预览下一张图片.bat	--PASS
+
+	VRMusic测试/
+		VRMusic_01_设置单曲循环，并播放.bat	--PASS
+		VRMusic_02_设置随机循环，并播放.bat	--PASS
+		VRMusic_03_设置列表循环，并播放.bat	--PASS
+		VRMusic_04_收藏当前播放歌曲.bat	--PASS
+		VRMusic_05_取消收藏当前播放歌曲.bat	--PASS
+		VRMusic_06_指定歌曲path进行播放（指定路径再执行）.bat	--PASS
+
+	VRRadio测试/
+		VRRadio_01_收藏当前播放电台.bat	--PASS
+		VRRadio_02_取消收藏当前播放电台.bat	--PASS
+		VRRadio_03_播放收藏列表的中的电台.bat	--PASS
+		VRRadio_04_切换到上一电台（频率小的）.bat	--FAIL
+		VRRadio_05_切换到下一电台（频率大的）.bat	--FAIL
+		VRRadio_06_从当前波段向上搜索（频率大的）.bat	--PASS
+		VRRadio_07_从当前波段向下搜索（频率小的）.bat	--PASS
+		VRRadio_08_扫描全波段电台.bat
+		VRRadio_09_切换到FM调频，如果指定某个电台，会有station参数，需要打开界面.bat	--PASS
+		VRRadio_10_切换到AM调频，如果指定某个电台，会有station参数，需要打开界面.bat	--FAIL
+		VRRadio_11_刷新FM调频目录，如果当前不是FM调频，则先切到FM调频，再刷新.bat	--PASS
+		VRRadio_12_刷新AM调频目录，如果当前不是AM调频，则先切到AM调频，再刷新.bat	--FAIL
+
+	VRVideo测试/
+		VRImage_01_（视频界面）播放视频.bat	--PASS
+		VRImage_02_（视频播放中）停止播放视频.bat	--PASS
+		VRImage_03_（视频播放中）播放上一个视频.bat	--PASS
+		VRImage_04_（视频播放中）播放下一个视频.bat	--PASS
+模式切换/
+	Mode_Collect_Audio_0_切换到收藏音乐模式，只是后台播放.bat	--PASS
+	Mode_Collect_Audio_1_切换到收藏音乐模式，播放且前台显示.bat	--PASS
+	Mode_Collect_Video_1_切换到收藏视频模式，播放且前台显示.bat	--FAIL
+	Mode_FLash_Audio_0_切换到本地音乐模式，只是后台播放.bat	--PASS
+	Mode_FLash_Audio_1_切换到本地音乐模式，播放且前台显示.bat	--PASS
+	Mode_FLash_Video_1_切换到本地视频模式，播放且前台显示.bat	--FAIL
+	Mode_Radio_Audio_0_切换到收音机模式，只是后台播放.bat	--PASS
+	Mode_Radio_Audio_1_切换到收音机模式，播放且前台显示.bat	--PASS
+	Mode_USB1_Audio_0_切换到USB1音乐模式，只是后台播放.bat	--PASS
+	Mode_USB1_Audio_1_切换到USB1音乐模式，播放且前台显示.bat	--PASS
+	Mode_USB1_Video_1_切换到USB1视频模式，播放且前台显示.bat	--FAIL
+	Mode_USB2_Audio_0_切换到USB2音乐模式，只是后台播放.bat	--PASS
+	Mode_USB2_Audio_1_切换到USB2音乐模式，播放且前台显示.bat	--PASS
+	Mode_USB2_Video_1_切换到USB2视频模式，播放且前台显示.bat	--FAIL
+
+主题切换/
+	设置红色主题.bat	--PASS
+	设置蓝色主题.bat	--PASS
