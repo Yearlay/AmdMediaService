@@ -43,6 +43,9 @@ import com.haoke.util.Media_IF;
 public class MediaInterfaceUtil {
     private static final String TAG = "MediaInterfaceUtil";
     
+    // 按静音按键是否暂停音乐
+    private static final boolean MUTE_PAUSE_MUSIC = false;
+    
     //private static int sMediaPlayStateRecord = Source.NULL;
     
     public static final Uri URI_SKIN = Settings.System.getUriFor(SkinManager.SKIN_KEY_NAME);
@@ -84,7 +87,7 @@ public class MediaInterfaceUtil {
     }
     
     public static void setMuteRecordPlayState(int key) {
-        if (true) {
+        if (MUTE_PAUSE_MUSIC) {
             if (mAudioFocus == null) {
                 mAudioFocus = new AudioFocus(MediaApplication.getInstance());
                 mAudioFocus.registerListener(mAudioFocusListener);
@@ -134,8 +137,8 @@ public class MediaInterfaceUtil {
     }
     
     public static void cancelMuteRecordPlayState(int key) {
-        Log.d(TAG, "cancelMuteRecordPlayState sMuteKey_MuteState="+sMuteKey_MuteState+"; sPowerKey_MuteState="+sPowerKey_MuteState);
-        if (true) {
+        if (MUTE_PAUSE_MUSIC) {
+            Log.d(TAG, "cancelMuteRecordPlayState sMuteKey_MuteState="+sMuteKey_MuteState+"; sPowerKey_MuteState="+sPowerKey_MuteState);
             if (hasAudioFocus() || sMuteKey_MuteState || sPowerKey_MuteState) {
                 Log.d(TAG, "cancelMuteRecordPlayState hasAudioFocus");
                 if (key == KeyEvent.KEYCODE_MUTE) {

@@ -173,6 +173,10 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
         mAllImageView.setImageDrawable(skinManager.getDrawable(R.drawable.all));
         mPreImageView.setImageDrawable(skinManager.getDrawable(R.drawable.pre));
         mNextImageView.setImageDrawable(skinManager.getDrawable(R.drawable.next));
+        mPlayImageView.setImageDrawable(skinManager.getDrawable(mIF.isEnable() ? R.drawable.pause : R.drawable.play));
+        updateFreq(mIF.getCurFreq());
+        refreshScanIcon();
+        onPageSelected(viewPager.getCurrentItem());
     }
     
     public void onPause() {

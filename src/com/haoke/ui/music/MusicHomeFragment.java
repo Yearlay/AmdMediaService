@@ -155,6 +155,7 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 		if (mPlayLayout != null) {
 			mPlayLayout.refreshSkin();
 		}
+		setCurPlayViewState();
 	}
 	
 	private void setCurPlayViewState() {
