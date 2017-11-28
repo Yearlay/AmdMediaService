@@ -1,0 +1,1 @@
+adb shell am broadcast -a "com.jsbd.vr.radio.operation.action" --ei commandCode 10 --es station "106.00"

@@ -1,0 +1,1 @@
+adb shell am broadcast -a "com.jsbd.vr.music.operation.action" --ei commandCode 3

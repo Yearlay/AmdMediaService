@@ -1,0 +1,1 @@
+adb shell am broadcast -a "com.jsbd.vr.app.action" --ei function 1 --ei value 1

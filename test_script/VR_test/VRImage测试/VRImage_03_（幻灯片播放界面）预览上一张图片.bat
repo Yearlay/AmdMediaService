@@ -1,0 +1,1 @@
+adb shell am broadcast -a "com.jsbd.vr.picture.operation.action" --ei commandCode 3
