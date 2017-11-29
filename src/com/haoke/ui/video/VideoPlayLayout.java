@@ -378,6 +378,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
                 break;
             }
             mNextPlay = false;
+            updatePlayState(false);
             mVideoController.playPre();
             break;
         case R.id.video_ctrlbar_fastpre:  // 快退
@@ -410,6 +411,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
                 break;
             }
             mNextPlay = true;
+            updatePlayState(false);
             mVideoController.playNext();
             break;
         case R.id.collect_video:

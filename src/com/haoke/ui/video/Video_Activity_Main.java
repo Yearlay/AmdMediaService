@@ -148,10 +148,12 @@ public class Video_Activity_Main extends Activity implements
             FileNode fileNode = mVideoList.get(mCurPosition);
             mPlayLayout.setFileNode(fileNode);
             onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
-        } else if(intent.getIntExtra("isfrom",100) == MediaService.VALUE_FROM_VR_APP){
-        	//intent.getStringExtra("isfrom")
+        } else if(intent != null && intent.getIntExtra("isfrom",100) == MediaService.VALUE_FROM_VR_APP){
+        	//VR play default file
         	onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
         	mPlayLayout.playDefault();
+        } else if(intent != null && "modeSwitch".equals(intent.getStringExtra("isfrom"))){
+        	String deviceType = intent.getStringExtra("deviceType");
         }
     }
 
