@@ -70,6 +70,7 @@ public class Video_Activity_Main extends Activity implements
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+    	Log.e("luke","onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.video_activity_main);
         
@@ -127,7 +128,9 @@ public class Video_Activity_Main extends Activity implements
     }
     
     private void initIntent(Intent intent) {
+    	//Log.e("luke","onNewIntent");
         if (intent != null && "MediaSearchActivity".equals(intent.getStringExtra("isfrom"))) {
+        	Log.e("luke","onNewInten  MediaSearchActivity");
             String filePath = intent.getStringExtra("filepath");
             int deviceType = MediaUtil.getDeviceType(filePath);
             int position = 0;
@@ -139,10 +142,16 @@ public class Video_Activity_Main extends Activity implements
                 }
             }
             mPreferences.saveVideoDeviceType(deviceType);
-            mPlaying = true;
+            //mPlaying = true;
             updateCurPosition(position);
             FileNode fileNode = mVideoList.get(mCurPosition);
             mPlayLayout.setFileNode(fileNode);
+            onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
+        } else if(intent != null){
+        	Log.e("luke","onNewInten: " + intent.getStringExtra("isfrom"));
+        	//intent.getStringExtra("isfrom")
+        	onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
+        	mPlayLayout.playDefault();
         }
     }
 
@@ -413,6 +422,7 @@ public class Video_Activity_Main extends Activity implements
     private BroadcastReceiver mOperateAppReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+        	Log.e("luke","mOperateAppReceiver onReceive");
             if (intent != null && VRIntent.ACTION_OPERATE_VIDEO.equals(intent.getAction())) {
                 switch (intent.getIntExtra(VRIntent.KEY_VIDEO, 0)) {
                 case VRIntent.FINISH_VIDEO:
@@ -515,6 +525,7 @@ public class Video_Activity_Main extends Activity implements
         DebugLog.d(TAG, "onChangeFragment index: " + index);
         mPlaying = (index == SWITCH_TO_PLAY_FRAGMENT);
         if (index == SWITCH_TO_PLAY_FRAGMENT) {
+        	mPlaying = true;
             mPlayLayout.setVisibility(View.VISIBLE);
             mPlayLayout.onResume();
             HKWindowManager.hideWallpaper(this);
@@ -522,6 +533,7 @@ public class Video_Activity_Main extends Activity implements
             getWindow().getDecorView()
                     .setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         } else {
+        	mPlaying = false;
             mPlayLayout.onPause();
             mPlayLayout.setVisibility(View.GONE);
             HKWindowManager.showWallpaper(this);

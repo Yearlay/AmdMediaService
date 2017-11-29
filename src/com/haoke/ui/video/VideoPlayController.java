@@ -3,6 +3,8 @@ package com.haoke.ui.video;
 import java.util.ArrayList;
 
 import com.amd.media.AudioFocus;
+import com.amd.media.AudioFocus.AudioFocusListener;
+import com.amd.media.AmdMediaButtonReceiver;
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.media.RecordDevicePlay;
 import com.amd.util.Source;
@@ -15,9 +17,7 @@ import com.haoke.constant.MediaUtil;
 import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.constant.MediaUtil.MediaFunc;
-import com.haoke.constant.MediaUtil.MediaState;
 import com.haoke.constant.MediaUtil.PlayState;
-import com.haoke.constant.MediaUtil.RepeatMode;
 import com.haoke.constant.MediaUtil.ScanState;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.LoadListener;
@@ -25,18 +25,16 @@ import com.haoke.service.MediaClient;
 import com.haoke.util.DebugClock;
 import com.haoke.util.Media_IF;
 
+import android.content.ComponentName;
 import android.content.Context;
-import android.graphics.drawable.AnimationDrawable;
 import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
 import android.util.Log;
-import android.view.View;
-import android.widget.ImageView;
 import android.widget.VideoView;
 
-public class VideoPlayController {
+public class VideoPlayController implements AudioFocusListener{
 	
 	private static final String TAG = "VideoPlayController";
     public static final int MEDIA_MODE_AUDIO = 1;
@@ -53,6 +51,7 @@ public class VideoPlayController {
 	private int mFileType = FileType.NULL;
 	private int mDeviceType = DeviceType.NULL;
 	private int mPlayState = PlayState.STOP;
+	private int mPlayStateBeforeLoseFocus = PlayState.STOP;
 	
 	private int mPlayingDeviceType = DeviceType.NULL;
 	private int mPlayingFileType = FileType.NULL;
@@ -61,6 +60,8 @@ public class VideoPlayController {
 	private ArrayList<MediaClient> mClientList = new ArrayList<MediaClient>();
 	
 	private AudioFocus mAudioFocus;
+	private AudioManager mAudioManager;
+	protected ComponentName mComponentName;
 	
 	private VideoPlayLayout videoLayout;
 	
@@ -79,13 +80,18 @@ public class VideoPlayController {
 		mContext = MediaApplication.getInstance();
 		mAllMediaList = AllMediaList.instance(mContext);
 		mAllMediaList.registerLoadListener(mLoadListener);
+
 		mAudioFocus = new AudioFocus(mContext);
+		mAudioFocus.registerListener(this);
+
+		mAudioManager = (AudioManager)mContext.getSystemService(Context.AUDIO_SERVICE);
+		mComponentName = new ComponentName(mContext, AmdMediaButtonReceiver.class);
 	}
-	
+
 	public void setVideoPlayLayout(VideoPlayLayout layout){
 		videoLayout = layout;
 	}
-	
+
     private LoadListener mLoadListener = new LoadListener() {
 		
 		@Override
@@ -368,10 +374,12 @@ public class VideoPlayController {
 	}
 	
 	public void playOrPause(boolean playOrPause) {
+		requestAudioFocus(true);
 		if (playOrPause) {
-		    requestAudioFocus(true);
+		    mPlayState = PlayState.PLAY;
 			mVideView.start();
 		} else {
+			mPlayState = PlayState.PAUSE;
 			mVideView.pause();
 		}
 		isVideoPlaying = playOrPause;
@@ -455,7 +463,7 @@ public class VideoPlayController {
 		final String path = node.getFilePath(); // 获得播放路径
 /*		mMediaPlayer.setFileType(mPlayingFileType);
 		boolean returnVal = mMediaPlayer.setDataSource(path);*/
-		
+		mPlayState = PlayState.PLAY;
 		resetMediaPlayer();
 		Log.e("luke","----playOther  VideoView set video patch: " + path );
 		DebugClock debugClock = new DebugClock();
@@ -790,4 +798,47 @@ public class VideoPlayController {
 		Log.v(TAG, "sourceChanged source=" + source);
 		RecordDevicePlay.instance().sourceChanged(source);
 	}
+
+	// 获取播放状态
+	public int getPlayState() {
+		if (isPlayState()) {
+			return PlayState.PLAY;
+		} else {
+			return mPlayState;
+		}
+	}
+
+	@Override
+	public void audioFocusChanged(int state) {
+		// TODO Auto-generated method stub
+		int playState = getPlayState();
+		Log.v(TAG, "audioFocusChanged state=" + state + "; playState="+playState+"; mPlayStateBeforeLoseFocus="+mPlayStateBeforeLoseFocus);
+		switch (state) {
+		case PlayState.PLAY: //获得焦点
+			if(mPlayStateBeforeLoseFocus == PlayState.PLAY){
+				mPlayStateBeforeLoseFocus = PlayState.STOP;
+				playOrPause(true);
+			} else {
+				playOrPause(false);
+			}
+
+			if (mComponentName != null) {
+				mAudioManager.registerMediaButtonEventReceiver(mComponentName);
+			}
+			break;
+		case PlayState.PAUSE:  //失去焦点
+			mPlayStateBeforeLoseFocus = playState;
+			playOrPause(false);
+			break;
+		case PlayState.STOP:
+			if (mComponentName != null) {
+				mAudioManager.unregisterMediaButtonEventReceiver(mComponentName);
+			}
+			mPlayStateBeforeLoseFocus = PlayState.STOP;
+			playOrPause(false);
+			break;
+		}
+
+	}
+
 }

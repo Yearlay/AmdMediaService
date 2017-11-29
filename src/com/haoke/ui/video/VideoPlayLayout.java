@@ -122,7 +122,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         }
     }
     
-    public void updatePlayState(int playState) {
+    public void updatePlayState() {
         mPlayImageView.setImageDrawable(skinManager.getDrawable(
         		!mVideoController.isPlayState() ?
                 R.drawable.image_pause_icon_selector : R.drawable.image_play_icon_selector));
@@ -204,6 +204,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
 				VideoPlayController.isVideoPlaying = false;
 				Log.e("luke","setOnCompletionListener");
 				updateTimeBar();
+				mVideoController.getPlayFileNode().setPlayTime(0);
 				mVideoController.playNext();
 			}
         	
@@ -546,6 +547,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
                 break;
             case PLAY_DELAY:
                 mVideoController.play((FileNode) msg.obj);
+                updatePlayState();
                 break;
             default:
                 break;
@@ -676,8 +678,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
 			String videoInfo = sPreferences.getPlayTime(deviceType, FileType.VIDEO);
 			String splitStr = PlayStateSharedPreferences.SPLIT_STR;
             String filePath = videoInfo.substring(0, videoInfo.indexOf(splitStr));
-            String playTimeStr = videoInfo.substring(videoInfo.indexOf(splitStr) +
-            		videoInfo.length(), videoInfo.length());
+            String playTimeStr = videoInfo.substring(videoInfo.indexOf(splitStr) + 2, videoInfo.length());
             int playTime = Integer.valueOf(playTimeStr);
             
             ArrayList<FileNode> videoList = AllMediaList.instance(mContext).getMediaList(deviceType, FileType.VIDEO);
