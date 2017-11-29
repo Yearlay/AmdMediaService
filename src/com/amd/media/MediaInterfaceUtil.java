@@ -321,24 +321,38 @@ public class MediaInterfaceUtil {
         context.startActivity(intent);
     }
     
-    public static void launchSourceActivityFromDeiveType(int deviceType, boolean autoPlay) {
+    public static void launchSourceActivityFromDeiveType(int deviceType, int fileType, boolean autoPlay) {
         int mode = ModeSwitch.EMPTY_MODE;
+        String value = null;
         switch (deviceType) {
         case DeviceType.USB1:
             mode = ModeSwitch.MUSIC_USB1_MODE;
+            value = "USB1";
             break;
         case DeviceType.USB2:
             mode = ModeSwitch.MUSIC_USB2_MODE;
+            value = "USB2";
             break;
         case DeviceType.FLASH:
             mode = ModeSwitch.MUSIC_LOCAL_MODE;
+            value = "FLASH";
             break;
         case DeviceType.COLLECT:
             mode = ModeSwitch.MUSIC_COLLECT_MODE;
+            value = "COLLECT";
             break;
         }
-        if (mode != ModeSwitch.EMPTY_MODE) {
-            launchSourceActivity(mode, autoPlay);
+        if (mode == ModeSwitch.EMPTY_MODE) {
+        } else if (fileType == FileType.AUDIO) {
+            if (mode != ModeSwitch.EMPTY_MODE) {
+                launchSourceActivity(mode, autoPlay);
+            }
+        } else if (fileType == FileType.VIDEO) {
+            Context context = MediaApplication.getInstance();
+            Intent intent = new Intent(context, Video_Activity_Main.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra("deviceType", value);
+            context.startActivity(intent);
         }
     }
     
@@ -602,7 +616,7 @@ public class MediaInterfaceUtil {
                             } else {
                                 Log.d(TAG, "checkModeRecordInternalEx song not exist!");
                                 if (display == DISPLAY_ON) {
-                                    launchSourceActivityFromDeiveType(runDeviceType, false);
+                                    launchSourceActivityFromDeiveType(runDeviceType, fileType, false);
                                 }
                             }
                         } else {
@@ -631,9 +645,7 @@ public class MediaInterfaceUtil {
                     } else {
                         Log.d(TAG, "checkModeRecordInternalEx device has no song");
                         if (display == DISPLAY_ON) {
-                            if (fileType == FileType.AUDIO) {
-                                launchSourceActivityFromDeiveType(runDeviceType, false);
-                            }
+                            launchSourceActivityFromDeiveType(runDeviceType, fileType, false);
                         }
                     }
                 } else {
@@ -721,9 +733,7 @@ public class MediaInterfaceUtil {
         
         if (!exist) {
             Log.d(TAG, "checkAllDeviceAndJump exist is false! runDeviceType="+runDeviceType+"; fileType="+fileType);
-            if (fileType == FileType.AUDIO) {
-                launchSourceActivityFromDeiveType(runDeviceType, false);
-            }
+            launchSourceActivityFromDeiveType(runDeviceType, fileType, false);
         }
     }
 }
