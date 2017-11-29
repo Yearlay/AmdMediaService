@@ -205,16 +205,15 @@ public class MediaInterfaceUtil {
         return Media_IF.getCallState();
     }
     
-    private static void checkAndPlayDeviceType(final int deviceType, final int fileType) {
+    private static boolean checkAndPlayDeviceType(final int deviceType, final int fileType) {
         if (fileType == FileType.AUDIO) {
             if (Media_IF.getInstance().isPlayState() && Media_IF.getInstance().getPlayingDevice() == deviceType) {
                 Log.d(TAG, "checkAndPlayDeviceType return! deviceType="+deviceType);
-                return;
+                return true;
             }
-            Media_IF.getInstance().playDefault(deviceType, FileType.AUDIO);
-        } else if (fileType == FileType.VIDEO) {
-            
+            return Media_IF.getInstance().playDefault(deviceType, FileType.AUDIO);
         }
+        return false;
     }
     
     /**
@@ -279,9 +278,6 @@ public class MediaInterfaceUtil {
             intent.setClass(context, Media_Activity_Main.class);
             intent.putExtra("Mode_To_Music", "radio_intent");
             if (autoPlay) {
-//                if (!Radio_IF.getInstance().isEnable()) {
-//                    Radio_IF.getInstance().setEnable(true);
-//                }
                 intent.putExtra("autoPlay", true);
             }
             break;
@@ -290,7 +286,6 @@ public class MediaInterfaceUtil {
             intent.putExtra("Mode_To_Music", "hddAudio_intent");
             if (autoPlay) {
                 intent.putExtra("play_music", true);
-//                checkAndPlayDeviceType(DeviceType.FLASH, FileType.AUDIO);
             }
             break;
         case ModeSwitch.MUSIC_USB1_MODE:
@@ -298,7 +293,6 @@ public class MediaInterfaceUtil {
             intent.putExtra("Mode_To_Music", "USB1_intent");
             if (autoPlay) {
                 intent.putExtra("play_music", true);
-//                checkAndPlayDeviceType(DeviceType.USB1, FileType.AUDIO);
             }
             break;
         case ModeSwitch.MUSIC_USB2_MODE:
@@ -306,22 +300,46 @@ public class MediaInterfaceUtil {
             intent.putExtra("Mode_To_Music", "USB2_intent");
             if (autoPlay) {
                 intent.putExtra("play_music", true);
-//                checkAndPlayDeviceType(DeviceType.USB2, FileType.AUDIO);
             }
             break;
         case ModeSwitch.MUSIC_BT_MODE:
             intent.setClass(context, Media_Activity_Main.class);
             intent.putExtra("Mode_To_Music", "btMusic_intent");
             if (autoPlay) {
-                //if (!BT_IF.getInstance().music_isPlaying()) {
-                //    BT_IF.getInstance().music_play();
-                //}
                 BT_IF.getInstance().music_play();
                 intent.putExtra("autoPlay", true);
             }
             break;
+        case ModeSwitch.MUSIC_COLLECT_MODE:
+            intent.setClass(context, Music_Activity_List.class);
+            intent.putExtra("Mode_To_Music", "COLLECT_intent");
+            if (autoPlay) {
+                intent.putExtra("play_music", true);
+            }
+            break;
         }
         context.startActivity(intent);
+    }
+    
+    public static void launchSourceActivityFromDeiveType(int deviceType, boolean autoPlay) {
+        int mode = ModeSwitch.EMPTY_MODE;
+        switch (deviceType) {
+        case DeviceType.USB1:
+            mode = ModeSwitch.MUSIC_USB1_MODE;
+            break;
+        case DeviceType.USB2:
+            mode = ModeSwitch.MUSIC_USB2_MODE;
+            break;
+        case DeviceType.FLASH:
+            mode = ModeSwitch.MUSIC_LOCAL_MODE;
+            break;
+        case DeviceType.COLLECT:
+            mode = ModeSwitch.MUSIC_COLLECT_MODE;
+            break;
+        }
+        if (mode != ModeSwitch.EMPTY_MODE) {
+            launchSourceActivity(mode, autoPlay);
+        }
     }
     
     public static boolean isRunningTopActivity(Context context, String PackName, String ClassName) {
@@ -387,113 +405,8 @@ public class MediaInterfaceUtil {
             return -1;
         }
         
-        int ms = -1;
-        final int source = Media_IF.getCurSource();
-        if (Source.isRadioSource(source)) {
-            if (!Radio_IF.getInstance().isEnable()) {
-                if (Media_IF.getMute()) {
-                    Media_IF.cancelMute();
-                }
-                Radio_IF.getInstance().setEnable(true);
-            }
-            if (!isNaviApp(service)) {
-                launchSourceActivity(ModeSwitch.RADIO_MODE, false);
-            }
-        } else if (Source.isAudioSource(source) || Source.isVideoSource(source)) {
-            AllMediaList allMediaList = AllMediaList.instance(service);
-            if (sLastDeviceType == -1) {
-                if (Source.isAudioSource(source)) {
-                    sLastDeviceType = allMediaList.getLastDeviceType();
-                } else {
-                    sLastDeviceType = allMediaList.getLastDeviceTypeVideo();
-                }
-            }
-            int fileType = (Source.isAudioSource(source) ? FileType.AUDIO : FileType.VIDEO);
-            boolean currPlaying = Media_IF.getInstance().isPlayState() || VideoPlayController.isVideoPlaying;
-            boolean lastPlaying = true;//allMediaList.getPlayState(fileType);
-            Log.d(TAG, "checkSourceFromBoot LastDeviceType="+sLastDeviceType+"; lastPlaying="+lastPlaying+"; currPlaying="+currPlaying);
-            if (!currPlaying && lastPlaying && sLastDeviceType != DeviceType.NULL) {
-                if (sLastDeviceType == DeviceType.COLLECT) {
-                    int waitMs = waitUsbMounted(service);
-                    if (waitMs > 0) {
-                        return waitMs;
-                    }
-                }
-                StorageBean storage = allMediaList.getStoragBean(sLastDeviceType);
-                Log.d(TAG, "checkSourceFromBoot storage="+storage);
-                if (sLastDeviceType == DeviceType.COLLECT || storage.isLoadCompleted()) {
-                    ArrayList<FileNode> lists = allMediaList.getMediaList(sLastDeviceType, fileType);
-                    int size = lists.size();
-                    if (size > 0) {
-                        FileNode lastFileNode = allMediaList.getPlayTime(sLastDeviceType, fileType);
-                        if (lastFileNode != null) {
-                            if (Source.isAudioSource(source)) {
-                                if (Media_IF.getMute()) {
-                                    Media_IF.cancelMute();
-                                }
-                                checkAndPlayDeviceType(sLastDeviceType, fileType);
-                            }
-                            if (!isNaviApp(service)) {
-                                if (Source.isAudioSource(source)) {
-                                    launchMusicPlayActivity(service);
-                                } else {
-                                    launchVideoPlayActivity(service, lastFileNode);
-                                }
-                            }
-                        } else {
-                            // song not exist
-                            Log.d(TAG, "checkSourceFromBoot song not exist!");
-                        }
-                    } else {
-                        // device has no song
-                        Log.d(TAG, "checkSourceFromBoot device has no song");
-                    }
-                } else {
-                    // loading
-                    boolean mounted = storage.isMounted();
-                    Log.d(TAG, "checkSourceFromBoot loading mounted="+mounted);
-                    if (mounted) {
-                        long end = System.currentTimeMillis();
-                        if (start == -1) {
-                            start = end;
-                            ms = 500;
-                        } else if (end - start > 40000) {
-                            Log.d(TAG, "checkSourceFromBoot loading timeout!");
-                        } else {
-                            ms = 500;
-                        }
-                    } else {
-                        long end = System.currentTimeMillis();
-                        if (start == -1) {
-                            start = end;
-                            ms = 500;
-                        } else if (end - start > 40000) {
-                            Log.d(TAG, "checkSourceFromBoot mounting timeout!");
-                        } else {
-                            ms = 500;
-                        }
-                    }
-                }
-            }
-        } else if (Source.isBTMusicSource(source)) {
-            BT_IF btIF = BT_IF.getInstance();
-            int state = btIF.getConnState();
-            if (state == BTConnState.DISCONNECTED) {
-                
-            } else if (state == BTConnState.CONNECTED) {
-                if (!BT_IF.getInstance().music_isPlaying()) {
-                    if (Media_IF.getMute()) {
-                        Media_IF.cancelMute();
-                    }
-                    BT_IF.getInstance().music_play();
-                }
-                if (!isNaviApp(service)) {
-                    launchSourceActivity(ModeSwitch.MUSIC_BT_MODE, false);
-                }
-            }
-        }
-        Log.d(TAG, "checkSourceFromBoot source="+source+"; ms="+ms);
-        return ms;
+        Log.d(TAG, "checkSourceFromBoot return -1");
+        return -1;
     }
     
     private static long sWaitUsb1Mounted = 0;
@@ -511,12 +424,12 @@ public class MediaInterfaceUtil {
             long end = System.currentTimeMillis();
             if (sWaitUsb1Mounted == 0) {
                 sWaitUsb1Mounted = end;
-                return 1000;
-            } else if (end - sWaitUsb1Mounted > 8000) {
+                return 500;
+            } else if (end - sWaitUsb1Mounted > 400) {
                 Log.d(TAG, "checkSourceFromBoot wait usb1 mounted timeout!");
                 sWaitUsb1Mounted = -1;
             } else {
-                return 1000;
+                return 500;
             }
         }
         StorageBean storage2 = allMediaList.getStoragBean(DeviceType.USB2);
@@ -530,12 +443,12 @@ public class MediaInterfaceUtil {
             long end = System.currentTimeMillis();
             if (sWaitUsb2Mounted == 0) {
                 sWaitUsb2Mounted = end;
-                return 1000;
-            } else if (end - sWaitUsb2Mounted > 8000) {
+                return 500;
+            } else if (end - sWaitUsb2Mounted > 400) {
                 Log.d(TAG, "checkSourceFromBoot wait usb2 mounted timeout!");
                 sWaitUsb2Mounted = -1;
             } else {
-                return 1000;
+                return 500;
             }
         }
         return -1;
@@ -562,7 +475,6 @@ public class MediaInterfaceUtil {
     private static final int DISPLAY_ON = 1;      //需要播放并显示界面
     private static int sModeRecordWaitTimeOut = 0;
     private static long sRunStart = -1;
-    private static int sRunDeviceType = -1;
     public static void checkModeRecord(MediaService service, Intent intent) {
         String username = intent.getStringExtra(KEY_MODE_RECORD_USER_NAME);
         int source = intent.getIntExtra(KEY_MODE_RECORD_SOURCE, ModeDef.RADIO);
@@ -580,6 +492,10 @@ public class MediaInterfaceUtil {
         if (ms >= 0) {
             if (sModeRecordWaitTimeOut > 80000) {
                 Log.e(TAG, "checkModeRecordInternal sModeRecordWaitTimeOut="+sModeRecordWaitTimeOut);
+                sWaitUsb1Mounted = 0;
+                sWaitUsb2Mounted = 0;
+                sModeRecordWaitTimeOut = 0;
+                sRunStart = -1;
             } else {
                 sModeRecordWaitTimeOut += ms;
                 service.getModeHandler().postDelayed(new Runnable() {
@@ -589,6 +505,11 @@ public class MediaInterfaceUtil {
                     }
                 }, ms);
             }
+        } else {
+            sWaitUsb1Mounted = 0;
+            sWaitUsb2Mounted = 0;
+            sModeRecordWaitTimeOut = 0;
+            sRunStart = -1;
         }
     }
     
@@ -621,9 +542,6 @@ public class MediaInterfaceUtil {
         int ms = -1;
         if (Source.isRadioSource(ourSource)) {
             if (!Radio_IF.getInstance().isEnable()) {
-                if (Media_IF.getMute()) {
-                    Media_IF.cancelMute();
-                }
                 Radio_IF.getInstance().setEnable(true);
             }
             if (display == DISPLAY_ON) {
@@ -632,12 +550,23 @@ public class MediaInterfaceUtil {
         } else if (Source.isBTMusicSource(ourSource)) {
             BT_IF btIF = BT_IF.getInstance();
             int state = btIF.getConnState();
-            if (state == BTConnState.DISCONNECTED) {
-                
-            } else if (state == BTConnState.CONNECTED) {
-                if (Media_IF.getMute()) {
-                    Media_IF.cancelMute();
+            if (state == BTConnState.DISCONNECTED || !btIF.getAgreementState()) {
+                long end = System.currentTimeMillis();
+                if (sRunStart == -1) {
+                    sRunStart = end;
+                    ms = 500;
+                } else if (end - sRunStart > 20000) {
+                    Log.d(TAG, "checkModeRecordInternalEx loading BTConnState timeout! open Radio!");
+                    if (!Radio_IF.getInstance().isEnable()) {
+                        Radio_IF.getInstance().setEnable(true);
+                    }
+                    if (display == DISPLAY_ON) {
+                        launchSourceActivity(ModeSwitch.RADIO_MODE, false);
+                    }
+                } else {
+                    ms = 500;
                 }
+            } else if (state == BTConnState.CONNECTED) {
                 BT_IF.getInstance().music_play();
                 if (display == DISPLAY_ON) {
                     launchSourceActivity(ModeSwitch.MUSIC_BT_MODE, false);
@@ -645,42 +574,67 @@ public class MediaInterfaceUtil {
             }
         } else if (Source.isAudioSource(ourSource) || Source.isVideoSource(ourSource)) {
             AllMediaList allMediaList = AllMediaList.instance(service);
-            sRunDeviceType = Source.getDeviceType(ourSource);
+            int runDeviceType = Source.getDeviceType(ourSource);
             int fileType = (Source.isAudioSource(ourSource) ? FileType.AUDIO : FileType.VIDEO);
             boolean currPlaying = false; //Media_IF.getInstance().isPlayState() || VideoPlayController.isVideoPlaying;
             boolean lastPlaying = true;//allMediaList.getPlayState(fileType);
-            Log.d(TAG, "checkModeRecordInternalEx sRunDeviceType="+sRunDeviceType+"; lastPlaying="+lastPlaying+"; currPlaying="+currPlaying);
-            if (!currPlaying && lastPlaying && sRunDeviceType != DeviceType.NULL) {
-                if (sRunDeviceType == DeviceType.COLLECT) {
+            Log.d(TAG, "checkModeRecordInternalEx runDeviceType="+runDeviceType+"; lastPlaying="+lastPlaying+"; currPlaying="+currPlaying);
+            if (!currPlaying && lastPlaying && runDeviceType != DeviceType.NULL) {
+                if (runDeviceType == DeviceType.COLLECT) {
                     int waitMs = waitUsbMounted(service);
                     if (waitMs > 0) {
                         return waitMs;
                     }
                 }
-                StorageBean storage = allMediaList.getStoragBean(sRunDeviceType);
+                StorageBean storage = allMediaList.getStoragBean(runDeviceType);
                 Log.d(TAG, "checkModeRecordInternalEx storage="+storage);
-                if (sRunDeviceType == DeviceType.COLLECT || storage.isLoadCompleted()) {
-                    ArrayList<FileNode> lists = allMediaList.getMediaList(sRunDeviceType, fileType);
+                if (runDeviceType == DeviceType.COLLECT || storage.isLoadCompleted()) {
+                    ArrayList<FileNode> lists = allMediaList.getMediaList(runDeviceType, fileType);
                     int size = lists.size();
                     if (size > 0) {
-                        FileNode lastFileNode = allMediaList.getPlayTime(sRunDeviceType, fileType);
-                        if (lastFileNode != null) {
-                            if (Media_IF.getMute()) {
-                                Media_IF.cancelMute();
-                            }
-                            if (fileType == FileType.AUDIO) {
-                                checkAndPlayDeviceType(sRunDeviceType, fileType);
+                        boolean success = false;
+                        if (fileType == FileType.AUDIO) {
+                            success = checkAndPlayDeviceType(runDeviceType, fileType);
+                            if (success) {
                                 if (display == DISPLAY_ON) {
                                     launchMusicPlayActivity(service);
                                 }
                             } else {
-                                launchVideoPlayActivity(service, lastFileNode);
+                                Log.d(TAG, "checkModeRecordInternalEx song not exist!");
+                                if (display == DISPLAY_ON) {
+                                    launchSourceActivityFromDeiveType(runDeviceType, false);
+                                }
                             }
                         } else {
-                            Log.d(TAG, "checkModeRecordInternalEx song not exist!");
+                            FileNode lastFileNode = allMediaList.getPlayTime(runDeviceType, fileType);
+                            if (lastFileNode != null && lastFileNode.isExist(service)) {
+                                success = true;
+                            } else {
+                                if (lastFileNode != null && lastFileNode.isExist(service)) {
+                                    success = true;
+                                } else {
+                                    for (FileNode fileNode : lists) {
+                                        if (fileNode != null && fileNode.isExist(service)) {
+                                            lastFileNode = fileNode;
+                                            success = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            if(success) {
+                                launchVideoPlayActivity(service, lastFileNode);
+                            } else {
+                                Log.d(TAG, "checkModeRecordInternalEx video not exist!");
+                            }
                         }
                     } else {
                         Log.d(TAG, "checkModeRecordInternalEx device has no song");
+                        if (display == DISPLAY_ON) {
+                            if (fileType == FileType.AUDIO) {
+                                launchSourceActivityFromDeiveType(runDeviceType, false);
+                            }
+                        }
                     }
                 } else {
                     boolean mounted = storage.isMounted();
@@ -690,8 +644,9 @@ public class MediaInterfaceUtil {
                         if (sRunStart == -1) {
                             sRunStart = end;
                             ms = 500;
-                        } else if (end - sRunStart > 40000) {
+                        } else if (end - sRunStart > 20000) {
                             Log.d(TAG, "checkModeRecordInternalEx loading timeout!");
+                            checkAllDeviceAndJump(service, username, ourSource, display);
                         } else {
                             ms = 500;
                         }
@@ -700,8 +655,9 @@ public class MediaInterfaceUtil {
                         if (sRunStart == -1) {
                             sRunStart = end;
                             ms = 500;
-                        } else if (end - sRunStart > 40000) {
+                        } else if (end - sRunStart > 20000) {
                             Log.d(TAG, "checkModeRecordInternalEx mounting timeout!");
+                            checkAllDeviceAndJump(service, username, ourSource, display);
                         } else {
                             ms = 500;
                         }
@@ -711,5 +667,63 @@ public class MediaInterfaceUtil {
         }
         Log.d(TAG, "checkModeRecordInternalEx ourSource="+ourSource+"; ms="+ms);
         return ms;
+    }
+    
+    private static void checkAllDeviceAndJump(final MediaService service, final String username, 
+            final int ourSource, final int display) {
+        AllMediaList allMediaList = AllMediaList.instance(service);
+        int runDeviceType = Source.getDeviceType(ourSource);
+        int fileType = (Source.isAudioSource(ourSource) ? FileType.AUDIO : FileType.VIDEO);
+        int lastDeviceType = DeviceType.NULL;
+        if (fileType == FileType.VIDEO) {
+            lastDeviceType = allMediaList.getLastDeviceTypeVideo();
+        } else {
+            lastDeviceType = allMediaList.getLastDeviceType();
+        }
+        final int[] deviceTypes = {lastDeviceType, DeviceType.USB1, 
+                DeviceType.USB2, DeviceType.FLASH, DeviceType.COLLECT};
+        boolean exist = false;
+        for (int deviceType : deviceTypes) {
+            if (deviceType == DeviceType.NULL || deviceType == runDeviceType) {
+                continue;
+            }
+            StorageBean bean = allMediaList.getStoragBean(deviceType);
+            if (bean.isMounted() && bean.isId3ParseCompleted()) {
+                ArrayList<FileNode> lists = allMediaList.getMediaList(deviceType, fileType);
+                if (lists.size() > 0) {
+                    FileNode playFileNode = allMediaList.getPlayTime(deviceType, fileType);
+                    if (playFileNode != null && playFileNode.isExist(service)) {
+                        exist = true;
+                    } else {
+                        for (FileNode fileNode : lists) {
+                            if (fileNode != null && fileNode.isExist(service)) {
+                                playFileNode = fileNode;
+                                exist = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (exist) {
+                        Log.d(TAG, "checkAllDeviceAndJump playFileNode="+playFileNode);
+                        if (fileType == FileType.AUDIO) {
+                            checkAndPlayDeviceType(deviceType, fileType);
+                            if (display == DISPLAY_ON) {
+                                launchMusicPlayActivity(service);
+                            }
+                        } else {
+                            launchVideoPlayActivity(service, playFileNode);
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        
+        if (!exist) {
+            Log.d(TAG, "checkAllDeviceAndJump exist is false! runDeviceType="+runDeviceType+"; fileType="+fileType);
+            if (fileType == FileType.AUDIO) {
+                launchSourceActivityFromDeiveType(runDeviceType, false);
+            }
+        }
     }
 }
