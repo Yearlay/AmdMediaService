@@ -58,6 +58,7 @@ public class Video_Activity_Main extends Activity implements
     private TextView mCancelView;
     private TextView mCopyTextView;
     private boolean mPlaying;
+    private boolean isShow;
 
     public PlayStateSharedPreferences mPreferences;
     private ArrayList<FileNode> mVideoList = new ArrayList<FileNode>();
@@ -205,6 +206,7 @@ public class Video_Activity_Main extends Activity implements
     @Override
     protected void onResume() {
         Log.v(TAG, "HMI------------onResume");
+        isShow = true;
         AllMediaList.notifyAllLabelChange(getApplicationContext(), R.string.pub_video);
         if (mPlaying) {
             onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
@@ -243,7 +245,8 @@ public class Video_Activity_Main extends Activity implements
 
     @Override
     protected void onPause() {
-    	super.onPause();
+        super.onPause();
+        isShow = false;
         Log.v(TAG, "HMI------------onPause");
         mRadioGroup.setVisibility(View.GONE);
         if (mPlayLayout.getVisibility() == View.VISIBLE) {
@@ -379,8 +382,10 @@ public class Video_Activity_Main extends Activity implements
                 if (mListLayout != null) {
                     mListLayout.dismissDialog();
                 }
-                new CustomDialog().ShowDialog(Video_Activity_Main.this, DIALOG_TYPE.NONE_BTN,
-                        R.string.music_device_pullout_usb);
+                if (isShow) {
+                    new CustomDialog().ShowDialog(Video_Activity_Main.this, DIALOG_TYPE.NONE_BTN,
+                            R.string.music_device_pullout_usb);
+                }
             }
         }
     }

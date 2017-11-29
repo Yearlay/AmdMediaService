@@ -55,6 +55,7 @@ public class Image_Activity_Main extends Activity implements
     private TextView mCancelView;
     private TextView mCopyTextView;
     private String mFilePathFromSearch;
+    private boolean isShow;
     
     private ArrayList<FileNode> mImageList = new ArrayList<FileNode>();
     
@@ -137,6 +138,7 @@ public class Image_Activity_Main extends Activity implements
 
     @Override
     protected void onResume() {
+        isShow = true;
         AllMediaList.notifyAllLabelChange(getApplicationContext(), R.string.pub_image);
         if (mFilePathFromSearch != null) {
             int deviceType = MediaUtil.getDeviceType(mFilePathFromSearch);
@@ -187,6 +189,7 @@ public class Image_Activity_Main extends Activity implements
 
     @Override
     protected void onPause() {
+        isShow = false;
         mListLayout.dismissDialog();
         mRadioGroup.setOnCheckedChangeListener(null);
         super.onPause();
@@ -229,8 +232,10 @@ public class Image_Activity_Main extends Activity implements
                 if (mListLayout != null) {
                     mListLayout.dismissDialog();
                 }
-                new CustomDialog().ShowDialog(Image_Activity_Main.this, DIALOG_TYPE.NONE_BTN,
-                        R.string.music_device_pullout_usb);
+                if (isShow) {
+                    new CustomDialog().ShowDialog(Image_Activity_Main.this, DIALOG_TYPE.NONE_BTN,
+                            R.string.music_device_pullout_usb);
+                }
             }
         }
     }
