@@ -76,6 +76,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     private Handler mHandler = new Handler();
     
     private SkinManager skinManager;
+    private boolean isShow = false;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -225,6 +226,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     protected void onResume() {
         super.onResume();
         Log.d(TAG, "onResume");
+        isShow = true;
         if (getIntent() != null && "com.haoke.data.ModeSwitch".equals(getIntent().getAction())) {
             ModeSwitch.instance().setGoingFlag(false);
             //setIntent(null);
@@ -261,6 +263,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     protected void onPause() {
         super.onPause();
         Log.d(TAG, "onPause");
+        isShow = false;
         mPlayDefault = false;
         mIF.unregisterLocalCallBack(this); // 注销服务监听
         if (mProgressDialog != null && mProgressDialog.getDialog() != null &&
@@ -398,9 +401,13 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     }
     
     private void deviceChanged(int deviceType, int state) {
-        if (mIF.getMediaDevice() == deviceType) {
+        if (mDeviceType == deviceType) {
             if (state == 0) { // 无设备 - 拔出设备
                 showNodeviceLayout();
+                if (isShow) {
+                    new CustomDialog().ShowDialog(this, DIALOG_TYPE.NONE_BTN,
+                            R.string.music_device_pullout_usb);
+                }
             } else {
                 mIF.browseDevice(deviceType, FileType.AUDIO);
             }
@@ -688,8 +695,8 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
                 mIF.setRepeatMode(RepeatMode.CIRCLE);
             }
             if (index == mIF.getPlayIndex() 
-                    && mIF.getPlayingDevice() == mIF.getMediaDevice()
-                    && mIF.getPlayingFileType() == mIF.getMediaFileType()
+                    && mIF.getPlayingDevice() == mDeviceType
+                    && mIF.getPlayingFileType() == FileType.AUDIO
                     && Source.isAudioSource()) {
                 mIF.setInterface(1);//回播放界面
             } else {
