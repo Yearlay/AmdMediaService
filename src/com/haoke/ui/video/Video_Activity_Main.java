@@ -156,7 +156,6 @@ public class Video_Activity_Main extends Activity implements
     }
 
     public void updateDevice(final int deviceType) {
-    	Media_IF.getInstance().setCurScanner(deviceType, FileType.VIDEO);
         int checkId = R.id.video_device_flash;
         if (deviceType == DeviceType.USB1) {
             checkId = R.id.video_device_usb1;
