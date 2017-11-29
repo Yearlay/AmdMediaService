@@ -42,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:ellipsize="end"
-                android:textSize="26sp"
+                android:textSize="22sp"
                 android:textColor="#FFFFFF"  >
             </TextView>
         </LinearLayout>
