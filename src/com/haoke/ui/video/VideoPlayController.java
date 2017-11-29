@@ -674,27 +674,27 @@ public class VideoPlayController implements AudioFocusListener{
     		switch (msg.what) {
 			case MSG_PLAY: 
 				Log.d(TAG, "mHandler MSG_PLAY");
-				if(mVideView != null && isPlayState()){
+				if(mVideView != null ){
 					playOrPause(true);
 				}
 				break;
 				
 			case MSG_PAUSE:
 				Log.d(TAG, "mHandler MSG_PAUSE");
-				if(mVideView != null && isPlayState()){
+				if(mVideView != null ){
 					playOrPause(false);
 				}
 				break;
     		
 			case MSG_PREPLAY:
 				Log.d(TAG, "mHandler MSG_PREPLAY");
-				if(mVideView != null && isPlayState()){
+				if(mVideView != null ){
 					playPre();
 				}
 				break;
 			case MSG_NEXTPLAY:
 				Log.d(TAG, "mHandler MSG_NEXTPLAY");
-				if(mVideView != null && isPlayState()){
+				if(mVideView != null ){
 					playNext();
 				}
 				break;
