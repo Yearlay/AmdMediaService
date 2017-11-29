@@ -73,7 +73,7 @@ public class Video_Activity_Main extends Activity implements
     	Log.e("luke","onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.video_activity_main);
-        
+        AllMediaList.launcherTocheckAllStorageScanState(this);
         AllMediaList.instance(getApplicationContext()).registerLoadListener(this);
         
         getWindow().getDecorView().setSystemUiVisibility(mLayoutProps);

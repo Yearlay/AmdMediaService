@@ -31,6 +31,7 @@ import com.haoke.constant.DBConfig.UriAddress;
 import com.haoke.constant.DBConfig.UriType;
 import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.FileType;
+import com.haoke.constant.MediaUtil.ScanType;
 import com.haoke.scanner.MediaDbHelper;
 import com.haoke.scanner.MediaDbHelper.TransactionTask;
 import com.haoke.service.MediaService;
@@ -969,5 +970,11 @@ public class AllMediaList {
             }
         }
         return existSelectFlag;
+    }
+    
+    public static void launcherTocheckAllStorageScanState(Context context) {
+        Intent intents = new Intent(context, MediaService.class);
+        intents.putExtra(MediaService.KEY_COMMAND_FROM, MediaService.VALUE_FROM_CHECK_ALL_SRORAGE_SCAN_STATE);
+        context.startService(intents);
     }
 }

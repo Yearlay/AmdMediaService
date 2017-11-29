@@ -52,6 +52,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.media_activity_main);
+        AllMediaList.launcherTocheckAllStorageScanState(this);
         getWindow().getDecorView().setSystemUiVisibility(mLayoutProps);
         
         mActivityTab = (Media_Activity_Tab) findViewById(R.id.media_activity_tab);

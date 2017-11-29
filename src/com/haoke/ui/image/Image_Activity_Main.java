@@ -62,7 +62,7 @@ public class Image_Activity_Main extends Activity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.image_activity_main);
-        
+        AllMediaList.launcherTocheckAllStorageScanState(this);
         AllMediaList.instance(getApplicationContext()).registerLoadListener(this);
         mPlayPreferences = PlayStateSharedPreferences.instance(getApplicationContext());
         
