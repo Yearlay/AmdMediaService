@@ -14,9 +14,12 @@ import java.util.HashSet;
 
 import com.haoke.application.MediaApplication;
 import com.haoke.bean.FileNode;
+import com.haoke.bean.StorageBean;
 import com.haoke.bean.UserBean;
 import com.haoke.bean.UserInfoBean;
 import com.haoke.constant.MediaUtil;
+import com.haoke.data.AllMediaList;
+import com.haoke.util.DebugLog;
 import com.haoke.util.GsonUtil;
 
 import android.content.Context;
@@ -444,6 +447,12 @@ public class MediaUtil {
         return null;
     }
     
+    /**
+     * 反射调用系统的方法StorageManager#getVolumeState来判断磁盘是否挂载。
+     * @param context 上下文
+     * @param storagePath 磁盘路径
+     * @return
+     */
     public static boolean checkMounted(Context context, String storagePath) {
         if (storagePath == null) {
             return false;
@@ -460,6 +469,24 @@ public class MediaUtil {
             e.printStackTrace();
         }
         return false;
+    }
+    
+    /**
+     * 检查挂载的所有的设备是否扫描完成。
+     * @param context
+     * @return true表示全部扫描完成，false表示有Mount的设备没有扫描。
+     */
+    public static boolean checkAllStorageScanOver(Context context) {
+        boolean retFlag = true;
+        for (int deviceType : DBConfig.sScan3zaDefaultList) {
+            if (MediaUtil.checkMounted(context, MediaUtil.getDevicePath(deviceType))) { // 系统检查是否Mounted上了。
+                if (AllMediaList.instance(context).getStoragBean(deviceType).isScanIdle()) { // AllMediaList检查是否已经扫描。
+                    retFlag = false;
+                    break;
+                }
+            }
+        }
+        return retFlag;
     }
     
     public static boolean pasteFileByte(Thread thread, File srcfile, File tarFile, String checkDir) {

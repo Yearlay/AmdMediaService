@@ -46,13 +46,16 @@ public class MediaScanner {
     public void beginScanningAllStorage() {
         for (int deviceType : DBConfig.sScan3zaDefaultList) {
             String devicePath = MediaUtil.getDevicePath(deviceType);
-            if (MediaUtil.checkMounted(mContext, MediaUtil.getDevicePath(deviceType)) &&
-                    AllMediaList.instance(mContext).getStoragBean(deviceType).isScanIdle()) {
-                DebugLog.d(TAG, "Begin scaning deviceType : " + deviceType);
-                AllMediaList.instance(mContext).updateStorageBean(devicePath, StorageBean.MOUNTED);
-                beginScanningStorage(MediaUtil.getDevicePath(deviceType));
+            if (MediaUtil.checkMounted(mContext, devicePath)) { // 系统检查是否Mounted上了。
+                if (AllMediaList.instance(mContext).getStoragBean(deviceType).isScanIdle()) { // AllMediaList检查是否已经扫描。
+                    DebugLog.d(TAG, "Begin scaning deviceType : " + deviceType);
+                    AllMediaList.instance(mContext).updateStorageBean(devicePath, StorageBean.MOUNTED);
+                    beginScanningStorage(MediaUtil.getDevicePath(deviceType));
+                } else {
+                    DebugLog.i(TAG, "beginScanningAllStorage device is scanning or scan completed : " + devicePath);
+                }
             } else {
-                DebugLog.e(TAG, "Error, Not mounted, device path: " + MediaUtil.getDevicePath(deviceType));
+                DebugLog.i(TAG, "beginScanningAllStorage Not mounted, device path: " + devicePath);
             }
         }
     }

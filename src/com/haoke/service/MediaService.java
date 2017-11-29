@@ -52,6 +52,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     public static final int VALUE_FROM_VR_RADIO = 4;
     public static final int VALUE_FROM_VR_IMAGE = 5;
     public static final int VALUE_FROM_VR_VIDEO = 6;
+    public static final int VALUE_FROM_CHECK_ALL_SRORAGE_SCAN_STATE = 7;
     
     private static final String TAG = "MediaService";
     private static MediaService mSelf = null;
@@ -101,7 +102,9 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         int pidID = android.os.Process.myPid();
         DebugLog.i("Yearlay", "MediaService pid: " + pidID);
         if (pidID > 2000) {
-            mScanner.beginScanningAllStorage();
+            if (!MediaUtil.checkAllStorageScanOver(getApplicationContext())) {
+                mScanner.beginScanningAllStorage();
+            }
         }
     }
 
@@ -116,6 +119,12 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
                 int from = intent.getIntExtra(KEY_COMMAND_FROM, 0);
                 if (from == VALUE_FROM_SCAN) {
                     scanOperate(intent);
+                } else if (from == VALUE_FROM_CHECK_ALL_SRORAGE_SCAN_STATE) {
+                    if (!MediaUtil.checkAllStorageScanOver(getApplicationContext())) {
+                        mScanner.beginScanningAllStorage();
+                    } else {
+                        DebugLog.i(TAG, "checkAllStorageScanOver true!");
+                    }
                 } else {
                     VRInterfaceUtil.VRCommand(intent);
                 }
