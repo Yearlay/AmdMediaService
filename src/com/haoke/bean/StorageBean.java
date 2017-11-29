@@ -74,7 +74,7 @@ public class StorageBean {
     }
     
     public boolean isScanIdle() {
-        return mState == MOUNTED;
+        return mState <= MOUNTED;
     }
     
     public String toString() {
