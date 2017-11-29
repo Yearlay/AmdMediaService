@@ -381,6 +381,8 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
             mNextPlay = false;
             updatePlayState(false);
             mVideoController.playPre();
+            mFileNode = mVideoController.getCurFileNode();
+            updateCollectView();
             break;
         case R.id.video_ctrlbar_fastpre:  // 快退
             if (MediaInterfaceUtil.mediaCannotPlay()) {
@@ -414,6 +416,8 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
             mNextPlay = true;
             updatePlayState(false);
             mVideoController.playNext();
+            mFileNode = mVideoController.getCurFileNode();
+            updateCollectView();
             break;
         case R.id.collect_video:
             collectOrUncollect();

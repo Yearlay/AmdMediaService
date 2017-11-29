@@ -646,6 +646,10 @@ public class VideoPlayController implements AudioFocusListener{
 		return false;
 	}
 	
+	public FileNode getCurFileNode(){
+		return mCurFileNode;
+	}
+	
 	private void savePlayTime(FileNode fileNode, int playTime) {
 	    if (fileNode == null) {
 	        return;
