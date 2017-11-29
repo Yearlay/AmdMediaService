@@ -131,6 +131,8 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             mDeviceType = DeviceType.USB1;
         } else if ("USB2_intent".equals(musicMode)) {
             mDeviceType = DeviceType.USB2;
+        } else if ("COLLECT_intent".equals(musicMode)) {
+            mDeviceType = DeviceType.COLLECT;
         }
         
         mPlayDefault = intent.getBooleanExtra("play_music", false);

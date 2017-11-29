@@ -5,7 +5,6 @@ import android.content.Context;
 import com.amd.bt.BT_IF;
 import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.constant.MediaUtil;
-import com.haoke.util.DebugLog;
 
 public class ModeSwitch {
     private static final String TAG = "ModeSwitch";
@@ -26,6 +25,7 @@ public class ModeSwitch {
     public static final int MUSIC_USB1_MODE = 24;
     public static final int MUSIC_USB2_MODE = 25;
     public static final int MUSIC_BT_MODE = 4;
+    public static final int MUSIC_COLLECT_MODE = 37;
     
     public static final int[] sModeList = new int[] {
         RADIO_MODE, MUSIC_LOCAL_MODE, MUSIC_USB1_MODE, MUSIC_USB2_MODE,
