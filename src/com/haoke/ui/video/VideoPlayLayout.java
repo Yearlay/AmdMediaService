@@ -122,7 +122,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         }
     }
     
-    public void updatePlayState(boolean playing) {
+    public void updatePlayState(boolean playing) { //true: playicon, false: pauseicon
         mPlayImageView.setImageDrawable(skinManager.getDrawable(
         		!playing ?
                 R.drawable.image_pause_icon_selector : R.drawable.image_play_icon_selector));
@@ -545,9 +545,9 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
             case END_SCROLL:
                 mTimeSeekBar.onStopTrackingTouch(mTimeSeekBar.getSeekBar());
                 break;
-            case PLAY_DELAY:
+            case PLAY_DELAY: 
                 mVideoController.play((FileNode) msg.obj);
-                updatePlayState(mVideoController.isPlayState());
+                updatePlayState(false);
                 startHideTimer();
                 break;
             default:

@@ -376,7 +376,6 @@ public class VideoPlayController implements AudioFocusListener{
 	
 	public void playOrPause(boolean playOrPause) {
 		//requestAudioFocus(true);
-		videoLayout.updatePlayState(playOrPause);
 		if (playOrPause) {
 		    mPlayState = PlayState.PLAY;
 			mVideView.start();
@@ -813,13 +812,14 @@ public class VideoPlayController implements AudioFocusListener{
 	@Override
 	public void audioFocusChanged(int state) {
 		// TODO Auto-generated method stub
+		
 		int playState = getPlayState();
 		Log.v(TAG, "audioFocusChanged state=" + state + "; playState="+playState+"; mPlayStateBeforeLoseFocus="+mPlayStateBeforeLoseFocus);
 		switch (state) {
 		case PlayState.PLAY: //获得焦点
 			if(mPlayStateBeforeLoseFocus == PlayState.PLAY){
 				mPlayStateBeforeLoseFocus = PlayState.STOP;
-				playOrPause(true);
+				playOrPause(true);	
 			} else {
 				playOrPause(false);
 			}
@@ -837,9 +837,12 @@ public class VideoPlayController implements AudioFocusListener{
 				mAudioManager.unregisterMediaButtonEventReceiver(mComponentName);
 			}
 			mPlayStateBeforeLoseFocus = PlayState.STOP;
+			
 			playOrPause(false);
 			break;
 		}
+		
+		videoLayout.updatePlayState(! isPlayState());
 
 	}
 
