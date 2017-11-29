@@ -14,6 +14,7 @@ import com.haoke.data.ModeSwitch;
 import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.constant.MediaUtil.RepeatMode;
+import com.haoke.service.MediaService;
 import com.haoke.ui.image.Image_Activity_Main;
 import com.haoke.ui.video.Video_Activity_Main;
 import com.haoke.util.DebugLog;
@@ -150,6 +151,7 @@ public class VRInterfaceUtil {
         DebugLog.d(TAG, "operateVideo");
         if (yesOperate) {
             Intent intent = new Intent(MediaApplication.getInstance(), Video_Activity_Main.class);
+            intent.putExtra(MediaService.KEY_COMMAND_FROM, MediaService.VALUE_FROM_VR_APP);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         } else {

@@ -33,6 +33,7 @@ import com.haoke.data.LoadListener;
 import com.haoke.data.PlayStateSharedPreferences;
 import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.mediaservice.R;
+import com.haoke.service.MediaService;
 import com.haoke.ui.media.MediaSearchActivity;
 import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
@@ -128,7 +129,7 @@ public class Video_Activity_Main extends Activity implements
     }
     
     private void initIntent(Intent intent) {
-    	//Log.e("luke","onNewIntent");
+    	Log.e("luke","onNewIntent: " + intent);
         if (intent != null && "MediaSearchActivity".equals(intent.getStringExtra("isfrom"))) {
         	Log.e("luke","onNewInten  MediaSearchActivity");
             String filePath = intent.getStringExtra("filepath");
@@ -147,8 +148,7 @@ public class Video_Activity_Main extends Activity implements
             FileNode fileNode = mVideoList.get(mCurPosition);
             mPlayLayout.setFileNode(fileNode);
             onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
-        } else if(intent != null){
-        	Log.e("luke","onNewInten: " + intent.getStringExtra("isfrom"));
+        } else if(intent.getIntExtra("isfrom",100) == MediaService.VALUE_FROM_VR_APP){
         	//intent.getStringExtra("isfrom")
         	onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
         	mPlayLayout.playDefault();

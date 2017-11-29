@@ -21,6 +21,7 @@ import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.constant.MediaUtil.ScanState;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.LoadListener;
+import com.haoke.mediaservice.R;
 import com.haoke.service.MediaClient;
 import com.haoke.util.DebugClock;
 import com.haoke.util.Media_IF;
@@ -374,7 +375,8 @@ public class VideoPlayController implements AudioFocusListener{
 	}
 	
 	public void playOrPause(boolean playOrPause) {
-		requestAudioFocus(true);
+		//requestAudioFocus(true);
+		videoLayout.updatePlayState(playOrPause);
 		if (playOrPause) {
 		    mPlayState = PlayState.PLAY;
 			mVideView.start();
