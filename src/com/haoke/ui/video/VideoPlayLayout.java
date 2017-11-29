@@ -77,6 +77,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     private FileNode mFileNode;
     
     private SkinManager skinManager;
+    private Toast mToEndToast;
     
     public VideoPlayLayout(Context context) {
         super(context);
@@ -424,7 +425,10 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     private void showToast(boolean isFastPre) {
         int oldPosition = mVideoController.getPosition();
         if (oldPosition >= mVideoController.getDuration() - 15 && !isFastPre) {
-            Toast.makeText(mContext, R.string.video_fastnext_to_end_message, Toast.LENGTH_SHORT).show();
+            if (mToEndToast == null) {
+                mToEndToast = Toast.makeText(mContext, R.string.video_fastnext_to_end_message, Toast.LENGTH_SHORT);
+            }
+            mToEndToast.show();
             return;
         }
         int newPosition = oldPosition + (isFastPre ? -30 : 30);
