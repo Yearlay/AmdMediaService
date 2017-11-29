@@ -56,19 +56,19 @@
 
 	    <LinearLayout
 	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
+	        android:layout_height="80px"
 	        android:gravity="center" > 
 			
 		    <LinearLayout
 		        android:layout_width="0dp"
-		        android:layout_height="wrap_content"
+		        android:layout_height="80px"
 	            android:layout_weight="1"
 	            android:gravity="center" >
 		        <!-- 确定按钮 -->
 		        <Button
                 android:id="@+id/pub_dialog_ok"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="80px"
                 android:paddingTop="18px"
                 android:paddingBottom="18px"
                 android:background="@drawable/bd_dialog_button"
@@ -87,13 +87,13 @@
         
 		    <LinearLayout
 		        android:layout_width="0dp"
-		        android:layout_height="wrap_content"
+		        android:layout_height="80px"
 	            android:layout_weight="1"
 	            android:gravity="center" >
 		        <Button
                 android:id="@+id/pub_dialog_cancel"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="80px"
                 android:paddingTop="18px"
                 android:paddingBottom="18px"
                 android:background="@drawable/bd_dialog_button"
