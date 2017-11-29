@@ -351,6 +351,7 @@ public class MediaInterfaceUtil {
             Context context = MediaApplication.getInstance();
             Intent intent = new Intent(context, Video_Activity_Main.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra("isfrom", "modeSwitch");
             intent.putExtra("deviceType", value);
             context.startActivity(intent);
         }
