@@ -58,6 +58,7 @@ public class Video_Activity_Main extends Activity implements
     private TextView mCancelView;
     private TextView mCopyTextView;
     private boolean mPlaying;
+    private boolean isShow;
 
     public PlayStateSharedPreferences mPreferences;
     private ArrayList<FileNode> mVideoList = new ArrayList<FileNode>();
@@ -148,10 +149,12 @@ public class Video_Activity_Main extends Activity implements
             FileNode fileNode = mVideoList.get(mCurPosition);
             mPlayLayout.setFileNode(fileNode);
             onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
-        } else if(intent.getIntExtra("isfrom",100) == MediaService.VALUE_FROM_VR_APP){
-        	//intent.getStringExtra("isfrom")
+        } else if(intent != null && intent.getIntExtra("isfrom",100) == MediaService.VALUE_FROM_VR_APP){
+        	//VR play default file
         	onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
         	mPlayLayout.playDefault();
+        } else if(intent != null && "modeSwitch".equals(intent.getStringExtra("isfrom"))){
+        	String deviceType = intent.getStringExtra("deviceType");
         }
     }
 
@@ -203,6 +206,7 @@ public class Video_Activity_Main extends Activity implements
     @Override
     protected void onResume() {
         Log.v(TAG, "HMI------------onResume");
+        isShow = true;
         AllMediaList.notifyAllLabelChange(getApplicationContext(), R.string.pub_video);
         if (mPlaying) {
             onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
@@ -241,12 +245,15 @@ public class Video_Activity_Main extends Activity implements
 
     @Override
     protected void onPause() {
+        super.onPause();
+        isShow = false;
         Log.v(TAG, "HMI------------onPause");
+        mRadioGroup.setVisibility(View.GONE);
         if (mPlayLayout.getVisibility() == View.VISIBLE) {
             mPlayLayout.onPause();
         }
         mListLayout.dismissDialog();
-        super.onPause();
+        
     }
 
     @Override
@@ -375,8 +382,10 @@ public class Video_Activity_Main extends Activity implements
                 if (mListLayout != null) {
                     mListLayout.dismissDialog();
                 }
-                new CustomDialog().ShowDialog(Video_Activity_Main.this, DIALOG_TYPE.NONE_BTN,
-                        R.string.music_device_pullout_usb);
+                if (isShow) {
+                    new CustomDialog().ShowDialog(Video_Activity_Main.this, DIALOG_TYPE.NONE_BTN,
+                            R.string.music_device_pullout_usb);
+                }
             }
         }
     }
@@ -527,6 +536,8 @@ public class Video_Activity_Main extends Activity implements
         	mPlaying = true;
             mPlayLayout.setVisibility(View.VISIBLE);
             mPlayLayout.onResume();
+            mListLayout.setVisibility(View.GONE);
+            mRadioGroup.setVisibility(View.GONE);
             HKWindowManager.hideWallpaper(this);
             HKWindowManager.fullScreen(this, true);
             getWindow().getDecorView()
@@ -535,6 +546,8 @@ public class Video_Activity_Main extends Activity implements
         	mPlaying = false;
             mPlayLayout.onPause();
             mPlayLayout.setVisibility(View.GONE);
+            mListLayout.setVisibility(View.VISIBLE);
+            mRadioGroup.setVisibility(View.VISIBLE);
             HKWindowManager.showWallpaper(this);
             HKWindowManager.fullScreen(this, false);
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
