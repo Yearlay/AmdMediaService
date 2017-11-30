@@ -340,13 +340,22 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 	}
 	
 	private void startListActivity(int type) {
-		Bundle bundle = new Bundle();
 		Intent intent = new Intent();
 		mIF.setAudioDevice(type);
 		intent.setClass(getContext(), Music_Activity_List.class);
-		bundle.clear();
-		bundle.putInt("devices_type", type);
-		intent.putExtras(bundle);
+        String value = null;
+        if (type == DeviceType.COLLECT) {
+            value = "COLLECT_intent";
+        } else if (type == DeviceType.FLASH) {
+            value = "hddAudio_intent";
+        } else if (type == DeviceType.USB1) {
+            value = "USB1_intent";
+        } else if (type == DeviceType.USB2) {
+            value = "USB2_intent";
+        } else {
+            return;
+        }
+        intent.putExtra("Mode_To_Music", value);
 		getContext().startActivity(intent);
 	}
 	
