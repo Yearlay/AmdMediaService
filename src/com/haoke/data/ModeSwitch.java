@@ -51,8 +51,8 @@ public class ModeSwitch {
     }
     
     public int getNextMode(Context context) {
-        // int currentMode = PlayStateSharedPreferences.instance(context).getSwitchMode();
-        int currentMode = Media_IF.getCurSource();
+        int currentMode = PlayStateSharedPreferences.instance(context).getSwitchMode();
+        // int currentMode = Media_IF.getCurSource();
         int nextIndex = 0;
         for (int index = 0; index < sModeList.length; index++) {
             if (currentMode == sModeList[index]) {
