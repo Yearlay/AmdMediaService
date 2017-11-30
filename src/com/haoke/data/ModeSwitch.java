@@ -3,8 +3,10 @@ package com.haoke.data;
 import android.content.Context;
 
 import com.amd.bt.BT_IF;
+import com.amd.util.Source;
 import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.constant.MediaUtil;
+import com.haoke.util.Media_IF;
 
 public class ModeSwitch {
     private static final String TAG = "ModeSwitch";
@@ -20,12 +22,12 @@ public class ModeSwitch {
      * 收音机 --> 本地音乐 --> USB1音乐 --> USB2音乐 --> BT音乐  ... --> 收音机。
      */
     public static final int EMPTY_MODE = 0;
-    public static final int RADIO_MODE = 3;
-    public static final int MUSIC_LOCAL_MODE = 23;
-    public static final int MUSIC_USB1_MODE = 24;
-    public static final int MUSIC_USB2_MODE = 25;
-    public static final int MUSIC_BT_MODE = 4;
-    public static final int MUSIC_COLLECT_MODE = 37;
+    public static final int RADIO_MODE = Source.RADIO;
+    public static final int MUSIC_LOCAL_MODE = Source.AUDIO_FLASH;
+    public static final int MUSIC_USB1_MODE = Source.AUDIO_USB1;
+    public static final int MUSIC_USB2_MODE = Source.AUDIO_USB2;
+    public static final int MUSIC_BT_MODE = Source.BT;
+    public static final int MUSIC_COLLECT_MODE = Source.AUDIO_COLLECT;
     
     public static final int[] sModeList = new int[] {
         RADIO_MODE, MUSIC_LOCAL_MODE, MUSIC_USB1_MODE, MUSIC_USB2_MODE,
@@ -49,7 +51,8 @@ public class ModeSwitch {
     }
     
     public int getNextMode(Context context) {
-        int currentMode = PlayStateSharedPreferences.instance(context).getSwitchMode();
+        // int currentMode = PlayStateSharedPreferences.instance(context).getSwitchMode();
+        int currentMode = Media_IF.getCurSource();
         int nextIndex = 0;
         for (int index = 0; index < sModeList.length; index++) {
             if (currentMode == sModeList[index]) {
