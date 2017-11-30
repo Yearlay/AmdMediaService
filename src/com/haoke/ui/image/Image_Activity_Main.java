@@ -157,6 +157,7 @@ public class Image_Activity_Main extends Activity implements
             mFilePathFromSearch = null;
         } else {
             updateDevice(mPlayPreferences.getImageDeviceType());
+            mPlayLayout.setPlayState(mPlayLayout.mRecordPlayState);
         }
         mRadioGroup.setOnCheckedChangeListener(this);
         
@@ -189,9 +190,11 @@ public class Image_Activity_Main extends Activity implements
 
     @Override
     protected void onPause() {
+    	mPlayLayout.mRecordPlayState = mPlayLayout.mPlayState;
         isShow = false;
         mListLayout.dismissDialog();
         mRadioGroup.setOnCheckedChangeListener(null);
+        mPlayLayout.setPlayState(PlayState.PAUSE);
         super.onPause();
     }
 
