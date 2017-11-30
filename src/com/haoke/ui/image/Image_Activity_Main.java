@@ -151,7 +151,7 @@ public class Image_Activity_Main extends Activity implements
                     break;
                 }
             }
-            mPlayLayout.setPlayState(PlayState.PAUSE);
+            mPlayLayout.setPlayState(PlayState.PLAY);
             mPlayLayout.setCurrentPosition(position);
             onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
             mFilePathFromSearch = null;
