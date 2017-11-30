@@ -39,6 +39,7 @@ import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 
@@ -345,7 +346,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     @Override
     public void onBTDataChange(int mode, int func, int data) { // 目的是给仪表发送信息。
         boolean needToSend = false;
-        if (Source.isBTMode(mode)) {
+        if (Source.isBTMode(mode) && Source.isBTMusicSource()) {
             switch (func) {
             case BTFunc.MUSIC_PLAY_STATE://400
                 needToSend = mBTIF.music_isPlaying();
@@ -367,7 +368,9 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
             String title = mBTIF.music_getTitle();
             String artist = mBTIF.music_getArtist();
             String album = mBTIF.music_getAlbum();
-            Meter_IF.sendMusicInfo(title, artist, album);
+            if (!TextUtils.isEmpty(title)) {
+                Meter_IF.sendMusicInfo(title, artist, album);
+            }
         }
     }
 
@@ -375,7 +378,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     public void onDataChange(int mode, int func, int data1, int data2) { // 目的是给仪表发送信息。
         DebugLog.i(TAG, "onDataChange MediaFunc: " + func);
         boolean needToSend = false;
-        if (mode == mMediaIF.getMode()) {
+        if (mode == mMediaIF.getMode() && Source.isAudioSource()) {
             switch (func) {
             case MediaFunc.DEVICE_CHANGED://8 data1=deviceType, data2=isExist ? 1 : 0
             case MediaFunc.SCAN_STATE://1
