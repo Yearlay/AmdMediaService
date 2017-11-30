@@ -34,6 +34,7 @@ import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.OperateListener;
 import com.haoke.mediaservice.R;
+import com.haoke.ui.image.Image_Activity_Main;
 import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
 import com.haoke.ui.widget.CustomDialog.OnDialogListener;
@@ -307,6 +308,7 @@ public class VideoListLayout extends RelativeLayout implements
                 }
             }
             unSelectAll();
+            mActivityHandler.sendEmptyMessage(Video_Activity_Main.DISMISS_COPY_DIALOG);
         }
         if (operateValue == OperateListener.OPERATE_DELETE &&
                 resultCode != OperateListener.OPERATE_SUCEESS) {

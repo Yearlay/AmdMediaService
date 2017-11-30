@@ -10,6 +10,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -141,6 +142,7 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
     }
     
     public void dismissDialog() {
+    	Log.e("luke","dismissDialog");
         if (mErrorDialog != null) {
             mErrorDialog.CloseDialog();
         }
@@ -310,6 +312,7 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
                 }
             }
             unSelectAll();
+            mActivityHandler.sendEmptyMessage(Image_Activity_Main.DISMISS_COPY_DIALOG);
         }
         if (operateValue == OperateListener.OPERATE_DELETE &&
                 resultCode != OperateListener.OPERATE_SUCEESS) {

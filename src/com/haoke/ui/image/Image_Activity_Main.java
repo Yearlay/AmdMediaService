@@ -321,6 +321,7 @@ public class Image_Activity_Main extends Activity implements
     public static final int LONG_CLICK_LIST_ITEM = 4;
     public static final int SHOW_BOTTOM = 5;
     public static final int HIDE_BOTTOM = 6;
+    public static final int DISMISS_COPY_DIALOG = 7;
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -368,6 +369,15 @@ public class Image_Activity_Main extends Activity implements
                 .setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
                 getWindow().getDecorView().setSystemUiVisibility(mLayoutProps);
                 break;
+            case DISMISS_COPY_DIALOG:
+            	if (mListLayout.isEditMode()) {
+            		if (AllMediaList.checkSelected(Image_Activity_Main.this, mImageList)) {
+                        mSelectAllView.setText(R.string.music_choose_remove);
+                    } else {
+                        mSelectAllView.setText(R.string.music_choose_all);
+                    }
+            	}
+            	break;
             default:
                 break;
             }
