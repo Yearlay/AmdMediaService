@@ -411,10 +411,6 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             } else {
                 mIF.browseDevice(deviceType, FileType.AUDIO);
             }
-        } else if (mIF.getMediaDevice() == DeviceType.NULL) { // 当前没有浏览设备
-            if (state == 1) {//插入设备
-                mIF.browseDevice(deviceType, FileType.AUDIO);
-            }
         }
     }
 
