@@ -546,6 +546,9 @@ public class Video_Activity_Main extends Activity implements
             mPlayLayout.onPause();
             mPlayLayout.setVisibility(View.GONE);
             mListLayout.setVisibility(View.VISIBLE);
+            if(!mListLayout.isEditMode()){
+            	mRadioGroup.setVisibility(View.VISIBLE);
+            }
             HKWindowManager.showWallpaper(this);
             HKWindowManager.fullScreen(this, false);
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
