@@ -377,6 +377,9 @@ public class VideoPlayController implements AudioFocusListener{
 	public void playOrPause(boolean playOrPause) {
 		//requestAudioFocus(true);
 		if (playOrPause) {
+			if (!requestAudioFocus(true)) {
+				Log.e(TAG, "playOrPause requestAudioFocus fail!");
+			}
 		    mPlayState = PlayState.PLAY;
 			mVideView.start();
 		} else {
@@ -426,30 +429,7 @@ public class VideoPlayController implements AudioFocusListener{
 			Log.e(TAG, "playOther requestAudioFocus fail!");
 			return false;
 		}
-		
-/*		if (mCurFileNode!=null) {
-			if (!mCurFileNode.isSamePathAndFrom(node)) {
-				stopRecordTimer();
-				if (mCurFileNode.getDeviceType() == node.getDeviceType()) {
-					savePlayTime(node, 0);
-				} else if (isPlayState()) {
-					savePlayTime(mCurFileNode, getPosition());
-				}
-			} else {
-				ArrayList<FileNode> lists = mAllMediaList.getMediaList(node.getDeviceType(), node.getFileType());
-				if (lists.size() == 1) { //fix bug 17652
-					savePlayTime(node, 0);
-				}
-			}
-			if (isPlayState()) {
-				savePlayTime(mCurFileNode, getPosition());
-				stopRecordTimer();
-			}						
-		}*/
-		
 
-		//Log.v(TAG, "playOther  mCurPlayVideoIndex: " + mCurPlayVideoIndex + "; mCurFileNode: " + mCurFileNode);
-		
 		if (mPlayingDeviceType == DeviceType.NULL || mPlayingFileType == FileType.NULL) {
 			setPlayingData(node.getDeviceType(), node.getFileType(), true);
 		}
