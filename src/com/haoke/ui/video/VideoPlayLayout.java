@@ -172,6 +172,10 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         				mVideoController.playOrPause(savePlayState);
         				mVideoController.setPosition(temp.getPlayTime());
         				
+        				if(savePlayState){
+        					startHideTimer();
+        				}
+        				
         			}
         		
         		}catch (Exception e) {
@@ -511,6 +515,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     // 启动托盘隐藏计时器
     private void startHideTimer() {
         if (mVideoController.isPlayState()) {
+        	Log.e("luke","startHideTimer");
             mHandler.removeMessages(HIDE_CTRL);
             mHandler.sendEmptyMessageDelayed(HIDE_CTRL, DELAY_TIME);
         }
@@ -518,6 +523,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
 
     // 停止托盘隐藏计时器
     private void stopHideTimer() {
+    	Log.e("luke","stopHideTimer");
         mHandler.removeMessages(HIDE_CTRL);
     }
 
@@ -640,6 +646,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
         mTimeSeekBar.onStopTrackingTouch(mTimeSeekBar.getSeekBar());
+        startHideTimer();
         return true;
     }
     

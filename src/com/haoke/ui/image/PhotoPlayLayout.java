@@ -398,7 +398,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     // 图片缩放回调 OnMatrixChangedListener
     @Override
     public void onMatrixChanged(RectF rect) {
-    	DebugLog.d("Yearlay","onMatrixChanged: " + rect.toString());
+    	//DebugLog.d("Yearlay","onMatrixChanged: " + rect.toString());
         checkPlayStatus(); // 重新计时
 /*        if(rect.top != 0){
         	setPlayState(PlayState.PAUSE);
@@ -612,6 +612,8 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     private OnTouchListener mTouchListener = new OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
+        	DebugLog.d("Yearlay", "mTouchListener onTouch");
+        	setPlayState(PlayState.PAUSE);
             switch (event.getAction()){
                 case MotionEvent.ACTION_DOWN:
                     break;
