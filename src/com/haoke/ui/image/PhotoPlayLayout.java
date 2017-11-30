@@ -77,6 +77,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     private ProgressDialog mProgressDialog;
     
     public static int mPlayState;
+    public int mRecordPlayState = PlayState.PLAY;
     
     private SkinManager skinManager;
     
