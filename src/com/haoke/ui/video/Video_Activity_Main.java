@@ -34,6 +34,7 @@ import com.haoke.data.PlayStateSharedPreferences;
 import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.mediaservice.R;
 import com.haoke.service.MediaService;
+import com.haoke.ui.image.Image_Activity_Main;
 import com.haoke.ui.media.MediaSearchActivity;
 import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
@@ -473,6 +474,7 @@ public class Video_Activity_Main extends Activity implements
     public static final int CLICK_LIST_ITEM = 2;
     public static final int LONG_CLICK_LIST_ITEM = 3;
     public static final int HIDE_UNSUPPORT_VIEW = 6;
+    public static final int DISMISS_COPY_DIALOG = 7;
     public static int mErrorCount = 0;
     private Handler mHandler = new Handler() {
         @Override
@@ -522,6 +524,15 @@ public class Video_Activity_Main extends Activity implements
                 }
                     //mPlayLayout.updateVideoLayout(true);
                 break;
+            case DISMISS_COPY_DIALOG:
+            	if (mListLayout.isEditMode()) {
+            		if (AllMediaList.checkSelected(Video_Activity_Main.this, mVideoList)) {
+                        mSelectAllView.setText(R.string.music_choose_remove);
+                    } else {
+                        mSelectAllView.setText(R.string.music_choose_all);
+                    }
+            	}
+            	break;
             default:
                 break;
             }
