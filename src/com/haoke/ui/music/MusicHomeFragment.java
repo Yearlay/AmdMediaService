@@ -18,6 +18,7 @@ import com.haoke.constant.MediaUtil.MediaFunc;
 import com.haoke.constant.MediaUtil.MediaState;
 import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.mediaservice.R;
+import com.haoke.ui.media.Media_Activity_Main;
 import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
 import com.haoke.util.DebugLog;
@@ -98,7 +99,7 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 	}
 	
 	public void onNewIntent(int source, boolean autoPlay) {
-		if (Source.isBTMusicSource(source)) {
+		if (source == Media_Activity_Main.MODE_BTMUSIC) {
 			if (autoPlay) {
 				mBTIF.music_play();
 			}
