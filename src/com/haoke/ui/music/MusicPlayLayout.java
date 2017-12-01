@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -17,7 +16,6 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
-import com.amd.bt.BTMusic_IF;
 import com.amd.bt.BT_IF;
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.util.Source;
@@ -601,6 +599,7 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 				if (!Source.isBTMusicSource(source)) {
 					if (btPlaying) {
 						btIF.music_play();
+						setCurPlayViewState();
 					}
 				}
 			}
@@ -617,5 +616,12 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
     		refreshFromViewPagerMaybePlayBTEx(fragmentVisible);
     	}
 	}
+    
+    private void setCurPlayViewState() {
+        Context context = getContext();
+        if (context instanceof com.haoke.ui.media.Media_Activity_Main) {
+            ((com.haoke.ui.media.Media_Activity_Main)context).setCurPlayViewState();
+        }
+    }
 	
 }

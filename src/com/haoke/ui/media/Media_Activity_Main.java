@@ -21,6 +21,7 @@ import com.haoke.data.AllMediaList;
 import com.haoke.data.ModeSwitch;
 import com.haoke.mediaservice.R;
 import com.haoke.ui.music.MusicHomeFragment;
+import com.amd.bt.BT_IF;
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.radio.Radio_Activity_Main;
 import com.amd.radio.SearchRadioActivity;
@@ -290,7 +291,18 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
         mHomeFragment.replaceBtMusicFragment();
     }
     
-    public void setCurPlayViewState(boolean isHomeFragment, boolean isAudioMusicPlayFragment, boolean isBtMusicPlayFragment,
+    public void setCurPlayViewState() {
+        boolean isAudioMusicPlayFragment = mHomeFragment.isAudioPlayFragment();
+        boolean isBtMusicPlayFragment = mHomeFragment.isBTMusicPlayFragment();
+        boolean isHomeFragment = mHomeFragment.isMusicHomeFragment();
+        int source = Media_IF.getCurSource();
+        boolean isAudioMusicPlay = (Source.isAudioSource(source) && Media_IF.getInstance().isPlayState());
+        boolean isBTMusicPlay = (Source.isBTMusicSource(source) && BT_IF.getInstance().music_isPlaying());
+        setCurPlayViewState(isHomeFragment, isAudioMusicPlayFragment, isBtMusicPlayFragment,
+                    isAudioMusicPlay, isBTMusicPlay);
+    }
+    
+    private void setCurPlayViewState(boolean isHomeFragment, boolean isAudioMusicPlayFragment, boolean isBtMusicPlayFragment,
             boolean isAudioMusicPlay, boolean isBTMusicPlay) {
         boolean showSearchButton = true;
         Boolean showUnderline = null;

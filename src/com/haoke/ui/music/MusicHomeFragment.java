@@ -150,6 +150,14 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 		return mShowLayout == ShowLayout.BT_PLAY_LAYOUT;
 	}
 	
+    public boolean isAudioPlayFragment() {
+        return mShowLayout == ShowLayout.AUDIO_PLAY_LAYOUT;
+    }
+    
+    public boolean isMusicHomeFragment() {
+        return mShowLayout == ShowLayout.HOME_LAYOUT;
+    }
+	
 	public void refreshSkin() {
 		mHomeLayout.refreshSkin();
 		if (mPlayLayout != null) {
@@ -159,17 +167,8 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 	}
 	
 	private void setCurPlayViewState() {
-		boolean isAudioMusicPlayFragment = mShowLayout == ShowLayout.AUDIO_PLAY_LAYOUT;
-		boolean isBtMusicPlayFragment = mShowLayout == ShowLayout.BT_PLAY_LAYOUT;
-		boolean isHomeFragment = mShowLayout == ShowLayout.HOME_LAYOUT;
-		int source = Media_IF.getCurSource();
-		boolean isAudioMusicPlay = (Source.isAudioSource(source) && mIF.getPlayState() == PlayState.PLAY);
-		boolean isBTMusicPlay = (Source.isBTMusicSource(source) && mBTIF.music_isPlaying());
-		//Activity activity = getActivity();
 		if (mContext instanceof com.haoke.ui.media.Media_Activity_Main) {
-			((com.haoke.ui.media.Media_Activity_Main)mContext).setCurPlayViewState(
-					isHomeFragment, isAudioMusicPlayFragment, isBtMusicPlayFragment,
-					isAudioMusicPlay, isBTMusicPlay);
+			((com.haoke.ui.media.Media_Activity_Main)mContext).setCurPlayViewState();
 		}
 	}
 	
