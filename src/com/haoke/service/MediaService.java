@@ -247,9 +247,10 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     private void handleModeKey() {
         if (!ModeSwitch.instance().isGoingFlag()) {
             long start = System.currentTimeMillis();
-            launchSourceActivity(ModeSwitch.instance().getNextMode(getApplicationContext()), true);
+            int nextMode = ModeSwitch.instance().getNextMode(getApplicationContext());
+            launchSourceActivity(nextMode, true);
             long end = System.currentTimeMillis();
-            Log.d(TAG, "handleModeKey consume time="+(end-start)+"ms");
+            Log.d(TAG, "handleModeKey consume time="+(end-start)+"ms; nextMode="+nextMode);
         } else {
             DebugLog.e(TAG, "handleModeKey lost  isGoingFlag : true");
         }

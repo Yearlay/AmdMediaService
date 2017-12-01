@@ -328,7 +328,7 @@ public class MediaInterfaceUtil {
             intent.setClass(context, Media_Activity_Main.class);
             intent.putExtra("Mode_To_Music", "btMusic_intent");
             if (autoPlay) {
-                BT_IF.getInstance().music_play();
+                //BT_IF.getInstance().music_play();
                 intent.putExtra("autoPlay", true);
             }
             break;
