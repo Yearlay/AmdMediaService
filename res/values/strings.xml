@@ -101,4 +101,7 @@
     <string name="music_delect_empty">Please choose the songs</string>
     
     <string name="bt_permission">There is no access to Bluetooth media permissions.\n Please make sure that the Bluetooth media permissions are opened at the end of the cell phone.</string>
+    
+    <string name="in_call_cannot_play">In the call, the media can\'t be played!</string>
+    
 </resources>

@@ -12,6 +12,7 @@ import com.haoke.aidl.IMediaCallBack;
 import com.amd.media.AudioFocus;
 import com.amd.util.Source;
 import com.haoke.bean.FileNode;
+import com.haoke.btjar.main.BTDef.BTCallState;
 import com.haoke.aidl.ICarUartCallBack;
 import com.haoke.constant.MediaUtil;
 import com.haoke.data.PlayStateSharedPreferences;
@@ -299,14 +300,13 @@ public class Media_IF extends CarService_IF {
 	}
 	
 	public static boolean getCallState() {
-		/* 先屏蔽，因为通话时，是无法进入媒体界面的。
-		 * try {
+		try {
 			int state = getInstance().mServiceIF.bt_getCallState();
 			Log.e(TAG, "getCallState state="+state);
 			return state == BTCallState.IDLE ? false : true;
 		} catch (Exception e) {
 			Log.e(TAG, "getCallState error e="+e);
-		}*/
+		}
 		return false;
 	}
 	

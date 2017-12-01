@@ -99,4 +99,6 @@
     <string name="music_delect_empty">请选择想要删除的歌曲</string>
     
     <string name="bt_permission">无法获取蓝牙媒体权限，\n 请确保手机端蓝牙媒体权限开启。</string>
+    
+    <string name="in_call_cannot_play">通话中，媒体无法播放！</string>
 </resources>
