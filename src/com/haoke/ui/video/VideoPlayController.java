@@ -798,18 +798,18 @@ public class VideoPlayController implements AudioFocusListener{
 				playOrPause(false);
 			}
 
-			if (mComponentName != null) {
+/*			if (mComponentName != null) {
 				mAudioManager.registerMediaButtonEventReceiver(mComponentName);
-			}
+			}*/
 			break;
 		case PlayState.PAUSE:  //失去焦点
 			mPlayStateBeforeLoseFocus = playState;
 			playOrPause(false);
 			break;
 		case PlayState.STOP:
-			if (mComponentName != null) {
+/*			if (mComponentName != null) {
 				mAudioManager.unregisterMediaButtonEventReceiver(mComponentName);
-			}
+			}*/
 			mPlayStateBeforeLoseFocus = PlayState.STOP;
 			
 			playOrPause(false);

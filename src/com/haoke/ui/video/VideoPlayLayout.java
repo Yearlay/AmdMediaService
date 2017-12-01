@@ -247,7 +247,6 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         mForbiddenView.setOnTouchListener(this);
         mUnsupportView = findViewById(R.id.not_support_text);
         mVideoController.setVideoPlayLayout(this);
-        //registerReceiver(mBroadcastReceiver, new IntentFilter(VRIntent.ACTION_OPERATE_VIDEO));
         
         skinManager = SkinManager.instance(mContext);
     }

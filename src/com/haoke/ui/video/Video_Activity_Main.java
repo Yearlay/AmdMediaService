@@ -130,10 +130,10 @@ public class Video_Activity_Main extends Activity implements
     
     private void initIntent(Intent intent) {
     	Log.e("luke","onNewIntent: " + intent);
-        if (intent != null && "MediaSearchActivity".equals(intent.getStringExtra("isfrom"))) {
-        	Log.e("luke","onNewInten  MediaSearchActivity");
+        if (intent != null && "MediaSearchActivity".equals(intent.getStringExtra("isfrom"))) {  //search、语音播放、模式切换入口
             String filePath = intent.getStringExtra("filepath");
             int deviceType = MediaUtil.getDeviceType(filePath);
+            Log.e("luke","onNewInten  MediaSearchActivity deviceType: " + deviceType);
             int position = 0;
             updateDevice(deviceType);
             for (int index = 0; index < mVideoList.size(); index++) {
@@ -148,14 +148,15 @@ public class Video_Activity_Main extends Activity implements
             FileNode fileNode = mVideoList.get(mCurPosition);
             mPlayLayout.setFileNode(fileNode);
             onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
-        } else if(intent != null && intent.getIntExtra("isfrom",100) == MediaService.VALUE_FROM_VR_APP){
+        } else if(intent != null && intent.getIntExtra("isfrom",100) == MediaService.VALUE_FROM_VR_APP){ //VR
         	//VR play default file
         	Log.e("luke","onNewInten VR");
         	onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
         	mPlayLayout.playDefault();
-        } else if(intent != null && "modeSwitch".equals(intent.getStringExtra("isfrom"))){
+        } else if(intent != null && "modeSwitch".equals(intent.getStringExtra("isfrom"))){ // 没有视频文件入口
         	Log.e("luke","onNewInten modeSwitch");
-        	String deviceType = intent.getStringExtra("deviceType");
+        	int deviceType = intent.getIntExtra("deviceType", DeviceType.FLASH);
+        	updateDevice(deviceType);
         }
     }
 
@@ -532,7 +533,7 @@ public class Video_Activity_Main extends Activity implements
         DebugLog.d(TAG, "onChangeFragment index: " + index);
         mPlaying = (index == SWITCH_TO_PLAY_FRAGMENT);
         if (index == SWITCH_TO_PLAY_FRAGMENT) {
-        	mPlaying = true;
+        	registerReceiver(mPlayLayout.getVideoLayoutReciver(), new IntentFilter(Intent.ACTION_MEDIA_BUTTON));
             mPlayLayout.setVisibility(View.VISIBLE);
             mPlayLayout.onResume();
             mListLayout.setVisibility(View.GONE);
@@ -541,7 +542,6 @@ public class Video_Activity_Main extends Activity implements
             getWindow().getDecorView()
                     .setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         } else {
-        	mPlaying = false;
             mPlayLayout.onPause();
             mPlayLayout.setVisibility(View.GONE);
             mListLayout.setVisibility(View.VISIBLE);
