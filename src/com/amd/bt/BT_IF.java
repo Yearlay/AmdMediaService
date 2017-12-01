@@ -208,14 +208,16 @@ public class BT_IF extends BTService_IF {
 
 	// 播放状态
 	public boolean music_isPlaying() {
+	    boolean isPlaying = false;
 		try {
 			if (getConnState() == BTConnState.CONNECTED) {
-				return mServiceIF.music_isPlaying();
+			    isPlaying = mServiceIF.music_isPlaying();
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
 		}
-		return false;
+		Log.d(TAG, "music_isPlaying isPlaying="+isPlaying);
+		return isPlaying;
 	}
 
 	// 获取ID3标题
