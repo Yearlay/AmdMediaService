@@ -95,7 +95,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     		Log.e("luke","VideoPlayLayout setFileNode is null!!");
     		return;
     	}
-        mFileNode = fileNode;
+    	setCurFileNode(fileNode);
         mTitleTextView.setText(mFileNode.getFileName());
         updateCollectView();
         updateVideoLayout(true);
@@ -128,6 +128,10 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         		!playing ?
                 R.drawable.image_pause_icon_selector : R.drawable.image_play_icon_selector));
         mTimeSeekBar.updateCurTime();
+    }
+    
+    public void setCurFileNode(FileNode filenode){
+    	mFileNode = filenode;
     }
     
     public void updateTimeBar() {
@@ -213,6 +217,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
 				updateTimeBar();
 				mVideoController.getPlayFileNode().setPlayTime(0);
 				mVideoController.playNext();
+				setCurFileNode(mVideoController.getCurFileNode());
 				savePlayState = true;
 			}
         	
@@ -257,7 +262,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            Log.d("luke", "onReceive action="+action);
+            Log.d("luke", "Steering wheel control onReceive action="+action);
             if (MediaInterfaceUtil.mediaCannotPlay()) {
                 return;
             }
@@ -275,6 +280,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
                         //play();
                     	if(mVideoController.getVideoView().getVisibility() == View.VISIBLE) {
                     		mVideoController.playOrPause(true);
+                    		updatePlayState(false);
                     	}
                     }
                     break;
@@ -284,6 +290,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
                     	//zanting
                     	if(mVideoController.getVideoView().getVisibility() == View.VISIBLE){
                     		mVideoController.playOrPause(false);
+                    		updatePlayState(true);
                     	}
                     }
                     break;
@@ -306,6 +313,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
                 	}
                     break;
                 }
+                setCurFileNode(mVideoController.getCurFileNode());
             }
         }
     };
@@ -323,6 +331,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     private boolean savePlayState = true;
 
     public void onResume() {
+    	//Log.d("luke", Log.getStackTraceString(new Throwable()));
         //Video_IF.getInstance().setVideoShow(true);
     	Log.e("luke","------VideoPlayLayout onResume " + savePlayState);
         if (mFileNode != null) {
@@ -389,7 +398,6 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
             mNextPlay = false;
             //updatePlayState(false);
             mVideoController.playPre();
-            mFileNode = mVideoController.getCurFileNode();
             updateCollectView();
             break;
         case R.id.video_ctrlbar_fastpre:  // 快退
@@ -425,13 +433,13 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
             mNextPlay = true;
             //updatePlayState(false);
             mVideoController.playNext();
-            mFileNode = mVideoController.getCurFileNode();
             updateCollectView();
             break;
         case R.id.collect_video:
             collectOrUncollect();
             break;
         }
+        setCurFileNode(mVideoController.getCurFileNode());
         startHideTimer();
     }
     

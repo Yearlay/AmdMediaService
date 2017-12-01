@@ -49,13 +49,13 @@ public class VideoPlayController implements AudioFocusListener{
 	private int mCurPlayVideoIndex; //当前播放媒体index
 	private FileNode mCurFileNode; //当前播放的文件
 	private AllMediaList mAllMediaList;
-	private int mFileType = FileType.NULL;
+	private int mFileType = FileType.VIDEO;
 	private int mDeviceType = DeviceType.NULL;
 	private int mPlayState = PlayState.STOP;
 	private int mPlayStateBeforeLoseFocus = PlayState.STOP;
 	
 	private int mPlayingDeviceType = DeviceType.NULL;
-	private int mPlayingFileType = FileType.NULL;
+	private int mPlayingFileType = FileType.VIDEO;
 	private int mListSize = -1;
 	private int mPlayingListSize = -1;
 	private ArrayList<MediaClient> mClientList = new ArrayList<MediaClient>();
@@ -232,14 +232,24 @@ public class VideoPlayController implements AudioFocusListener{
 			mPlayingFileType = fileType;
 			if (size != mPlayingListSize) {
 				mPlayingListSize = size;
-				//resetRandomNum(mPlayingListSize);
 			}
 			mCurPlayVideoIndex = changeFileNodeToIndex(mCurFileNode);
-			//mRandomListPos = changeIndexToRandomPos(mPlayingPos);
 			mCurFileNode = getPlayFileNode();
 		}
 		
 	}
+	
+    // 设置设备类型和文件类型
+    public void setDeviceAndFileType(int deviceType, int fileType) {
+    	Log.d(TAG, "setDeviceAndFileType: deviceType="+deviceType+"; fileType="+fileType
+    			+ "; mDeviceType="+mDeviceType+"; mFileType="+mFileType);
+    	if (mDeviceType != deviceType || mFileType != fileType) {
+    		mDeviceType = deviceType;
+    		mFileType = fileType;
+    		loadData();
+    		resetPlayingData(false);
+    	}
+    }
 	
 	public FileNode getPlayFileNode() {
 		FileNode fileNode = null;
@@ -396,8 +406,6 @@ public class VideoPlayController implements AudioFocusListener{
 		if (MediaInterfaceUtil.mediaCannotPlay()) {
 			return false;
 		}
-		
-		//Log.v(TAG, "playOther fileNode: " + fileNode + "; index="+index);
 		FileNode node = null;
 		
 		if (fileNode == null) {
@@ -409,15 +417,13 @@ public class VideoPlayController implements AudioFocusListener{
 			if (node == null) {
 				return false;
 			}
-			//mCurPlayVideoIndex = index;
 		} else {
 			node = fileNode;
-			//mCurPlayVideoIndex = changeFileNodeToIndex(node);
 		}
 		
 		mCurFileNode = node;
 		mCurPlayVideoIndex = changeFileNodeToIndex(node);
-		
+		Log.e("luke","----playOther  node filetype " + node.getFileType() + " ,devicetype: " + node.getDeviceType() + " ,playingtime: " + node.getPlayTime() );
 /*		if (mCurPlayVideoIndex == -1) {
 			return false;
 		} else {*/
@@ -434,33 +440,16 @@ public class VideoPlayController implements AudioFocusListener{
 			setPlayingData(node.getDeviceType(), node.getFileType(), true);
 		}
 		changeSource(mPlayingDeviceType, mPlayingFileType);
-/*		if (mPlayingFileType == FileType.AUDIO && mRepeatMode == RepeatMode.RANDOM) { // 随机开
-			mRandomListPos = changeIndexToRandomPos(mPlayingPos);
-		}*/
 
-/*		if (node.getFileType() == FileType.AUDIO) {
-			mPlayMusicFileNode = node;
-		}*/
 		final String path = node.getFilePath(); // 获得播放路径
-/*		mMediaPlayer.setFileType(mPlayingFileType);
-		boolean returnVal = mMediaPlayer.setDataSource(path);*/
+
 		mPlayState = PlayState.PLAY;
 		resetMediaPlayer();
-		Log.e("luke","----playOther  VideoView set video patch: " + path );
 		DebugClock debugClock = new DebugClock();
 		mVideView.setVideoPath(path);  //主要的耗时操作
 		debugClock.calculateTime(TAG, "mVideView setVideoPath");
-		//videoLayout.onResume();
-		
+
 		Log.v("luke","Play done ,waiting OnPrepare " + " ,----Time: " + node.getPlayTime() + "  ,filesize: " + node.getFile().length());
-		//mVideView.setVisibility(View.VISIBLE);
-		
-		//mVideView.seekTo(node.getPlayTime());
-		//mVideView.start();
-		//startRecordTimer();
-//		if (returnVal) {
-//			onDataChanged(mMediaMode, MediaFunc.PLAY_STATE, PlayState.PLAY, 0);
-//		}
 		setCurSource(node.getDeviceType());
 		return true;
 	}
