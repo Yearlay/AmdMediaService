@@ -707,7 +707,7 @@ public class Media_IF extends CarService_IF {
 	
 	// 获取是否播放状态
 	public boolean isPlayState() {
-		return getPlayState() == PlayState.PLAY ? true : false;
+		return getPlayState() == PlayState.PLAY;
 	}
 
 	// 获取播放状态
