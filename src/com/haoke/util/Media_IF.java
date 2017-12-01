@@ -15,6 +15,7 @@ import com.haoke.bean.FileNode;
 import com.haoke.btjar.main.BTDef.BTCallState;
 import com.haoke.aidl.ICarUartCallBack;
 import com.haoke.constant.MediaUtil;
+import com.haoke.data.ModeSwitch;
 import com.haoke.data.PlayStateSharedPreferences;
 import com.haoke.define.CMSStatusDef.CMSStatusFuc;
 import com.haoke.define.CMSStatusDef.TrafficRestriction;
@@ -227,6 +228,7 @@ public class Media_IF extends CarService_IF {
                     if (source == Source.NULL && Source.isBTMusicSource(sLastSource)) {
                         sLastSource = Source.NULL;
                     }
+                    ModeSwitch.setCurSourceMode(source);
                 }
                 mcuSource = Source.changeToMcuSource(source);
                 // getInstance().mServiceIF.mcu_setCurSource(mcuSource);

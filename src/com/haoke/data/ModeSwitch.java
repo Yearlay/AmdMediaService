@@ -50,9 +50,15 @@ public class ModeSwitch {
         }
     }
     
+    private static int sCurSourceMode = EMPTY_MODE;
+    public static void setCurSourceMode(int source) {
+        sCurSourceMode = source;
+    }
+    
     public int getNextMode(Context context) {
-        int currentMode = PlayStateSharedPreferences.instance(context).getSwitchMode();
-        // int currentMode = Media_IF.getCurSource();
+//        int currentMode = PlayStateSharedPreferences.instance(context).getSwitchMode();
+//        int currentMode = Media_IF.getCurSource();
+        int currentMode = sCurSourceMode;
         int nextIndex = 0;
         for (int index = 0; index < sModeList.length; index++) {
             if (currentMode == sModeList[index]) {
@@ -92,6 +98,7 @@ public class ModeSwitch {
                 break;
             }
         }
+        setCurSourceMode(nextMode);
         return nextMode;
     }
 }
