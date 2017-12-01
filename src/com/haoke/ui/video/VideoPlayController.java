@@ -69,7 +69,7 @@ public class VideoPlayController implements AudioFocusListener{
 	
 	//private boolean mVideoShow = false;
 	
-	protected int mMediaMode = MEDIA_MODE_AUDIO;
+	protected int mMediaMode = MEDIA_MODE_VIDEO;
 	
 	
 	public VideoPlayController(MyVideoView v) {
@@ -423,6 +423,7 @@ public class VideoPlayController implements AudioFocusListener{
 		
 		mCurFileNode = node;
 		mCurPlayVideoIndex = changeFileNodeToIndex(node);
+		videoLayout.setCurFileNode(mCurFileNode);
 		Log.e("luke","----playOther  node filetype " + node.getFileType() + " ,devicetype: " + node.getDeviceType() + " ,playingtime: " + node.getPlayTime() );
 /*		if (mCurPlayVideoIndex == -1) {
 			return false;

@@ -113,10 +113,8 @@ public class Video_Activity_Main extends Activity implements
         mSelectAllView.setOnClickListener(this);
         mCopyTextView = (TextView) mEditView.findViewById(R.id.copy_to_local);
         mCopyTextView.setOnClickListener(this);
-
-        // Media_IF.getInstance().setVideoActivity(this);
-        registerReceiver(mPlayLayout.getVideoLayoutReciver(), new IntentFilter(Intent.ACTION_MEDIA_BUTTON));
         
+        registerReceiver(mPlayLayout.getVideoLayoutReciver(), new IntentFilter(Intent.ACTION_MEDIA_BUTTON));
         registerReceiver(mOperateAppReceiver, new IntentFilter(VRIntent.ACTION_OPERATE_VIDEO));
         
         mPlaying = false;
@@ -152,9 +150,11 @@ public class Video_Activity_Main extends Activity implements
             onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
         } else if(intent != null && intent.getIntExtra("isfrom",100) == MediaService.VALUE_FROM_VR_APP){
         	//VR play default file
+        	Log.e("luke","onNewInten VR");
         	onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
         	mPlayLayout.playDefault();
         } else if(intent != null && "modeSwitch".equals(intent.getStringExtra("isfrom"))){
+        	Log.e("luke","onNewInten modeSwitch");
         	String deviceType = intent.getStringExtra("deviceType");
         }
     }
@@ -295,18 +295,6 @@ public class Video_Activity_Main extends Activity implements
             return true;
         }
         return super.onTouchEvent(ev);
-    }
-    
-    private void onError() {
-        if (mPlayLayout != null && mPlayLayout.getVisibility() == View.VISIBLE) {
-            mPlayLayout.setUnsupportViewShow(true);
-            mHandler.removeMessages(HIDE_UNSUPPORT_VIEW);
-            mHandler.sendEmptyMessageDelayed(HIDE_UNSUPPORT_VIEW, 1000);
-        }
-    }
-
-    private void onPlayOver() {
-        onChangeFragment(SWITCH_TO_LIST_FRAGMENT); // 回列表
     }
 
     @Override

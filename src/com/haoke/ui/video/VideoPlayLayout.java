@@ -217,7 +217,6 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
 				updateTimeBar();
 				mVideoController.getPlayFileNode().setPlayTime(0);
 				mVideoController.playNext();
-				setCurFileNode(mVideoController.getCurFileNode());
 				savePlayState = true;
 			}
         	
@@ -313,7 +312,6 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
                 	}
                     break;
                 }
-                setCurFileNode(mVideoController.getCurFileNode());
             }
         }
     };
@@ -439,7 +437,6 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
             collectOrUncollect();
             break;
         }
-        setCurFileNode(mVideoController.getCurFileNode());
         startHideTimer();
     }
     
