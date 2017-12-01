@@ -12,6 +12,7 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.widget.Toast;
 
 import com.amd.bt.BTMusic_IF;
 import com.amd.bt.BT_IF;
@@ -31,6 +32,7 @@ import com.haoke.define.ModeDef;
 import com.haoke.define.ModeDef.MediaType;
 import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.PlayState;
+import com.haoke.mediaservice.R;
 import com.haoke.service.BTMusicService;
 import com.haoke.service.MediaService;
 import com.haoke.service.RadioService;
@@ -197,12 +199,32 @@ public class MediaInterfaceUtil {
         }
     };
     
+    private static Toast sToast;
+    public static void showToast(int resId, int duration) {
+        showToast(MediaApplication.getInstance().getString(resId), duration);
+    }
+    
+    public static void showToast(String string, int duration) {
+        if (sToast == null) {
+            sToast = Toast.makeText(MediaApplication.getInstance(), 
+                    string, duration);
+        } else {
+            sToast.setText(string);
+            sToast.setDuration(duration);
+        }
+        sToast.show();
+    }
+    
     /**
      * 打电话时，不能点击媒体的播放按钮，即点击无效。
      * @return true为媒体不能播放，false为可以播放。
      */
     public static boolean mediaCannotPlay() {
-        return Media_IF.getCallState();
+        boolean calling = Media_IF.getCallState();
+        if (calling) {
+            showToast(R.string.in_call_cannot_play, Toast.LENGTH_SHORT);
+        }
+        return calling;
     }
     
     private static boolean checkAndPlayDeviceType(final int deviceType, final int fileType) {
