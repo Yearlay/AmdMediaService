@@ -682,6 +682,22 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         }
         mForbiddenView.setVisibility(showForbiddenViewFlag ? View.VISIBLE : View.GONE);
     }
+    
+    public void showOrHideForbiddenView(boolean showForbiddenView) {
+        boolean showForbiddenViewFlag = false;
+        try {
+            boolean sysLimitFlag = mVideoController.limitToPlayVideoWhenDrive();
+            showForbiddenViewFlag = (sysLimitFlag && showForbiddenView);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        if (showForbiddenViewFlag) {
+            DebugLog.d("Yearlay", "show Forbidden View... speed : " + AllMediaList.sCarSpeed);
+        } else {
+            DebugLog.d("Yearlay", "hide Forbidden View... speed : " + AllMediaList.sCarSpeed);
+        }
+        mForbiddenView.setVisibility(showForbiddenViewFlag ? View.VISIBLE : View.GONE);
+    }
 
     private void updateCollectView() {
         if (mFileNode == null || mCollectView == null) {

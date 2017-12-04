@@ -464,6 +464,8 @@ public class Video_Activity_Main extends Activity implements
     public static final int LONG_CLICK_LIST_ITEM = 3;
     public static final int HIDE_UNSUPPORT_VIEW = 6;
     public static final int DISMISS_COPY_DIALOG = 7;
+    public static final int SHOW_FORBIDDEN_VIEW = 8;
+    public static final int HIDE_FORBIDDEN_VIEW = 9;
     public static int mErrorCount = 0;
     private Handler mHandler = new Handler() {
         @Override
@@ -522,6 +524,16 @@ public class Video_Activity_Main extends Activity implements
                     }
             	}
             	break;
+            case SHOW_FORBIDDEN_VIEW:
+                if (mPlayLayout != null && AllMediaList.sCarSpeed >= 20.0f) {
+                    mPlayLayout.showOrHideForbiddenView(true);
+                }
+                break;
+            case HIDE_FORBIDDEN_VIEW:
+                if (mPlayLayout != null && AllMediaList.sCarSpeed < 20.0f) {
+                    mPlayLayout.showOrHideForbiddenView(false);
+                }
+                break;
             default:
                 break;
             }
@@ -571,29 +583,20 @@ public class Video_Activity_Main extends Activity implements
                 
                 AllMediaList.sCarSpeed = speed;
                 DebugLog.d("Yearlay", "onUartDataChange 0D 00 2D current speed: " + speed);
-                if (speed >= 20.0f && !mPlayLayout.isShowForbiddenView()) { // 加速超过20km/h
-                    mPlayLayout.checkSpeedAndRefreshView(speed);
-                }
-                if (speed < 20.0f && mPlayLayout.isShowForbiddenView()) { // 减速低于20km/h
-                    mPlayLayout.checkSpeedAndRefreshView(speed);
+                if (mPlayLayout.isShowForbiddenView()) { // 限制播放视频View，显示状态。
+                    if (speed < 20.0f) {
+                        mHandler.sendEmptyMessageDelayed(HIDE_FORBIDDEN_VIEW, 3000);
+                    } else {
+                        mHandler.removeMessages(HIDE_FORBIDDEN_VIEW);
+                    }
+                } else { // 限制播放视频View，不显示状态。
+                    if (speed >= 20.0f) {
+                        mHandler.sendEmptyMessageDelayed(SHOW_FORBIDDEN_VIEW, 3000);
+                    } else {
+                        mHandler.removeMessages(SHOW_FORBIDDEN_VIEW);
+                    }
                 }
             }
         }
-    }
-    
-    private String bytesToHexString(byte[] src){
-        StringBuilder stringBuilder = new StringBuilder();
-        if (src == null || src.length <= 0) {
-            return null;
-        }
-        for (int i = 0; i < src.length; i++) {
-            int v = src[i] & 0xFF;
-            String hv = " " + Integer.toHexString(v);
-            if (hv.length() < 2) {
-                stringBuilder.append(0);
-            }
-            stringBuilder.append(hv);
-        }       
-        return stringBuilder.toString();
     }
 }
