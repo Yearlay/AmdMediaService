@@ -48,6 +48,7 @@ import com.haoke.mediaservice.R;
 import com.haoke.ui.image.Image_Activity_Main;
 import com.haoke.util.DebugClock;
 import com.haoke.util.DebugLog;
+import com.haoke.util.Media_IF;
 import com.haoke.video.VideoSurfaceView;
 import com.nforetek.bt.res.MsgOutline;
 
@@ -373,6 +374,9 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         mVideoController.getVideoView().setVisibility(View.VISIBLE);
         debugClock.calculateTime("luke", "updateVideoLayout setVisibility");
         if (checkSpeed) {
+            if (AllMediaList.sCarSpeed == 0) {
+                AllMediaList.sCarSpeed = Media_IF.getCarSpeed();
+            }
             checkSpeedAndRefreshView(AllMediaList.sCarSpeed);
         }
         debugClock.calculateTime("luke", "updateVideoLayout checkSpeedAndRefreshView");
