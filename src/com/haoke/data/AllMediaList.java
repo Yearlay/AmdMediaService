@@ -62,7 +62,7 @@ public class AllMediaList {
     private LocalHandler mLocalHandler; // 用于多线程通信的Handler对象。
     private LoadThread mLoadThread; // 加载线程
     private OperateThread mOperateThread; // 操作线程。
-    public static float sCarSpeed;
+    public static float sCarSpeed = 0.0f;
     
     private static AllMediaList sAllMediaList;
     
