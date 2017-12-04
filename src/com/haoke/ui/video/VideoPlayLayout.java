@@ -41,6 +41,7 @@ import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.OperateListener;
 import com.haoke.data.PlayStateSharedPreferences;
+import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.MediaState;
 import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.constant.VRConstant.VRIntent;
@@ -133,6 +134,10 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     
     public void setCurFileNode(FileNode filenode){
     	mFileNode = filenode;
+    }
+    
+    public FileNode getCurFileNode(){
+    	return mFileNode;
     }
     
     public void updateTimeBar() {
@@ -722,27 +727,37 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
 			// 取系统存储的默认的路径来进行播放。
 			PlayStateSharedPreferences sPreferences = PlayStateSharedPreferences.instance();
 			int deviceType = sPreferences.getLastDeviceTypeVideo();
+			Log.e("luke","---playDefault deviceType: " + deviceType);
 			String videoInfo = sPreferences.getPlayTime(deviceType, FileType.VIDEO);
 			String splitStr = PlayStateSharedPreferences.SPLIT_STR;
 			Log.e("luke","---playDefault videoInfo: " + videoInfo);
-            String filePath = videoInfo.substring(0, videoInfo.indexOf(splitStr));
-            String playTimeStr = videoInfo.substring(videoInfo.indexOf(splitStr) + 2, videoInfo.length());
-            int playTime = Integer.valueOf(playTimeStr);
-            
-            ArrayList<FileNode> videoList = AllMediaList.instance(mContext).getMediaList(deviceType, FileType.VIDEO);
-            if (videoList.size() > 0 && !TextUtils.isEmpty(filePath)) {
-            	for (FileNode fileNode : videoList) {
-            		if (filePath.equals(fileNode.getFilePath())) {
-            			mFileNode = fileNode;
-            			mFileNode.setPlayTime(playTime);
-            			break;
-            		}
-            	}
-            	if (mFileNode == null) {
-            		mFileNode = videoList.get(0);
-            	}
-            }
+			ArrayList<FileNode> videoList;
+			if(deviceType == 0){
+				videoList = AllMediaList.instance(mContext).getMediaList(DeviceType.FLASH, FileType.VIDEO);
+			} else {
+				videoList = AllMediaList.instance(mContext).getMediaList(deviceType, FileType.VIDEO);
+			}
+		
+			if(videoInfo == null || videoInfo.length() == 0){ //没有记忆文件，播放本地第一个视频
+				if(videoList.size() > 0) {
+					mFileNode = videoList.get(0);
+				}
+			} else { //播放记忆文件
+	            String filePath = videoInfo.substring(0, videoInfo.indexOf(splitStr));
+	            String playTimeStr = videoInfo.substring(videoInfo.indexOf(splitStr) + 2, videoInfo.length());
+	            int playTime = Integer.valueOf(playTimeStr);
+	            if (videoList.size() > 0 && !TextUtils.isEmpty(filePath)) {
+	            	for (FileNode fileNode : videoList) {
+	            		if (filePath.equals(fileNode.getFilePath())) {
+	            			mFileNode = fileNode;
+	            			mFileNode.setPlayTime(playTime);
+	            			break;
+	            		}
+	            	}
+	            }
+			}
 		}
+		Log.e("luke","playDefault: " + mFileNode);
 		setFileNode(mFileNode);
 	}
 }
