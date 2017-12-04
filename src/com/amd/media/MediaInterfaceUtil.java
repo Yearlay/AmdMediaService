@@ -219,12 +219,20 @@ public class MediaInterfaceUtil {
      * 打电话时，不能点击媒体的播放按钮，即点击无效。
      * @return true为媒体不能播放，false为可以播放。
      */
-    public static boolean mediaCannotPlay() {
+    private static boolean mediaCannotPlayIntenal(boolean showToast) {
         boolean calling = Media_IF.getCallState();
-        if (calling) {
+        if (showToast && calling) {
             showToast(R.string.in_call_cannot_play, Toast.LENGTH_SHORT);
         }
         return calling;
+    }
+    
+    public static boolean mediaCannotPlay() {
+        return mediaCannotPlayIntenal(true);
+    }
+    
+    public static boolean mediaCannotPlayNoToast() {
+        return mediaCannotPlayIntenal(false);
     }
     
     private static boolean checkAndPlayDeviceType(final int deviceType, final int fileType) {

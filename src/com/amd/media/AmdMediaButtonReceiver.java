@@ -32,8 +32,13 @@ public class AmdMediaButtonReceiver extends BroadcastReceiver {
             if (event == null || event.getAction() != KeyEvent.ACTION_UP) {
                 return;
             }
+            boolean longPress = event.isLongPress();
+            int repeatCount = event.getRepeatCount();
             int keycode = event.getKeyCode();
-            Log.d(TAG, "onReceive keycode="+keycode);
+            Log.d(TAG, "onReceive keycode="+keycode+"; longPress="+longPress+"; repeatCount="+repeatCount);
+            if (longPress) {
+                //return;
+            }
             switch (keycode) {
             case KeyEvent.KEYCODE_MEDIA_PLAY: //126
                 if (!Image_Activity_Main.isPlayImage(context)) {
