@@ -384,14 +384,26 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     @Override
     public void onPageSelected(int arg0) {
         if (arg0 == 0) {
-            mPrePagerView.setImageDrawable(skinManager.getDrawable(R.drawable.up_gray));
-            mNextPagerView.setImageDrawable(skinManager.getDrawable(R.drawable.down));
+            mPrePagerView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_up));
+            mPrePagerView.setAlpha(0.3f);
+            mPrePagerView.setEnabled(false);
+            mNextPagerView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_down));
+            mNextPagerView.setAlpha(1.0f);
+            mNextPagerView.setEnabled(true);
         }else if(arg0 == Data_Common.pager -1){
-            mPrePagerView.setImageDrawable(skinManager.getDrawable(R.drawable.up));
-            mNextPagerView.setImageDrawable(skinManager.getDrawable(R.drawable.down_gray));
+            mPrePagerView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_up));
+            mPrePagerView.setAlpha(1.0f);
+            mPrePagerView.setEnabled(true);
+            mNextPagerView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_down));
+            mNextPagerView.setAlpha(0.3f);
+            mNextPagerView.setEnabled(false);
         }else{
-            mPrePagerView.setImageDrawable(skinManager.getDrawable(R.drawable.up));
-            mNextPagerView.setImageDrawable(skinManager.getDrawable(R.drawable.down));
+            mPrePagerView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_up));
+            mPrePagerView.setAlpha(1.0f);
+            mPrePagerView.setEnabled(true);
+            mNextPagerView.setImageDrawable(skinManager.getDrawable(R.drawable.radio_down));
+            mNextPagerView.setAlpha(1.0f);
+            mNextPagerView.setEnabled(true);
         }
     }
     
