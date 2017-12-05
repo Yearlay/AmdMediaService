@@ -1,13 +1,13 @@
 package com.jsbd.util;
 
+import com.amd.util.Source;
 import com.haoke.util.Media_IF;
 
-import android.provider.MediaStore.Audio.Media;
 import android.util.Log;
 
 public class Meter_IF {
 
-	public static final String TAG="Meter_IF";
+	public static final String TAG="AMD_Meter_IF";
 	
 	//-------------------------------媒体部分 start-----------------------//
 	
@@ -44,7 +44,6 @@ public class Meter_IF {
 				throw new Exception("source id error!!!");
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
 			Log.e(TAG, Log.getStackTraceString(e));
 		}
 		
@@ -56,10 +55,14 @@ public class Meter_IF {
 	 * @param freq
 	 */
 	public static void sendRadioInfo(int band, int freq){
-		Log.d("Meter_IF", "sendRadioInfo: band="+band+"; freq="+freq);
+	    boolean isRadioSource = Source.isRadioSource();
+		Log.d(TAG, "sendRadioInfo: band="+band+"; freq="+freq+"; isRadioSource="+isRadioSource);
+		if (!isRadioSource) {
+		    return;
+		}
 		try {
 			if(band != BAND_AM && band != BAND_FM){
-				throw new Exception("band is error");
+				return;
 			}
 			
 			byte[] data = new byte[6];
@@ -77,7 +80,6 @@ public class Meter_IF {
 			
 			Media_IF.getInstance().sendToDashbroad(data);
 		} catch (Exception e) {
-			// TODO: handle exception
 			Log.e(TAG, Log.getStackTraceString(e));
 		}
 	}
@@ -90,7 +92,11 @@ public class Meter_IF {
 	 */
 	public static void sendMusicInfo(String musicNmae, String musicSinger, String musicAlbum){
 		try {
-			Log.d("Meter_IF", "sendMusicInfo: musicNmae="+musicNmae+"; musicSinger="+musicSinger+"; musicAlbum="+musicAlbum);
+		    boolean isAudioSource = Source.isAudioSource();
+			Log.d(TAG, "sendMusicInfo: musicNmae="+musicNmae+"; musicSinger="+musicSinger+"; musicAlbum="+musicAlbum+"; isAudioSource="+isAudioSource);
+			if (!isAudioSource) {
+			    return;
+			}
 			if(musicNmae==null){
 				musicNmae="";
 			}
@@ -159,7 +165,6 @@ public class Meter_IF {
 			Media_IF.getInstance().sendToDashbroad(sendData);
 			
 		} catch (Exception e) {
-			// TODO: handle exception
 			Log.e(TAG, Log.getStackTraceString(e));
 		}
 	}
