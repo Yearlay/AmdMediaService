@@ -185,11 +185,11 @@ public class Radio_IF extends CarService_IF {
 	public void setEnable(boolean enable){
 		try {
 			boolean focus = true;
-			if (MediaInterfaceUtil.mediaCannotPlay()) {
-				return;
-			}
 			Log.d(TAG, "setEnable enable="+enable);
 			if (enable) {
+	            if (MediaInterfaceUtil.mediaCannotPlay()) {
+	                return;
+	            }
 				focus = RadioService.getInstance().getRadioManager().requestAudioFocus(true);
 				Log.d(TAG, "setEnable enable="+enable+"; focus="+focus);
 				if (focus) {
