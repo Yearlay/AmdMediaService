@@ -31,6 +31,8 @@ import com.haoke.constant.VRConstant.VRIntent;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.LoadListener;
 import com.haoke.data.PlayStateSharedPreferences;
+import com.haoke.define.CMSStatusDef.CMSStatusFuc;
+import com.haoke.define.ModeDef;
 import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.mediaservice.R;
 import com.haoke.service.MediaService;
@@ -575,35 +577,27 @@ public class Video_Activity_Main extends Activity implements
     }
 
     @Override
-    public void onCarDataChange(int mode, int func, int data) {}
-    @Override
-    public void onUartDataChange(int mode, int len, byte[] datas) {
-        if (datas.length > 8 && mPlayLayout != null) {
-            int data3 = datas[3] & 0xFF;
-            int data4 = datas[4] & 0xFF;
-            int data5 = datas[5] & 0xFF;
-            if (data3 == 0x0D && data4 == 0x00 && data5 == 0x2D) {
-                int speedData = 0x0000;
-                speedData = (speedData | datas[6]) << 8;
-                speedData = speedData | datas[7];
-                float speed = (float) (speedData & 0xFFFF) / 100;
-                
-                AllMediaList.sCarSpeed = speed;
-                DebugLog.d("Yearlay", "onUartDataChange 0D 00 2D current speed: " + speed);
-                if (mPlayLayout.isShowForbiddenView()) { // 限制播放视频View，显示状态。
-                    if (speed < 20.0f) {
-                        mHandler.sendEmptyMessageDelayed(HIDE_FORBIDDEN_VIEW, 3000);
-                    } else {
-                        mHandler.removeMessages(HIDE_FORBIDDEN_VIEW);
-                    }
-                } else { // 限制播放视频View，不显示状态。
-                    if (speed >= 20.0f) {
-                        mHandler.sendEmptyMessageDelayed(SHOW_FORBIDDEN_VIEW, 3000);
-                    } else {
-                        mHandler.removeMessages(SHOW_FORBIDDEN_VIEW);
-                    }
+    public void onCarDataChange(int mode, int func, int data) {
+        if (mode == ModeDef.CMS_STATUS && func == CMSStatusFuc.CAR_SPEED) {
+            int speed = data;
+            AllMediaList.sCarSpeed = speed;
+            DebugLog.d("Yearlay", "onUartDataChange 0D 00 2D current speed: " + speed);
+            if (mPlayLayout.isShowForbiddenView()) { // 限制播放视频View，显示状态。
+                if (speed < 20.0f) {
+                    mHandler.sendEmptyMessageDelayed(HIDE_FORBIDDEN_VIEW, 3000);
+                } else {
+                    mHandler.removeMessages(HIDE_FORBIDDEN_VIEW);
+                }
+            } else { // 限制播放视频View，不显示状态。
+                if (speed >= 20.0f) {
+                    mHandler.sendEmptyMessageDelayed(SHOW_FORBIDDEN_VIEW, 3000);
+                } else {
+                    mHandler.removeMessages(SHOW_FORBIDDEN_VIEW);
                 }
             }
         }
     }
+    
+    @Override
+    public void onUartDataChange(int mode, int len, byte[] datas) {}
 }
