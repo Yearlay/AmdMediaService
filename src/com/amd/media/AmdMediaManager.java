@@ -1276,6 +1276,13 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
                     mPlayMusicFileNode = null;
                     setPlayState(PlayState.PAUSE);
                     setPlayState(PlayState.STOP);
+                } else if (mPlayingFileNode != null 
+                    && mPlayingFileNode.isFromCollectTable()
+                    && fileNode.isSame(mPlayingFileNode)) {
+                    // this "else if" for fix bug 18848
+                    mPlayMusicFileNode = null;
+                    setPlayState(PlayState.PAUSE);
+                    setPlayState(PlayState.STOP);
                 }
             }
         }
