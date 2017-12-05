@@ -23,8 +23,10 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.ContentObserver;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -148,6 +150,13 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
         super.onResume();
         updateLabel();
         refreshSkin();
+        getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, mContentObserver);
+    }
+
+    @Override
+    protected void onPause() {
+        getContentResolver().unregisterContentObserver(mContentObserver);
+        super.onPause();
     }
 
     @Override
@@ -417,4 +426,9 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
         doSearch();
     }
 
+    private ContentObserver mContentObserver = new ContentObserver(new Handler()) {
+        public void onChange(boolean selfChange) {
+            refreshSkin();
+        };
+    };
 }

@@ -14,7 +14,9 @@ import com.haoke.ui.widget.CustomDialog.OnDialogListener;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.ContentObserver;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -137,6 +139,7 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
         super.onResume();
         AllMediaList.notifyAllLabelChange(this, R.string.pub_radio);
         refreshSkin();
+        getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, mContentObserver);
     }
     
     private void refreshSkin() {
@@ -154,6 +157,7 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
         if (mErrorDialog != null) {
             mErrorDialog.CloseDialog();
         }
+        getContentResolver().unregisterContentObserver(mContentObserver);
         super.onPause();
     }
 
@@ -291,4 +295,9 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
         startActivity(radioIntent);
     }
     
+    private ContentObserver mContentObserver = new ContentObserver(new Handler()) {
+        public void onChange(boolean selfChange) {
+            refreshSkin();
+        };
+    };
 }

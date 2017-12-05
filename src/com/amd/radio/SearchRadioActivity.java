@@ -9,7 +9,9 @@ import com.haoke.mediaservice.R;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.ContentObserver;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -31,6 +33,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.amd.util.SkinManager;
 
 // FM: 87.5 ~ 108.0
@@ -79,7 +82,7 @@ public class SearchRadioActivity extends Activity implements OnClickListener,
 		initView();
 	}
 	
-	private void initSkin() {
+	private void refreshSkin() {
 		mInputEditText.setBackground(mSkinManager.getDrawable(R.drawable.search_input_bg));
 		
 		mSearchIcon.setBackground(mSkinManager.getDrawable(R.drawable.search_icon));
@@ -162,9 +165,16 @@ public class SearchRadioActivity extends Activity implements OnClickListener,
 	@Override
 	protected void onResume() {
 		super.onResume();
-		initSkin();
+		refreshSkin();
+		getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, mContentObserver);
 		AllMediaList.notifyAllLabelChange(this, R.string.pub_radio);
 	}
+	
+	@Override
+    protected void onPause() {
+        getContentResolver().unregisterContentObserver(mContentObserver);
+        super.onPause();
+    }
 
 	@Override
 	public void onClick(View v) {
@@ -508,4 +518,9 @@ public class SearchRadioActivity extends Activity implements OnClickListener,
         startActivity(radioIntent);
 	}
 
+	private ContentObserver mContentObserver = new ContentObserver(new Handler()) {
+        public void onChange(boolean selfChange) {
+            refreshSkin();
+        };
+    };
 }

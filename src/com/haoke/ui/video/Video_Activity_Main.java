@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.ContentObserver;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -219,6 +220,7 @@ public class Video_Activity_Main extends Activity implements
             mPlayLayout.onResume();
         }
         refreshSkin();
+        getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, mContentObserver);
         super.onResume();
     }
     
@@ -255,7 +257,7 @@ public class Video_Activity_Main extends Activity implements
             mPlayLayout.onPause();
         }
         mListLayout.dismissDialog();
-        
+        getContentResolver().unregisterContentObserver(mContentObserver);
     }
 
     @Override
@@ -599,4 +601,10 @@ public class Video_Activity_Main extends Activity implements
             }
         }
     }
+    
+    private ContentObserver mContentObserver = new ContentObserver(new Handler()) {
+        public void onChange(boolean selfChange) {
+            refreshSkin();
+        };
+    };
 }

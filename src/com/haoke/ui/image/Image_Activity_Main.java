@@ -7,9 +7,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.ContentObserver;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -19,6 +21,7 @@ import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
 
+import com.amd.media.MediaInterfaceUtil;
 import com.amd.util.SkinManager;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.StorageBean;
@@ -162,6 +165,7 @@ public class Image_Activity_Main extends Activity implements
         mRadioGroup.setOnCheckedChangeListener(this);
         
         refreshSkin();
+        getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, mContentObserver);
         super.onResume();
     }
     
@@ -195,6 +199,7 @@ public class Image_Activity_Main extends Activity implements
         mListLayout.dismissDialog();
         mRadioGroup.setOnCheckedChangeListener(null);
         mPlayLayout.setPlayState(PlayState.PAUSE);
+        getContentResolver().unregisterContentObserver(mContentObserver);
         super.onPause();
     }
 
@@ -491,4 +496,10 @@ public class Image_Activity_Main extends Activity implements
             break;
         }
     }
+    
+    private ContentObserver mContentObserver = new ContentObserver(new Handler()) {
+        public void onChange(boolean selfChange) {
+            refreshSkin();
+        };
+    };
 }
