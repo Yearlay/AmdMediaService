@@ -7,7 +7,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.ContentObserver;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -129,7 +128,7 @@ public class Video_Activity_Main extends Activity implements
         initIntent(intent);
     }
     
-    private void initIntent(Intent intent) {
+    private void initIntent(Intent intent) {  //第三方叫醒播放入口
 	Log.e("luke","onNewIntent: " + intent);
     if (intent != null && "MediaSearchActivity".equals(intent.getStringExtra("isfrom"))) {  //search、语音播放、模式切换入口
         String filePath = intent.getStringExtra("filepath");
@@ -145,6 +144,7 @@ public class Video_Activity_Main extends Activity implements
         }
         mPreferences.saveVideoDeviceType(deviceType);
         //mPlaying = true;
+        mPlayLayout.setBeforePlaystate(true);
         updateCurPosition(position);
         FileNode fileNode = mVideoList.get(mCurPosition);
         mPlayLayout.setFileNode(fileNode);
@@ -224,7 +224,6 @@ public class Video_Activity_Main extends Activity implements
             mPlayLayout.onResume();
         }
         refreshSkin();
-        getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, mContentObserver);
         super.onResume();
     }
     
@@ -256,12 +255,13 @@ public class Video_Activity_Main extends Activity implements
         super.onPause();
         isShow = false;
         Log.v(TAG, "HMI------------onPause");
+        mPlayLayout.setBeforePlaystate(VideoPlayController.isVideoPlaying);
         mRadioGroup.setVisibility(View.GONE);
         if (mPlayLayout.getVisibility() == View.VISIBLE) {
             mPlayLayout.onPause();
         }
         mListLayout.dismissDialog();
-        getContentResolver().unregisterContentObserver(mContentObserver);
+        
     }
 
     @Override
@@ -417,6 +417,7 @@ public class Video_Activity_Main extends Activity implements
         if (MediaInterfaceUtil.mediaCannotPlay()) {
             return;
         }
+        mPlayLayout.setBeforePlaystate(true);
         updateCurPosition(position);
         FileNode fileNode = mVideoList.get(mCurPosition);
         mPlayLayout.setFileNode(fileNode);
@@ -605,10 +606,4 @@ public class Video_Activity_Main extends Activity implements
             }
         }
     }
-    
-    private ContentObserver mContentObserver = new ContentObserver(new Handler()) {
-        public void onChange(boolean selfChange) {
-            refreshSkin();
-        };
-    };
 }

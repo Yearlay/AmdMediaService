@@ -386,6 +386,8 @@ public class VideoPlayController implements AudioFocusListener{
 	
 	public void playOrPause(boolean playOrPause) {
 		//requestAudioFocus(true);
+		Log.e("luke", "playOrPause: " + playOrPause);
+		isVideoPlaying = playOrPause;
 		if (playOrPause) {
 			if (!requestAudioFocus(true)) {
 				Log.e(TAG, "playOrPause requestAudioFocus fail!");
@@ -396,7 +398,6 @@ public class VideoPlayController implements AudioFocusListener{
 			mPlayState = PlayState.PAUSE;
 			mVideView.pause();
 		}
-		isVideoPlaying = playOrPause;
 	}
 	
 	/**
@@ -420,7 +421,7 @@ public class VideoPlayController implements AudioFocusListener{
 		} else {
 			node = fileNode;
 		}
-		
+		isVideoPlaying = true;
 		mCurFileNode = node;
 		mCurPlayVideoIndex = changeFileNodeToIndex(node);
 		videoLayout.setCurFileNode(mCurFileNode);
@@ -434,6 +435,7 @@ public class VideoPlayController implements AudioFocusListener{
 		
 		if (!requestAudioFocus(true)) {
 			Log.e(TAG, "playOther requestAudioFocus fail!");
+			isVideoPlaying = false;
 			return false;
 		}
 
@@ -675,7 +677,7 @@ public class VideoPlayController implements AudioFocusListener{
 			case MSG_SAVE_PLAYTIME:
 				int time = getPosition();
 				savePlayTime(getPlayFileNode(), time);
-				Log.d(TAG, "mHandler MSG_SAVE_PLAYTIME time="+time+"; mPlayingPos="+mCurPlayVideoIndex+"; mPlayingListSize="+mPlayingListSize);
+				//Log.d(TAG, "mHandler MSG_SAVE_PLAYTIME time="+time+"; mPlayingPos="+mCurPlayVideoIndex+"; mPlayingListSize="+mPlayingListSize);
 				removeMessages(MSG_SAVE_PLAYTIME);
 				sendEmptyMessageDelayed(MSG_SAVE_PLAYTIME, MSG_DELAY_PLAYTIME);
 				break;
@@ -793,7 +795,7 @@ public class VideoPlayController implements AudioFocusListener{
 		case PlayState.PLAY: //获得焦点
 			if(mPlayStateBeforeLoseFocus == PlayState.PLAY){
 				mPlayStateBeforeLoseFocus = PlayState.STOP;
-				playOrPause(true);	
+				playOrPause(true);
 			} else {
 				playOrPause(false);
 			}
@@ -815,7 +817,6 @@ public class VideoPlayController implements AudioFocusListener{
 			playOrPause(false);
 			break;
 		}
-		
 		videoLayout.updatePlayState(! isPlayState());
 
 	}
