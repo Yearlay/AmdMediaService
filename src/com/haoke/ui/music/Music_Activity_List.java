@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
+import android.database.ContentObserver;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -252,6 +253,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         
         playDefault();
         refreshSkin();
+        getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, mContentObserver);
     }
     
     private void refreshSkin() {
@@ -271,6 +273,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             mProgressDialog.CloseDialog();
             Toast.makeText(this, R.string.file_operate_cancel, Toast.LENGTH_SHORT).show();
         }
+        getContentResolver().unregisterContentObserver(mContentObserver);
     }
     
     @Override
@@ -776,4 +779,10 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     public void onDismiss(DialogInterface dialog) {
         AllMediaList.instance(this).stopOperateThread();
     }
+    
+    private ContentObserver mContentObserver = new ContentObserver(new Handler()) {
+        public void onChange(boolean selfChange) {
+            refreshSkin();
+        };
+    };
 }
