@@ -81,9 +81,12 @@ public class BTMusicManager implements CarService_Listener,
 			}*/
 			mBTIF.music_openEx();
 			if (recordPlayState == PlayState.PLAY) {
-				// 清除标志，避免原本是暂停，每次抢焦点都进行播放
-				setRecordPlayState(PlayState.STOP);
-				mBTIF.music_play();
+			    if (MediaInterfaceUtil.mediaCannotPlayNoToast()) {
+	            } else {
+	                // 清除标志，避免原本是暂停，每次抢焦点都进行播放
+	                setRecordPlayState(PlayState.STOP);
+	                mBTIF.music_play();
+	            }
 			}
 			mAudioManager.registerMediaButtonEventReceiver(mComponentName);
 			break;
@@ -91,7 +94,11 @@ public class BTMusicManager implements CarService_Listener,
 		case PlayState.PAUSE:
 			//mBTIF.music_pause();
 			mBTIF.music_close_pause();
-			setRecordPlayState(playing ? PlayState.PLAY : PlayState.STOP);
+            if (recordPlayState == PlayState.PLAY
+                    && MediaInterfaceUtil.mediaCannotPlayNoToast()) {
+            } else {
+                setRecordPlayState(playing ? PlayState.PLAY : PlayState.STOP);
+            }
 			break;
 			
 		case PlayState.STOP:

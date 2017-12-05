@@ -130,36 +130,40 @@ public class Video_Activity_Main extends Activity implements
     }
     
     private void initIntent(Intent intent) {
-    	Log.e("luke","onNewIntent: " + intent);
-        if (intent != null && "MediaSearchActivity".equals(intent.getStringExtra("isfrom"))) {  //search、语音播放、模式切换入口
-            String filePath = intent.getStringExtra("filepath");
-            int deviceType = MediaUtil.getDeviceType(filePath);
-            Log.e("luke","onNewInten  MediaSearchActivity deviceType: " + deviceType);
-            int position = 0;
-            updateDevice(deviceType);
-            for (int index = 0; index < mVideoList.size(); index++) {
-                if (filePath.equals(mVideoList.get(index).getFilePath())) {
-                    position = index;
-                    break;
-                }
+	Log.e("luke","onNewIntent: " + intent);
+    if (intent != null && "MediaSearchActivity".equals(intent.getStringExtra("isfrom"))) {  //search、语音播放、模式切换入口
+        String filePath = intent.getStringExtra("filepath");
+        int deviceType = MediaUtil.getDeviceType(filePath);
+        Log.e("luke","onNewInten  MediaSearchActivity deviceType: " + deviceType);
+        int position = 0;
+        updateDevice(deviceType);
+        for (int index = 0; index < mVideoList.size(); index++) {
+            if (filePath.equals(mVideoList.get(index).getFilePath())) {
+                position = index;
+                break;
             }
-            mPreferences.saveVideoDeviceType(deviceType);
-            //mPlaying = true;
-            updateCurPosition(position);
-            FileNode fileNode = mVideoList.get(mCurPosition);
-            mPlayLayout.setFileNode(fileNode);
-            onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
-        } else if(intent != null && intent.getIntExtra("isfrom",100) == MediaService.VALUE_FROM_VR_APP){ //VR
-        	//VR play default file
-        	Log.e("luke","onNewInten VR");
-        	onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
-        	mPlayLayout.playDefault();
-        } else if(intent != null && "modeSwitch".equals(intent.getStringExtra("isfrom"))){ // 没有视频文件入口
-        	Log.e("luke","onNewInten modeSwitch");
-        	int deviceType = intent.getIntExtra("deviceType", DeviceType.FLASH);
-        	updateDevice(deviceType);
         }
+        mPreferences.saveVideoDeviceType(deviceType);
+        //mPlaying = true;
+        updateCurPosition(position);
+        FileNode fileNode = mVideoList.get(mCurPosition);
+        mPlayLayout.setFileNode(fileNode);
+        onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
+    } else if(intent != null && intent.getIntExtra("isfrom",100) == MediaService.VALUE_FROM_VR_APP){ //VR
+    	//VR play default file
+    	Log.e("luke","onNewInten VR");
+    	mPlayLayout.playDefault();
+    	if(mPlayLayout.getCurFileNode() == null || mPlayLayout.getCurFileNode().getFilePath().length() == 0){
+    		onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
+    	} else {
+    		onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
+    	}
+    } else if(intent != null && "modeSwitch".equals(intent.getStringExtra("isfrom"))){ // 没有视频文件入口
+    	Log.e("luke","onNewInten modeSwitch");
+    	int deviceType = intent.getIntExtra("deviceType", DeviceType.FLASH);
+    	updateDevice(deviceType);
     }
+}
 
     public void updateDevice(final int deviceType) {
         int checkId = R.id.video_device_flash;
