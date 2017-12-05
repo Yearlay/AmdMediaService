@@ -28,7 +28,6 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
     private Context mContext;
     private Media_IF mIF;
     private int mTotal = 0;
-    private int mFocusItemNo = -1;
     private int mTyep = 0;//当前模式：0 列表模式，1 编辑模式
     private ListView mListView;
     private String unknown;
@@ -47,17 +46,9 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
 
     // 重新加载数据
     public void updateList() {
-        mFocusItemNo = -1;
         mTotal = mIF.getListTotal();
         Log.v(TAG, "HMI------------updateList mTotal= " + mTotal);
         refreshData();
-    }
-
-    public void releaseFocus() {
-        if (mFocusItemNo != -1) {
-            mFocusItemNo = -1;
-            refreshData();
-        }
     }
 
     @Override
