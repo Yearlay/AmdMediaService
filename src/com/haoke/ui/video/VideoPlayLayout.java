@@ -76,6 +76,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     
     private boolean mNextPlay = true;
     private FileNode mFileNode;
+    private boolean mPlayStateBefore = false;
     
     private SkinManager skinManager;
     private Toast mToEndToast;
@@ -91,6 +92,14 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     public VideoPlayLayout(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
+    
+    public void setBeforePlaystate(boolean playing){
+    	mPlayStateBefore = playing;
+    }
+    
+    public boolean getBeforePlaystate(){
+    	return mPlayStateBefore;
+    }
 
     public void setFileNode(FileNode fileNode) {
     	if (fileNode == null) {
@@ -102,8 +111,9 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         updateCollectView();
         updateVideoLayout(true);
         slaverShow(true);
-        savePlayState = true;
         Log.e("luke","------setFileNode: " + mFileNode.toString());
+        
+        mVideoController.play(fileNode);
         
         if (mCtrlBar.getVisibility() == View.VISIBLE) {
             mHandler.removeMessages(HIDE_CTRL);
@@ -178,11 +188,11 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         				//mVideoController.startRecordTimer();
         				Log.e("luke","------onPrepared getPlayTime: " + temp.getPlayTime());
         				//mVideoController.play(temp);
-        				updatePlayState(!savePlayState);
-        				mVideoController.playOrPause(savePlayState);
+        				updatePlayState(!getBeforePlaystate());
+        				mVideoController.playOrPause(getBeforePlaystate());
         				mVideoController.setPosition(temp.getPlayTime());
         				
-        				if(savePlayState){
+        				if(getBeforePlaystate()){
         					startHideTimer();
         				}
         				
@@ -192,8 +202,8 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         			Log.e("luke","--" + e.toString());
         		}
         		updateTimeBar();
-        		VideoPlayController.isVideoPlaying = true;
         		mLoading.setVisibility(View.GONE);
+        		//VideoPlayController.isVideoPlaying = true;
         	}
         });
         
@@ -218,12 +228,13 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         mVideoView.setOnCompletionListener(new OnCompletionListener(){
 			@Override
 			public void onCompletion(MediaPlayer arg0) {
-				VideoPlayController.isVideoPlaying = false;
+				//VideoPlayController.isVideoPlaying = false;
+				setBeforePlaystate(VideoPlayController.isVideoPlaying);
 				Log.e("luke","setOnCompletionListener");
 				updateTimeBar();
 				mVideoController.getPlayFileNode().setPlayTime(0);
 				mVideoController.playNext();
-				savePlayState = true;
+				//savePlayState = true;
 			}
         	
         });
@@ -331,12 +342,10 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         mTimeSeekBar.refreshSkin();
     }
     
-    private boolean savePlayState = true;
+    //private boolean savePlayState = true;
 
     public void onResume() {
-    	//Log.d("luke", Log.getStackTraceString(new Throwable()));
-        //Video_IF.getInstance().setVideoShow(true);
-    	Log.e("luke","------VideoPlayLayout onResume " + savePlayState);
+    	Log.e("luke","------VideoPlayLayout onResume " + getBeforePlaystate());
         if (mFileNode != null) {
             mTitleTextView.setText(mFileNode.getFileName());
         }
@@ -344,34 +353,28 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         mVideoController.startRecordTimer();
 
         updateVideoLayout(true);
-        if (!mVideoController.isPlayState()) {
+        if (!mVideoController.isVideoPlaying) {
             slaverShow(true);
         }
         
         if (mFileNode != null) {
             mLoading.setVisibility(View.VISIBLE);
-            mHandler.removeMessages(PLAY_DELAY);
-            Message message = mHandler.obtainMessage(PLAY_DELAY, mFileNode);
-            mHandler.sendMessage(message);
+            mVideoController.playOrPause(getBeforePlaystate());
+            startHideTimer();
         }
     }
 
     public void onPause() {
-    	Log.e("luke","------VideoPlayLayout onPause");
+    	Log.e("luke","------VideoPlayLayout onPause: " + mVideoController.isVideoPlaying);
         if (mContext == null) {
             return;
         }
-        mHandler.removeMessages(PLAY_DELAY);
         mVideoController.stopRecordTimer();
-        
-        if(mVideoController.isPlayState()){
-        	savePlayState = true;
-        } else {
-        	savePlayState = false;
-        }
-
         mVideoController.getVideoView().setVisibility(View.INVISIBLE);
-        mVideoController.playOrPause(false);
+
+        if(mVideoController.isPlayState() == true){
+        	mVideoController.playOrPause(false);
+        }
     }
 
     public void updateVideoLayout(boolean checkSpeed) {
@@ -390,6 +393,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     @Override
     public void onClick(View view) {
         stopHideTimer();
+        setBeforePlaystate(mVideoController.isVideoPlaying);
         switch (view.getId()) {
         case R.id.video_ctrlbar_list:
             if (mActivityHandler != null) {
@@ -400,9 +404,10 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
             if (MediaInterfaceUtil.mediaCannotPlay()) {
                 break;
             }
-            savePlayState = true;
+            //savePlayState = true;
             mNextPlay = false;
             //updatePlayState(false);
+            setBeforePlaystate(true);
             mVideoController.playPre();
             updateCollectView();
             break;
@@ -416,7 +421,6 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
             if (MediaInterfaceUtil.mediaCannotPlay()) {
                 break;
             }
-            //Video_IF.getInstance().changePlayState();
             boolean playing = mVideoController.isPlayState();
             Log.e("luke","-----onClick playing: " + playing);
             mPlayImageView.setImageDrawable(skinManager.getDrawable(
@@ -435,8 +439,9 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
             if (MediaInterfaceUtil.mediaCannotPlay()) {
                 break;
             }
-            savePlayState = true;
+            //savePlayState = true;
             mNextPlay = true;
+            setBeforePlaystate(true);
             //updatePlayState(false);
             mVideoController.playNext();
             updateCollectView();
@@ -563,7 +568,6 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     private static final int HIDE_CTRL = 1;
     private static final int DELAY_PLAY = 2;
     private static final int END_SCROLL = 3;
-    private static final int PLAY_DELAY = 4;
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -578,11 +582,6 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
                 break;
             case END_SCROLL:
                 mTimeSeekBar.onStopTrackingTouch(mTimeSeekBar.getSeekBar());
-                break;
-            case PLAY_DELAY: 
-                mVideoController.play((FileNode) msg.obj);
-                //updatePlayState(false);
-                startHideTimer();
                 break;
             default:
                 break;
@@ -758,6 +757,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
 			}
 		}
 		Log.e("luke","playDefault: " + mFileNode);
+		setBeforePlaystate(true);
 		setFileNode(mFileNode);
 	}
 }
