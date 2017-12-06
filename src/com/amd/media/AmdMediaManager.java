@@ -1018,6 +1018,10 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		if (request && hasAudioFocus()) {
 			return true;
 		} else {
+		    if (getRecordPlayState() == PlayState.PLAY) {
+		        Log.d(TAG, "requestAudioFocus reset RecordPlayState!");
+		        setRecordPlayState(PlayState.STOP);
+		    }
 			return mAudioFocus.requestAudioFocus(request);
 		}
 	}
@@ -1273,6 +1277,13 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
             if (fileNode.isSelected()) {
                 selectedList.add(fileNode);
                 if (fileNode.isSamePathAndFrom(mPlayingFileNode)) {
+                    mPlayMusicFileNode = null;
+                    setPlayState(PlayState.PAUSE);
+                    setPlayState(PlayState.STOP);
+                } else if (mPlayingFileNode != null 
+                    && mPlayingFileNode.isFromCollectTable()
+                    && fileNode.isSame(mPlayingFileNode)) {
+                    // this "else if" for fix bug 18848
                     mPlayMusicFileNode = null;
                     setPlayState(PlayState.PAUSE);
                     setPlayState(PlayState.STOP);

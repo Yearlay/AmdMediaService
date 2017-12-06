@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -147,6 +148,7 @@ public class Video_Activity_Main extends Activity implements
         mPreferences.saveVideoDeviceType(deviceType);
         //mPlaying = true;
         mPlayLayout.setBeforePlaystate(true);
+        Log.e("luke","initIntent setBeforePlaystate true");
         updateCurPosition(position);
         FileNode fileNode = mVideoList.get(mCurPosition);
         mPlayLayout.setFileNode(fileNode);
@@ -165,6 +167,7 @@ public class Video_Activity_Main extends Activity implements
     	int deviceType = intent.getIntExtra("deviceType", DeviceType.FLASH);
     	updateDevice(deviceType);
     }
+    Log.e("luke","BeforePlaystate: " + mPlayLayout.getBeforePlaystate());
 }
 
     public void updateDevice(final int deviceType) {
@@ -256,12 +259,20 @@ public class Video_Activity_Main extends Activity implements
     protected void onPause() {
         super.onPause();
         isShow = false;
-        Log.v(TAG, "HMI------------onPause");
-        mPlayLayout.setBeforePlaystate(VideoPlayController.isVideoPlaying);
+        Log.v("luke", "HMI------------onPause BeforePlaystate: " + mPlayLayout.getBeforePlaystate());
         mRadioGroup.setVisibility(View.GONE);
         if (mPlayLayout.getVisibility() == View.VISIBLE) {
+        	Log.v(TAG, "HMI------------onPause mPlayLayout VISIBLE");
             mPlayLayout.onPause();
+            
+            if(!mPlayLayout.getVideoController().hasAudioFocus()){
+            	Log.v(TAG, "HMI------------onPause mPlayLayout not AudioFocus");
+            	mPlayLayout.setBeforePlaystate(mPlayLayout.getBeforePlaystate());
+            } else {
+            	mPlayLayout.setBeforePlaystate(VideoPlayController.isVideoPlaying);
+            }
         }
+        Log.v("luke", "HMI------------onPause BeforePlaystate: " + mPlayLayout.getBeforePlaystate());
         mListLayout.dismissDialog();
         
     }
@@ -326,6 +337,14 @@ public class Video_Activity_Main extends Activity implements
             break;
         }
     }
+    
+    @Override  
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        // TODO Auto-generated method stub
+        Log.e("luke","onKeyUp!! keyCode: " + keyCode );
+        mPlayLayout.mediaKeyHandle(getApplicationContext(), keyCode);
+        return super.onKeyUp(keyCode, event);
+    } 
     
     private void touchEvent(int deviceType) {
         mPreferences.saveVideoDeviceType(deviceType);
@@ -420,6 +439,8 @@ public class Video_Activity_Main extends Activity implements
             return;
         }
         mPlayLayout.setBeforePlaystate(true);
+        mPlayLayout.mNextPlay = true;
+        Log.e(TAG,"playVideo setBeforePlaystate " + mPlayLayout.getBeforePlaystate());
         updateCurPosition(position);
         FileNode fileNode = mVideoList.get(mCurPosition);
         mPlayLayout.setFileNode(fileNode);
@@ -439,26 +460,31 @@ public class Video_Activity_Main extends Activity implements
                     if (!mPlaying) {
                         onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
                     }
+                    mPlayLayout.updatePlayState(false);
                     mPlayLayout.playDefault();
                     break;
                 case VRIntent.PAUSE_VIDEO:
+                	mPlayLayout.updatePlayState(true);
                     mPlayLayout.getVideoController().playOrPause(false);
                     break;
                 case VRIntent.PRE_VIDEO:
                     if (!mPlaying) {
                         onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
                     }
+                    mPlayLayout.mNextPlay = false;
                     mPlayLayout.getVideoController().playPre();
                     break;
                 case VRIntent.NEXT_VIDEO:
                     if (!mPlaying) {
                         onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
                     }
+                    mPlayLayout.mNextPlay = true;
                     mPlayLayout.getVideoController().playNext();
                     break;
                 default:
                     break;
                 }
+                
             }
         }
     };
@@ -554,7 +580,6 @@ public class Video_Activity_Main extends Activity implements
         DebugLog.d(TAG, "onChangeFragment index: " + index);
         mPlaying = (index == SWITCH_TO_PLAY_FRAGMENT);
         if (index == SWITCH_TO_PLAY_FRAGMENT) {
-        	registerReceiver(mPlayLayout.getVideoLayoutReciver(), new IntentFilter(Intent.ACTION_MEDIA_BUTTON));
             mPlayLayout.setVisibility(View.VISIBLE);
             mPlayLayout.onResume();
             mListLayout.setVisibility(View.GONE);

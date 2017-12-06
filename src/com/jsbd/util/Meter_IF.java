@@ -92,11 +92,8 @@ public class Meter_IF {
 	 */
 	public static void sendMusicInfo(String musicNmae, String musicSinger, String musicAlbum){
 		try {
-		    boolean isAudioSource = Source.isAudioSource();
-			Log.d(TAG, "sendMusicInfo: musicNmae="+musicNmae+"; musicSinger="+musicSinger+"; musicAlbum="+musicAlbum+"; isAudioSource="+isAudioSource);
-			if (!isAudioSource) {
-			    return;
-			}
+		    int source = Media_IF.getCurSource();
+			Log.d(TAG, "sendMusicInfo: musicNmae="+musicNmae+"; musicSinger="+musicSinger+"; musicAlbum="+musicAlbum+"; source="+source);
 			if(musicNmae==null){
 				musicNmae="";
 			}

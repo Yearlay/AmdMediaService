@@ -74,7 +74,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     private Handler mActivityHandler;
     private GestureDetector mGestureDetector;
     
-    private boolean mNextPlay = true;
+    public boolean mNextPlay = true;
     private FileNode mFileNode;
     private boolean mPlayStateBefore = false;
     
@@ -111,7 +111,8 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         updateCollectView();
         updateVideoLayout(true);
         slaverShow(true);
-        Log.e("luke","------setFileNode: " + mFileNode.toString());
+        setBeforePlaystate(true);
+        Log.e("luke","setFileNode setBeforePlaystate" + getBeforePlaystate());
         
         mVideoController.play(fileNode);
         
@@ -229,8 +230,9 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
 			@Override
 			public void onCompletion(MediaPlayer arg0) {
 				//VideoPlayController.isVideoPlaying = false;
+				mNextPlay = true;
 				setBeforePlaystate(VideoPlayController.isVideoPlaying);
-				Log.e("luke","setOnCompletionListener");
+				Log.e("luke","OnCompletionListener setBeforePlaystate " + getBeforePlaystate());
 				updateTimeBar();
 				mVideoController.getPlayFileNode().setPlayTime(0);
 				mVideoController.playNext();
@@ -289,48 +291,54 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
                 }
                 int keycode = event.getKeyCode();
                 Log.d("luke", "onReceive keycode="+keycode);
-                switch (keycode) {
-                case KeyEvent.KEYCODE_MEDIA_PLAY: //126
-                    if (!Image_Activity_Main.isPlayImage(context) && mVideoController !=null) {
-                        //play();
-                    	if(mVideoController.getVideoView().getVisibility() == View.VISIBLE) {
-                    		mVideoController.playOrPause(true);
-                    		updatePlayState(false);
-                    	}
-                    }
-                    break;
-                case KeyEvent.KEYCODE_MEDIA_PAUSE: //127
-                    if (!Image_Activity_Main.isPlayImage(context) && mVideoController !=null) {
-                        //pause();
-                    	//zanting
-                    	if(mVideoController.getVideoView().getVisibility() == View.VISIBLE){
-                    		mVideoController.playOrPause(false);
-                    		updatePlayState(true);
-                    	}
-                    }
-                    break;
-                case KeyEvent.KEYCODE_MEDIA_PREVIOUS: //88
-                    //prev();
-                	//上一个
-                	if(mVideoController !=null){
-                		if(mVideoController.getVideoView().getVisibility() == View.VISIBLE) {
-                			mVideoController.playPre();
-                		}
-                	}
-                    break;
-                case KeyEvent.KEYCODE_MEDIA_NEXT: //87
-                    //next();
-                	//下一个
-                	if(mVideoController !=null){
-                		if(mVideoController.getVideoView().getVisibility() == View.VISIBLE){
-                			mVideoController.playNext();
-                		}
-                	}
-                    break;
-                }
+                mediaKeyHandle(context, keycode);
             }
         }
     };
+    
+    public void mediaKeyHandle(Context context, int key){
+        switch (key) {
+        case KeyEvent.KEYCODE_MEDIA_PLAY: //126
+            if (!Image_Activity_Main.isPlayImage(context) && mVideoController !=null) {
+                //play();
+            	if(mVideoController.getVideoView().getVisibility() == View.VISIBLE) {
+            		mVideoController.playOrPause(true);
+            		updatePlayState(false);
+            	}
+            }
+            break;
+        case KeyEvent.KEYCODE_MEDIA_PAUSE: //127
+            if (!Image_Activity_Main.isPlayImage(context) && mVideoController !=null) {
+                //pause();
+            	//zanting
+            	if(mVideoController.getVideoView().getVisibility() == View.VISIBLE){
+            		mVideoController.playOrPause(false);
+            		updatePlayState(true);
+            	}
+            }
+            break;
+        case KeyEvent.KEYCODE_MEDIA_PREVIOUS: //88
+            //prev();
+        	//上一个
+        	if(mVideoController !=null){
+        		if(mVideoController.getVideoView().getVisibility() == View.VISIBLE) {
+        			mVideoController.playPre();
+        			mNextPlay = false;
+        		}
+        	}
+            break;
+        case KeyEvent.KEYCODE_MEDIA_NEXT: //87
+            //next();
+        	//下一个
+        	if(mVideoController !=null){
+        		if(mVideoController.getVideoView().getVisibility() == View.VISIBLE){
+        			mVideoController.playNext();
+        			mNextPlay = true;
+        		}
+        	}
+            break;
+        }
+    }
     
     
     public void refreshSkin() {
@@ -451,6 +459,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
             break;
         }
         startHideTimer();
+        Log.e("luke","onClick setBeforePlaystate " + getBeforePlaystate());
     }
     
     private void showToast(boolean isFastPre) {
@@ -615,14 +624,17 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
 
     @Override
     public void onShowPress(MotionEvent e) { // 用户轻触触摸屏，尚未松开或拖动，由一个1个MotionEvent ACTION_DOWN触发
+    	Log.e("luke","onShowPress");
     }
     
     @Override
     public void onLongPress(MotionEvent e) {
+    	Log.e("luke","onLongPress");
     }
 
     @Override
     public boolean onSingleTapUp(MotionEvent e) { // 用户（轻触触摸屏后）松开，由一个1个MotionEvent ACTION_UP触发
+    	Log.e("luke","onSingleTapUp");
         slaverShow(mCtrlBar.getVisibility() != View.VISIBLE);
         return true;
     }
@@ -642,6 +654,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+    	Log.e("luke","onScroll");
         if (mCtrlBar.getVisibility() != View.VISIBLE) {
             slaverShow(true);
         }
@@ -657,6 +670,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
 
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+    	Log.e("luke","onFling");
         mTimeSeekBar.onStopTrackingTouch(mTimeSeekBar.getSeekBar());
         startHideTimer();
         return true;
@@ -758,6 +772,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
 		}
 		Log.e("luke","playDefault: " + mFileNode);
 		setBeforePlaystate(true);
+		Log.e("luke","playDefault setBeforePlaystate: " + getBeforePlaystate());
 		setFileNode(mFileNode);
 	}
 }
