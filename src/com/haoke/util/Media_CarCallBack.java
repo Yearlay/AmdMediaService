@@ -83,7 +83,8 @@ public class Media_CarCallBack {
 
 		int curMode = Media_IF.getInstance().getMode();
 		if (mode == curMode || Source.isMcuMode(mode)
-		        || Source.isBTMode(mode) || Source.isEQMode(mode)) {
+		        || Source.isBTMode(mode) || Source.isEQMode(mode)
+		        || Source.isCmsStatusMode(mode)) {
 			Log.v(TAG, "HMI------------onDataChange mode=" + mode + ", func="
 					+ func + ", data=" + data);
 			Message message = mHandler.obtainMessage();
