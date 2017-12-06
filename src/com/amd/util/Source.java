@@ -126,6 +126,10 @@ public class Source {
         return mode == com.haoke.define.ModeDef.EQ;
     }
     
+    public static boolean isCmsStatusMode(int mode) {
+        return mode == com.haoke.define.ModeDef.CMS_STATUS;
+    }
+    
     /**
      * 判断模式是否为收音，仅限onCarDataChange或者CallBack调用
      */
