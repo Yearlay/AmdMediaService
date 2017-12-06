@@ -301,12 +301,15 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
+                    if (!mPlayDefault) {
+                        return;
+                    }
                     if (mIF.isPlayState() && mIF.getPlayingDevice() == mDeviceType) {
                         mPlayDefault = false;
                     } else {
                         int state = mIF.getScanState(mDeviceType);
                         if (state == ScanState.SCANNING || state == ScanState.IDLE) {
-                            Log.d(TAG, "onResume mDeviceType:" + mDeviceType + " is scanning!");
+                            Log.d(TAG, "playDefault mDeviceType:" + mDeviceType + " is scanning!");
                         } else {
                             mIF.playDefault(mDeviceType, FileType.AUDIO);
                             mPlayDefault = false;
