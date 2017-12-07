@@ -139,6 +139,7 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
     
     public void refreshSkin() {
         mLoadingImageView.setImageDrawable(skinManager.getDrawable(R.drawable.media_loading_anim));
+        mPhotoAdapter.notifyDataSetChanged();
     }
     
     public void dismissDialog() {
