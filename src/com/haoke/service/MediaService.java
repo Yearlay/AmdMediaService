@@ -208,11 +208,8 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
             int keyCode = data & 0xFF;
             if (keyState == McuDef.KeyState.PRESS_RELEASED) {
                 if (keyCode == McuDef.KeyCode.MODE) {
-                     boolean cannotPlay = MediaInterfaceUtil.mediaCannotPlay();
-                     DebugLog.d("Yearlay", "MediaService onCarDataChange handle Mode_Key... cannotPlay="+cannotPlay);
-                     if (!cannotPlay) {
-                         handleModeKey();
-                     }
+                     DebugLog.d("Yearlay", "MediaService onCarDataChange handle Mode_Key...");
+                     handleModeKey();
                 } else if (keyCode == McuDef.KeyCode.POWER2) {
                     
                 }

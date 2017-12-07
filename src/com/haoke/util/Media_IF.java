@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.RemoteException;
 import android.util.Log;
 
+import com.amd.bt.BT_IF;
 import com.amd.media.AmdMediaManager;
 import com.amd.media.MediaInterfaceUtil;
 import com.haoke.aidl.ICarCallBack;
@@ -303,8 +304,9 @@ public class Media_IF extends CarService_IF {
 	
 	public static boolean getCallState() {
 		try {
-			int state = getInstance().mServiceIF.bt_getCallState();
-			Log.e(TAG, "getCallState state="+state);
+			//int state = getInstance().mServiceIF.bt_getCallState();
+			int state = BT_IF.getCallState();
+			Log.e(TAG, "BT_IF.getCallState state="+state);
 			return state == BTCallState.IDLE ? false : true;
 		} catch (Exception e) {
 			Log.e(TAG, "getCallState error e="+e);
