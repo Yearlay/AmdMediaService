@@ -88,6 +88,7 @@ public class VideoListLayout extends RelativeLayout implements
     
     public void refreshSkin() {
         mLoadingImageView.setImageDrawable(skinManager.getDrawable(R.drawable.media_loading_anim));
+        mVideoAdapter.notifyDataSetChanged();
     }
     
     public void updataList(ArrayList<FileNode> dataList, StorageBean storageBean) {
