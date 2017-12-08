@@ -401,7 +401,7 @@ public class VideoPlayController implements AudioFocusListener{
 			mPlayState = PlayState.PAUSE;
 			mVideView.pause();
 		}
-		//videoLayout.setBeforePlaystate(isVideoPlaying);
+		videoLayout.updatePlayState(!playOrPause);
 		isVideoPlaying = playOrPause;
 	}
 	
@@ -804,8 +804,12 @@ public class VideoPlayController implements AudioFocusListener{
 			if(mPlayStateBeforeLoseFocus == PlayState.PLAY){
 				mPlayStateBeforeLoseFocus = PlayState.STOP;
 				playOrPause(true);
-			} else {
+				//videoLayout.updatePlayState(false);
+			} else if(mPlayStateBeforeLoseFocus == PlayState.PAUSE){
 				playOrPause(false);
+				//videoLayout.updatePlayState(true);
+			} else {
+				
 			}
 			mContext.registerReceiver(videoLayout.getVideoLayoutReciver(), new IntentFilter(Intent.ACTION_MEDIA_BUTTON));
 			break;
@@ -814,16 +818,16 @@ public class VideoPlayController implements AudioFocusListener{
 			videoLayout.setBeforePlaystate(playStateTransformation(mPlayStateBeforeLoseFocus));
 			Log.v("luke", "audioFocusChanged setBeforePlaystate " + videoLayout.getBeforePlaystate());
 			playOrPause(false);
+			//videoLayout.updatePlayState(true);
 			break;
 		case PlayState.STOP:
 			mContext.unregisterReceiver(videoLayout.getVideoLayoutReciver());
 			mPlayStateBeforeLoseFocus = PlayState.STOP;
-			
-			//playOrPause(false);
-			//isVideoPlaying = true;
+			//mVideView.stopPlayback();
+			//videoLayout.setBeforePlaystate(playStateTransformation(mPlayStateBeforeLoseFocus));
 			break;
 		}
-		videoLayout.updatePlayState(! isPlayState());
+		
 
 	}
 

@@ -137,6 +137,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     }
     
     public void updatePlayState(boolean playing) { //true: playicon, false: pauseicon
+    	Log.e("luke","updatePlayState playIcon " + playing);
         mPlayImageView.setImageDrawable(skinManager.getDrawable(
         		!playing ?
                 R.drawable.image_pause_icon_selector : R.drawable.image_play_icon_selector));
@@ -189,7 +190,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         				//mVideoController.startRecordTimer();
         				Log.e("luke","------onPrepared getPlayTime: " + temp.getPlayTime());
         				//mVideoController.play(temp);
-        				updatePlayState(!getBeforePlaystate());
+        				//updatePlayState(!getBeforePlaystate());
         				mVideoController.playOrPause(getBeforePlaystate());
         				mVideoController.setPosition(temp.getPlayTime());
         				
@@ -303,7 +304,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
                 //play();
             	if(mVideoController.getVideoView().getVisibility() == View.VISIBLE) {
             		mVideoController.playOrPause(true);
-            		updatePlayState(false);
+            		//updatePlayState(false);
             	}
             }
             break;
@@ -313,7 +314,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
             	//zanting
             	if(mVideoController.getVideoView().getVisibility() == View.VISIBLE){
             		mVideoController.playOrPause(false);
-            		updatePlayState(true);
+            		//updatePlayState(true);
             	}
             }
             break;
@@ -431,11 +432,8 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
             }
             boolean playing = mVideoController.isPlayState();
             Log.e("luke","-----onClick playing: " + playing);
-            mPlayImageView.setImageDrawable(skinManager.getDrawable(
-            		!playing ?
-                    R.drawable.image_pause_icon_selector : R.drawable.image_play_icon_selector));
+            //updatePlayState(playing);
             mVideoController.playOrPause(!playing);
-            mTimeSeekBar.updateCurTime();
             break;
         case R.id.video_ctrlbar_fastnext: // 快进
             if (MediaInterfaceUtil.mediaCannotPlay()) {
@@ -532,6 +530,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
 
     @Override
     public void OnHKTouchEvent(View view, TOUCH_ACTION action) {
+    	Log.e("luke","OnHKTouchEvent");
         if (action == TOUCH_ACTION.BTN_DOWN) {
             stopHideTimer();
         } else if (action == TOUCH_ACTION.BTN_UP) {
@@ -614,6 +613,35 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
+    	//Log.e("luke","onTouch " + event.toString());
+/*    	int eventaction = event.getAction();
+    	int distanceX = (int) event.getRawX();
+    	int distanceY = (int) event.getRawY();
+    	
+    	switch (eventaction) {
+    	case MotionEvent.ACTION_DOWN:
+    		slaverShow(mCtrlBar.getVisibility() != View.VISIBLE);
+    		break;
+    	case MotionEvent.ACTION_MOVE:
+            if (mCtrlBar.getVisibility() != View.VISIBLE) {
+                slaverShow(true);
+            }
+            mTimeSeekBar.onStartTrackingTouch(mTimeSeekBar.getSeekBar());
+            SeekBar seekBar = mTimeSeekBar.getSeekBar();
+            int position = seekBar.getProgress();
+            Log.e("luke","onTouch position: " + position + "  ," + modifyDistanceX(distanceX));
+            seekBar.setProgress(position - modifyDistanceX(distanceX));
+            mTimeSeekBar.checkScroll();
+    		break;
+    	case MotionEvent.ACTION_UP:
+            mTimeSeekBar.onStopTrackingTouch(mTimeSeekBar.getSeekBar());
+            startHideTimer();
+    		break;
+    	default :
+    		break;
+    	}
+    	
+    	return true;*/
         return mGestureDetector.onTouchEvent(event);
     }
 
@@ -663,8 +691,8 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         int position = seekBar.getProgress();
         seekBar.setProgress(position - modifyDistanceX(distanceX));
         mTimeSeekBar.checkScroll();
-        mHandler.removeMessages(END_SCROLL);
-        mHandler.sendEmptyMessageDelayed(END_SCROLL, 1500);
+        //mHandler.removeMessages(END_SCROLL);
+        //mHandler.sendEmptyMessageDelayed(END_SCROLL, 1500);
         return true;
     }
 

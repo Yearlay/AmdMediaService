@@ -466,7 +466,7 @@ public class Video_Activity_Main extends Activity implements
                     mPlayLayout.playDefault();
                     break;
                 case VRIntent.PAUSE_VIDEO:
-                	mPlayLayout.updatePlayState(true);
+                	//mPlayLayout.updatePlayState(true);
                     mPlayLayout.getVideoController().playOrPause(false);
                     break;
                 case VRIntent.PRE_VIDEO:

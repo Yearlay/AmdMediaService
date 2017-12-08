@@ -168,6 +168,7 @@ public class VideoPlayTimeSeekBar extends RelativeLayout implements OnSeekBarCha
     
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+    	Log.e("luke","VideoPlayTimeSeekBar onTouchEvent MotionEvent: " + event.toString());
     	if (mTouchedListener != null) {
     		int action = event.getAction();
     		if (action == MotionEvent.ACTION_DOWN) {
@@ -262,11 +263,6 @@ public class VideoPlayTimeSeekBar extends RelativeLayout implements OnSeekBarCha
 	
 	private void setTotalTime(int total) {
 		String string = "";
-//		if (total > 3600) {
-//			mTextFormat = 2;
-//		} else {
-//			mTextFormat = 1;
-//		}
 		if (mTextFormat == 1) {
 			string = MediaUtil.TimeFormat(total);
         } else if (mTextFormat == 2) {
