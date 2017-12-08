@@ -194,8 +194,14 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     
     private Handler mModeHandler = new Handler();
     /* 此方法只供按mode键和开机进入源时调用  */
-    public Handler getModeHandler() {
-        return mModeHandler;
+    public void postModeHandlerRunnable(Runnable r, long delayMillis) {
+        Log.d(TAG, "postModeHandlerRunnable delayMillis="+delayMillis);
+        mModeHandler.postDelayed(r, delayMillis);
+    }
+    /* 此方法只供按mode键和开机进入源时调用  */
+    public void removeModeHandlerMsg() {
+        Log.d(TAG, "removeModeHandlerMsg");
+        mModeHandler.removeCallbacksAndMessages(null);
     }
     
     @Override
@@ -219,7 +225,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
             Log.v(TAG, "onCarDataChange MCU func=" + func + ", data=" + data);
             switch (func) {
             case McuFunc.SOURCE:
-                getModeHandler().removeCallbacksAndMessages(null);
+                removeModeHandlerMsg();
                 mMediaIF.sourceChanged(data);
                 break;
             case McuFunc.KEY://按钮处理
@@ -269,7 +275,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
                 Log.e(TAG, "checkLaunchFromBoot mBootWaitTimeOut="+mBootWaitTimeOut);
             } else {
                 mBootWaitTimeOut += ms;
-                getModeHandler().postDelayed(new Runnable() {
+                postModeHandlerRunnable(new Runnable() {
                     @Override
                     public void run() {
                         checkLaunchFromBoot();

@@ -295,8 +295,9 @@ public class MediaInterfaceUtil {
      * @param mode为相关模式，autoPlay为自动播放
      */
     public static void launchSourceActivity(int mode, boolean autoPlay) {
+        Log.d(TAG, "launchSourceActivity mode="+mode+"; autoPlay="+autoPlay);
         if (autoPlay) {
-            MediaService.getInstance().getModeHandler().removeCallbacksAndMessages(null);
+            MediaService.getInstance().removeModeHandlerMsg();
         }
         Context context = MediaApplication.getInstance();
         // ModeSwitch.instance().setGoingFlag(true);
@@ -543,7 +544,7 @@ public class MediaInterfaceUtil {
                 sRunStart = -1;
             } else {
                 sModeRecordWaitTimeOut += ms;
-                service.getModeHandler().postDelayed(new Runnable() {
+                service.postModeHandlerRunnable(new Runnable() {
                     @Override
                     public void run() {
                         checkModeRecordInternal(service, username, ourSource, display);
