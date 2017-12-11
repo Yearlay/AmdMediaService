@@ -26,6 +26,7 @@ import com.haoke.util.Media_CarListener;
 import com.haoke.util.Media_IF;
 import com.haoke.util.Media_Listener;
 import com.amd.media.MediaInterfaceUtil;
+import com.amd.media.UsbAutoPlay;
 import com.amd.media.VRInterfaceUtil;
 import com.amd.radio.Radio_IF;
 import com.amd.util.Source;
@@ -81,6 +82,8 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         mMediaIF.initMedia();
         
         mBinder = new MediaServiceBinder(this);
+        
+        UsbAutoPlay.setServiceStartTime();
 
         // 发广播通知服务已经启动
         Intent intent = new Intent();

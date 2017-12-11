@@ -884,7 +884,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 				}
 			}
 			if (storageBean.isId3ParseCompleted() && mMediaMode == MEDIA_MODE_AUDIO) {
-				RecordDevicePlay.instance().checkUsbPlay(storageBean.getDeviceType());
+				MediaInterfaceUtil.insertUsbAndScanComplete(storageBean.getDeviceType());
 			}
 		}
 		
