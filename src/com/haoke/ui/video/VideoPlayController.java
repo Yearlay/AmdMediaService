@@ -109,11 +109,11 @@ public class VideoPlayController implements AudioFocusListener{
 			if (deviceType == mPlayingDeviceType && fileType == mPlayingFileType) {
 				setPlayingData(deviceType, fileType, false);
 			}
-			if (mMediaMode == MEDIA_MODE_AUDIO && fileType == FileType.AUDIO
+/*			if (mMediaMode == MEDIA_MODE_AUDIO && fileType == FileType.AUDIO
 			        && deviceType == mAllMediaList.getLastDeviceType()) {
 			    //mPlayMusicFileNode = null;
 			    AllMediaList.notifyUpdateAppWidgetByAudio();
-			}
+			}*/
 		}
 		
 		@Override
@@ -143,9 +143,9 @@ public class VideoPlayController implements AudioFocusListener{
 					}
 				}
 			}
-			if (storageBean.isId3ParseCompleted() && mMediaMode == MEDIA_MODE_AUDIO) {
+/*			if (storageBean.isId3ParseCompleted() && mMediaMode == MEDIA_MODE_AUDIO) {
 				RecordDevicePlay.instance().checkUsbPlay(storageBean.getDeviceType());
-			}
+			}*/
 		}
 		
 	};
@@ -770,15 +770,6 @@ public class VideoPlayController implements AudioFocusListener{
 			return;
 		}
 		Media_IF.setCurSource(source);
-	}
-	
-	/**
-	 * 切换播放源，参数为 {@link com.amd.util.Source} <p>
-	 * eg. {@link com.amd.util.Source#RADIO}
-	 */
-	public void sourceChanged(int source) {
-		Log.v(TAG, "sourceChanged source=" + source);
-		RecordDevicePlay.instance().sourceChanged(source);
 	}
 
 	// 获取播放状态
