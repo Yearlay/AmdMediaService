@@ -21,12 +21,11 @@ import android.os.Message;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.GestureDetector;
-import android.view.GestureDetector.OnGestureListener;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.view.ViewConfiguration;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -54,7 +53,7 @@ import com.haoke.video.VideoSurfaceView;
 import com.nforetek.bt.res.MsgOutline;
 
 public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener, View.OnClickListener,
-        OperateListener, OnTouchListener, OnGestureListener {
+        OperateListener, OnTouchListener {
     private Context mContext;
     private VideoPlayController mVideoController; // 视频布局框
     private MyVideoView mVideoView;
@@ -72,7 +71,6 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
     private View mUnsupportView;
     private ImageView mLoading;
     private Handler mActivityHandler;
-    private GestureDetector mGestureDetector;
     
     public boolean mNextPlay = true;
     private FileNode mFileNode;
@@ -172,7 +170,6 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         mVideoView = (MyVideoView) findViewById(R.id.video_play_layout);
         mVideoController = new VideoPlayController(mVideoView);
         
-        mGestureDetector = new GestureDetector(this);
         mLoading = (ImageView) findViewById(R.id.loading_image);
         
         mVideoView.setOnTouchListener(this);
@@ -268,6 +265,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         mUnsupportView = findViewById(R.id.not_support_text);
         mVideoController.setVideoPlayLayout(this);
         
+        initTouchSlop();
         skinManager = SkinManager.instance(mContext);
     }
     
@@ -611,62 +609,110 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         }
     }
 
+    private float mLastFocusX;
+    private float mLastFocusY;
+    private float mDownFocusX;
+    private float mDownFocusY;
+    private boolean mAlwaysInTapRegion;
+    private int mTouchSlopSquare;
+    
+    private void initTouchSlop(){
+        int touchSlop;
+        if (mContext == null) {
+            //noinspection deprecation
+            touchSlop = ViewConfiguration.getTouchSlop();
+        } else {
+            final ViewConfiguration configuration = ViewConfiguration.get(mContext);
+            touchSlop = configuration.getScaledTouchSlop();
+            mTouchSlopSquare = touchSlop * touchSlop;
+        }
+    }
+    
     @Override
     public boolean onTouch(View v, MotionEvent event) {
     	//Log.e("luke","onTouch " + event.toString());
-/*    	int eventaction = event.getAction();
-    	int distanceX = (int) event.getRawX();
-    	int distanceY = (int) event.getRawY();
-    	
-    	switch (eventaction) {
-    	case MotionEvent.ACTION_DOWN:
-    		slaverShow(mCtrlBar.getVisibility() != View.VISIBLE);
-    		break;
-    	case MotionEvent.ACTION_MOVE:
-            if (mCtrlBar.getVisibility() != View.VISIBLE) {
-                slaverShow(true);
-            }
-            mTimeSeekBar.onStartTrackingTouch(mTimeSeekBar.getSeekBar());
-            SeekBar seekBar = mTimeSeekBar.getSeekBar();
-            int position = seekBar.getProgress();
-            Log.e("luke","onTouch position: " + position + "  ," + modifyDistanceX(distanceX));
-            seekBar.setProgress(position - modifyDistanceX(distanceX));
-            mTimeSeekBar.checkScroll();
-    		break;
-    	case MotionEvent.ACTION_UP:
-            mTimeSeekBar.onStopTrackingTouch(mTimeSeekBar.getSeekBar());
-            startHideTimer();
-    		break;
-    	default :
-    		break;
-    	}
-    	
-    	return true;*/
-        return mGestureDetector.onTouchEvent(event);
-    }
+    	int eventaction = event.getAction();
+        final boolean pointerUp =
+                (eventaction & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_POINTER_UP;
+        final int skipIndex = pointerUp ? event.getActionIndex() : -1;
 
-    @Override
-    public boolean onDown(MotionEvent e) {  // 用户轻触触摸屏，由1个MotionEvent ACTION_DOWN触发
+        // Determine focal point
+        float sumX = 0, sumY = 0;
+        final int count = event.getPointerCount();
+        for (int i = 0; i < count; i++) {
+            if (skipIndex == i) continue;
+            sumX += event.getX(i);
+            sumY += event.getY(i);
+        }
+        final int div = pointerUp ? count - 1 : count;
+        final float focusX = sumX / div;
+        final float focusY = sumY / div;
+        
+        switch (eventaction){
+        case MotionEvent.ACTION_DOWN:
+            mDownFocusX = mLastFocusX = focusX;
+            mDownFocusY = mLastFocusY = focusY;
+            mAlwaysInTapRegion = true;
+            break;
+        case MotionEvent.ACTION_MOVE:
+            final float scrollX = mLastFocusX - focusX;
+            final float scrollY = mLastFocusY - focusY;
+            
+            if (mAlwaysInTapRegion) {
+                final int deltaX = (int) (focusX - mDownFocusX);
+                final int deltaY = (int) (focusY - mDownFocusY);
+                int distance = (deltaX * deltaX) + (deltaY * deltaY);
+                if (distance > mTouchSlopSquare) {
+                	//TODO onscroll
+                	doOnScroll(scrollX);
+                    mLastFocusX = focusX;
+                    mLastFocusY = focusY;
+                    mAlwaysInTapRegion = false;
+                }
+
+            } else if ((Math.abs(scrollX) >= 1) || (Math.abs(scrollY) >= 1)) {
+            	//TODO onscroll
+            	doOnScroll(scrollX);
+                mLastFocusX = focusX;
+                mLastFocusY = focusY;
+            }
+            
+            break;
+        case MotionEvent.ACTION_UP:
+        	if (mAlwaysInTapRegion) {
+        		//TODO onSingleTap
+        		doOnSingleTap();
+            } else {
+                mTimeSeekBar.onStopTrackingTouch(mTimeSeekBar.getSeekBar());
+            }
+        	startHideTimer();
+        	break;
+        	
+        case MotionEvent.ACTION_CANCEL:
+        	mAlwaysInTapRegion = false;
+            break;
+        }
         return true;
     }
 
-    @Override
-    public void onShowPress(MotionEvent e) { // 用户轻触触摸屏，尚未松开或拖动，由一个1个MotionEvent ACTION_DOWN触发
-    	Log.e("luke","onShowPress");
+    private void doOnScroll(float distanceX){
+    	Log.e("luke","onScroll");
+        if (mCtrlBar.getVisibility() != View.VISIBLE) {
+            slaverShow(true);
+        }
+        mTimeSeekBar.onStartTrackingTouch(mTimeSeekBar.getSeekBar());
+        SeekBar seekBar = mTimeSeekBar.getSeekBar();
+        int position = seekBar.getProgress();
+        Log.e("luke","onTouch position: " + position + "  ," + modifyDistanceX(distanceX) + "  ," + distanceX);
+        seekBar.setProgress(position - modifyDistanceX(distanceX));
+        mTimeSeekBar.checkScroll();
     }
     
-    @Override
-    public void onLongPress(MotionEvent e) {
-    	Log.e("luke","onLongPress");
-    }
-
-    @Override
-    public boolean onSingleTapUp(MotionEvent e) { // 用户（轻触触摸屏后）松开，由一个1个MotionEvent ACTION_UP触发
+    private void doOnSingleTap(){
     	Log.e("luke","onSingleTapUp");
         slaverShow(mCtrlBar.getVisibility() != View.VISIBLE);
-        return true;
     }
-    
+
     private int modifyDistanceX(float distanceX) {
         int distance = 0;
         if (mFileNode != null) {
@@ -679,31 +725,7 @@ public class VideoPlayLayout extends RelativeLayout implements OnHKTouchListener
         }
         return distance;
     }
-    
-    @Override
-    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-    	Log.e("luke","onScroll");
-        if (mCtrlBar.getVisibility() != View.VISIBLE) {
-            slaverShow(true);
-        }
-        mTimeSeekBar.onStartTrackingTouch(mTimeSeekBar.getSeekBar());
-        SeekBar seekBar = mTimeSeekBar.getSeekBar();
-        int position = seekBar.getProgress();
-        seekBar.setProgress(position - modifyDistanceX(distanceX));
-        mTimeSeekBar.checkScroll();
-        //mHandler.removeMessages(END_SCROLL);
-        //mHandler.sendEmptyMessageDelayed(END_SCROLL, 1500);
-        return true;
-    }
 
-    @Override
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-    	Log.e("luke","onFling");
-        mTimeSeekBar.onStopTrackingTouch(mTimeSeekBar.getSeekBar());
-        startHideTimer();
-        return true;
-    }
-    
     public boolean isShowForbiddenView() {
         boolean showFlag = false;
         if (mForbiddenView != null) {
