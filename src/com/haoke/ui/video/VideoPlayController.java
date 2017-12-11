@@ -68,9 +68,6 @@ public class VideoPlayController implements AudioFocusListener{
 	
 	private VideoPlayLayout videoLayout;
 	
-	
-	//private boolean mVideoShow = false;
-	
 	protected int mMediaMode = MEDIA_MODE_VIDEO;
 	
 	
@@ -128,24 +125,15 @@ public class VideoPlayController implements AudioFocusListener{
 				if (!storageBean.isMounted()) {
 					resetMediaPlayer();
 					resetPlayingData(true);
-/*					if (mRepeatMode == RepeatMode.RANDOM) {
-						setRepeatMode(RepeatMode.CIRCLE);//插拔U盘，断随机模式记忆
-					}*/
 				}
 			} else if (mPlayingDeviceType == DeviceType.COLLECT && mCurFileNode != null) {
 				if (mCurFileNode.getFromDeviceType() == storageBean.getDeviceType()) {
 					if (!storageBean.isMounted()) {
 						resetMediaPlayer();
 						resetPlayingData(true);
-/*						if (mRepeatMode == RepeatMode.RANDOM) {
-							setRepeatMode(RepeatMode.CIRCLE);//插拔U盘，断随机模式记忆
-						}*/
 					}
 				}
 			}
-/*			if (storageBean.isId3ParseCompleted() && mMediaMode == MEDIA_MODE_AUDIO) {
-				RecordDevicePlay.instance().checkUsbPlay(storageBean.getDeviceType());
-			}*/
 		}
 		
 	};
@@ -177,10 +165,8 @@ public class VideoPlayController implements AudioFocusListener{
 	public void resetMediaPlayer() {
 	    DebugClock debugClock = new DebugClock();
 		try {
-			//if (mMediaPlayer.getMediaState() == MediaState.PREPARED) {
 				mVideView.stopPlayback();
 				mPlayState = PlayState.STOP;
-			//}
 				mVideView.suspend();
 
 		} catch (Exception e) {
@@ -474,7 +460,7 @@ public class VideoPlayController implements AudioFocusListener{
 		int fileType = MediaUtil.getMediaType(filePath);
 		if (deviceType == DeviceType.USB1 || deviceType == DeviceType.USB2 ||
 				deviceType == DeviceType.FLASH || deviceType == DeviceType.COLLECT) {
-			if (fileType == FileType.AUDIO || fileType == FileType.VIDEO) {
+			if (fileType == FileType.VIDEO) {
 				FileNode fileNode = getFileNodeByFilePath(filePath);
 				if (fileNode != null) {
 					setPlayingData(deviceType, fileType, true);
@@ -492,7 +478,7 @@ public class VideoPlayController implements AudioFocusListener{
 		int fileType = fileNode.getFileType();
 		if (deviceType == DeviceType.USB1 || deviceType == DeviceType.USB2 ||
 				deviceType == DeviceType.FLASH || deviceType == DeviceType.COLLECT) {
-			if (fileType == FileType.AUDIO || fileType == FileType.VIDEO) {
+			if (fileType == FileType.VIDEO) {
 				setPlayingData(deviceType, fileType, true);
 				return playOther(fileNode, -1);
 			}
@@ -549,22 +535,6 @@ public class VideoPlayController implements AudioFocusListener{
 		}
 		return playOther(null, pos);
 	}
-
-/*	// 改变播放状态
-	public void changePlayState() {
-		try {
-			int state = getPlayState();
-			if (state == PlayState.PLAY) {
-				state = PlayState.PAUSE;
-			} else {
-				state = PlayState.PLAY;
-			}
-			setPlayState(state);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}*/
 	
 	// 获取是否播放状态
 	public boolean isPlayState() {
@@ -632,9 +602,6 @@ public class VideoPlayController implements AudioFocusListener{
 	        return;
 	    }
 		mAllMediaList.savePlayTime(fileNode, playTime);
-		if (fileNode.getFileType() == FileType.AUDIO) {
-			RecordDevicePlay.instance().saveLastPlayDevice(fileNode.getDeviceType());
-		}
 	}
 	
 	public Handler getControllerHandler(){
