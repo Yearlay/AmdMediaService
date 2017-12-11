@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.amd.bt.BTMusic_IF;
 import com.amd.bt.BT_IF;
 import com.amd.radio.Radio_IF;
+import com.amd.util.AmdConfig;
 import com.amd.util.SkinManager;
 import com.amd.util.Source;
 import com.haoke.application.MediaApplication;
@@ -766,6 +767,14 @@ public class MediaInterfaceUtil {
         if (!exist) {
             Log.d(TAG, "checkAllDeviceAndJump exist is false! runDeviceType="+runDeviceType+"; fileType="+fileType);
             launchSourceActivityFromDeiveType(runDeviceType, fileType, false);
+        }
+    }
+    
+    public static void insertUsbAndScanComplete(int deviceType) {
+        if (AmdConfig.INSERT_USB_AUTO_PLAY_MUSIC) {
+            UsbAutoPlay.playDefaultMusic(deviceType);
+        } else if (AmdConfig.INSERT_USB_RECODRD_PLAY_MUSIC){
+            RecordDevicePlay.instance().checkUsbPlay(deviceType);
         }
     }
 }

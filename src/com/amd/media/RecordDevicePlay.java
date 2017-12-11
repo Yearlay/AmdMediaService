@@ -7,6 +7,7 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.amd.util.AmdConfig;
 import com.amd.util.Source;
 import com.haoke.application.MediaApplication;
 import com.haoke.bean.FileNode;
@@ -23,7 +24,7 @@ public class RecordDevicePlay {
 	private Context mContext;
 	private DeviceInfo mLastPlayDevice = new DeviceInfo();
 	
-	public static final class DeviceInfo {
+	private static final class DeviceInfo {
 		public int mDeviceType = DeviceType.NULL;
 		public String mDeviceMd5 = null;
 		
@@ -53,6 +54,9 @@ public class RecordDevicePlay {
 	}
 	
 	public void saveLastPlayDevice(int deviceType) {
+	    if (!AmdConfig.INSERT_USB_RECODRD_PLAY_MUSIC) {
+	        return;
+	    }
 		if (mLastPlayDevice == null) {
 			mLastPlayDevice = new DeviceInfo();
 		}
@@ -66,6 +70,9 @@ public class RecordDevicePlay {
 	}
 	
 	public void sourceChanged(int source) {
+        if (!AmdConfig.INSERT_USB_RECODRD_PLAY_MUSIC) {
+            return;
+        }
 		if (Source.isAudioSource(source)) {
 			clearLastPlayDevice();
 		}
@@ -76,6 +83,9 @@ public class RecordDevicePlay {
 	 * @return false为设备不是最后一次播放的设备
 	 */
 	public boolean checkUsbPlay(int deviceType) {
+        if (!AmdConfig.INSERT_USB_RECODRD_PLAY_MUSIC) {
+            return false;
+        }
 		if (mLastPlayDevice==null) {
 			Log.d(TAG, "checkUsbPlay mLastPlayDevice is null!");
 			return false;
