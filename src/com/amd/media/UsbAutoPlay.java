@@ -61,6 +61,7 @@ public class UsbAutoPlay {
             File file = new File(filePath);
             if (file.exists() && file.canRead()) {
                 Media_IF.getInstance().play(filePath);
+                MediaInterfaceUtil.launchMusicPlayActivity(context);
             } else {
                 filePath = null;
             }
@@ -71,6 +72,7 @@ public class UsbAutoPlay {
             ArrayList<FileNode> lists = allMediaList.getMediaList(deviceType, FileType.AUDIO);
             if (lists.size() > 0) {
                 Media_IF.getInstance().play(lists.get(0));
+                MediaInterfaceUtil.launchMusicPlayActivity(context);
             }
         }
         return;
