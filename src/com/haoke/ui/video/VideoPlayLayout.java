@@ -745,6 +745,12 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 			ArrayList<FileNode> videoList;
 			if (deviceType == 0) {
 				videoList = AllMediaList.instance(mContext).getMediaList(DeviceType.FLASH, FileType.VIDEO);
+				if(videoList.size() == 0){
+					videoList = AllMediaList.instance(mContext).getMediaList(DeviceType.USB1, FileType.VIDEO);
+				}
+				if(videoList.size() == 0){
+					videoList = AllMediaList.instance(mContext).getMediaList(DeviceType.USB2, FileType.VIDEO);
+				}
 			} else {
 				videoList = AllMediaList.instance(mContext).getMediaList(deviceType, FileType.VIDEO);
 			}
