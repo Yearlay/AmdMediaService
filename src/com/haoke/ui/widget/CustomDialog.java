@@ -46,6 +46,7 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 		abstract void OnDialogDismiss();
 	}
 	private OnDialogListener mDialogListener;
+	private OnDismissListener mOtherOnDismissListener;
 	public void SetDialogListener(OnDialogListener listener) {
 		mDialogListener = listener;
 	}
@@ -139,7 +140,8 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 		mContext = context;
         mContext.getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, mContentObserver);
 		mDialog = new Dialog(context, R.style.pub_dialog);
-		mDialog.setOnDismissListener(listener);
+		mOtherOnDismissListener = listener;
+		mDialog.setOnDismissListener(this);
 		mDialog.setContentView(R.layout.custom_dialog_progress);
 		mRootView = mDialog.findViewById(R.id.pub_dialog_layout);
 		refreshSkin();
@@ -235,6 +237,9 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 	    }
 		if (mDialogListener != null) {
 			mDialogListener.OnDialogDismiss();
+		}
+		if (mOtherOnDismissListener != null) {
+		    mOtherOnDismissListener.onDismiss(dialog);
 		}
 	}
 	
