@@ -31,6 +31,7 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 	private Button mCancelButton;
 	private TextView mTextView;
 	private TextView mTitleTextView;
+	private LinearLayout mLinearLayout;
 	
 	// 对话框类型枚举
 	public enum DIALOG_TYPE {
@@ -67,6 +68,15 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 	        }
 	        if (mCancelButton != null) {
 	            mCancelButton.setBackgroundDrawable(skinManager.getDrawable(R.drawable.bd_dialog_button));
+	        }
+	        if (mLinearLayout != null && mLinearLayout.getChildCount() > 0) {
+	            for (int index = 0; index < mLinearLayout.getChildCount(); index++) {
+	                View view = mLinearLayout.getChildAt(index);
+	                if (view instanceof AmdCheckBox) {
+	                    AmdCheckBox amdCheckBox = ((AmdCheckBox) view);
+	                    amdCheckBox.setChecked(amdCheckBox.isChecked());
+	                }
+	            }
 	        }
 	    }
 	}
@@ -183,7 +193,7 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 		mTitleTextView = (TextView) mDialog.findViewById(R.id.pub_dialog_title);
 		mTitleTextView.setText(R.string.cover_dialog_title);
 		
-		LinearLayout linearLayout = (LinearLayout) mDialog.findViewById(R.id.cover_linearlayout);
+		mLinearLayout = (LinearLayout) mDialog.findViewById(R.id.cover_linearlayout);
         for (final FileNode fileNode : dataList) {
             String destFilePath = MediaUtil.LOCAL_COPY_DIR + "/" +
                     fileNode.getFilePath().substring(fileNode.getFilePath().lastIndexOf('/') + 1);
@@ -198,13 +208,13 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
                         fileNode.setSelected(isChecked);
                     }
                 });
-                linearLayout.addView(checkBox);
+                mLinearLayout.addView(checkBox);
             }
         }
         
 		// 显示对话框
 		try {
-			if (linearLayout.getChildCount() > 0) {
+			if (mLinearLayout.getChildCount() > 0) {
 				mDialog.setCanceledOnTouchOutside(true);
 				mDialog.show();
 			} else {
