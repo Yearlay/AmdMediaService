@@ -31,7 +31,6 @@ import com.haoke.constant.DBConfig.UriAddress;
 import com.haoke.constant.DBConfig.UriType;
 import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.FileType;
-import com.haoke.constant.MediaUtil.ScanType;
 import com.haoke.scanner.MediaDbHelper;
 import com.haoke.scanner.MediaDbHelper.TransactionTask;
 import com.haoke.service.MediaService;
@@ -177,6 +176,11 @@ public class AllMediaList {
         for (LoadListener listener : mLoadListenerList) {
             listener.onLoadCompleted(deviceType, fileType);
         }
+        // 当收藏表加载完成，参照收藏表来更新媒体表中的媒体收藏的信息。 不适用媒体表中的collect和collectPath字段。
+        if (deviceType == DeviceType.COLLECT) {
+            Message message = mLocalHandler.obtainMessage(UPDATE_COLLECT_INFO_FOR_MEDIAS, deviceType, fileType);
+            mLocalHandler.sendMessage(message);
+        }
     }
     
     private void notifyScanStateChange(StorageBean storageBean) {
@@ -217,6 +221,7 @@ public class AllMediaList {
     private static final int NOTIFY_SEARCH_BACKCALL = 9;
     private static final int NOTIFY_SCAN_LISTENER = 10;
     private static final int BEGIN_LOAD_ALL_THREAD = 11;
+    private static final int UPDATE_COLLECT_INFO_FOR_MEDIAS = 12;
     
     @SuppressLint("HandlerLeak")
     class LocalHandler extends Handler {
@@ -289,6 +294,10 @@ public class AllMediaList {
                 break;
             case NOTIFY_SCAN_LISTENER:
                 callOnScanStateChange((StorageBean)msg.obj);
+                break;
+            case UPDATE_COLLECT_INFO_FOR_MEDIAS:
+                // TODO
+                mMediaDbHelper.updateCollectDataOfMediaTableFromCollectTable(msg.arg1, msg.arg2);
                 break;
             default:
                 break;

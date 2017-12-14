@@ -14,6 +14,7 @@ import com.haoke.constant.DBConfig.TableName;
 import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.data.AllMediaList;
+import com.haoke.util.DebugClock;
 import com.haoke.util.DebugLog;
 
 import android.content.ContentValues;
@@ -456,5 +457,39 @@ public class MediaDbHelper extends SQLiteOpenHelper {
         updateCollectDataFromChangeUseList(userList, FileType.IMAGE);
         updateCollectDataFromChangeUseList(userList, FileType.AUDIO);
         updateCollectDataFromChangeUseList(userList, FileType.VIDEO);
+    }
+    
+    /**
+     * 当收藏表加载完成，参照收藏表来更新媒体表中的媒体收藏的信息。 不适用媒体表中的collect和collectPath字段。
+     */
+    public void updateCollectDataOfMediaTableFromCollectTable(int deviceType, int fileType) {
+        DebugClock debugClock = new DebugClock();
+        for (int devicetype : DBConfig.sScan3zaDefaultList) {
+            updateCollectDataOfMediaTable(devicetype, fileType);
+        }
+        debugClock.calculateTime(TAG, "updateCollectDataOfMediaTableFromCollectTable fileType: " + fileType);
+    }
+    
+    private void updateCollectDataOfMediaTable(int deviceType, int fileType) {
+        AllMediaList allMediaList = AllMediaList.instance(mContext);
+        ArrayList<FileNode> collectList = allMediaList.getMediaList(DeviceType.COLLECT, fileType);
+        if (allMediaList.getStoragBean(deviceType).isMounted()) {
+            ArrayList<FileNode> mediaList = allMediaList.getMediaList(deviceType, fileType);
+            for (FileNode fileNode : mediaList) {
+                boolean isContain = judgeContain(fileNode, collectList);
+                fileNode.setCollect(isContain ? 1 : 0);
+            }
+        }
+    }
+    
+    private boolean judgeContain(FileNode fileNode, ArrayList<FileNode> collectList) {
+        boolean isContain = false;
+        for (FileNode item : collectList) {
+            if (item.isSame(fileNode)) {
+                isContain = true;
+                break;
+            }
+        }
+        return isContain;
     }
 }
