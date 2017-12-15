@@ -429,6 +429,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     private void registerReceiverInternal() {
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_MEDIA_MOUNTED);
+        filter.addAction(Intent.ACTION_MEDIA_UNMOUNTED);
         filter.addAction(Intent.ACTION_MEDIA_EJECT);
         filter.addDataScheme("file");
         filter.setPriority(10001);
