@@ -31,8 +31,8 @@ public class MediaReceiver extends BroadcastReceiver {
         if (action.equals(Intent.ACTION_MEDIA_MOUNTED)) {
             DebugLog.d("Yearlay", "MediaReceiver Intent.ACTION_MEDIA_MOUNTED: " + getDataPath(intent));
             startFileService(context, ScanType.SCAN_STORAGE, getDataPath(intent));
-        } else if (action.equals(Intent.ACTION_MEDIA_EJECT)) {
-            DebugLog.d("Yearlay", "MediaReceiver Intent.ACTION_MEDIA_EJECT: " + getDataPath(intent));
+        } else if (action.equals(Intent.ACTION_MEDIA_EJECT) || action.equals(Intent.ACTION_MEDIA_UNMOUNTED)) {
+            DebugLog.d("Yearlay", "MediaReceiver Intent.ACTION_MEDIA_EJECT or ACTION_MEDIA_UNMOUNTED: " + getDataPath(intent));
             startFileService(context, ScanType.REMOVE_STORAGE, getDataPath(intent));
         }
     }
