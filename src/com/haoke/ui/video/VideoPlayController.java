@@ -156,6 +156,8 @@ public class VideoPlayController implements AudioFocusListener {
 			mVideView.stopPlayback();
 			mPlayState = PlayState.STOP;
 			mVideView.suspend();
+			mVideView.invalidate();
+			//mVideView.setBackgroundColor(Color.BLACK);
 
 		} catch (Exception e) {
 			Log.e(TAG, "resetMediaPlayer e=" + e);
@@ -297,7 +299,8 @@ public class VideoPlayController implements AudioFocusListener {
 		} else {
 			if (state == StorageBean.EJECT) {
 				onDataChanged(mMediaMode, MediaFunc.DEVICE_CHANGED, deviceType, 0);
-			} else if (state == StorageBean.FILE_SCANNING) {// state == StorageBean.MOUNTED
+			} else if (state == StorageBean.FILE_SCANNING) {// state ==
+															// StorageBean.MOUNTED
 				onDataChanged(mMediaMode, MediaFunc.DEVICE_CHANGED, deviceType, 1);
 			}
 		}
@@ -593,10 +596,18 @@ public class VideoPlayController implements AudioFocusListener {
 	public static final int MSG_PAUSE = 1002;
 	public static final int MSG_PREPLAY = 1003;
 	public static final int MSG_NEXTPLAY = 1004;
+	public static final int VR_PLAY_STATE = 1005;
+	public static final int VR_PAUSE_STATE = 1006;
 
 	private Handler mHandler = new Handler() {
 		public void handleMessage(android.os.Message msg) {
 			switch (msg.what) {
+			case VR_PLAY_STATE:
+				mPlayStateBeforeLoseFocus = PlayState.PLAY;
+				break;
+			case VR_PAUSE_STATE:
+				mPlayStateBeforeLoseFocus = PlayState.PAUSE;
+				break;
 			case MSG_PLAY:
 				Log.d(TAG, "mHandler MSG_PLAY");
 				if (mVideView != null) {

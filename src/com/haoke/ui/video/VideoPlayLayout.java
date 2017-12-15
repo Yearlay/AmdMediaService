@@ -123,7 +123,8 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 		}
 	}
 
-	public void updatePlayState(boolean playing) { // true: playicon, false: pauseicon
+	public void updatePlayState(boolean playing) { // true: playicon, false:
+													// pauseicon
 		Log.e("luke", "updatePlayState playIcon " + playing);
 		mPlayImageView.setImageDrawable(skinManager.getDrawable(!playing ? R.drawable.image_pause_icon_selector : R.drawable.image_play_icon_selector));
 		mTimeSeekBar.updateCurTime();
@@ -169,6 +170,10 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 				try {
 					if (temp != null) {
 						Log.e("luke", "------onPrepared getPlayTime: " + temp.getPlayTime());
+						//mVideoView.setBackgroundColor(Color.TRANSPARENT);
+						//updateVideoLayout(true);
+						// mVideoView.cl
+						// mVideoView.invalidate();
 						mVideoController.playOrPause(getBeforePlaystate());
 						mVideoController.setPosition(temp.getPlayTime());
 						if (getBeforePlaystate()) {
@@ -180,6 +185,10 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 				}
 				updateTimeBar();
 				mLoading.setVisibility(View.GONE);
+
+				// mActivityHandler.removeMessages(Video_Activity_Main.FORBIDDEN_VIEW_TEST);
+				// mActivityHandler.sendEmptyMessageDelayed(Video_Activity_Main.FORBIDDEN_VIEW_TEST,
+				// 5000);
 			}
 		});
 
@@ -271,8 +280,11 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 			if (!Image_Activity_Main.isPlayImage(context) && mVideoController != null) {
 				// play();
 				if (mVideoController.getVideoView().getVisibility() == View.VISIBLE) {
-					mVideoController.playOrPause(true);
-					// updatePlayState(false);
+					if (mVideoController.hasAudioFocus()) {
+						mVideoController.playOrPause(true);
+					} else {
+						mVideoController.getControllerHandler().sendEmptyMessage(VideoPlayController.VR_PLAY_STATE);
+					}
 				}
 			}
 			break;
@@ -281,8 +293,11 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 				// pause();
 				// zanting
 				if (mVideoController.getVideoView().getVisibility() == View.VISIBLE) {
-					mVideoController.playOrPause(false);
-					// updatePlayState(true);
+					if (mVideoController.hasAudioFocus()) {
+						mVideoController.playOrPause(false);
+					} else {
+						mVideoController.getControllerHandler().sendEmptyMessage(VideoPlayController.VR_PAUSE_STATE);
+					}
 				}
 			}
 			break;
@@ -745,10 +760,10 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 			ArrayList<FileNode> videoList;
 			if (deviceType == 0) {
 				videoList = AllMediaList.instance(mContext).getMediaList(DeviceType.FLASH, FileType.VIDEO);
-				if(videoList.size() == 0){
+				if (videoList.size() == 0) {
 					videoList = AllMediaList.instance(mContext).getMediaList(DeviceType.USB1, FileType.VIDEO);
 				}
-				if(videoList.size() == 0){
+				if (videoList.size() == 0) {
 					videoList = AllMediaList.instance(mContext).getMediaList(DeviceType.USB2, FileType.VIDEO);
 				}
 			} else {
