@@ -43,6 +43,7 @@ import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
 import com.haoke.util.DebugLog;
 import com.haoke.util.Media_CarListener;
 import com.haoke.util.Media_IF;
+import com.haoke.window.HKWindowManager;
 
 public class Video_Activity_Main extends Activity implements OnClickListener, LoadListener, OnCheckedChangeListener, Media_CarListener {
 
@@ -591,13 +592,11 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 			mPlayLayout.setVisibility(View.VISIBLE);
 			mPlayLayout.onResume();
 			mListLayout.setVisibility(View.GONE);
-			/*
-			 * HKWindowManager.hideWallpaper(this);
-			 * HKWindowManager.fullScreen(this, true);
-			 * getWindow().getDecorView()
-			 * .setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN |
-			 * View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-			 */
+			
+			 HKWindowManager.hideWallpaper(this);
+			 HKWindowManager.fullScreen(this, true);
+			 getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+			 
 		} else {
 			mPlayLayout.onPause();
 			mPlayLayout.setVisibility(View.GONE);
@@ -605,13 +604,12 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 			if (!mListLayout.isEditMode()) {
 				mRadioGroup.setVisibility(View.VISIBLE);
 			}
-			/*
-			 * HKWindowManager.showWallpaper(this);
-			 * HKWindowManager.fullScreen(this, false);
-			 * getWindow().getDecorView(
-			 * ).setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-			 * getWindow().getDecorView().setSystemUiVisibility(mLayoutProps);
-			 */
+			
+			 HKWindowManager.showWallpaper(this);
+			 HKWindowManager.fullScreen(this, false);
+			 getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+			 getWindow().getDecorView().setSystemUiVisibility(mLayoutProps);
+			 
 		}
 	}
 
