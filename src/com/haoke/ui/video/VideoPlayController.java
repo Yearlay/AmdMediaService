@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
 import android.util.Log;
+import android.view.View;
 import android.widget.VideoView;
 
 import com.amd.media.AudioFocus;
@@ -63,6 +64,7 @@ public class VideoPlayController implements AudioFocusListener {
 	// protected ComponentName mComponentName;
 
 	private VideoPlayLayout videoLayout;
+	private boolean mPlayDefaultVideo = false;
 
 	protected int mMediaMode = MEDIA_MODE_VIDEO;
 
@@ -88,6 +90,10 @@ public class VideoPlayController implements AudioFocusListener {
 	public void setVideoPlayLayout(VideoPlayLayout layout) {
 		videoLayout = layout;
 	}
+	
+	public void playDefaultVideo(boolean defaultVideo){
+		mPlayDefaultVideo = defaultVideo;
+	}
 
 	private LoadListener mLoadListener = new LoadListener() {
 
@@ -110,10 +116,6 @@ public class VideoPlayController implements AudioFocusListener {
 			// 处理磁盘状态 和 扫描状态发生改变的状态： 主要是更新UI的显示效果。
 			Log.d(TAG, "mLoadListener onScanStateChange storageBean=" + storageBean + "; mDeviceType=" + mDeviceType + "; mPlayingDeviceType="
 					+ mPlayingDeviceType);
-			// if (storageBean.getDeviceType() == mDeviceType) {
-			// needToChange(storageBean.getDeviceType(),
-			// storageBean.getState());
-			// }
 			needToChange(storageBean.getDeviceType(), storageBean.getState());
 			if (storageBean.getDeviceType() == mPlayingDeviceType) {
 				if (!storageBean.isMounted()) {
@@ -123,7 +125,7 @@ public class VideoPlayController implements AudioFocusListener {
 			} else if (mPlayingDeviceType == DeviceType.COLLECT && mCurFileNode != null) {
 				if (mCurFileNode.getFromDeviceType() == storageBean.getDeviceType()) {
 					if (!storageBean.isMounted()) {
-						resetMediaPlayer();
+						//resetMediaPlayer();
 						resetPlayingData(true);
 					}
 				}
@@ -401,11 +403,21 @@ public class VideoPlayController implements AudioFocusListener {
 			node = fileNode;
 		}
 		isVideoPlaying = true;
+		
+		int playTime = node.getPlayTime();
+		if(mPlayDefaultVideo || (mCurFileNode != null && mCurFileNode.isSamePathAndFrom(node))){
+			node.setPlayTime(playTime);
+		} else {
+			node.setPlayTime(0); //从头开始播放
+		}
+		mPlayDefaultVideo = false;
 		mCurFileNode = node;
 		mCurPlayVideoIndex = changeFileNodeToIndex(node);
 		videoLayout.setCurFileNode(mCurFileNode);
 		Log.e("luke", "----playOther  node filetype " + node.getFileType() + " ,devicetype: " + node.getDeviceType() + " ,playingtime: " + node.getPlayTime());
-
+		
+		videoLayout.getLoadingAnimation().setVisibility(View.VISIBLE);
+		
 		Message msg = mHandler.obtainMessage(MSG_PARSE_ID3_INFO, mCurPlayVideoIndex, 0);
 		mHandler.sendMessageDelayed(msg, 300);
 
@@ -427,7 +439,6 @@ public class VideoPlayController implements AudioFocusListener {
 		DebugClock debugClock = new DebugClock();
 		mVideView.setVideoPath(path); // 主要的耗时操作
 		debugClock.calculateTime(TAG, "mVideView setVideoPath");
-
 		Log.v("luke", "Play done ,waiting OnPrepare " + " ,----Time: " + node.getPlayTime() + "  ,filesize: " + node.getFile().length());
 		setCurSource(node.getDeviceType());
 		return true;
