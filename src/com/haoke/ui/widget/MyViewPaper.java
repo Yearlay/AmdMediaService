@@ -234,6 +234,7 @@ public class MyViewPaper extends ViewGroup {
     private ArrayList<View> mDrawingOrderedChildren;
     private static final ViewPositionComparator sPositionComparator = new ViewPositionComparator();
 
+    private boolean mDisableScroll = false;
     /**
      * Indicates that the pager is in an idle, settled state. The current page
      * is fully in view and no animation is in progress.
@@ -1867,6 +1868,10 @@ public class MyViewPaper extends ViewGroup {
             ViewCompat.setLayerType(getChildAt(i), layerType, null);
         }
     }
+    
+    public void disableScroll(boolean disable) {
+        mDisableScroll = disable;
+    }
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
@@ -1875,6 +1880,9 @@ public class MyViewPaper extends ViewGroup {
          * If we return true, onMotionEvent will be called and we do the actual
          * scrolling there.
          */
+        if (mDisableScroll) {
+            return super.onInterceptTouchEvent(ev);
+        }
 
         final int action = ev.getAction() & MotionEventCompat.ACTION_MASK;
 
@@ -2014,6 +2022,9 @@ public class MyViewPaper extends ViewGroup {
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
+        if (mDisableScroll) {
+            return super.onTouchEvent(ev);
+        }
         if (mFakeDragging) {
             // A fake drag is in progress already, ignore this real one
             // but still eat the touch events.

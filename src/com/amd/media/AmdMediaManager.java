@@ -27,6 +27,7 @@ import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.constant.MediaUtil.MediaFunc;
 import com.haoke.constant.MediaUtil.MediaState;
+import com.haoke.constant.MediaUtil.OperateState;
 import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.constant.MediaUtil.RandomMode;
 import com.haoke.constant.MediaUtil.RepeatMode;
@@ -1219,8 +1220,18 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	public boolean collectMusic(FileNode fileNode) {
 		boolean returnVal = true;
 		if (fileNode != null) {
-			//TODO 
-			mAllMediaList.collectMediaFile(fileNode, null);
+		    onDataChanged(mMediaMode, MediaFunc.COLLECT_FILE, OperateState.OPERATING, 0);
+			mAllMediaList.collectMediaFile(fileNode, new OperateListener() {
+                @Override
+                public void onOperateCompleted(int operateValue, int progress,
+                        int resultCode) {
+                    if (resultCode == 0) {
+                        onDataChanged(mMediaMode, MediaFunc.COLLECT_FILE, OperateState.SUCCESS, 0);
+                    } else {
+                        onDataChanged(mMediaMode, MediaFunc.COLLECT_FILE, OperateState.FAIL, 0);
+                    }
+                }
+            });
 		}
 		return returnVal;
 	}
@@ -1228,16 +1239,16 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	public boolean deleteCollectedMusic(FileNode fileNode) {
 		boolean returnVal = true;
 		if (fileNode != null) {
-			onDataChanged(mMediaMode, MediaFunc.DELETE_FILE, DeleteState.DELETING, 0);
+			onDataChanged(mMediaMode, MediaFunc.UNCOLLECT_FILE, OperateState.OPERATING, 0);
 			mAllMediaList.uncollectMediaFile(fileNode, new OperateListener() {
 				@Override
 				public void onOperateCompleted(int operateValue, int progress,
 						int resultCode) {
 					loadData();
 					if (resultCode == 0) {
-						onDataChanged(mMediaMode, MediaFunc.DELETE_FILE, DeleteState.SUCCESS, 0);
+						onDataChanged(mMediaMode, MediaFunc.UNCOLLECT_FILE, OperateState.SUCCESS, 0);
 					} else {
-						onDataChanged(mMediaMode, MediaFunc.DELETE_FILE, DeleteState.FAIL, 0);
+						onDataChanged(mMediaMode, MediaFunc.UNCOLLECT_FILE, OperateState.FAIL, 0);
 					}
 				}
 			});

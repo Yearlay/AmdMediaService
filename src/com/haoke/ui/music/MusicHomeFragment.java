@@ -16,6 +16,7 @@ import com.haoke.btjar.main.BTDef.BTFunc;
 import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.MediaFunc;
 import com.haoke.constant.MediaUtil.MediaState;
+import com.haoke.constant.MediaUtil.OperateState;
 import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.mediaservice.R;
 import com.haoke.ui.media.Media_Activity_Main;
@@ -213,6 +214,12 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 			case MediaFunc.MEDIA_SCAN_MODE:
 			    scanModeChanged(data1);
 			    break;
+			case MediaFunc.COLLECT_FILE:
+			    collectFileChanged(data1);
+			    break;
+			case MediaFunc.UNCOLLECT_FILE:
+			    uncollectFileChanged(data1);
+			    break;
 			default:
 				break;
 			}
@@ -324,7 +331,19 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
             mPlayLayout.updateScanMode(data);
         }
 	}
+	
+	private void collectFileChanged(int data) {
+	    if (mPlayLayout != null && mPlayLayout.getVisibility() == View.VISIBLE) {
+            mPlayLayout.collectFileChanged(data);
+        }
+	}
 
+    private void uncollectFileChanged(int data) {
+        if (mPlayLayout != null && mPlayLayout.getVisibility() == View.VISIBLE) {
+            mPlayLayout.uncollectFileChanged(data);
+        }
+    }
+    
 	// 是否在播放界面
 	public boolean isPlayFragment() {
 		if (mContext == null) {

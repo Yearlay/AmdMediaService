@@ -42,11 +42,13 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
     private final int VIEWPAGER_ID_RADIO = 0;
     private final int VIEWPAGER_ID_MUSIC = 1;
     
-    public static final int MODE_RADIO = 1;
-    public static final int MODE_AUDIO = 2;
-    public static final int MODE_BTMUSIC = 3;
+    public static final int MODE_RADIO = 1;   //收音
+    public static final int MODE_AUDIO = 2;   //我的音乐
+    public static final int MODE_MUSIC = 3;   //音乐播放界面
+    public static final int MODE_BTMUSIC = 4; //蓝牙音乐播放界面
+    private static int mCurrMode = MODE_RADIO;
     
-    private MediaPageChangeListener mPageChangeListener = new MediaPageChangeListener();
+    //private MediaPageChangeListener mPageChangeListener = new MediaPageChangeListener();
     private boolean pressBackToHome = false;
     
     @Override
@@ -68,8 +70,9 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
         mRadioFragment = (Radio_Activity_Main) inflater.inflate(R.layout.radio_main_fragment, null, false);
         mViewPager = (MyViewPaper) findViewById(R.id.media_activity_viewpager);
         mViewPager.setAdapter(new MediaPagerAdapter());
-        mViewPager.setOnPageChangeListener(mPageChangeListener);
+        //mViewPager.setOnPageChangeListener(mPageChangeListener);
         mViewPager.setOffscreenPageLimit(0);
+        mViewPager.disableScroll(true);
         mSearchButton = findViewById(R.id.search_button);
 
         registerReceiver(mReceiver, new IntentFilter(VRConstant.VRIntent.ACTION_FINISH_MUSIC_RADIO));
@@ -89,38 +92,38 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
     }
     
     @Override
-	protected void onStart() {
-		super.onStart();
-		Log.d(TAG, "onStart");
-		mRadioFragment.onStart();
-		mHomeFragment.onStart();
-	}
+    protected void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart");
+        mRadioFragment.onStart();
+        mHomeFragment.onStart();
+    }
 
-	@Override
-	protected void onStop() {
-		Log.d(TAG, "onStart");
-		mRadioFragment.onStop();
-		mHomeFragment.onStop();
-		super.onStop();
-	}
+    @Override
+    protected void onStop() {
+        Log.d(TAG, "onStart");
+        mRadioFragment.onStop();
+        mHomeFragment.onStop();
+        super.onStop();
+    }
 
-	@Override
-	protected void onPause() {
-		Log.d(TAG, "onPause");
-		mRadioFragment.onPause();
-		mHomeFragment.onPause();
-		pressBackToHome = false;
-		super.onPause();
-	}
+    @Override
+    protected void onPause() {
+        Log.d(TAG, "onPause");
+        mRadioFragment.onPause();
+        mHomeFragment.onPause();
+        pressBackToHome = false;
+        super.onPause();
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
         Log.d(TAG, "onResume ");
         if (isShowRadioLayout()) {
-    		mRadioFragment.onResume();
+            mRadioFragment.onResume();
         } else {
-    		mHomeFragment.onResume();
+            mHomeFragment.onResume();
         }
         if (getIntent() != null && "com.haoke.data.ModeSwitch".equals(getIntent().getAction())) {
             ModeSwitch.instance().setGoingFlag(false);
@@ -128,7 +131,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
         //解决：U盘歌曲播放界面，点击返回，点击蓝牙界面，进入蓝牙界面后，按HOME，然后再按导航的媒体键，会闪一下蓝牙音乐。
 //      updateSystemUILabel(mCurLabel, true);
         if (isShowRadioLayout()) {
-        	ModeSwitch.instance().setCurrentMode(this, true, ModeSwitch.RADIO_MODE);
+            ModeSwitch.instance().setCurrentMode(this, true, ModeSwitch.RADIO_MODE);
         }
 //        mActivityTab.refreshSkin();
     }
@@ -136,8 +139,8 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
     @Override
     public void onDestroy() {
         Log.d(TAG, "onDestroy");
-		mRadioFragment.onDestroy();
-		mHomeFragment.onDestroy();
+        mRadioFragment.onDestroy();
+        mHomeFragment.onDestroy();
         super.onDestroy();
         unregisterReceiver(mReceiver);
         getContentResolver().unregisterContentObserver(mContentObserver);
@@ -172,142 +175,133 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
     }
 
     private boolean isShowRadioLayout() {
-    	return mViewPager.getCurrentItem() == VIEWPAGER_ID_RADIO;
+        return mViewPager.getCurrentItem() == VIEWPAGER_ID_RADIO;
     }
     
-	private void initCurSource() {
+    private void initCurSource() {
         Intent intent = getIntent();
         int source = Media_IF.getCurSource();
-        int mode = MODE_RADIO;
+        int mode = mCurrMode;
         if (Source.isRadioSource(source)) {
             mode = MODE_RADIO;
         } else if (Source.isAudioSource(source)) {
             mode = MODE_AUDIO;
+            if (mHomeFragment.isPlayFragment()) {
+                mode = MODE_MUSIC;
+            }
         } else if (Source.isBTMusicSource(source)) {
             mode = MODE_BTMUSIC;
         }
         if (intent != null) {
             boolean fromIntent = false;
-            boolean goPlay = false;
-            boolean goHome = false;
             String musicMode = intent.getStringExtra("Mode_To_Music");
             boolean hasAutoPlay = intent.hasExtra("autoPlay");
             boolean autoPlay = hasAutoPlay ? intent.getBooleanExtra("autoPlay", false) : false;
             Log.d(TAG, "initCurSource musicMode="+musicMode+"; autoPlay="+autoPlay);
             if ("radio_intent".equals(musicMode)) {
                 mode = MODE_RADIO;
-            	fromIntent = true;
+                fromIntent = true;
             } else if ("btMusic_intent".equals(musicMode)) {
                 mode = MODE_BTMUSIC;
-            	fromIntent = true;
+                fromIntent = true;
             } else if ("music_play_intent".equals(musicMode)) {
-                mode = MODE_AUDIO;
-            	fromIntent = true;
-            	goPlay = true;
+                mode = MODE_MUSIC;
+                fromIntent = true;
             } else if ("music_main_home".equals(musicMode)) {
                 mode = MODE_AUDIO;
-            	fromIntent = true;
-            	goHome = true;
+                fromIntent = true;
             }
             if (fromIntent) {
-            	if (hasAutoPlay) {
-                	if (mode == MODE_RADIO) {
-                    	mRadioFragment.onNewIntent(mode, autoPlay);
-                	} else {
-                		mHomeFragment.onNewIntent(mode, autoPlay);
-                	}
-            	}
-            	if (mode == MODE_BTMUSIC) {
-            		replaceBtMusicFragment();
-            	} else if (goPlay) {
-            		goPlay(false, true);
-            	} else if (goHome) {
-            		goHome();
-            	}
+                if (hasAutoPlay) {
+                    if (mode == MODE_RADIO) {
+                        mRadioFragment.onNewIntent(mode, autoPlay);
+                    } else {
+                        mHomeFragment.onNewIntent(mode, autoPlay);
+                    }
+                }
+                if (mode == MODE_BTMUSIC) {
+                    replaceBtMusicFragment();
+                } else if (mode == MODE_MUSIC) {
+                    goPlay(false, false);
+                } else if (mode == MODE_AUDIO) {
+                    goHome();
+                } else {
+                    goRadio();
+                }
             } else {
-            	if (mode == MODE_AUDIO || mode == MODE_BTMUSIC) {
-            		if (true || mViewPager.getCurrentItem() == VIEWPAGER_ID_MUSIC) {
-                		goPlay(false, true);
-            		}
-            	}
+                if (mode == MODE_AUDIO || mode == MODE_MUSIC || mode == MODE_BTMUSIC) {
+                    goPlay(false, false);
+                } else {
+                    goRadio();
+                }
             }
         }
-        setCurSource(mode, false);
         if (intent != null && "com.haoke.data.ModeSwitch".equals(intent.getAction())) {
             pressBackToHome = true;
         }
-    }
+     }
     
-    private void setCurSource(int mode) {
-        setCurSource(mode, true);
-    }
-
-    private void setCurSource(int mode, boolean smoothScroll) {
-        int tabSource = MODE_AUDIO;
-        int tabItem = VIEWPAGER_ID_MUSIC;
-        if (mode == MODE_RADIO) {//3 收音
-        	tabSource = MODE_RADIO;
-        	tabItem = VIEWPAGER_ID_RADIO;
-        } else if (mode == MODE_AUDIO || mode == MODE_BTMUSIC) {//5、1  我的音乐
-        	tabSource = MODE_AUDIO;
-        	tabItem = VIEWPAGER_ID_MUSIC;
-        } else { // 默认进入音乐
-        	tabSource = MODE_AUDIO;
-        	tabItem = VIEWPAGER_ID_MUSIC;
+    private void goRadio() {
+        if (!isShowRadioLayout()) {
+            mViewPager.setCurrentItem(VIEWPAGER_ID_RADIO, false);
+            mRadioFragment.onResume();
+            mHomeFragment.onPause();
         }
-        Log.d(TAG, "setCurSource tabSource="+tabSource+"; tabItem="+tabItem);
-        mActivityTab.setCurSource(tabSource);
-        mViewPager.setOnPageChangeListener(null);
-        mViewPager.setCurrentItem(tabItem, smoothScroll);
-        mViewPager.setOnPageChangeListener(mPageChangeListener);
-        if (mViewPager.getCurrentItem() == VIEWPAGER_ID_RADIO) {
-            mSearchButton.setVisibility(View.VISIBLE);
-        } else if (mode == MODE_BTMUSIC || mHomeFragment.isBTMusicPlayFragment()) {
-            mSearchButton.setVisibility(View.INVISIBLE);
-        } else {
-            mSearchButton.setVisibility(View.VISIBLE);
-        }
-        if (smoothScroll) {
-        	if (mViewPager.getCurrentItem() == VIEWPAGER_ID_RADIO) {
-        		mRadioFragment.onResume();
-        		mHomeFragment.onPause();
-        	} else {
-        		mRadioFragment.onPause();
-        		mHomeFragment.onResume();
-        	}
-        }
-        pressBackToHome = false;
+        setCurPlayViewState();
     }
     
     private void goHome() {
-    	mHomeFragment.goHome();
+        if (isShowRadioLayout()) {
+            mViewPager.setCurrentItem(VIEWPAGER_ID_MUSIC, false);
+            mHomeFragment.onResume();
+            mRadioFragment.onPause();
+        }
+        mHomeFragment.goHome();
     }
     
     private void goPlay(boolean toast, boolean noPlayGoHome) {
-    	mHomeFragment.goPlay(toast, noPlayGoHome);
+        if (isShowRadioLayout()) {
+            mViewPager.setCurrentItem(VIEWPAGER_ID_MUSIC, false);
+            mHomeFragment.onResume();
+            mRadioFragment.onPause();
+        }
+        mHomeFragment.goPlay(toast, noPlayGoHome);
     }
     
     public void replaceBtMusicFragment() {
+        if (isShowRadioLayout()) {
+            mViewPager.setCurrentItem(VIEWPAGER_ID_MUSIC, false);
+            mHomeFragment.onResume();
+            mRadioFragment.onPause();
+        }
         mHomeFragment.replaceBtMusicFragment();
     }
     
     public void setCurPlayViewState() {
+        boolean isRadioFragment = mViewPager.getCurrentItem() == VIEWPAGER_ID_RADIO;
         boolean isAudioMusicPlayFragment = mHomeFragment.isAudioPlayFragment();
         boolean isBtMusicPlayFragment = mHomeFragment.isBTMusicPlayFragment();
         boolean isHomeFragment = mHomeFragment.isMusicHomeFragment();
         int source = Media_IF.getCurSource();
         boolean isAudioMusicPlay = (Source.isAudioSource(source) && Media_IF.getInstance().isPlayState());
         boolean isBTMusicPlay = (Source.isBTMusicSource(source) && BT_IF.getInstance().music_isPlaying());
-        setCurPlayViewState(isHomeFragment, isAudioMusicPlayFragment, isBtMusicPlayFragment,
+        setCurPlayViewState(isRadioFragment, isHomeFragment, isAudioMusicPlayFragment, isBtMusicPlayFragment,
                     isAudioMusicPlay, isBTMusicPlay);
     }
     
-    private void setCurPlayViewState(boolean isHomeFragment, boolean isAudioMusicPlayFragment, boolean isBtMusicPlayFragment,
+    private void setCurPlayViewState(boolean isRadioFragment, boolean isHomeFragment, 
+            boolean isAudioMusicPlayFragment, boolean isBtMusicPlayFragment,
             boolean isAudioMusicPlay, boolean isBTMusicPlay) {
         boolean showSearchButton = true;
         Boolean showUnderline = null;
         Integer viewState = null;
-        if (isHomeFragment) {
+        int mode = MODE_RADIO;
+        if (isRadioFragment) {
+            mode = MODE_RADIO;
+            showUnderline = false;
+            viewState = Media_Activity_Tab.VIEW_GONE;
+        } else if (isHomeFragment) {
+            mode = MODE_AUDIO;
             showUnderline = false;
             if (isAudioMusicPlay || isBTMusicPlay) {
                 viewState = Media_Activity_Tab.VIEW_NORMAL_PLAYING;
@@ -315,6 +309,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
                 viewState = Media_Activity_Tab.VIEW_NORMAL;
             }
         } else if (isAudioMusicPlayFragment) {
+            mode = MODE_MUSIC;
             showUnderline = true;
             if (isAudioMusicPlay) {
                 viewState = Media_Activity_Tab.VIEW_CURRENT_PLAYING;
@@ -322,6 +317,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
                 viewState = Media_Activity_Tab.VIEW_CURRENT;
             }
         } else if (isBtMusicPlayFragment) {
+            mode = MODE_BTMUSIC;
             showUnderline = true;
             if (isBTMusicPlay) {
                 viewState = Media_Activity_Tab.VIEW_CURRENT_PLAYING;
@@ -330,12 +326,10 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
             }
             showSearchButton = false;
         }
-        if (mViewPager.getCurrentItem() == VIEWPAGER_ID_RADIO) {
-            showSearchButton = true;
-        }
+        mCurrMode = mode;
         Log.d(TAG, "setCurPlayViewState isHomeFragment="+isHomeFragment+"; isAudioMusicPlayFragment="+isAudioMusicPlayFragment
-        		+"; isBtMusicPlayFragment="+isBtMusicPlayFragment+"; isAudioMusicPlay="+isAudioMusicPlay
-        		+"; isBTMusicPlay="+isBTMusicPlay+"; showSearchButton="+showSearchButton);
+                +"; isBtMusicPlayFragment="+isBtMusicPlayFragment+"; isAudioMusicPlay="+isAudioMusicPlay
+                +"; isBTMusicPlay="+isBTMusicPlay+"; showSearchButton="+showSearchButton);
         mActivityTab.setCurPlayViewState(showUnderline, viewState);
         mSearchButton.setVisibility(showSearchButton ? View.VISIBLE : View.INVISIBLE);
     }
@@ -355,55 +349,33 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
             return 2;
         }
 
-		@Override
-		public boolean isViewFromObject(View arg0, Object arg1) {
-			return arg0 == arg1;
-		}
-		
-	    @Override  
-	    public void destroyItem(ViewGroup container, int position, Object object) {
-	        container.removeView((View) object);  
-	    }  
-	  
-	    @Override  
-	    public Object instantiateItem(ViewGroup container, int position) {
-	    	ViewGroup obj = mHomeFragment;
-	    	if (position == 0) {
-	    		obj = mRadioFragment;  
-	    	}
-	    	if (obj.getParent() == null) {
+        @Override
+        public boolean isViewFromObject(View arg0, Object arg1) {
+            return arg0 == arg1;
+        }
+        
+        @Override  
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            container.removeView((View) object);  
+        }  
+      
+        @Override  
+        public Object instantiateItem(ViewGroup container, int position) {
+            ViewGroup obj = mHomeFragment;
+            if (position == 0) {
+                obj = mRadioFragment;  
+            }
+            if (obj.getParent() == null) {
                 container.addView(obj);
             }
-	        return obj;  
-	    }  
-	  
-	    @Override  
-	    public int getItemPosition(Object object) {  
-	        return POSITION_NONE;  
-	    }  
+            return obj;  
+        }  
+      
+        @Override  
+        public int getItemPosition(Object object) {  
+            return POSITION_NONE;  
+        }  
 
-    }
-
-    class MediaPageChangeListener implements OnPageChangeListener {
-        @Override public void onPageScrollStateChanged(int arg0) {
-            mViewPager.setOffscreenPageLimit(1);
-        }
-        @Override public void onPageScrolled(int arg0, float arg1, int arg2) {}
-        @Override
-        public void onPageSelected(int arg0) {
-            int source = -1;
-            switch (arg0) {
-            case 0:
-                source = MODE_RADIO;
-                break;
-            case 1:
-                source = MODE_AUDIO;
-                break;
-            default:
-                return;
-            }
-            setCurSource(source);
-        }
     }
 
     @Override
@@ -411,9 +383,9 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
         int id = view.getId();
         Log.d(TAG, "onClick id="+id);
         if (id == R.id.media_tab_radio) {
-            setCurSource(MODE_RADIO);
+            goRadio();
         } else if (id == R.id.media_tab_music) {
-            setCurSource(MODE_AUDIO);
+            goHome();
         } else if (id == R.id.search_button) {
             if (mViewPager.getCurrentItem() == VIEWPAGER_ID_RADIO) {
                 startActivity(new Intent(this, SearchRadioActivity.class));
@@ -423,9 +395,9 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
                 startActivity(intent);
             }
         } else if (id == R.id.media_tab_layout) {
-        	if (mViewPager.getCurrentItem() == VIEWPAGER_ID_MUSIC) {
+            if (mViewPager.getCurrentItem() == VIEWPAGER_ID_MUSIC) {
                 goPlay(true, false);
-        	}
+            }
         }
     }
     

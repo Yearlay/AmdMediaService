@@ -18,7 +18,7 @@ public class Media_Activity_Tab extends RelativeLayout implements OnCheckedChang
         mOnClickListener = listener;
     }
 
-    public void setCurSource(int mode) {
+    /*public void setCurSource(int mode) {
         if (mCurMode == mode) {
             return;
         }
@@ -32,7 +32,7 @@ public class Media_Activity_Tab extends RelativeLayout implements OnCheckedChang
             view = mBtnMusic;
             break;
         default:
-            view = mBtnRadio;
+            view = null;
             break;
         }
         if (view != null) {
@@ -40,8 +40,13 @@ public class Media_Activity_Tab extends RelativeLayout implements OnCheckedChang
             mBtnLayout.setEnabled(view == mBtnRadio ? false : true);
             mBtnCurPlay.setVisibility(view == mBtnRadio ? View.INVISIBLE : View.VISIBLE);
             mCurPlayUnderLineView.setVisibility((view == mBtnRadio || !mShowCurPlayUnderLine) ? View.INVISIBLE : View.VISIBLE);
+        } else {
+            setFocusBtn(-1);
+            mBtnLayout.setEnabled(true);
+            mBtnCurPlay.setVisibility(View.VISIBLE);
+            mCurPlayUnderLineView.setVisibility(View.VISIBLE);
         }
-    }
+    }*/
     
     // ------------------------------外部接口 end------------------------------
 
@@ -122,14 +127,18 @@ public class Media_Activity_Tab extends RelativeLayout implements OnCheckedChang
         boolean underline = (showUnderline == null) ? mShowCurPlayUnderLine : showUnderline;
         int state = (viewState == null) ? mViewState : viewState;
         int playResId = R.drawable.ico_media_play_n;
+        int focusViewId = -1;
         switch (state) {
         case VIEW_GONE:
+            focusViewId = mBtnRadio.getId();
             break;
         case VIEW_NORMAL:
             playResId = R.drawable.ico_media_play_n;
+            focusViewId = mBtnMusic.getId();
             break;
         case VIEW_NORMAL_PLAYING:
             playResId = R.drawable.music_play_anim_n;
+            focusViewId = mBtnMusic.getId();
             break;
         case VIEW_CURRENT:
             playResId = R.drawable.music_play_anim_1;
@@ -141,7 +150,15 @@ public class Media_Activity_Tab extends RelativeLayout implements OnCheckedChang
         mShowCurPlayUnderLine = underline;
         mViewState = state;
         mCurPlayUnderLineView.setVisibility((underline&&mBtnCurPlay.getVisibility()==VISIBLE) ? View.VISIBLE : View.INVISIBLE);
-        mBtnCurPlay.setImageDrawable(SkinManager.instance(getContext()).getDrawable(playResId));
+        if (state == VIEW_GONE) {
+            mBtnLayout.setEnabled(false);
+            mBtnCurPlay.setVisibility(View.INVISIBLE);
+        } else {
+            mBtnLayout.setEnabled(true);
+            mBtnCurPlay.setVisibility(View.VISIBLE);
+            mBtnCurPlay.setImageDrawable(SkinManager.instance(getContext()).getDrawable(playResId));
+        }
+        setFocusBtn(focusViewId);
     }
     
     @Override

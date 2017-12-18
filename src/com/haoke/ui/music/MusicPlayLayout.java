@@ -27,6 +27,7 @@ import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.ModeSwitch;
 import com.haoke.constant.MediaUtil.DeviceType;
+import com.haoke.constant.MediaUtil.OperateState;
 import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.constant.MediaUtil.RepeatMode;
 import com.haoke.mediaservice.R;
@@ -586,6 +587,18 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
             if (mScanStartPos != -1) {
                 exitScanMode();
             }
+        }
+    }
+    
+    public void collectFileChanged(int data) {
+        if (data == OperateState.SUCCESS) {
+            updateCollectIcon();
+        }
+    }
+
+    public void uncollectFileChanged(int data) {
+        if (data == OperateState.SUCCESS) {
+            updateCollectIcon();
         }
     }
     
