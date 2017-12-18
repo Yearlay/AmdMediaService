@@ -131,10 +131,13 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 
 	private void initIntent(Intent intent) { // 第三方叫醒播放入口
 		Log.e("luke", "onNewIntent: " + intent);
-		if (intent != null && "MediaSearchActivity".equals(intent.getStringExtra("isfrom"))) { // search、语音播放、模式切换入口
+		if (intent != null && "MediaSearchActivity".equals(intent.getStringExtra("isfrom"))) { // search、开机播放
 			String filePath = intent.getStringExtra("filepath");
+			String flag = intent.getStringExtra("flag");
+			if(flag != null && flag.equals("bootStartPlay")){
+				mPlayLayout.getVideoController().playDefaultVideo(true);
+			}
 			int deviceType = MediaUtil.getDeviceType(filePath);
-			Log.e("luke", "onNewInten  MediaSearchActivity deviceType: " + deviceType);
 			int position = 0;
 			updateDevice(deviceType);
 			for (int index = 0; index < mVideoList.size(); index++) {
@@ -144,12 +147,11 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 				}
 			}
 			mPreferences.saveVideoDeviceType(deviceType);
-			// mPlaying = true;
 			mPlayLayout.setBeforePlaystate(true);
-			Log.e("luke", "initIntent setBeforePlaystate true");
 			updateCurPosition(position);
 			FileNode fileNode = mVideoList.get(mCurPosition);
 			mPlayLayout.setFileNode(fileNode);
+			Log.e("luke", "onNewInten  MediaSearchActivity deviceType: " + deviceType + "   , fileNode: " + fileNode);
 			onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
 		} else if (intent != null && intent.getIntExtra("isfrom", 100) == MediaService.VALUE_FROM_VR_APP) { // VR
 			// VR play default file

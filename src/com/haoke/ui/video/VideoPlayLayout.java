@@ -80,6 +80,9 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 		super(context, attrs, defStyle);
 	}
 
+	public ImageView getLoadingAnimation(){
+		return mLoading;
+	}
 	public void setBeforePlaystate(boolean playing) {
 		mPlayStateBefore = playing;
 	}
@@ -193,7 +196,6 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 		});
 
 		mVideoView.setOnErrorListener(new OnErrorListener() {
-
 			@Override
 			public boolean onError(MediaPlayer arg0, int arg1, int arg2) {
 				// TODO Auto-generated method stub
@@ -347,7 +349,6 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 		}
 
 		if (mFileNode != null) {
-			mLoading.setVisibility(View.VISIBLE);
 			mVideoController.playOrPause(getBeforePlaystate());
 			startHideTimer();
 		}
@@ -762,7 +763,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 				videoList = AllMediaList.instance(mContext).getMediaList(DeviceType.FLASH, FileType.VIDEO);
 				if (videoList.size() == 0) {
 					videoList = AllMediaList.instance(mContext).getMediaList(DeviceType.USB1, FileType.VIDEO);
-				}
+				} 
 				if (videoList.size() == 0) {
 					videoList = AllMediaList.instance(mContext).getMediaList(DeviceType.USB2, FileType.VIDEO);
 				}
@@ -772,6 +773,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 
 			if (videoInfo == null || videoInfo.length() == 0) { // 没有记忆文件，播放本地第一个视频
 				if (videoList.size() > 0) {
+					Log.e("luke","playDefault play local first video!!");
 					mFileNode = videoList.get(0);
 				}
 			} else { // 播放记忆文件
@@ -781,6 +783,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 				if (videoList.size() > 0 && !TextUtils.isEmpty(filePath)) {
 					for (FileNode fileNode : videoList) {
 						if (filePath.equals(fileNode.getFilePath())) {
+							Log.e("luke","playDefault play record file video!!");
 							mFileNode = fileNode;
 							mFileNode.setPlayTime(playTime);
 							break;
@@ -789,9 +792,9 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 				}
 			}
 		}
-		Log.e("luke", "playDefault: " + mFileNode);
 		setBeforePlaystate(true);
 		Log.e("luke", "playDefault setBeforePlaystate: " + getBeforePlaystate());
 		setFileNode(mFileNode);
+		mVideoController.playDefaultVideo(true);
 	}
 }

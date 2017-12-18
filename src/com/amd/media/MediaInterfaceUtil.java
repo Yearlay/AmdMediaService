@@ -16,30 +16,28 @@ import android.widget.Toast;
 
 import com.amd.bt.BTMusic_IF;
 import com.amd.bt.BT_IF;
+import com.amd.media.AudioFocus.AudioFocusListener;
 import com.amd.radio.Radio_IF;
 import com.amd.util.AmdConfig;
 import com.amd.util.SkinManager;
 import com.amd.util.Source;
 import com.haoke.application.MediaApplication;
-import com.amd.media.AudioFocus;
-import com.amd.media.AudioFocus.AudioFocusListener;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.StorageBean;
 import com.haoke.btjar.main.BTDef.BTConnState;
+import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.FileType;
+import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.ModeSwitch;
 import com.haoke.define.ModeDef;
 import com.haoke.define.ModeDef.MediaType;
-import com.haoke.constant.MediaUtil.DeviceType;
-import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.mediaservice.R;
 import com.haoke.service.BTMusicService;
 import com.haoke.service.MediaService;
 import com.haoke.service.RadioService;
 import com.haoke.ui.media.Media_Activity_Main;
 import com.haoke.ui.music.Music_Activity_List;
-import com.haoke.ui.video.VideoPlayController;
 import com.haoke.ui.video.Video_Activity_Main;
 import com.haoke.util.Media_IF;
 
@@ -287,6 +285,7 @@ public class MediaInterfaceUtil {
         Intent intent = new Intent(context, Video_Activity_Main.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra("isfrom", "MediaSearchActivity");
+        intent.putExtra("flag", "bootStartPlay");
         intent.putExtra("filepath", fileNode.getFilePath());
         context.startActivity(intent);
     }
