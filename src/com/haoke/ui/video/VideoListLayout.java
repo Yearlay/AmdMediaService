@@ -34,7 +34,6 @@ import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.OperateListener;
 import com.haoke.mediaservice.R;
-import com.haoke.ui.image.Image_Activity_Main;
 import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
 import com.haoke.ui.widget.CustomDialog.OnDialogListener;
@@ -89,6 +88,7 @@ public class VideoListLayout extends RelativeLayout implements
     public void refreshSkin() {
         mLoadingImageView.setImageDrawable(skinManager.getDrawable(R.drawable.media_loading_anim));
         mVideoAdapter.notifyDataSetChanged();
+        SkinManager.setScrollViewDrawable(mGridView, skinManager.getDrawable(R.drawable.scrollbar_thumb));
     }
     
     public void updataList(ArrayList<FileNode> dataList, StorageBean storageBean) {
