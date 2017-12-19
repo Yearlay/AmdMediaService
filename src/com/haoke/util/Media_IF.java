@@ -22,6 +22,7 @@ import com.haoke.define.CMSStatusDef.CMSStatusFuc;
 import com.haoke.define.CMSStatusDef.TrafficRestriction;
 import com.haoke.define.McuDef;
 import com.haoke.define.McuDef.McuFunc;
+import com.haoke.define.SystemDef.ScreenState;
 import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.constant.MediaUtil.MediaState;
@@ -306,12 +307,34 @@ public class Media_IF extends CarService_IF {
 		try {
 			//int state = getInstance().mServiceIF.bt_getCallState();
 			int state = BT_IF.getCallState();
-			Log.e(TAG, "BT_IF.getCallState state="+state);
+			Log.d(TAG, "BT_IF.getCallState state="+state);
 			return state == BTCallState.IDLE ? false : true;
 		} catch (Exception e) {
 			Log.e(TAG, "getCallState error e="+e);
 		}
 		return false;
+	}
+	
+	public static boolean getScreenOn() {
+	    try {
+	        int state = getInstance().mServiceIF.getScreenState();
+	        Log.d(TAG, "getScreenOn state="+state);
+	        return state == ScreenState.SCREEN_ON;
+        } catch (Exception e) {
+            Log.e(TAG, "getScreenOn error e="+e);
+        }
+	    return true;
+	}
+	
+	public static void setScreenOn() {
+	    try {
+            if (!getScreenOn()) {
+                Log.d(TAG, "setScreenOn SCREEN_ON");
+                getInstance().mServiceIF.setScreenState(ScreenState.SCREEN_ON);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "setScreenOn error e="+e);
+        }
 	}
 	
 	/**
@@ -657,6 +680,13 @@ public class Media_IF extends CarService_IF {
 			if (MediaInterfaceUtil.mediaCannotPlay()) {
 				return false;
 			}
+			if (getPosition() > 10) {
+                setPosition(0);
+                if (getPlayState() != PlayState.PLAY) {
+                    setPlayState(PlayState.PLAY);
+                }
+                return true;
+            }
 			return mMediaManager.pre(true);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -927,6 +957,10 @@ public class Media_IF extends CarService_IF {
 	
 	public FileNode getDefaultItem() {
 		return mMediaManager.getDefaultItem();
+	}
+	
+	public int getLastPlayItem(int deviceType, int fileType) {
+	    return mMediaManager.getLastPlayItem(deviceType, fileType);
 	}
 	
 	public void finishVideoActivity() {

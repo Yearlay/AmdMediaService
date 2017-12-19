@@ -15,14 +15,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.BaseAdapter;
 import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amd.util.SkinManager;
 import com.haoke.bean.FileNode;
@@ -140,6 +140,7 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
     public void refreshSkin() {
         mLoadingImageView.setImageDrawable(skinManager.getDrawable(R.drawable.media_loading_anim));
         mPhotoAdapter.notifyDataSetChanged();
+        SkinManager.setScrollViewDrawable(mGridView, skinManager.getDrawable(R.drawable.scrollbar_thumb));
     }
     
     public void dismissDialog() {

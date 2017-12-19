@@ -1,5 +1,7 @@
 package com.amd.util;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 
 import android.content.ContentResolver;
@@ -21,6 +23,8 @@ import android.graphics.drawable.shapes.Shape;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
 
 public class SkinManager {
     public static final String SKIN_KEY_NAME = "bd_theme_color";
@@ -192,5 +196,35 @@ public class SkinManager {
             drawable = mResources.getDrawable(resId);
         }
         return tileify(drawable, false);
+    }
+    
+    public static void setScrollViewDrawable(ViewGroup mViewGroup, Drawable thumbDrawable) {
+        try {
+            Field mScrollCacheField = View.class.getDeclaredField("mScrollCache");
+            mScrollCacheField.setAccessible(true);
+            Object mScrollCache = mScrollCacheField.get(mViewGroup); // 从listview中获取bar
+
+            Field scrollBarField = mScrollCache.getClass().getDeclaredField("scrollBar");
+            scrollBarField.setAccessible(true);
+            Object scrollBar = scrollBarField.get(mScrollCache);
+
+            Method method1 = scrollBar.getClass().getDeclaredMethod("setVerticalThumbDrawable", Drawable.class);// 滚动条
+            method1.setAccessible(true);
+            Method method2 = scrollBar.getClass().getDeclaredMethod("setVerticalTrackDrawable", Drawable.class);// 滚动条背景
+            method2.setAccessible(true);
+            // method2.invoke(scrollBar,
+            // getResources().getDrawable(R.drawable.search_bg));
+
+            // Set your drawable here.
+            // method1.invoke(scrollBar,
+            // mContext.getResources().getDrawable(R.drawable.vertical));
+            // method1.invoke(scrollBar,
+            // (Drawable)(skinManager.getDrawable(R.drawable.vertical)));
+            
+            method1.invoke(scrollBar, thumbDrawable);
+
+        } catch (Exception e) {
+            Log.d(TAG, "setScrollViewDrawable: "+e.toString());
+        }
     }
 }

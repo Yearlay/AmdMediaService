@@ -143,6 +143,7 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
         mClearButton.setBackgroundDrawable(skinManager.getDrawable(R.drawable.search_num_clear));
         mCancelButton.setBackgroundDrawable(skinManager.getDrawable(R.drawable.search_cancel_bg));
         mCancelButton.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
+        mSearchAdapter.notifyDataSetChanged();
     }
     
     @Override
@@ -257,9 +258,7 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
                 holder = new ViewHolder();
                 convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.music_search_listview_item, null);
                 holder.mItemBgView = (ImageView) convertView.findViewById(R.id.search_item_bg);
-                holder.mItemBgView.setBackgroundDrawable(skinManager.getDrawable(R.drawable.pub_list_short_selector));
                 holder.mDeviceTypeView = (TextView) convertView.findViewById(R.id.music_item_device_type);
-                holder.mDeviceTypeView.setBackgroundColor(skinManager.getColor(R.color.hk_custom_text_p));
                 holder.mIconView = (ImageView) convertView.findViewById(R.id.music_item_icon);
                 holder.mTitleView = (TextView) convertView.findViewById(R.id.music_listitem_title);
                 holder.mArtistView = (TextView) convertView.findViewById(R.id.music_item_text);
@@ -268,6 +267,9 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }
+            
+            holder.mDeviceTypeView.setBackgroundColor(skinManager.getColor(R.color.hk_custom_text_p));
+            holder.mItemBgView.setBackgroundDrawable(skinManager.getDrawable(R.drawable.pub_list_short_selector));
             
             FileNode fileNode = mResultStationList.get(position);
             // 显示数据来自哪个存储。
