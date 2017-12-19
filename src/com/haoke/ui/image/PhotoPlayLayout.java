@@ -4,23 +4,6 @@ import haoke.ui.util.HKViewPager;
 
 import java.util.ArrayList;
 
-import com.amd.util.SkinManager;
-import com.haoke.bean.FileNode;
-import com.haoke.bean.ImageLoad;
-import com.haoke.constant.MediaUtil;
-import com.haoke.constant.MediaUtil.DeviceType;
-import com.haoke.constant.MediaUtil.FileType;
-import com.haoke.data.AllMediaList;
-import com.haoke.data.OperateListener;
-import com.haoke.constant.MediaUtil.PlayState;
-import com.haoke.mediaservice.R;
-import com.haoke.ui.photoview.Media_Photo_View;
-import com.haoke.ui.photoview.PhotoViewAttacher.OnMatrixChangedListener;
-import com.haoke.ui.photoview.PhotoViewAttacher.OnPhotoTapListener;
-import com.haoke.util.DebugLog;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
-
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -41,6 +24,23 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.amd.util.SkinManager;
+import com.haoke.bean.FileNode;
+import com.haoke.bean.ImageLoad;
+import com.haoke.constant.MediaUtil;
+import com.haoke.constant.MediaUtil.DeviceType;
+import com.haoke.constant.MediaUtil.FileType;
+import com.haoke.constant.MediaUtil.PlayState;
+import com.haoke.data.AllMediaList;
+import com.haoke.data.OperateListener;
+import com.haoke.mediaservice.R;
+import com.haoke.ui.photoview.Media_Photo_View;
+import com.haoke.ui.photoview.PhotoViewAttacher.OnMatrixChangedListener;
+import com.haoke.ui.photoview.PhotoViewAttacher.OnPhotoTapListener;
+import com.haoke.util.DebugLog;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
         OnMatrixChangedListener, OnPhotoTapListener, OperateListener, ImageLoadingListener {
@@ -73,6 +73,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     private int mCurPosition;
     private int mLastPosition;
     private boolean mPreFlag;
+    public static int mErrorCount = 0;
     
     private ProgressDialog mProgressDialog;
     
@@ -154,7 +155,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     }
 
     public void onResume() {
-        DebugLog.d("Yearlay", "onResume mCurPosition: " + mCurPosition);
+        DebugLog.d("luke", "onResume mCurPosition: " + mCurPosition + "  , mErrorCount: " + mErrorCount);
         if (mPhotoList.size() > 0) {
             mCurPosition = mCurPosition < 0 ? 0 : mCurPosition;
             mCurPosition = mCurPosition >= mPhotoList.size() ? mPhotoList.size() - 1 : mCurPosition; 
@@ -176,12 +177,23 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
         FileNode fileNode = mPhotoList.get(mCurPosition);
         if (fileNode.isUnSupportFlag() || fileNode.getFile().length() > 52428800) { // 不支持的图片。
             mCollectView.setVisibility(View.GONE);
+            mErrorCount++;
+            DebugLog.e("luke","onResume Image Loading Error");
             mUnsupportView.setVisibility(View.VISIBLE);
             mHandler.removeMessages(PLAY_ERROR);
             mHandler.sendEmptyMessageDelayed(PLAY_ERROR, 1000);
         } else {
+        	mErrorCount = 0;
             mUnsupportView.setVisibility(View.GONE);
+            DebugLog.e("luke","onResume Image Loading complete");
         }
+    	if(mErrorCount >= 5){
+    		mErrorCount = 0;
+    		if (mActivityHandler != null) {
+                mActivityHandler.sendEmptyMessage(Image_Activity_Main.SWITCH_TO_LIST_FRAGMENT);
+            }
+    		//return;
+    	}
         
         mViewPager.setOnPageChangeListener(mPageChangeListener);
         mViewPager.setOnTouchListener(mTouchListener);
@@ -442,6 +454,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
                 slaverShow(false);
                 break;
             case PLAY_ERROR:
+            	DebugLog.e("luke","PLAY_ERROR Image Loading Error");
                 if (mPreFlag) {
                     preImage();
                 } else {
@@ -477,6 +490,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
             photoView.setOnPhotoTapListener(PhotoPlayLayout.this);
             if (fileNode.isUnSupportFlag() || fileNode.getFile().length() > 52428800) {
                 if (position == mCurPosition) {
+                	DebugLog.e("luke","instantiateItem Image Loading Error");
                     mUnsupportView.setVisibility(View.VISIBLE);
                     mHandler.removeMessages(PLAY_ERROR);
                     mHandler.sendEmptyMessageDelayed(PLAY_ERROR, 1000);
@@ -504,10 +518,12 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
 
     @Override
     public void onLoadingComplete(String arg0, View arg1, Bitmap arg2) {
+    	DebugLog.e("luke","Image Loading complete");
     }
 
     @Override
     public void onLoadingFailed(String uri, View view, FailReason reason) {
+    	DebugLog.e("luke","Image Loading Error");
         FileNode failedFileNode = null;
         int failedPosition = -1;
         for (int index = 0; index < mPhotoList.size(); index++) {
@@ -569,6 +585,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
 
         @Override
         public void onPageSelected(int position) {
+        	DebugLog.e("luke","onPageSelected mErrorCount: " + mErrorCount);
             checkPlayStatus(); // 重新计时
             restorePhotoView();
             FileNode fileNode = mPhotoList.get(position);
@@ -583,12 +600,24 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
             
             if (fileNode.isUnSupportFlag() || fileNode.getFile().length() > 52428800) { // 不支持的图片。
                 mCollectView.setVisibility(View.GONE);
+                mErrorCount++;
+                DebugLog.e("luke","onPageSelected Image Loading Error");
                 mUnsupportView.setVisibility(View.VISIBLE);
                 mHandler.removeMessages(PLAY_ERROR);
                 mHandler.sendEmptyMessageDelayed(PLAY_ERROR, 1000);
             } else {
+            	DebugLog.e("luke","onPageSelected Image Loading complete");
+            	mErrorCount = 0;
                 mUnsupportView.setVisibility(View.GONE);
             }
+        	if(mErrorCount >= 5){
+        		mErrorCount = 0;
+        		if (mActivityHandler != null) {
+                    mActivityHandler.sendEmptyMessage(Image_Activity_Main.SWITCH_TO_LIST_FRAGMENT);
+                }
+        		//return;
+        	}
+            
             mPreFlag = mLastPosition > position;
             setCurrentPosition(position);
             DebugLog.d("Yearlay", "onPageSelected mCurPosition: " + mCurPosition);
