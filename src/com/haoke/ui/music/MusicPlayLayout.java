@@ -321,14 +321,7 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 				BT_IF.getInstance().music_pre();
 			} else {
 				exitScanMode();
-				if (mIF.getPosition() > 10) {
-					mIF.setPosition(0);
-					if (mIF.getPlayState() != PlayState.PLAY) {
-						mIF.setPlayState(PlayState.PLAY);
-					}
-				} else {
-					mIF.playPre();
-				}
+				mIF.playPre();
 			}
 			break;
 		case R.id.media_ctrlbar_next:

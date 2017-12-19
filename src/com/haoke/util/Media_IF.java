@@ -680,6 +680,13 @@ public class Media_IF extends CarService_IF {
 			if (MediaInterfaceUtil.mediaCannotPlay()) {
 				return false;
 			}
+			if (getPosition() > 10) {
+                setPosition(0);
+                if (getPlayState() != PlayState.PLAY) {
+                    setPlayState(PlayState.PLAY);
+                }
+                return true;
+            }
 			return mMediaManager.pre(true);
 		} catch (Exception e) {
 			e.printStackTrace();
