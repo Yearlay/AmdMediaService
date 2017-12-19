@@ -1,6 +1,10 @@
 
 package com.haoke.scanner;
 
+import java.util.ArrayList;
+
+import com.amd.util.AmdConfig;
+import com.haoke.bean.FileNode;
 import com.haoke.bean.StorageBean;
 import com.haoke.constant.DBConfig;
 import com.haoke.constant.MediaUtil;
@@ -65,10 +69,34 @@ public class ID3ParseThread extends Thread {
         mMediaDbHelper.notifyCollectChange();
         // 通知更新一下APPWidget。
         debugClock.calculateTime(TAG, getClass().getName()+"#id3_update");
+        
+        if (AmdConfig.SCAN_OVER_LAUNCHER_PARSE_AUDIO_ID3_INFO) {
+            parseId3InfoOfAudio();
+        }
     }
     
     private boolean checkMounted(String devicePath) {
         return MediaUtil.checkMounted(mMediaDbHelper.getContext(), devicePath) &&
                 AllMediaList.instance(mMediaDbHelper.getContext()).getStoragBean(devicePath).isMounted();
+    }
+    
+    public void parseId3InfoOfAudio() {
+        DebugClock debugClock = new DebugClock();
+        AllMediaList allMediaList = AllMediaList.instance(mMediaDbHelper.getContext());
+        for (int devicetype : DBConfig.sScan3zaDefaultList) {
+            if (allMediaList.getStoragBean(devicetype).isMounted()) {
+                ArrayList<FileNode> mediaList = allMediaList.getMediaList(devicetype, FileType.AUDIO);
+                try {
+                    for (FileNode fileNode : mediaList) {
+                        if (fileNode.getParseId3() == 0) {
+                            fileNode.parseID3Info();
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        debugClock.calculateTime(TAG, "parseId3InfoOfAudio");
     }
 }

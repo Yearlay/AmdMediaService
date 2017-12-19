@@ -493,39 +493,4 @@ public class MediaDbHelper extends SQLiteOpenHelper {
         }
         return isContain;
     }
-    
-    /**
-     * 更新所有的音乐的ID3信息;
-     * 仅供 MediaContentProvider#query() 使用。
-     */
-    private Thread mParseID3Thread = null;
-    public void parseId3InfoOfAudio() {
-        if (mParseID3Thread != null) {
-            return;
-        }
-        mParseID3Thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                DebugClock debugClock = new DebugClock();
-                AllMediaList allMediaList = AllMediaList.instance(mContext);
-                for (int devicetype : DBConfig.sScan3zaDefaultList) {
-                    if (allMediaList.getStoragBean(devicetype).isMounted()) {
-                        ArrayList<FileNode> mediaList = allMediaList.getMediaList(devicetype, FileType.AUDIO);
-                        try {
-                            for (FileNode fileNode : mediaList) {
-                                if (fileNode.getParseId3() == 0) {
-                                    fileNode.parseID3Info();
-                                }
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                debugClock.calculateTime(TAG, "parseId3InfoOfAudio");
-                mParseID3Thread = null;
-            }
-        });
-        mParseID3Thread.start();
-    }
 }
