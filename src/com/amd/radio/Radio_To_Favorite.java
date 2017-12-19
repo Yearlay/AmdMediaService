@@ -150,6 +150,10 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
         mSelectAllTextView.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
         mCancelTextView.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
         mDeleteTextView.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+            SkinManager.setScrollViewDrawable(gridView, skinManager.getDrawable(R.drawable.scrollbar_thumb));
+        }
     }
 
     @Override
@@ -298,9 +302,6 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
     private ContentObserver mContentObserver = new ContentObserver(new Handler()) {
         public void onChange(boolean selfChange) {
             refreshSkin();
-            if (adapter != null) {
-                adapter.notifyDataSetChanged();
-            }
         };
     };
 }
