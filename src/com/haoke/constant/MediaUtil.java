@@ -81,8 +81,10 @@ public class MediaUtil {
         public static final int DELETE_FILE = 7;
         /** 外部设备改变 value:8 */
         public static final int DEVICE_CHANGED = 8;
-        /** 收藏文件动作 value:8 */
+        /** 收藏文件动作 value:9 */
         public static final int COLLECT_FILE = 9;
+        /** 取消收藏文件动作 value:10 */
+        public static final int UNCOLLECT_FILE = 10;
 
         // HKMedia
         /** 播放准备中 value:100 */
@@ -213,6 +215,18 @@ public class MediaUtil {
         /** 文件删除失败 value:1 */
         public static final int FAIL = 1;
         /** 文件删除成功 value:2 */
+        public static final int SUCCESS = 2;
+    }
+    
+    /**
+     * 其他状态类型
+     */
+    public class OperateState {
+        /** 操作中 */
+        public static final int OPERATING = 0;
+        /** 操作失败 */
+        public static final int FAIL = 1;
+        /** 操作成功 */
         public static final int SUCCESS = 2;
     }
     

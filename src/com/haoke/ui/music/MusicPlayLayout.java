@@ -27,6 +27,7 @@ import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.ModeSwitch;
 import com.haoke.constant.MediaUtil.DeviceType;
+import com.haoke.constant.MediaUtil.OperateState;
 import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.constant.MediaUtil.RepeatMode;
 import com.haoke.mediaservice.R;
@@ -80,7 +81,11 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 	
 	public void setBTPlayMode(boolean btModeFlag) {
 		Log.d(TAG, "setBTPlayMode btModeFlag="+btModeFlag);
-		isBTPlay = btModeFlag;
+		if (btModeFlag != isBTPlay) {
+	        isBTPlay = btModeFlag;
+		    AllMediaList.notifyAllLabelChange(getContext(), 
+	                isBTPlay ? R.string.pub_btmusic :R.string.pub_music);
+		}
 		mId3.setBTPlayMode(btModeFlag);
 		if (isBTPlay) {
 			ModeSwitch.instance().setCurrentMode(getContext(), true, ModeSwitch.MUSIC_BT_MODE);
@@ -316,14 +321,7 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 				BT_IF.getInstance().music_pre();
 			} else {
 				exitScanMode();
-				if (mIF.getPosition() > 10) {
-					mIF.setPosition(0);
-					if (mIF.getPlayState() != PlayState.PLAY) {
-						mIF.setPlayState(PlayState.PLAY);
-					}
-				} else {
-					mIF.playPre();
-				}
+				mIF.playPre();
 			}
 			break;
 		case R.id.media_ctrlbar_next:
@@ -586,6 +584,18 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
             if (mScanStartPos != -1) {
                 exitScanMode();
             }
+        }
+    }
+    
+    public void collectFileChanged(int data) {
+        if (data == OperateState.SUCCESS) {
+            updateCollectIcon();
+        }
+    }
+
+    public void uncollectFileChanged(int data) {
+        if (data == OperateState.SUCCESS) {
+            updateCollectIcon();
         }
     }
     

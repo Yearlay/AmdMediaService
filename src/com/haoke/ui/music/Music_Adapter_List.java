@@ -61,7 +61,6 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
             holder = new ViewHolder();
             convertView = LayoutInflater.from(mContext).inflate(R.layout.music_list_item, null);
             holder.mItemBg = convertView.findViewById(R.id.music_list_item_bg);
-            holder.mItemBg.setBackgroundDrawable(skinManager.getDrawable(R.drawable.music_list_item_selector));
             holder.mSelectBtn = (ImageView) convertView.findViewById(R.id.music_list_item_select);
             holder.mImageIcon = (ImageView) convertView.findViewById(R.id.music_item_icon);
             
@@ -90,6 +89,7 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
             Log.v(TAG, "setDate() itemNo=" +itemNo +", mTotal=" +mTotal);
             FileNode fileNode = mIF.getItem(itemNo);
             if (fileNode != null) {
+                holder.mItemBg.setBackgroundDrawable(skinManager.getDrawable(R.drawable.music_list_item_selector));
                 holder.mImageIcon.setImageDrawable(skinManager.getDrawable(R.drawable.media_list_item_music));
                 if (fileNode.getParseId3() == 1) {
                     ImageLoad.instance(mContext).loadBitmap(holder.mImageIcon,
