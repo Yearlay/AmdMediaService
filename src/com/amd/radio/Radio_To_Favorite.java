@@ -298,6 +298,9 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
     private ContentObserver mContentObserver = new ContentObserver(new Handler()) {
         public void onChange(boolean selfChange) {
             refreshSkin();
+            if (adapter != null) {
+                adapter.notifyDataSetChanged();
+            }
         };
     };
 }
