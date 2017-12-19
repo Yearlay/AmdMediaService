@@ -7,6 +7,7 @@ import com.haoke.bean.ID3Parse;
 import com.haoke.bean.ImageLoad;
 import com.haoke.bean.ID3Parse.ID3ParseListener;
 import com.haoke.constant.MediaUtil.DeviceType;
+import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.mediaservice.R;
 import com.haoke.util.Media_IF;
@@ -32,6 +33,8 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
     private ListView mListView;
     private String unknown;
     private SkinManager skinManager;
+    private int mDeviceType = DeviceType.NULL;
+    private int mLastPlayItem = -2;
 
     public Music_Adapter_List(Context context) {
         mContext = context;
@@ -47,6 +50,8 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
     // 重新加载数据
     public void updateList() {
         mTotal = mIF.getListTotal();
+        mDeviceType = mIF.getMediaDevice();
+        mLastPlayItem = -2;
         Log.v(TAG, "HMI------------updateList mTotal= " + mTotal);
         refreshData();
     }
@@ -97,9 +102,12 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
                 } else {
                     ID3Parse.instance().parseID3(position, fileNode, this);
                 }
+                boolean isPlayingItem = isPlayItem(position);
+                boolean isSelectedItem = mIF.isCurItemSelected(position);
+                boolean isLastPlayItem = isLastPlayItem(position);
                 // 控制焦点项显示
-                if (isPlayItem(position)) {
-                    if (isPlaying(position)) {
+                if (isPlayingItem || isLastPlayItem) {
+                    if (isPlaying(fileNode)) {
                         holder.mPlayStateImage.setImageDrawable(skinManager.getDrawable(R.drawable.music_play_anim));
                     } else {
                         holder.mPlayStateImage.setImageDrawable(skinManager.getDrawable(R.drawable.music_play_anim_1));
@@ -119,14 +127,14 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
                 } 
                 
                 //歌曲选中图标状态
-                if (mIF.isCurItemSelected(position)) {
+                if (isSelectedItem) {
                     holder.mSelectBtn.setImageDrawable(skinManager.getDrawable(R.drawable.music_selected_icon));
                 } else {
                     holder.mSelectBtn.setImageDrawable(skinManager.getDrawable(R.drawable.music_selected_nomal));
                 }
                 
                 //选中歌曲名状态
-                if (isPlayItem(position) || mIF.isCurItemSelected(position)) {
+                if (isPlayingItem || isSelectedItem || isLastPlayItem) {
                     holder.mTitleText.setTextColor(skinManager.getColor(R.color.hk_custom_text_p));
                 } else {
                     holder.mTitleText.setTextColor(skinManager.getColor(R.color.hk_custom_text));
@@ -159,14 +167,6 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
             }
         }
         return buffer.toString();
-    }
-    
-    public void setPlayingAnim(boolean play) {
-        if (play) {
-            
-        } else {
-            
-        }
     }
     
     public void setListType(int type) {
@@ -250,8 +250,16 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
         return val;
     }
     
-    private boolean isPlaying(int position) {
-        if (mIF.getPlayState() == PlayState.PLAY) {
+    private boolean isLastPlayItem(int position) {
+        if (mLastPlayItem == -2) {
+            mLastPlayItem = mIF.getLastPlayItem(mDeviceType, FileType.AUDIO);
+        }
+        return mLastPlayItem == position;
+    }
+    
+    private boolean isPlaying(FileNode fileNode) {
+        if (mIF.getPlayState() == PlayState.PLAY 
+                && fileNode.getDeviceType() == mIF.getPlayingDevice()) {
             return true;
         }
         return false;
