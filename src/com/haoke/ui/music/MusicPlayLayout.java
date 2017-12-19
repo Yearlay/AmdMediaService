@@ -81,7 +81,11 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 	
 	public void setBTPlayMode(boolean btModeFlag) {
 		Log.d(TAG, "setBTPlayMode btModeFlag="+btModeFlag);
-		isBTPlay = btModeFlag;
+		if (btModeFlag != isBTPlay) {
+	        isBTPlay = btModeFlag;
+		    AllMediaList.notifyAllLabelChange(getContext(), 
+	                isBTPlay ? R.string.pub_btmusic :R.string.pub_music);
+		}
 		mId3.setBTPlayMode(btModeFlag);
 		if (isBTPlay) {
 			ModeSwitch.instance().setCurrentMode(getContext(), true, ModeSwitch.MUSIC_BT_MODE);
