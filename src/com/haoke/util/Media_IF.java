@@ -959,6 +959,10 @@ public class Media_IF extends CarService_IF {
 		return mMediaManager.getDefaultItem();
 	}
 	
+	public int getLastPlayItem(int deviceType, int fileType) {
+	    return mMediaManager.getLastPlayItem(deviceType, fileType);
+	}
+	
 	public void finishVideoActivity() {
 		try {
 			if (getVideoActivity() != null) {

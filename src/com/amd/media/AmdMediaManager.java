@@ -215,6 +215,15 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	private void stopRecordTimer() {
 		mHandler.removeMessages(MSG_SAVE_PLAYTIME);
 	}
+	
+	public int getLastPlayItem(int deviceType, int fileType) {
+        Log.v(TAG, "getLastPlayItem deviceType="+deviceType+"; fileType="+fileType);
+        FileNode node = mAllMediaList.getPlayTime(deviceType, fileType);
+        if (node == null || !node.isExist(mContext)) {
+            return -1;
+        }
+        return changeFileNodeToIndex(node);
+	}
 
 	// 播放指定设备的默认歌曲（在mode切源后调用），与getPlayDefaultIndex对应
 	public boolean playDefault(int deviceType, int fileType) {
@@ -824,7 +833,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
     private int changeFileNodeToIndex(FileNode fileNode) {
     	int index = -1;
     	if (fileNode != null) {
-        	ArrayList<FileNode> lists = mAllMediaList.getMediaList(mPlayingDeviceType, mPlayingFileType);
+        	ArrayList<FileNode> lists = mAllMediaList.getMediaList(fileNode.getDeviceType(), fileNode.getFileType());
         	for (int i=0; i<lists.size(); i++) {
         		FileNode list = lists.get(i);
         		if (list.isSame(fileNode)) {
