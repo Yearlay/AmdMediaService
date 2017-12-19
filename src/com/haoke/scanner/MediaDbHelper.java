@@ -498,8 +498,12 @@ public class MediaDbHelper extends SQLiteOpenHelper {
      * 更新所有的音乐的ID3信息;
      * 仅供 MediaContentProvider#query() 使用。
      */
+    private Thread mParseID3Thread = null;
     public void parseId3InfoOfAudio() {
-        new Thread(new Runnable() {
+        if (mParseID3Thread != null) {
+            return;
+        }
+        mParseID3Thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 DebugClock debugClock = new DebugClock();
@@ -519,7 +523,9 @@ public class MediaDbHelper extends SQLiteOpenHelper {
                     }
                 }
                 debugClock.calculateTime(TAG, "parseId3InfoOfAudio");
+                mParseID3Thread = null;
             }
-        }).start();
+        });
+        mParseID3Thread.start();
     }
 }
