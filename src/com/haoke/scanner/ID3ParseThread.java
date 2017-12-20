@@ -3,6 +3,8 @@ package com.haoke.scanner;
 
 import java.util.ArrayList;
 
+import android.content.Intent;
+
 import com.amd.util.AmdConfig;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.StorageBean;
@@ -84,10 +86,18 @@ public class ID3ParseThread extends Thread {
         DebugClock debugClock = new DebugClock();
         AllMediaList allMediaList = AllMediaList.instance(mMediaDbHelper.getContext());
         for (int devicetype : DBConfig.sScan3zaDefaultList) {
+            if (Thread.interrupted()) { // 线程中断的话，就直接return；
+                debugClock.calculateTime(TAG, "Thread.interrupted! parseId3InfoOfAudio interrupted!");
+                return;
+            }
             if (allMediaList.getStoragBean(devicetype).isMounted()) {
                 ArrayList<FileNode> mediaList = allMediaList.getMediaList(devicetype, FileType.AUDIO);
                 try {
                     for (FileNode fileNode : mediaList) {
+                        if (Thread.interrupted()) { // 线程中断的话，就直接return；
+                            debugClock.calculateTime(TAG, "Thread.interrupted! parseId3InfoOfAudio interrupted!");
+                            return;
+                        }
                         if (fileNode.getParseId3() == 0) {
                             fileNode.parseID3Info();
                         }
@@ -97,6 +107,8 @@ public class ID3ParseThread extends Thread {
                 }
             }
         }
-        debugClock.calculateTime(TAG, "parseId3InfoOfAudio");
+        debugClock.calculateTime(TAG, "parseId3InfoOfAudio over!");
+        
+        mMediaDbHelper.getContext().sendBroadcast(new Intent("com.haoke.scanner.id3parse.over"));
     }
 }
