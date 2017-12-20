@@ -11,6 +11,7 @@ import com.amd.media.MediaInterfaceUtil;
 import com.haoke.aidl.ICarCallBack;
 import com.haoke.aidl.IMediaCallBack;
 import com.amd.media.AudioFocus;
+import com.amd.util.AmdConfig;
 import com.amd.util.Source;
 import com.haoke.bean.FileNode;
 import com.haoke.btjar.main.BTDef.BTCallState;
@@ -37,7 +38,7 @@ import com.jsbd.util.Meter_IF;
 
 public class Media_IF extends CarService_IF {
 
-	private static final String TAG = "Media_IF";
+	private static final String TAG = "Media_IF"+AmdConfig.APP_VERSION_DATE;
 	private static Media_IF mSelf = null;
 	private Media_CarCallBack mCarCallBack = null; // CarService的回调处理
 	private Media_CallBack mMediaCallBack = null; // MediaService的回调处理

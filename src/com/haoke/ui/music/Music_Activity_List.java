@@ -565,6 +565,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             }
         } else if (data == CopyState.SUCCESS) {
             mListTab.updateBtndate(false);
+            backToList();
         } else if (data == CopyState.FAIL) {
             Toast.makeText(this, "拷贝音乐文件异常", Toast.LENGTH_SHORT).show();
         }
