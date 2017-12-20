@@ -297,6 +297,9 @@ public class VideoListLayout extends RelativeLayout implements
         if (progress == 100) {
             if (mProgressDialog != null) {
                 mProgressDialog.CloseDialog();
+                if (mActivityHandler != null) {
+                	mActivityHandler.sendEmptyMessage(Video_Activity_Main.CANCEL_EDIT);
+                }
             }
             if ((operateValue == OperateListener.OPERATE_DELETE || operateValue == OperateListener.OPERATE_UNCOLLECT)
                     && resultCode == OperateListener.OPERATE_SUCEESS) {

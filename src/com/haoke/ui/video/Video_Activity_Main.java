@@ -384,7 +384,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 	@Override
 	public void onLoadCompleted(int deviceType, int fileType) {
 		// 处理数据加载完成的事件: 主要是处理数据。
-		if (deviceType == getCurrentDeviceType() && fileType == FileType.VIDEO) {
+		if (deviceType == getCurrentDeviceType() && fileType == FileType.VIDEO && mPlayLayout.getVisibility() != View.VISIBLE) {
 			updateDevice(deviceType);
 		}
 	}
@@ -503,6 +503,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 	public static final int SHOW_FORBIDDEN_VIEW = 8;
 	public static final int HIDE_FORBIDDEN_VIEW = 9;
 	public static final int FORBIDDEN_VIEW_TEST = 1001;
+	public static final int CANCEL_EDIT = 1002;
 	public static int mErrorCount = 0;
 	public static int speedTest = 0;
 	private Handler mHandler = new Handler() {
@@ -569,6 +570,11 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 			case HIDE_FORBIDDEN_VIEW:
 				if (mPlayLayout != null && AllMediaList.sCarSpeed < 20.0f) {
 					mPlayLayout.showOrHideForbiddenView(false);
+				}
+				break;
+			case CANCEL_EDIT:
+				if (mListLayout.isEditMode()) {
+					cancelEdit();
 				}
 				break;
 			case FORBIDDEN_VIEW_TEST:
