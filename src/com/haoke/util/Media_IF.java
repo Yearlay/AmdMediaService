@@ -21,6 +21,7 @@ import com.haoke.data.ModeSwitch;
 import com.haoke.data.PlayStateSharedPreferences;
 import com.haoke.define.CMSStatusDef.CMSStatusFuc;
 import com.haoke.define.CMSStatusDef.TrafficRestriction;
+import com.haoke.define.CMSStatusDef.VehicleStatus;
 import com.haoke.define.McuDef;
 import com.haoke.define.McuDef.McuFunc;
 import com.haoke.define.SystemDef.ScreenState;
@@ -336,6 +337,23 @@ public class Media_IF extends CarService_IF {
         } catch (Exception e) {
             Log.e(TAG, "setScreenOn error e="+e);
         }
+	}
+	
+	private static int getCMSStatus(int func) {
+	    try {
+	        int status = getInstance().mServiceIF.getCMSStatus(func);
+	        Log.d(TAG, "getCMSStatus func="+func+"; status="+status);
+            return status;
+        } catch (Exception e) {
+            Log.e(TAG, "getCMSStatus error e="+e);
+        }
+	    return -1;
+	}
+	
+	// 是否倒车
+	public static boolean isCarReversing() {
+	    int status = getCMSStatus(CMSStatusFuc.VEHICLE_STATUS);
+	    return status == VehicleStatus.REVERSING;
 	}
 	
 	/**

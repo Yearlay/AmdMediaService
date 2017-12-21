@@ -62,7 +62,9 @@ public class UsbAutoPlay {
             if (file.exists() && file.canRead()) {
                 Media_IF.setScreenOn();
                 Media_IF.getInstance().play(filePath);
-                MediaInterfaceUtil.launchMusicPlayActivity(context);
+                if (!Media_IF.isCarReversing()) {
+                    MediaInterfaceUtil.launchMusicPlayActivity(context);
+                }
             } else {
                 filePath = null;
             }
@@ -74,7 +76,9 @@ public class UsbAutoPlay {
             if (lists.size() > 0) {
                 Media_IF.setScreenOn();
                 Media_IF.getInstance().play(lists.get(0));
-                MediaInterfaceUtil.launchMusicPlayActivity(context);
+                if (!Media_IF.isCarReversing()) {
+                    MediaInterfaceUtil.launchMusicPlayActivity(context);
+                }
             }
         }
         return;
