@@ -476,9 +476,14 @@ public class MediaDbHelper extends SQLiteOpenHelper {
         ArrayList<FileNode> collectList = allMediaList.getMediaList(DeviceType.COLLECT, fileType);
         if (allMediaList.getStoragBean(deviceType).isMounted()) {
             ArrayList<FileNode> mediaList = allMediaList.getMediaList(deviceType, fileType);
-            for (FileNode fileNode : mediaList) {
-                boolean isContain = judgeContain(fileNode, collectList);
-                fileNode.setCollect(isContain ? 1 : 0);
+            for (int index = 0; index < mediaList.size(); index++) {
+                try {
+                    FileNode fileNode = mediaList.get(index);
+                    boolean isContain = judgeContain(fileNode, collectList);
+                    fileNode.setCollect(isContain ? 1 : 0);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
