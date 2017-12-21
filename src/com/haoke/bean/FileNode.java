@@ -725,8 +725,9 @@ public class FileNode {
         }
         boolean saveSuccees = false;
         if (!bitmapFile.exists()) {
+            Bitmap bitmap = null;
+            FileOutputStream out = null;
             try {
-                Bitmap bitmap = null;
                 if (getFileType() == FileType.AUDIO) {
                     if (getFile().exists()) {
                         bitmap = MediaUtil.BytesToBitmap(retriever.getEmbeddedPicture());
@@ -754,14 +755,24 @@ public class FileNode {
                         } catch (Exception e) {
                         }
                     }
-                    FileOutputStream out = new FileOutputStream(bitmapFile);
+                    out = new FileOutputStream(bitmapFile);
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
                     out.flush();
-                    out.close();
                     saveSuccees = true;
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+            } finally {
+                if (bitmap != null) {
+                    bitmap.recycle();
+                }
+                if (out != null) {
+                    try {
+                        out.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
         return saveSuccees;
