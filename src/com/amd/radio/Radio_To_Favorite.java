@@ -40,7 +40,6 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
     private View mEditLayout;
     private Button mEditButton;
     private ArrayList<RadioStation> mFavoriteList = Data_Common.collectAllFreqs;
-    private boolean selectAllFlag = false;
     private TextView mSelectAllTextView;
     private TextView mCancelTextView;
     private TextView mDeleteTextView;
@@ -100,6 +99,8 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
             Data_Common.tempFreq.add(freq_string);
             Data_Common.tempFreq.add(freq_name);
             exitActivity();
+        } else {
+            updateSelectAllTextView();
         }
     }
     
@@ -111,6 +112,7 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         adapter.changeSelected(position);
+        updateSelectAllTextView();
     }
     
     @Override
@@ -121,7 +123,7 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
         } else if(id == R.id.radio_edit) {
             enterEditMode();
         } else if(id == R.id.radio_edit_select_all) {
-            selectAll();
+            selectAll(!checkSelected());
         } else if(id == R.id.radio_edit_select_cancel) {
             exitEditMode();
         } else if(id == R.id.radio_edit_select_del) {
@@ -227,19 +229,22 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
         mEditButton.setVisibility(View.VISIBLE);
         mEditLayout.setVisibility(View.INVISIBLE);
         adapter.exitEditMode();
-        if (selectAllFlag){
-            selectAll();
-        }
+        selectAll(false);
     }
     
-    private void selectAll() {
-        if (!selectAllFlag) {
-            selectAllFlag = true;
+    private void selectAll(boolean select) {
+        if (select) {
             adapter.selectAll();
+        } else {
+            adapter.unSelectAll();
+        }
+        updateSelectAllTextView();
+    }
+    
+    private void updateSelectAllTextView() {
+        if (checkSelected()) {
             mSelectAllTextView.setText("撤销");
         } else {
-            selectAllFlag = false;
-            adapter.unSelectAll();
             mSelectAllTextView.setText("全选");
         }
     }
@@ -288,6 +293,7 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
             exitEditMode();
             showEmpty();
         }
+        updateSelectAllTextView();
     }
     
     private void exitActivity() {
