@@ -749,7 +749,7 @@ public class Radio_IF extends CarService_IF {
     private Toast mToast = null;
 	private void showToast(Context context, String msg) {
         if (mToast == null) {
-            mToast = Toast.makeText(context, msg, Toast.LENGTH_SHORT);
+            mToast = Toast.makeText(context.getApplicationContext(), msg, Toast.LENGTH_SHORT);
         } else {
             mToast.setText(msg);
             mToast.setDuration(Toast.LENGTH_SHORT);
