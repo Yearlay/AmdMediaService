@@ -1,6 +1,7 @@
 package com.haoke.ui.music;
 
 import com.amd.bt.BT_IF;
+import com.amd.util.AmdConfig;
 import com.amd.util.Source;
 import com.amd.util.SkinManager;
 import com.haoke.bean.FileNode;
@@ -27,7 +28,8 @@ import android.widget.Toast;
 public class Music_Play_Id3 extends LinearLayout implements OnClickListener, ID3ParseListener {
     private static final String TAG = "Music_Play_Id3";
     
-    private static final String VERSION_INFO = "当前媒体apk版本为 20171130 19:20";
+    private static final String VERSION_INFO = 
+            "当前媒体apk版本为 2017" + AmdConfig.APP_VERSION_DATE + " " +AmdConfig.APP_VERSION_TIME;
     
     private TextView mTrack;
     private TextView mAlbum;
@@ -224,7 +226,9 @@ public class Music_Play_Id3 extends LinearLayout implements OnClickListener, ID3
             mDeviceView.setText(R.string.media_collect_tab);
         }
         
-        mAlbumView.setOnClickListener(this);
+        if (AmdConfig.ENABLE_ID3_ALBUM_SECRET_CODE) {
+            mAlbumView.setOnClickListener(this);
+        }
     }
     
     public void refreshSkin(SkinManager skinManager) {

@@ -34,6 +34,7 @@ import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.OperateListener;
 import com.haoke.mediaservice.R;
+import com.haoke.ui.video.Video_Activity_Main;
 import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
 import com.haoke.ui.widget.CustomDialog.OnDialogListener;
@@ -302,6 +303,9 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
         if (progress == 100) {
             if (mProgressDialog != null) {
                 mProgressDialog.CloseDialog();
+                if (mActivityHandler != null) {
+                	mActivityHandler.sendEmptyMessage(Video_Activity_Main.CANCEL_EDIT);
+                }
             }
             if ((operateValue == OperateListener.OPERATE_DELETE || operateValue == OperateListener.OPERATE_UNCOLLECT)
                     && resultCode == OperateListener.OPERATE_SUCEESS) {

@@ -326,6 +326,7 @@ public class Image_Activity_Main extends Activity implements
     public static final int SHOW_BOTTOM = 5;
     public static final int HIDE_BOTTOM = 6;
     public static final int DISMISS_COPY_DIALOG = 7;
+    public static final int CANCEL_EDIT = 1002;
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -380,8 +381,13 @@ public class Image_Activity_Main extends Activity implements
                     } else {
                         mSelectAllView.setText(R.string.music_choose_all);
                     }
-            	}
-            	break;
+                }
+                break;
+			case CANCEL_EDIT:
+				if (mListLayout.isEditMode()) {
+					cancelEdit();
+				}
+				break;
             default:
                 break;
             }
