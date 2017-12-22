@@ -14,7 +14,9 @@ public class MediaReceiver extends BroadcastReceiver {
     
     private static String getDataPath(Intent intent) {
         String datapath = intent.getDataString();
-        datapath = datapath.replace("file://", "");
+        if (datapath != null) {
+            datapath = datapath.replace("file://", "");
+        }
         return datapath;
     }
     
