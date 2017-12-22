@@ -1,5 +1,6 @@
 package com.haoke.receiver;
 
+import com.haoke.constant.MediaUtil;
 import com.haoke.constant.MediaUtil.ScanType;
 import com.haoke.service.MediaService;
 import com.haoke.util.DebugLog;
@@ -25,15 +26,34 @@ public class MediaReceiver extends BroadcastReceiver {
         }
     }
     
+    private static boolean sUsb1Mounted = true;
+    private static boolean sUsb2Mounted = true;
     public static void onReceiveEx(Context context, Intent intent) {
         String action = intent.getAction();
         DebugLog.i("Yearlay", "onReceiveEx isDynamicFlag : " + isDynamicFlag);
+        String devicePath = getDataPath(intent);
         if (action.equals(Intent.ACTION_MEDIA_MOUNTED)) {
-            DebugLog.d("Yearlay", "MediaReceiver Intent.ACTION_MEDIA_MOUNTED: " + getDataPath(intent));
-            startFileService(context, ScanType.SCAN_STORAGE, getDataPath(intent));
+            DebugLog.d("Yearlay", "MediaReceiver Intent.ACTION_MEDIA_MOUNTED: " + devicePath);
+            if (MediaUtil.DEVICE_PATH_USB_1.equals(devicePath)) {
+                sUsb1Mounted = true;
+            } else if (MediaUtil.DEVICE_PATH_USB_2.equals(devicePath)) {
+                sUsb2Mounted = true;
+            }
+            startFileService(context, ScanType.SCAN_STORAGE, devicePath);
         } else if (action.equals(Intent.ACTION_MEDIA_EJECT) || action.equals(Intent.ACTION_MEDIA_UNMOUNTED)) {
-            DebugLog.d("Yearlay", "MediaReceiver Intent.ACTION_MEDIA_EJECT or ACTION_MEDIA_UNMOUNTED: " + getDataPath(intent));
-            startFileService(context, ScanType.REMOVE_STORAGE, getDataPath(intent));
+            DebugLog.d("Yearlay", "MediaReceiver Intent.ACTION_MEDIA_EJECT or ACTION_MEDIA_UNMOUNTED: " + devicePath);
+            if (MediaUtil.DEVICE_PATH_USB_1.equals(devicePath) && !sUsb1Mounted) {
+                return;
+            }
+            if (MediaUtil.DEVICE_PATH_USB_2.equals(devicePath) && !sUsb2Mounted) {
+                return;
+            }
+            startFileService(context, ScanType.REMOVE_STORAGE, devicePath);
+            if (MediaUtil.DEVICE_PATH_USB_1.equals(devicePath)) {
+                sUsb1Mounted = false;
+            } else if (MediaUtil.DEVICE_PATH_USB_2.equals(devicePath)) {
+                sUsb2Mounted = false;
+            }
         }
     }
     
