@@ -26,14 +26,14 @@ public class ImageLoad {
     
     public static ImageLoad instance(Context context) {
         if (sInstance == null) {
-            sInstance = new ImageLoad(context);
+            sInstance = new ImageLoad(context.getApplicationContext());
         }
         return sInstance;
     }
 
     public ImageLoad(Context context) {
         super();
-        mContext = context.getApplicationContext();
+        mContext = context;
         File cacheDir = StorageUtils.getOwnCacheDirectory(mContext, "imageloader/Cache");
         DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
                 .cacheInMemory(true).cacheOnDisc(true).build();

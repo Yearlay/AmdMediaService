@@ -76,7 +76,6 @@ public class VideoPlayController implements AudioFocusListener {
 		mVideView = v;
 		mContext = MediaApplication.getInstance();
 		mAllMediaList = AllMediaList.instance(mContext);
-		mAllMediaList.registerLoadListener(mLoadListener);
 
 		mAudioFocus = new AudioFocus(mContext);
 		mAudioFocus.registerListener(this);
@@ -85,6 +84,14 @@ public class VideoPlayController implements AudioFocusListener {
 		// (AudioManager)mContext.getSystemService(Context.AUDIO_SERVICE);
 		// mComponentName = new ComponentName(mContext,
 		// AmdMediaButtonReceiver.class);
+	}
+	
+	public void setLoadListener(boolean flag) {
+	    if (flag) {
+	        AllMediaList.instance(mContext).registerLoadListener(mLoadListener);
+	    } else {
+	        AllMediaList.instance(mContext).unRegisterLoadListener(mLoadListener);
+	    }
 	}
 
 	public void setVideoPlayLayout(VideoPlayLayout layout) {

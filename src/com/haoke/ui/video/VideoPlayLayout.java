@@ -153,6 +153,18 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 	public void setActivityHandler(Handler handler) {
 		mActivityHandler = handler;
 	}
+	
+	@Override
+    protected void onAttachedToWindow() {
+	    mVideoController.setLoadListener(true);
+        super.onAttachedToWindow();
+    }
+	
+	@Override
+    protected void onDetachedFromWindow() {
+	    mVideoController.setLoadListener(false);
+        super.onDetachedFromWindow();
+    }
 
 	@Override
 	protected void onFinishInflate() {

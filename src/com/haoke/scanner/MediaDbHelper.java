@@ -36,13 +36,13 @@ public class MediaDbHelper extends SQLiteOpenHelper {
     
     public MediaDbHelper(Context context) {
         super(context, DBConfig.DATABASE_NAME, null, DBConfig.DATABASE_VERSION);
-        mContext = context.getApplicationContext();
+        mContext = context;
     }
     
     private static MediaDbHelper sMediaDbHelper = null;
     public static MediaDbHelper instance(Context context) {
         if (sMediaDbHelper == null) {
-            sMediaDbHelper = new MediaDbHelper(context);
+            sMediaDbHelper = new MediaDbHelper(context.getApplicationContext());
         }
         return sMediaDbHelper;
     }

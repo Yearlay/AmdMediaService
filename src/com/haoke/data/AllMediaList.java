@@ -67,13 +67,13 @@ public class AllMediaList {
     
     public static AllMediaList instance(Context context) {
         if (sAllMediaList == null) {
-            sAllMediaList = new AllMediaList(context);
+            sAllMediaList = new AllMediaList(context.getApplicationContext());
         }
         return sAllMediaList;
     }
 
     private AllMediaList(Context context) {
-        this.mContext = context.getApplicationContext();
+        mContext = context;
         mMediaDbHelper = new MediaDbHelper(mContext);
         mLocalHandler = new LocalHandler();
         
