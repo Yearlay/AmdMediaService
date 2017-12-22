@@ -12,7 +12,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.PagerAdapter;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -225,6 +224,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     @Override
     public void onClick(View view) {
         stopHideTimer();
+        DebugLog.e("luke","onClick Image");
         switch (view.getId()) {
         case R.id.image_ctrlbar_list:
             if (mActivityHandler != null) { // 回列表
@@ -270,11 +270,11 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
             	DebugLog.e("luke","preImage Image Loading 2");
                 mCurPosition--;
                 mCurPosition = mCurPosition < 0 ? mPhotoList.size() - 1 : mCurPosition;
-/*                if (mCurPosition == (mPhotoList.size() - 1)) {
+                if (mCurPosition == (mPhotoList.size() - 1)) {
                     mViewPager.setCurrentItem(mCurPosition, false);
-                } else {*/
+                } else {
                     mViewPager.setCurrentItem(mCurPosition);
-                //}
+                }
                 checkPlayStatus(); // 重新计时
             }
         }
@@ -288,11 +288,12 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
             	DebugLog.e("luke","nextImage Image Loading 2");
                 mCurPosition++;
                 mCurPosition = mCurPosition >= mPhotoList.size() ? 0 : mCurPosition;
-/*                if (mCurPosition == 0) {
+                if (mCurPosition == 0) {
+                	DebugLog.e("luke","nextImage mCurPosition = 0");
                     mViewPager.setCurrentItem(mCurPosition, false);
-                } else {*/
+                } else {
                     mViewPager.setCurrentItem(mCurPosition);
-                //}
+                }
                 checkPlayStatus(); // 重新计时
             }
         }
@@ -360,7 +361,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     
     // 重置自动播放计时器
     private void checkPlayStatus() {
-    	Log.d("luke",Log.getStackTraceString(new Throwable()));
+    	//Log.d("luke",Log.getStackTraceString(new Throwable()));
         if (mPlayState == PlayState.PLAY) {
             mHandler.removeMessages(NEXT_PLAY);
             mHandler.sendEmptyMessageDelayed(NEXT_PLAY, DELAY_TIME);
@@ -451,11 +452,11 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
                 if (mCurPosition >= mPhotoList.size()) {
                     mCurPosition = 0; // 循环播放
                 }
-/*                if (mCurPosition == 0) {
+                if (mCurPosition == 0) {
                     mViewPager.setCurrentItem(mCurPosition, false);
-                } else {*/
+                } else {
                     mViewPager.setCurrentItem(mCurPosition);
-                //}
+                }
                 checkPlayStatus();
                 break;
             case HIDE_CTRL:
@@ -463,6 +464,13 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
                 break;
             case PLAY_ERROR:
             	DebugLog.e("luke","PLAY_ERROR Image Loading Error");
+            	if(mPhotoList.size() == 1){
+            		mErrorCount = 0;
+            		if (mActivityHandler != null) {
+            			mHandler.removeMessages(NEXT_PLAY);
+                        mActivityHandler.sendEmptyMessage(Image_Activity_Main.SWITCH_TO_LIST_FRAGMENT);
+                    }
+            	}
                 if (mPreFlag) {
                     preImage();
                 } else {
@@ -577,6 +585,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
             checkPlayStatus(); // 重新计时
+            DebugLog.d("luke","onPageScrolled");
             if (position == mPhotoList.size() - 1 && isDragPage) {
                 isEndToHead = positionOffsetPixels == 0;
                 isHeadToEnd = false;
