@@ -40,10 +40,10 @@ public class UsbAutoPlay {
         if (deviceType != DeviceType.USB1 && deviceType != DeviceType.USB2) {
             return;
         }
-        //if (!Media_IF.isBootSourceChanged()) {
-        //    Log.d(TAG, "playDefaultMusic return! BootSource not changed!");
-        //    return;
-        //}
+        if (!Media_IF.isBootSourceChanged()) {
+            Log.d(TAG, "playDefaultMusic return! BootSource not changed!");
+            return;
+        }
         if (!Media_IF.isPowerOn() && !Media_IF.getScreenOn()) {
             Log.d(TAG, "playDefaultMusic return! PowerOff and ScreenOff!");
             return;
