@@ -1,7 +1,5 @@
 package com.haoke.ui.image;
 
-import haoke.ui.util.HKViewPager;
-
 import java.util.ArrayList;
 
 import android.app.AlertDialog;
@@ -13,8 +11,8 @@ import android.graphics.RectF;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -38,6 +36,8 @@ import com.haoke.mediaservice.R;
 import com.haoke.ui.photoview.Media_Photo_View;
 import com.haoke.ui.photoview.PhotoViewAttacher.OnMatrixChangedListener;
 import com.haoke.ui.photoview.PhotoViewAttacher.OnPhotoTapListener;
+import com.haoke.ui.widget.MyViewPaper;
+import com.haoke.ui.widget.MyViewPaper.OnPageChangeListener;
 import com.haoke.util.DebugLog;
 import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
@@ -66,7 +66,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     private ImageView mCollectView;
     private TextView mTitleTextView;
     private TextView mUnsupportView;
-    private HKViewPager mViewPager;
+    private MyViewPaper mViewPager;
     private PhotoPagerAdapter mAdapter;
     private Handler mActivityHandler;
     private int mDeviceType;
@@ -129,7 +129,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mViewPager = (HKViewPager) findViewById(R.id.image_play_viewpager);
+        mViewPager = (MyViewPaper) findViewById(R.id.image_play_viewpager);
 
         mCtrlBar = findViewById(R.id.image_play_ctrlbar);
         mBackImageView = (ImageView) mCtrlBar.findViewById(R.id.image_ctrlbar_list);
@@ -190,11 +190,13 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     	if(mErrorCount >= 5){
     		mErrorCount = 0;
     		if (mActivityHandler != null) {
+    			mHandler.removeMessages(NEXT_PLAY);
                 mActivityHandler.sendEmptyMessage(Image_Activity_Main.SWITCH_TO_LIST_FRAGMENT);
             }
     		//return;
     	}
         
+    	// mViewPager.setOffscreenPageLimit(3);
         mViewPager.setOnPageChangeListener(mPageChangeListener);
         mViewPager.setOnTouchListener(mTouchListener);
     }
@@ -262,31 +264,35 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     
     public void preImage() {
         mHandler.removeMessages(PLAY_ERROR);
+        DebugLog.e("luke","preImage Image Loading 1");
         if (mViewPager != null) {
             if (getCurPhotoView() != null) {
+            	DebugLog.e("luke","preImage Image Loading 2");
                 mCurPosition--;
                 mCurPosition = mCurPosition < 0 ? mPhotoList.size() - 1 : mCurPosition;
-                if (mCurPosition == (mPhotoList.size() - 1)) {
+/*                if (mCurPosition == (mPhotoList.size() - 1)) {
                     mViewPager.setCurrentItem(mCurPosition, false);
-                } else {
+                } else {*/
                     mViewPager.setCurrentItem(mCurPosition);
-                }
+                //}
                 checkPlayStatus(); // 重新计时
             }
         }
     }
     
     public void nextImage() {
+    	DebugLog.e("luke","nextImage Image Loading 1");
         mHandler.removeMessages(PLAY_ERROR);
         if (mViewPager != null) {
             if (getCurPhotoView() != null) {
+            	DebugLog.e("luke","nextImage Image Loading 2");
                 mCurPosition++;
                 mCurPosition = mCurPosition >= mPhotoList.size() ? 0 : mCurPosition;
-                if (mCurPosition == 0) {
+/*                if (mCurPosition == 0) {
                     mViewPager.setCurrentItem(mCurPosition, false);
-                } else {
+                } else {*/
                     mViewPager.setCurrentItem(mCurPosition);
-                }
+                //}
                 checkPlayStatus(); // 重新计时
             }
         }
@@ -354,6 +360,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     
     // 重置自动播放计时器
     private void checkPlayStatus() {
+    	Log.d("luke",Log.getStackTraceString(new Throwable()));
         if (mPlayState == PlayState.PLAY) {
             mHandler.removeMessages(NEXT_PLAY);
             mHandler.sendEmptyMessageDelayed(NEXT_PLAY, DELAY_TIME);
@@ -438,16 +445,17 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
         public void handleMessage(Message msg) {
             switch (msg.what) {
             case NEXT_PLAY:
+            	DebugLog.e("luke","NEXT_PLAY Image Loading");
                 mPreFlag = false;
                 mCurPosition++;
                 if (mCurPosition >= mPhotoList.size()) {
                     mCurPosition = 0; // 循环播放
                 }
-                if (mCurPosition == 0) {
+/*                if (mCurPosition == 0) {
                     mViewPager.setCurrentItem(mCurPosition, false);
-                } else {
+                } else {*/
                     mViewPager.setCurrentItem(mCurPosition);
-                }
+                //}
                 checkPlayStatus();
                 break;
             case HIDE_CTRL:
@@ -483,7 +491,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             FileNode fileNode = mPhotoList.get(position);
-            
+            DebugLog.e("luke","instantiateItem");
             View view = LayoutInflater.from(mContext).inflate(R.layout.image_photopager_item, null);
             Media_Photo_View photoView = (Media_Photo_View) view.findViewById(R.id.photopager_imageview);
             photoView.setOnMatrixChangeListener(PhotoPlayLayout.this);
@@ -613,6 +621,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
         	if(mErrorCount >= 5){
         		mErrorCount = 0;
         		if (mActivityHandler != null) {
+        			mHandler.removeMessages(NEXT_PLAY);
                     mActivityHandler.sendEmptyMessage(Image_Activity_Main.SWITCH_TO_LIST_FRAGMENT);
                 }
         		//return;
@@ -660,7 +669,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
                         if (isEndToHead) {
                             DebugLog.d("Yearlay", " ...END to HEAD...");
                             isEndToHead = false;
-                            nextImage();
+                            // nextImage();
                             mViewPager.setCurrentItem(0, false);
                             return true;
                         }

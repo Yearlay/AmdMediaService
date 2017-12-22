@@ -44,7 +44,7 @@ public class VideoPlayController implements AudioFocusListener {
 
 	protected Context mContext = null;
 	private MyVideoView mVideView;
-	// private int mCurPlayTime; //当前播放媒体时间点
+	private int mCurPlayTime = 0; //当前播放媒体时间点
 	private int mCurPlayVideoIndex; // 当前播放媒体index
 	private FileNode mCurFileNode; // 当前播放的文件
 	private AllMediaList mAllMediaList;
@@ -587,19 +587,29 @@ public class VideoPlayController implements AudioFocusListener {
 	public FileNode getCurFileNode() {
 		return mCurFileNode;
 	}
+	
+	public int getCurPlayTime(){
+		return mCurPlayTime;
+	}
 
+	private int playTimeSaveCount = 0;
 	private void savePlayTime(FileNode fileNode, int playTime) {
 		if (fileNode == null) {
 			return;
 		}
-		mAllMediaList.savePlayTime(fileNode, playTime);
+		mCurPlayTime = playTime;
+		playTimeSaveCount ++;
+		if(playTimeSaveCount >= 3 ){
+			playTimeSaveCount = 0;
+			mAllMediaList.savePlayTime(fileNode, playTime);
+		}
 	}
 
 	public Handler getControllerHandler() {
 		return mHandler;
 	}
 
-	private static final int MSG_DELAY_PLAYTIME = 3000;
+	private static final int MSG_DELAY_PLAYTIME = 1000;
 	private static final int MSG_SAVE_PLAYTIME = 1;
 	private static final int MSG_SAVE_PLAYSTATE = 2;
 	private static final int MSG_PARSE_ID3_INFO = 3;
@@ -648,6 +658,7 @@ public class VideoPlayController implements AudioFocusListener {
 			case MSG_SAVE_PLAYTIME:
 				int time = getPosition();
 				savePlayTime(getPlayFileNode(), time);
+				Log.e("luke","----MSG_SAVE_PLAYTIME: " + time);
 				removeMessages(MSG_SAVE_PLAYTIME);
 				sendEmptyMessageDelayed(MSG_SAVE_PLAYTIME, MSG_DELAY_PLAYTIME);
 				break;
