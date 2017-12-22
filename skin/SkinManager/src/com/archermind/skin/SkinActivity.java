@@ -3,13 +3,8 @@ package com.archermind.skin;
 import com.archermind.skin.R;
 
 import android.app.Activity;
-import android.app.ActivityManagerNative;
-import android.app.IActivityManager;
-import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.RemoteException;
 import android.provider.Settings;
-import android.util.Log;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
@@ -117,12 +112,10 @@ public class SkinActivity extends Activity implements OnCheckedChangeListener{
             case R.id.skin_default:
                 Toast.makeText(getApplicationContext(), "Skin theme: 0", Toast.LENGTH_SHORT).show();
                 Settings.System.putInt(getContentResolver(), "bd_theme_color", 0);
-                switchMcc(460);
                 break;
             case R.id.skin_one:
                 Toast.makeText(getApplicationContext(), "Skin theme: 1", Toast.LENGTH_SHORT).show();
                 Settings.System.putInt(getContentResolver(), "bd_theme_color", 1);
-                switchMcc(454);
                 break;
                 
             case R.id.user_default:
@@ -140,17 +133,5 @@ public class SkinActivity extends Activity implements OnCheckedChangeListener{
             default:
                 break;
         }
-    }
-
-    private void switchMcc(int mcc) {
-        try {  
-            IActivityManager iActMag = ActivityManagerNative.getDefault();  
-            Configuration config = iActMag.getConfiguration();
-            Log.d("SkinActivity", "mcc="+config.mcc+"; mnc="+config.mnc);
-            config.mcc = mcc;
-            iActMag.updateConfiguration(config);  
-        } catch (RemoteException e) {  
-            Log.d(TAG, "switchMcc e="+e);
-        }  
     }
 }
