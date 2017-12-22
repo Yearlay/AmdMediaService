@@ -172,14 +172,13 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 				FileNode temp = mVideoController.getPlayFileNode();
 				try {
 					if (temp != null) {
-						Log.e("luke", "------onPrepared filePlayTime: " + temp.getPlayTime() + "   , recordTime: " + mVideoController.getCurPlayTime() );
+						Log.e("luke", "------onPrepared filePlayTime: " + temp.getPlayTime());
 						//mVideoView.setBackgroundColor(Color.TRANSPARENT);
 						//updateVideoLayout(true);
 						// mVideoView.cl
 						// mVideoView.invalidate();
-						int playtime = (temp.getPlayTime() > mVideoController.getCurPlayTime()) ? temp.getPlayTime() : mVideoController.getCurPlayTime();
 						mVideoController.playOrPause(getBeforePlaystate());
-						mVideoController.setPosition(playtime);
+						mVideoController.setPosition(temp.getPlayTime());
 						if (getBeforePlaystate()) {
 							startHideTimer();
 						}

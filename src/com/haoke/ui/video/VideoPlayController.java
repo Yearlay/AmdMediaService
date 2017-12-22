@@ -587,10 +587,6 @@ public class VideoPlayController implements AudioFocusListener {
 	public FileNode getCurFileNode() {
 		return mCurFileNode;
 	}
-	
-	public int getCurPlayTime(){
-		return mCurPlayTime;
-	}
 
 	private int playTimeSaveCount = 0;
 	private void savePlayTime(FileNode fileNode, int playTime) {
@@ -598,6 +594,7 @@ public class VideoPlayController implements AudioFocusListener {
 			return;
 		}
 		mCurPlayTime = playTime;
+		fileNode.setPlayTime(playTime);
 		playTimeSaveCount ++;
 		if(playTimeSaveCount >= 3 ){
 			playTimeSaveCount = 0;
