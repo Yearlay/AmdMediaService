@@ -16,6 +16,7 @@ import android.content.DialogInterface.OnDismissListener;
 import android.database.ContentObserver;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -25,6 +26,7 @@ import android.widget.TextView;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
 public class CustomDialog implements OnClickListener, OnDismissListener {
+    private static final String TAG = "CustomDialog";
     private Context mContext;
 	private View mRootView;
 	private Button mOkButton;
@@ -134,7 +136,11 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 			Handler handler = new Handler() {
 				@Override
 				public void handleMessage(Message msg) {
-					mDialog.dismiss();
+				    try {
+	                    mDialog.dismiss();
+                    } catch (Exception e) {
+                        Log.e(TAG, "NONE_BTN DISMISS" + e.toString());
+                    }
 					super.handleMessage(msg);
 				}
 				
