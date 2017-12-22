@@ -21,11 +21,15 @@ public class UsbAutoPlay {
     private static String TAG = "UsbAutoPlay";
     private static long sServiceStartTime = -1;
     private static final int DELAY_AUTO_PLAY = 90;
-    private static boolean sDonotDelay = false;
+    private static boolean sDonotDelay = true;
+    private static boolean isBootInsertUsb1 = false;
+    private static boolean isBootInsertUsb2 = false;
     
     public static void setServiceStartTime() {
         if (sServiceStartTime == -1) {
             sServiceStartTime = SystemClock.elapsedRealtime();
+            isBootInsertUsb1 = MediaInterfaceUtil.isUsbOn(DeviceType.USB1);
+            isBootInsertUsb2 = MediaInterfaceUtil.isUsbOn(DeviceType.USB2);
         }
     }
     
@@ -34,6 +38,14 @@ public class UsbAutoPlay {
             return;
         }
         if (deviceType != DeviceType.USB1 && deviceType != DeviceType.USB2) {
+            return;
+        }
+        //if (!Media_IF.isBootSourceChanged()) {
+        //    Log.d(TAG, "playDefaultMusic return! BootSource not changed!");
+        //    return;
+        //}
+        if (!Media_IF.isPowerOn() && !Media_IF.getScreenOn()) {
+            Log.d(TAG, "playDefaultMusic return! PowerOff and ScreenOff!");
             return;
         }
         if (!sDonotDelay) {
@@ -48,7 +60,14 @@ public class UsbAutoPlay {
                 return;
             }
         }
-        Log.d(TAG, "playDefaultMusic deviceType="+deviceType);
+        Log.d(TAG, "playDefaultMusic deviceType="+deviceType+"; isBootInsertUsb1="+isBootInsertUsb1+"; isBootInsertUsb2="+isBootInsertUsb2);
+        if (isBootInsertUsb1 && deviceType == DeviceType.USB1) {
+            isBootInsertUsb1 = false;
+            return;
+        } else if (isBootInsertUsb2 && deviceType == DeviceType.USB2) {
+            isBootInsertUsb2 = false;
+            return;
+        }
         Media_IF mIF = Media_IF.getInstance();
         Context context = MediaApplication.getInstance();
         AllMediaList allMediaList = AllMediaList.instance(context);
