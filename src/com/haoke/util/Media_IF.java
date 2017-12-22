@@ -19,11 +19,13 @@ import com.haoke.aidl.ICarUartCallBack;
 import com.haoke.constant.MediaUtil;
 import com.haoke.data.ModeSwitch;
 import com.haoke.data.PlayStateSharedPreferences;
+import com.haoke.define.CMSStatusDef.BootChangeSsourceStatus;
 import com.haoke.define.CMSStatusDef.CMSStatusFuc;
 import com.haoke.define.CMSStatusDef.TrafficRestriction;
 import com.haoke.define.CMSStatusDef.VehicleStatus;
 import com.haoke.define.McuDef;
 import com.haoke.define.McuDef.McuFunc;
+import com.haoke.define.McuDef.PowerState;
 import com.haoke.define.SystemDef.ScreenState;
 import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.FileType;
@@ -354,6 +356,23 @@ public class Media_IF extends CarService_IF {
 	public static boolean isCarReversing() {
 	    int status = getCMSStatus(CMSStatusFuc.VEHICLE_STATUS);
 	    return status == VehicleStatus.REVERSING;
+	}
+	
+	// 是否已经切过源了
+	public static boolean isBootSourceChanged() {
+	    int status = getCMSStatus(CMSStatusFuc.BOOT_CHANGE_SOURCE);
+	    return status == BootChangeSsourceStatus.STATUS_CHANGED;
+	}
+	
+	public static boolean isPowerOn() {
+	    try {
+	        int status = getInstance().mServiceIF.mcu_getPowerState();
+	        Log.d(TAG, "isPowerOn status="+status);
+	        return status == PowerState.POWER_ON;
+        } catch (Exception e) {
+            Log.e(TAG, "isPowerOn error e="+e);
+        }
+	    return true;
 	}
 	
 	/**

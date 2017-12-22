@@ -1,5 +1,6 @@
 package com.amd.media;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import android.app.ActivityManager;
@@ -419,6 +420,18 @@ public class MediaInterfaceUtil {
         }
         Log.d(TAG, "isNaviApp naviOpenKey="+naviOpenKey+"; isTop="+isTop);
         return naviOpenKey == 0 ? isTop : true;
+    }
+    
+    private static final String DEVICE_PATH_USB_1 = "/mnt/media_rw/usb_storage";
+    private static final String DEVICE_PATH_USB_2 = "/mnt/media_rw/usb_storage1";
+    public static boolean isUsbOn(int deviceType) {
+        String str = deviceType == DeviceType.USB1 ? DEVICE_PATH_USB_1 : DEVICE_PATH_USB_2;
+        File file = new File(str);
+        if (file.exists() && file.isDirectory() && file.canRead()
+                && file.canExecute()) {
+            return true;
+        }
+        return false;
     }
     
     private static long start = -1;
