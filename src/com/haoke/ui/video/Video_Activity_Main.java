@@ -115,8 +115,8 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 		mCopyTextView = (TextView) mEditView.findViewById(R.id.copy_to_local);
 		mCopyTextView.setOnClickListener(this);
 
-		registerReceiver(mPlayLayout.getVideoLayoutReciver(), new IntentFilter(Intent.ACTION_MEDIA_BUTTON));
 		registerReceiver(mOperateAppReceiver, new IntentFilter(VRIntent.ACTION_OPERATE_VIDEO));
+		mPlayLayout.registerMediaButtonReceiver();
 
 		mPlaying = false;
 
@@ -291,7 +291,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 		Log.v(TAG, "HMI------------onDestroy");
 		super.onDestroy();
 		// Media_IF.getInstance().setVideoActivity(null);
-		unregisterReceiver(mPlayLayout.getVideoLayoutReciver());
+		mPlayLayout.unRegisterMediaButtonReceiver();
 		AllMediaList.instance(getApplicationContext()).unRegisterLoadListener(this);
 		unregisterReceiver(mOperateAppReceiver);
 

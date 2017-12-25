@@ -78,7 +78,6 @@ public class VideoPlayController implements AudioFocusListener {
 		mAllMediaList = AllMediaList.instance(mContext);
 
 		mAudioFocus = new AudioFocus(mContext);
-		mAudioFocus.registerListener(this);
 
 		// mAudioManager =
 		// (AudioManager)mContext.getSystemService(Context.AUDIO_SERVICE);
@@ -86,11 +85,13 @@ public class VideoPlayController implements AudioFocusListener {
 		// AmdMediaButtonReceiver.class);
 	}
 	
-	public void setLoadListener(boolean flag) {
+	public void setRegisterListener(boolean flag) {
 	    if (flag) {
 	        AllMediaList.instance(mContext).registerLoadListener(mLoadListener);
+	        mAudioFocus.registerListener(this);
 	    } else {
 	        AllMediaList.instance(mContext).unRegisterLoadListener(mLoadListener);
+	        mAudioFocus.unRegisterListener(this);
 	    }
 	}
 
@@ -782,7 +783,7 @@ public class VideoPlayController implements AudioFocusListener {
 			} else {
 
 			}
-			mContext.registerReceiver(videoLayout.getVideoLayoutReciver(), new IntentFilter(Intent.ACTION_MEDIA_BUTTON));
+			videoLayout.registerMediaButtonReceiver();
 			break;
 		case PlayState.PAUSE: // 失去焦点
 			mPlayStateBeforeLoseFocus = playState;
@@ -792,7 +793,7 @@ public class VideoPlayController implements AudioFocusListener {
 			// videoLayout.updatePlayState(true);
 			break;
 		case PlayState.STOP:
-			mContext.unregisterReceiver(videoLayout.getVideoLayoutReciver());
+			videoLayout.unRegisterMediaButtonReceiver();
 			mPlayStateBeforeLoseFocus = PlayState.STOP;
 			// mVideView.stopPlayback();
 			// videoLayout.setBeforePlaystate(playStateTransformation(mPlayStateBeforeLoseFocus));

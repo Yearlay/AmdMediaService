@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
@@ -156,13 +157,13 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 	
 	@Override
     protected void onAttachedToWindow() {
-	    mVideoController.setLoadListener(true);
+	    mVideoController.setRegisterListener(true);
         super.onAttachedToWindow();
     }
 	
 	@Override
     protected void onDetachedFromWindow() {
-	    mVideoController.setLoadListener(false);
+	    mVideoController.setRegisterListener(false);
         super.onDetachedFromWindow();
     }
 
@@ -262,9 +263,20 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 		initTouchSlop();
 		skinManager = SkinManager.instance(mContext);
 	}
-
-	public BroadcastReceiver getVideoLayoutReciver() {
-		return mBroadcastReceiver;
+	
+	private boolean registerFlag = false;
+	public void registerMediaButtonReceiver() {
+	    if (!registerFlag) {
+	        getContext().registerReceiver(mBroadcastReceiver, new IntentFilter(Intent.ACTION_MEDIA_BUTTON));
+	        registerFlag = true;
+	    }
+	}
+	
+	public void unRegisterMediaButtonReceiver() {
+	    if (registerFlag) {
+	        getContext().unregisterReceiver(mBroadcastReceiver);
+	        registerFlag = false;
+	    }
 	}
 
 	// 系统按键处理
