@@ -91,6 +91,10 @@ public class VideoListLayout extends RelativeLayout implements
         SkinManager.setScrollViewDrawable(mGridView, skinManager.getDrawable(R.drawable.scrollbar_thumb));
     }
     
+    public void onPause() {
+        mLoadingImageView.setImageDrawable(null); // 需要这个操作，解决mLoadingImageView在界面销毁之后不回收的问题。
+    }
+    
     public void updataList(ArrayList<FileNode> dataList, StorageBean storageBean) {
         mCurrentStorageBean = storageBean;
         mVideoList.clear();

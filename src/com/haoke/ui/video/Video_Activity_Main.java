@@ -275,6 +275,8 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 		Log.v("luke", "HMI------------onPause BeforePlaystate: " + mPlayLayout.getBeforePlaystate());
 		mListLayout.dismissDialog();
 		getContentResolver().unregisterContentObserver(mContentObserver);
+		
+		mListLayout.onPause();
 	}
 
 	@Override
