@@ -29,4 +29,14 @@ public class AmdConfig {
      * 当扫描完成后，启动音频的id3解析
      */
     public static final boolean SCAN_OVER_LAUNCHER_PARSE_AUDIO_ID3_INFO = true;
+    
+    /**
+     * ImageLoader的缓存大小, 当前定义为12M。
+     */
+    public static final int CACHE_SIZE_OF_IMAGELOADER = 12;
+    
+    /**
+     * 支持的最大的图片文件，当前定义为32M。
+     */
+    public static final int MAX_SIZE_OF_IMAGE = 32;
 }

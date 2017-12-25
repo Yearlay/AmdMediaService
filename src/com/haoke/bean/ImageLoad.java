@@ -2,6 +2,7 @@ package com.haoke.bean;
 
 import java.io.File;
 
+import com.amd.util.AmdConfig;
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.mediaservice.R;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
@@ -19,7 +20,7 @@ import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
 
 public class ImageLoad {
-    private static final int MAX_SIZE =  32 * 1024 * 1024;
+    private static final int MAX_SIZE =  AmdConfig.MAX_SIZE_OF_IMAGE * 1024 * 1024;
     private Context mContext;
     
     private static ImageLoad sInstance;
@@ -40,9 +41,10 @@ public class ImageLoad {
 
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(mContext)
                 .defaultDisplayImageOptions(defaultOptions)
-                .memoryCache(new LruMemoryCache(12 * 1024 * 1024))
-                .memoryCacheSize(12 * 1024 * 1024)
-                .discCacheSize(32 * 1024 * 1024).discCacheFileCount(100)
+                .memoryCache(new LruMemoryCache(AmdConfig.CACHE_SIZE_OF_IMAGELOADER * 1024 * 1024))
+                .memoryCacheSize(AmdConfig.CACHE_SIZE_OF_IMAGELOADER * 1024 * 1024)
+                .discCacheSize(AmdConfig.CACHE_SIZE_OF_IMAGELOADER * 3 * 1024 * 1024)
+                .discCacheFileCount(100)
                 .diskCache(new UnlimitedDiskCache(cacheDir))
                 .threadPriority(Thread.NORM_PRIORITY - 2)
                 .denyCacheImageMultipleSizesInMemory()
