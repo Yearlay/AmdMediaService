@@ -54,7 +54,7 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 		mDialogListener = listener;
 	}
 
-	private Dialog mDialog;
+	private MyDialog mDialog;
 	public Dialog getDialog() {
 		return mDialog;
 	}
@@ -84,13 +84,11 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 	}
 	
 	public void ShowDialog(Context context, DIALOG_TYPE type, int messageId) {
-		if (mDialog != null) {
-			mDialog.dismiss();
-		}
+	    CloseDialog();
 		mContext = context;
-        mContext.getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, mContentObserver);
-		mDialog = new Dialog(context, R.style.pub_dialog);
+		mDialog = new MyDialog(context, R.style.pub_dialog);
 		mDialog.setOnDismissListener(this);
+		mDialog.setContentObserver(mContentObserver);
 		switch (type) {
 			case NONE_BTN:
 				mDialog.setContentView(R.layout.custom_dialog_none);
@@ -137,7 +135,7 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 				@Override
 				public void handleMessage(Message msg) {
 				    try {
-	                    mDialog.dismiss();
+	                    CloseDialog();
                     } catch (Exception e) {
                         Log.e(TAG, "NONE_BTN DISMISS" + e.toString());
                     }
@@ -150,12 +148,10 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 	}
 	
 	public void showProgressDialog(Context context, int titleID, OnDismissListener listener) {
-		if (mDialog != null) {
-			mDialog.dismiss();
-		}
+	    CloseDialog();
 		mContext = context;
-        mContext.getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, mContentObserver);
-		mDialog = new Dialog(context, R.style.pub_dialog);
+		mDialog = new MyDialog(context, R.style.pub_dialog);
+		mDialog.setContentObserver(mContentObserver);
 		mOtherOnDismissListener = listener;
 		mDialog.setOnDismissListener(this);
 		mDialog.setContentView(R.layout.custom_dialog_progress);
@@ -179,12 +175,10 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 	}
 	
 	public void showCoverDialog(Context context, ArrayList<FileNode> dataList) {
-		if (mDialog != null) {
-			mDialog.dismiss();
-		}
+	    CloseDialog();
 		mContext = context;
-		mContext.getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, mContentObserver);
-		mDialog = new Dialog(context, R.style.pub_dialog);
+		mDialog = new MyDialog(context, R.style.pub_dialog);
+		mDialog.setContentObserver(mContentObserver);
 		mDialog.setOnDismissListener(this);
 		mDialog.setContentView(R.layout.custom_dialog_two_cover);
 		// 初始化界面
@@ -243,14 +237,11 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 		if (mDialogListener != null) {
 			mDialogListener.OnDialogEvent(view.getId());
 		}
-		mDialog.dismiss();
+		CloseDialog();
 	}
 
 	@Override
 	public void onDismiss(DialogInterface dialog) {
-	    if (mContext != null) {
-	        mContext.getContentResolver().unregisterContentObserver(mContentObserver);
-	    }
 		if (mDialogListener != null) {
 			mDialogListener.OnDialogDismiss();
 		}
@@ -270,4 +261,32 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
             refreshSkin();
         };
     };
+    
+    class MyDialog extends Dialog {
+        ContentObserver contentObserver = null;
+        
+        public MyDialog(Context context) {
+            super(context);
+        }
+        
+        public MyDialog(Context context, int theme) {
+            super(context, theme);
+        }
+
+        public MyDialog(Context context, boolean cancelable, OnCancelListener cancelListener) {
+            super(context, cancelable, cancelListener);
+        }
+
+        public void setContentObserver(ContentObserver cObserver) {
+            contentObserver = cObserver;
+            getContext().getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, contentObserver);
+        }
+
+        @Override
+        public void dismiss() {
+            getContext().getContentResolver().unregisterContentObserver(contentObserver);
+            super.dismiss();
+        }
+        
+    }
 }
