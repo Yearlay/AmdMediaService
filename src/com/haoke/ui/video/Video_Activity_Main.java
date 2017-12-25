@@ -261,6 +261,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 		isShow = false;
 		Log.v("luke", "HMI------------onPause BeforePlaystate: " + mPlayLayout.getBeforePlaystate());
 		mRadioGroup.setVisibility(View.GONE);
+		mSearchButton.setVisibility(View.GONE);
 		if (mPlayLayout.getVisibility() == View.VISIBLE) {
 			Log.v(TAG, "HMI------------onPause mPlayLayout VISIBLE");
 			mPlayLayout.onPause();
@@ -613,6 +614,9 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 			mListLayout.setVisibility(View.VISIBLE);
 			if (!mListLayout.isEditMode()) {
 				mRadioGroup.setVisibility(View.VISIBLE);
+				if(mSearchButton != null){
+					mSearchButton.setVisibility(View.VISIBLE);
+				}
 			}
 			
 			 HKWindowManager.showWallpaper(this);

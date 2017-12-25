@@ -186,10 +186,6 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 				try {
 					if (temp != null) {
 						Log.e("luke", "------onPrepared filePlayTime: " + temp.getPlayTime());
-						//mVideoView.setBackgroundColor(Color.TRANSPARENT);
-						//updateVideoLayout(true);
-						// mVideoView.cl
-						// mVideoView.invalidate();
 						mVideoController.playOrPause(getBeforePlaystate());
 						mVideoController.setPosition(temp.getPlayTime());
 						if (getBeforePlaystate()) {
@@ -213,12 +209,12 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 			public boolean onError(MediaPlayer arg0, int arg1, int arg2) {
 				// TODO Auto-generated method stub
 				Log.e("luke", "-----------setOnErrorListener");
-				if (getVisibility() == View.VISIBLE) {
+				//if (getVisibility() == View.VISIBLE) {
 					Log.e("luke", "send error message!!!");
 					setUnsupportViewShow(true);
 					mActivityHandler.removeMessages(Video_Activity_Main.HIDE_UNSUPPORT_VIEW);
 					mActivityHandler.sendEmptyMessageDelayed(Video_Activity_Main.HIDE_UNSUPPORT_VIEW, 1000);
-				}
+				//}
 				mLoading.setVisibility(View.GONE);
 				return true;
 			}

@@ -3,8 +3,6 @@ package com.haoke.ui.video;
 import java.util.ArrayList;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Message;
@@ -166,9 +164,11 @@ public class VideoPlayController implements AudioFocusListener {
 			mVideView.stopPlayback();
 			mPlayState = PlayState.STOP;
 			mVideView.suspend();
-			mVideView.invalidate();
+			//mVideView.invalidate();
 			//mVideView.setBackgroundColor(Color.BLACK);
-
+			//videoLayout.setVisibility(View.GONE);
+			//videoLayout.invalidate();
+			//mVideView.refreshDrawableState();
 		} catch (Exception e) {
 			Log.e(TAG, "resetMediaPlayer e=" + e);
 		}
