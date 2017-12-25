@@ -1931,7 +1931,10 @@ public class MyViewPaper extends ViewGroup {
                 }
 
                 final int pointerIndex = MotionEventCompat.findPointerIndex(ev, activePointerId);
-                final float x = MotionEventCompat.getX(ev, pointerIndex);
+                if (pointerIndex == -1) {// fix bug 19577
+                    return mIsBeingDragged;
+                }
+                float x = MotionEventCompat.getX(ev, pointerIndex);
                 final float dx = x - mLastMotionX;
                 final float xDiff = Math.abs(dx);
                 final float y = MotionEventCompat.getY(ev, pointerIndex);
