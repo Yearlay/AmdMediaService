@@ -35,29 +35,27 @@ public class ImageLoad {
     public ImageLoad(Context context) {
         super();
         mContext = context;
-        File cacheDir = StorageUtils.getOwnCacheDirectory(mContext, "imageloader/Cache");
-        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-                .cacheInMemory(true).cacheOnDisc(true).build();
-
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(mContext)
-                .defaultDisplayImageOptions(defaultOptions)
-                .memoryCache(new LruMemoryCache(AmdConfig.CACHE_SIZE_OF_IMAGELOADER * 1024 * 1024))
-                .memoryCacheSize(AmdConfig.CACHE_SIZE_OF_IMAGELOADER * 1024 * 1024)
-                .discCacheSize(AmdConfig.CACHE_SIZE_OF_IMAGELOADER * 3 * 1024 * 1024)
-                .discCacheFileCount(100)
-                .diskCache(new UnlimitedDiskCache(cacheDir))
-                .threadPriority(Thread.NORM_PRIORITY - 2)
-                .denyCacheImageMultipleSizesInMemory()
-                .diskCacheFileNameGenerator(new Md5FileNameGenerator())
-                .tasksProcessingOrder(QueueProcessingType.LIFO)
-                .writeDebugLogs()
-                .build();
-
-        ImageLoader.getInstance().init(config);
-    }
-    
-    public ImageLoader getImageLoader() {
-        return ImageLoader.getInstance();
+        if (!AmdConfig.IMAGELOADER_OFF) {
+            File cacheDir = StorageUtils.getOwnCacheDirectory(mContext, "imageloader/Cache");
+            DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+            .cacheInMemory(true).cacheOnDisc(true).build();
+            
+            ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(mContext)
+            .defaultDisplayImageOptions(defaultOptions)
+            .memoryCache(new LruMemoryCache(AmdConfig.CACHE_SIZE_OF_IMAGELOADER * 1024 * 1024))
+            .memoryCacheSize(AmdConfig.CACHE_SIZE_OF_IMAGELOADER * 1024 * 1024)
+            .discCacheSize(AmdConfig.CACHE_SIZE_OF_IMAGELOADER * 3 * 1024 * 1024)
+            .discCacheFileCount(100)
+            .diskCache(new UnlimitedDiskCache(cacheDir))
+            .threadPriority(Thread.NORM_PRIORITY - 2)
+            .denyCacheImageMultipleSizesInMemory()
+            .diskCacheFileNameGenerator(new Md5FileNameGenerator())
+            .tasksProcessingOrder(QueueProcessingType.LIFO)
+            .writeDebugLogs()
+            .build();
+            
+            ImageLoader.getInstance().init(config);
+        }
     }
     
     public static DisplayImageOptions getOptions(Drawable defaultDrawable) {
@@ -70,6 +68,10 @@ public class ImageLoad {
     }
     
     public void loadBitmap(final ImageView imageView, Drawable defaultDrawable, final FileNode fileNode) {
+        if (AmdConfig.IMAGELOADER_OFF) {
+            imageView.setImageDrawable(defaultDrawable);
+            return;
+        }
         if (fileNode.getFileType() == FileType.IMAGE) {
             if (fileNode.getFile().length() > MAX_SIZE) {
                 imageView.setImageDrawable(defaultDrawable);
@@ -89,6 +91,10 @@ public class ImageLoad {
     
     public void loadImageBitmap(final ImageView imageView, Drawable defaultDrawable,
     		FileNode fileNode, ImageLoadingListener listener) {
+        if (AmdConfig.IMAGELOADER_OFF) {
+            imageView.setImageDrawable(defaultDrawable);
+            return;
+        }
         if (fileNode.getFileType() == FileType.IMAGE) {
             if (fileNode.getFile().length() > MAX_SIZE) {
                 imageView.setImageDrawable(defaultDrawable);

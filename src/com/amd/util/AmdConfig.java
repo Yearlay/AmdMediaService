@@ -36,6 +36,10 @@ public class AmdConfig {
     public static final int CACHE_SIZE_OF_IMAGELOADER = 12;
     
     /**
+     * 是否使用ImageLoader开关。
+     */
+    public static final boolean IMAGELOADER_OFF = false;
+    /**
      * 支持的最大的图片文件，当前定义为32M。
      */
     public static final int MAX_SIZE_OF_IMAGE = 32;
