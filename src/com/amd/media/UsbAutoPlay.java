@@ -79,10 +79,13 @@ public class UsbAutoPlay {
         if (!TextUtils.isEmpty(filePath)) {
             File file = new File(filePath);
             if (file.exists() && file.canRead()) {
-                Media_IF.setScreenOn();
-                Media_IF.getInstance().play(filePath);
-                if (!Media_IF.isCarReversing()) {
-                    MediaInterfaceUtil.launchMusicPlayActivity(context);
+                if (Media_IF.getInstance().play(filePath)) {
+                    Media_IF.setScreenOn();
+                    if (!Media_IF.isCarReversing()) {
+                        MediaInterfaceUtil.launchMusicPlayActivity(context);
+                    }
+                } else {
+                    filePath = null;
                 }
             } else {
                 filePath = null;
@@ -93,10 +96,11 @@ public class UsbAutoPlay {
         if (filePath == null) {
             ArrayList<FileNode> lists = allMediaList.getMediaList(deviceType, FileType.AUDIO);
             if (lists.size() > 0) {
-                Media_IF.setScreenOn();
-                Media_IF.getInstance().play(lists.get(0));
-                if (!Media_IF.isCarReversing()) {
-                    MediaInterfaceUtil.launchMusicPlayActivity(context);
+                if (Media_IF.getInstance().play(lists.get(0))) {
+                    Media_IF.setScreenOn();
+                    if (!Media_IF.isCarReversing()) {
+                        MediaInterfaceUtil.launchMusicPlayActivity(context);
+                    }
                 }
             }
         }
