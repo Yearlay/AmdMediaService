@@ -352,6 +352,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 		mFastPreImageView.setImageDrawable(skinManager.getDrawable(R.drawable.video_ctrl_fastpre_selector));
 		mFastNextImageView.setImageDrawable(skinManager.getDrawable(R.drawable.video_ctrl_fastnext_selector));
 		mNextImageView.setImageDrawable(skinManager.getDrawable(R.drawable.image_next_icon_selector));
+		mUnsupportView.setBackground(skinManager.getDrawable(R.drawable.pub_msgbox_bg1));
 		updateCollectView();
 		mTimeSeekBar.refreshSkin();
 	}
