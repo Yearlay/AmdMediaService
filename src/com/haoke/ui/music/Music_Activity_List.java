@@ -7,6 +7,8 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.database.ContentObserver;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -72,7 +74,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     
     private CustomDialog mProgressDialog;
 
-    private int mType = 0;//当前模式：0 列表模式，1 编辑模式
+    private boolean mEditMode = false;//当前模式：false 列表模式，true 编辑模式
     private boolean mPlayDefault = false;
     private Handler mHandler = new Handler();
     
@@ -141,15 +143,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     }
     
     private void resetDeviceType() {
-        if (mType == 1) {
-            for (int pos = 0; pos < mIF.getListTotal(); pos++) {
-                if (mIF.isCurItemSelected(pos)) {
-                    mIF.selectFile(pos, false);
-                }
-            }
-            mType = 0;
-            mAdapter.setListType(mType);
-        }
+        exitEditMode();
 
         mListTab.setLeftName(mDeviceType);
         if (mDeviceType == DeviceType.COLLECT) {//19
@@ -166,8 +160,8 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             mIF.setCurScanner(mDeviceType, FileType.AUDIO);
         }
         
-        mAdapter.updateList();
-        mListTab.updateEditTab();
+        mAdapter.updateDeviceType(mDeviceType, false);
+        setCurPlaySelection();
         showListLayout();
         
         if (mErrorDialog != null) {
@@ -204,11 +198,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
                     deleteItems();
                     break;
                 case R.id.music_tab_list_id:
-                    mType = 1;
-                    mAdapter.setListType(mType);
-                    mListTab.updateBtndate(false);
-                    mAdapter.updateList();
-                    mListTab.updateListTab();
+                    enterEditMode();
                     break;
                 case R.id.copy_to_local:
                     copyItems();
@@ -221,6 +211,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         mListView.setAdapter(mAdapter);
         mListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
         mListView.setOnItemClickListener(this);
+        mListView.setSelector(new ColorDrawable(Color.TRANSPARENT));
     }
     
     @Override
@@ -258,7 +249,6 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     
     private void refreshSkin() {
         mListTab.refreshSkin(skinManager);
-        mAdapter.notifyDataSetChanged();
         mLoadAnimationView.setImageDrawable(skinManager.getDrawable(R.drawable.media_loading_anim));
     }
     
@@ -449,7 +439,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             }
             if (isVisibility(mListLayout)) {
                 updateListWithoutSelection();
-                setCurPlaySelection(false);
+                setCurPlaySelection();
             }
         }
     }
@@ -481,24 +471,37 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     private void selectAllItems(){
         if (isItemsSeleted()) {
             mIF.selectAll(false);
+            mListTab.updateBtndate(false);
         } else {
             mIF.selectAll(true);
+            mListTab.updateBtndate(true);
         }
-        mListTab.updateBtndate(isItemsSeleted());
-        mAdapter.updateList();
+        notifyDataSetChanged();
     }
     
     //返回音乐列表
     private void backToList() {
-        for (int pos = 0; pos < mIF.getListTotal(); pos++) {
-            if (mIF.isCurItemSelected(pos)) {
-                mIF.selectFile(pos, false);
+        exitEditMode();
+    }
+    
+    private void enterEditMode() {
+        mEditMode = true;
+        mAdapter.setListType(mEditMode, true);
+        mListTab.updateBtndate(false);
+        mListTab.updateListTab();
+    }
+    
+    private void exitEditMode() {
+        if (mEditMode) {
+            for (int pos = 0; pos < mIF.getListTotal(); pos++) {
+                if (mIF.isCurItemSelected(pos)) {
+                    mIF.selectFile(pos, false);
+                }
             }
+            mEditMode = false;
+            mAdapter.setListType(mEditMode, true);
+            mListTab.updateEditTab();
         }
-        mType = 0;
-        mAdapter.setListType(mType);
-        mAdapter.updateList();
-        mListTab.updateEditTab();
     }
     
     private void updateDeleteState(int data, int data2) {
@@ -561,7 +564,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
                         mIF.selectFile(pos, false);
                     }
                 }
-                mAdapter.notifyDataSetChanged();
+                notifyDataSetChanged();
             }
         } else if (data == CopyState.SUCCESS) {
             mListTab.updateBtndate(false);
@@ -595,7 +598,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
                 }
                 @Override
                 public void OnDialogDismiss() {
-                    mAdapter.notifyDataSetChanged();
+                    notifyDataSetChanged();
                 }
             });
             mErrorDialog.showCoverDialog(this, audioList);
@@ -618,7 +621,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         }
     }
     
-    public void updateListWithoutSelection() {
+    private void updateListWithoutSelection() {
         int total = mIF.getListTotal();
         if (total <= 0) {
             try {
@@ -630,7 +633,8 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             }
             return;
         }
-        mAdapter.updateList();
+        mAdapter.resetLastPlayItem();
+        notifyDataSetChanged();
     }
     
     private boolean isVisibility(View view) {
@@ -686,8 +690,8 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position,
             long id) {
-        Log.v(TAG, "onItemClick mType="+mType+"; position="+position);
-        if (mType == 0) {//扫描列表
+        Log.v(TAG, "onItemClick mEditMode="+mEditMode+"; position="+position);
+        if (!mEditMode) {//扫描列表
             if (MediaInterfaceUtil.mediaCannotPlay()) {
                 return;
             }
@@ -711,15 +715,16 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             musicIntent.setClassName("com.haoke.mediaservice", "com.haoke.ui.media.Media_Activity_Main");
             musicIntent.putExtra("Mode_To_Music", "music_play_intent");
             startActivity(musicIntent);
-        } else if (mType == 1){//编辑列表
+        } else if (mEditMode){//编辑列表
             if (mIF.isCurItemSelected(position)) {
                 mIF.selectFile(position, false);
+                mListTab.updateBtndate(isItemsSeleted());
             } else {
                 mIF.selectFile(position, true);
+                mListTab.updateBtndate(true);
             }
             
-            mListTab.updateBtndate(isItemsSeleted());
-            mAdapter.notifyDataSetChanged();
+            notifyDataSetChanged();
         }
     }
     
@@ -744,7 +749,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             mListView.setVisibility(View.VISIBLE);
             mListTab.setVisibility(View.VISIBLE);
         }
-        mAdapter.updateList();
+        mAdapter.updateDeviceType(mDeviceType, true);
         
         // 停止当前正在滚动的列表
 //        mListView.dispatchTouchEvent(MotionEvent.obtain(
@@ -754,7 +759,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         final Runnable checkSelection = new Runnable() {
             @Override
             public void run() {
-                setCurPlaySelection(false);
+                setCurPlaySelection();
             }
         };
 
@@ -762,22 +767,30 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         mListView.postDelayed(checkSelection, 20);
     }
     
-    private void setCurPlaySelection(boolean requestFocus) {
-        if (requestFocus) mListView.requestFocusFromTouch();
+    private void setCurPlaySelection() {
         if (mIF.getPlayingDevice() == mDeviceType && mIF.getPlayingFileType() == FileType.AUDIO) {
-            int focusNo = 0;
-            focusNo = mIF.getPlayPos();
-            if (focusNo < 0)
-                focusNo = 0;
-            mListView.setSelection(focusNo);
+            setSelection(mIF.getPlayPos());
         } else {
             if (mPlayDefault) {
                 int index = mIF.getPlayDefaultIndex(mDeviceType, FileType.AUDIO);
-                mListView.setSelection(index);
+                setSelection(index);
             } else {
-                mListView.setSelection(0);
+                setSelection(0);
             }
         }
+    }
+    
+    private void setSelection(int index) {
+        mListView.requestFocusFromTouch();
+        if (index < 0) {
+            index = 0;
+        }
+        mListView.setSelection(index);
+        notifyDataSetChanged();
+    }
+    
+    private void notifyDataSetChanged() {
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -787,6 +800,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     
     private ContentObserver mContentObserver = new ContentObserver(new Handler()) {
         public void onChange(boolean selfChange) {
+            notifyDataSetChanged();
             refreshSkin();
         };
     };

@@ -12,12 +12,13 @@
     <!-- 列表 -->
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="455px" >
 
         <ListView
             android:id="@+id/music_list_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:descendantFocusability="blocksDescendants"
             android:fadeScrollbars="false"
             android:divider="@drawable/music_list_divider"  
 			android:dividerHeight="1px"

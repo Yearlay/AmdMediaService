@@ -43,11 +43,15 @@ public class AmdMediaButtonReceiver extends BroadcastReceiver {
             case KeyEvent.KEYCODE_MEDIA_PLAY: //126
                 if (!Image_Activity_Main.isPlayImage(context)) {
                     play();
+                } else {
+                    Log.d(TAG, "isPlayImage!");
                 }
                 break;
             case KeyEvent.KEYCODE_MEDIA_PAUSE: //127
                 if (!Image_Activity_Main.isPlayImage(context)) {
                     pause();
+                } else {
+                    Log.d(TAG, "isPlayImage!");
                 }
                 break;
             case KeyEvent.KEYCODE_MEDIA_PREVIOUS: //88

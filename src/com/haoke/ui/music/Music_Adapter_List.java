@@ -29,7 +29,7 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
     private Context mContext;
     private Media_IF mIF;
     private int mTotal = 0;
-    private int mTyep = 0;//当前模式：0 列表模式，1 编辑模式
+    private boolean mEditMode = false;//当前模式：false 列表模式，true 编辑模式
     private ListView mListView;
     private String unknown;
     private SkinManager skinManager;
@@ -47,15 +47,37 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
         mListView = listView;
     }
 
-    // 重新加载数据
-    public void updateList() {
-        mTotal = mIF.getListTotal();
-        mDeviceType = mIF.getMediaDevice();
+    // 设备有改变，重新加载数据
+    public boolean updateDeviceType(int deviceType, boolean force) {
+        if (mDeviceType != deviceType || force) {
+            mTotal = mIF.getMediaListSize(deviceType, FileType.AUDIO);
+            mDeviceType = deviceType;
+            resetLastPlayItem();
+            return true;
+        } else if (mDeviceType == deviceType) {
+            int size = mIF.getMediaListSize(deviceType, FileType.AUDIO);
+            if (size != mTotal) {
+                mTotal = size;
+                resetLastPlayItem();
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public void resetLastPlayItem() {
         mLastPlayItem = -2;
-        Log.v(TAG, "HMI------------updateList mTotal= " + mTotal);
-        refreshData();
     }
 
+    public void setListType(boolean editMode, boolean notifyDataChange) {
+        if (mEditMode != editMode) {
+            mEditMode = editMode;
+            if (notifyDataChange) {
+                notifyDataSetChanged();
+            }
+        }
+    }
+    
     @Override
     public View getView(final int position, View convertView, ViewGroup arg2) {
         final ViewHolder holder;
@@ -120,10 +142,10 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
                 holder.mTitleText.setText(fileNode.getTitleEx());
                 holder.mDescripeText.setText(getDescriptionText(fileNode));
                 
-                if (mTyep == 0) {
-                    holder.mSelectBtn.setVisibility(View.GONE);
-                } else if (mTyep == 1) {
+                if (mEditMode) {
                     holder.mSelectBtn.setVisibility(View.VISIBLE);
+                } else {
+                    holder.mSelectBtn.setVisibility(View.GONE);
                 } 
                 
                 //歌曲选中图标状态
@@ -169,10 +191,6 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
         return buffer.toString();
     }
     
-    public void setListType(int type) {
-        mTyep = type;
-    }
-    
     @Override
     public int getCount() {
         return mTotal;
@@ -198,11 +216,6 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
         private ImageView mPlayStateImage;
     }
 
-    // 重新加载数据
-    private void refreshData() {
-        notifyDataSetChanged();
-    }
-    
     @Override
     public void onID3ParseComplete(Object object, FileNode fileNode) {
         if (mListView == null) {
