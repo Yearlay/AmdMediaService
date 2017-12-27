@@ -158,8 +158,9 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
         if (mPhotoList.size() > 0) {
             mCurPosition = mCurPosition < 0 ? 0 : mCurPosition;
             mCurPosition = mCurPosition >= mPhotoList.size() ? mPhotoList.size() - 1 : mCurPosition; 
+            FileNode fileNode = mPhotoList.get(mCurPosition);
             mViewPager.setCurrentItem(mCurPosition, false);
-            DebugLog.d("Yearlay", "onResume setCurrentItem mCurPosition: " + mCurPosition);
+            checkUnsupportImage(fileNode);
         } else {
             if (mActivityHandler != null) {
                 mActivityHandler.sendEmptyMessage(Image_Activity_Main.SWITCH_TO_LIST_FRAGMENT);
@@ -173,28 +174,6 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
         updateCollectView();
         mTitleTextView.setText(mPhotoList.get(mViewPager.getCurrentItem()).getTitleEx());
         updatePlayState(mPlayState);
-        FileNode fileNode = mPhotoList.get(mCurPosition);
-        if (fileNode.isUnSupportFlag() || fileNode.getFile().length() > 52428800) { // 不支持的图片。
-            mCollectView.setVisibility(View.GONE);
-            mErrorCount++;
-            DebugLog.e("luke","onResume Image Loading Error");
-            mUnsupportView.setVisibility(View.VISIBLE);
-            mHandler.removeMessages(PLAY_ERROR);
-            mHandler.sendEmptyMessageDelayed(PLAY_ERROR, 1000);
-        } else {
-        	mErrorCount = 0;
-            mUnsupportView.setVisibility(View.GONE);
-            DebugLog.e("luke","onResume Image Loading complete");
-        }
-    	if(mErrorCount >= 5){
-    		mErrorCount = 0;
-    		if (mActivityHandler != null) {
-    			mHandler.removeMessages(NEXT_PLAY);
-                mActivityHandler.sendEmptyMessage(Image_Activity_Main.SWITCH_TO_LIST_FRAGMENT);
-            }
-    		//return;
-    	}
-        
     	// mViewPager.setOffscreenPageLimit(3);
         mViewPager.setOnPageChangeListener(mPageChangeListener);
         mViewPager.setOnTouchListener(mTouchListener);
@@ -358,6 +337,27 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
                 mProgressDialog.dismiss();
             }
         }
+    }
+    
+    private void checkUnsupportImage(FileNode fileNode){
+        if (fileNode.isUnSupportFlag() || fileNode.getFile().length() > 52428800) { // 不支持的图片。
+            mCollectView.setVisibility(View.GONE);
+            mErrorCount++;
+            DebugLog.e("luke","checkUnsupportImage Image Loading Error");
+            mUnsupportView.setVisibility(View.VISIBLE);
+            mHandler.removeMessages(PLAY_ERROR);
+            mHandler.sendEmptyMessageDelayed(PLAY_ERROR, 1000);
+        } else {
+        	mErrorCount = 0;
+            mUnsupportView.setVisibility(View.GONE);
+        }
+    	if(mErrorCount >= 5){
+    		mErrorCount = 0;
+    		if (mActivityHandler != null) {
+    			mHandler.removeMessages(NEXT_PLAY);
+                mActivityHandler.sendEmptyMessage(Image_Activity_Main.SWITCH_TO_LIST_FRAGMENT);
+            }
+    	}
     }
     
     // 重置自动播放计时器
@@ -535,7 +535,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
 
     @Override
     public void onLoadingComplete(String arg0, View arg1, Bitmap arg2) {
-    	DebugLog.e("luke","Image Loading complete");
+    	//DebugLog.e("luke","Image Loading complete");
     }
 
     @Override

@@ -397,7 +397,7 @@ public class Image_Activity_Main extends Activity implements
     
     private void onChangeFragment(int index) {
         mPlayPreferences.saveImageShowFragment(index);
-        Thread.dumpStack();
+        //Thread.dumpStack();
         if (index == SWITCH_TO_PLAY_FRAGMENT) {
             mListLayout.setVisibility(View.INVISIBLE);
             mPlayLayout.setVisibility(View.VISIBLE);
