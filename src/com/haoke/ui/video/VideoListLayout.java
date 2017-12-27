@@ -293,6 +293,8 @@ public class VideoListLayout extends RelativeLayout implements
         }
     }
     
+    private Toast mDeleteErrorToast;
+    private Toast mCopyErrorEndToast;
     @Override
     public void onOperateCompleted(int operateValue, int progress, int resultCode) {
         if (mProgressDialog != null) {
@@ -320,11 +322,17 @@ public class VideoListLayout extends RelativeLayout implements
         }
         if (operateValue == OperateListener.OPERATE_DELETE &&
                 resultCode != OperateListener.OPERATE_SUCEESS) {
-            Toast.makeText(mContext, "删除视频文件异常", Toast.LENGTH_SHORT).show();
+			if (mDeleteErrorToast == null) {
+				mDeleteErrorToast = Toast.makeText(mContext, "删除视频文件异常", Toast.LENGTH_SHORT);
+			}
+			mDeleteErrorToast.show();
         }
         if (operateValue == OperateListener.OPERATE_COPY_TO_LOCAL &&
                 resultCode != OperateListener.OPERATE_SUCEESS) {
-            Toast.makeText(mContext, "拷贝视频文件异常", Toast.LENGTH_SHORT).show();
+			if (mCopyErrorEndToast == null) {
+				mCopyErrorEndToast = Toast.makeText(mContext, "拷贝视频文件异常", Toast.LENGTH_SHORT);
+			}
+			mCopyErrorEndToast.show();
         }
         if (operateValue == OperateListener.OPERATE_UNCOLLECT) { // 取消收藏操作完成。
             AllMediaList.instance(mContext).reLoadAllMedia(FileType.VIDEO);
