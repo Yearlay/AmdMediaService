@@ -10,12 +10,14 @@ import com.haoke.bean.StorageBean;
 import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.data.AllMediaList;
+import com.haoke.mediaservice.R;
 import com.haoke.util.Media_IF;
 
 import android.content.Context;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.Toast;
 
 public class UsbAutoPlay {
     private static String TAG = "UsbAutoPlay";
@@ -101,6 +103,12 @@ public class UsbAutoPlay {
                     if (!Media_IF.isCarReversing()) {
                         MediaInterfaceUtil.launchMusicPlayActivity(context);
                     }
+                }
+            } else {
+                if (deviceType == DeviceType.USB1) {
+                    MediaInterfaceUtil.showToast(R.string.usb1_no_music, Toast.LENGTH_SHORT);
+                } else if (deviceType == DeviceType.USB2) {
+                    MediaInterfaceUtil.showToast(R.string.usb2_no_music, Toast.LENGTH_SHORT);
                 }
             }
         }

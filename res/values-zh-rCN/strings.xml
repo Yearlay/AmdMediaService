@@ -101,4 +101,6 @@
     <string name="bt_permission">无法获取蓝牙媒体权限，\n 请确保手机端蓝牙媒体权限开启。</string>
     
     <string name="in_call_cannot_play">通话中，媒体无法播放！</string>
+    <string name="usb1_no_music">USB1设备暂时无媒体文件</string>
+    <string name="usb2_no_music">USB2设备暂时无媒体文件</string>
 </resources>
