@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -22,12 +23,12 @@ import com.haoke.data.ModeSwitch;
 import com.haoke.mediaservice.R;
 import com.haoke.ui.music.MusicHomeFragment;
 import com.amd.bt.BT_IF;
+import com.amd.media.AmdMediaButtonReceiver;
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.radio.Radio_Activity_Main;
 import com.amd.radio.SearchRadioActivity;
 import com.amd.util.Source;
 import com.haoke.ui.widget.MyViewPaper;
-import com.haoke.ui.widget.MyViewPaper.OnPageChangeListener;
 import com.haoke.util.Media_IF;
 
 public class Media_Activity_Main extends Activity implements OnClickListener {
@@ -419,6 +420,15 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
             }
         }
         super.onBackPressed();
+    }
+    
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        Log.d(TAG, "onKeyUp keyCode="+keyCode);
+        if (AmdMediaButtonReceiver.onKeyUp(this, keyCode)) {
+            return true;
+        }
+        return super.onKeyUp(keyCode, event);
     }
     
     private ContentObserver mContentObserver = new ContentObserver(new Handler()) {

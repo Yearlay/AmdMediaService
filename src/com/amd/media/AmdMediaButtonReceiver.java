@@ -1,6 +1,7 @@
 package com.amd.media;
 
 import com.amd.bt.BT_IF;
+import com.amd.util.AmdConfig;
 import com.amd.util.Source;
 import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.ui.image.Image_Activity_Main;
@@ -39,32 +40,62 @@ public class AmdMediaButtonReceiver extends BroadcastReceiver {
             if (longPress) {
                 //return;
             }
-            switch (keycode) {
-            case KeyEvent.KEYCODE_MEDIA_PLAY: //126
-                if (!Image_Activity_Main.isPlayImage(context)) {
-                    play();
-                } else {
-                    Log.d(TAG, "isPlayImage!");
-                }
-                break;
-            case KeyEvent.KEYCODE_MEDIA_PAUSE: //127
-                if (!Image_Activity_Main.isPlayImage(context)) {
-                    pause();
-                } else {
-                    Log.d(TAG, "isPlayImage!");
-                }
-                break;
-            case KeyEvent.KEYCODE_MEDIA_PREVIOUS: //88
-                prev();
-                break;
-            case KeyEvent.KEYCODE_MEDIA_NEXT: //87
-                next();
-                break;
-            }
+            handleMediaKey(context, keycode, true);
         }
     }
     
-    private static void play() {
+    public static boolean onKeyUp(Context context, int keyCode) {
+        if (AmdConfig.ENABLE_MEDIA_KEY_HANDLE_IN_ACTIVITY) {
+            switch (keyCode) {
+            case KeyEvent.KEYCODE_MEDIA_PLAY:
+            case KeyEvent.KEYCODE_MEDIA_PAUSE:
+            case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
+            case KeyEvent.KEYCODE_MEDIA_NEXT:
+                if (AmdMediaButtonReceiver.handleMediaKey(context, keyCode, false)) {
+                    return true;
+                }
+                break;
+            }
+        }
+        return false;
+    }
+    
+    private static boolean handleMediaKey(Context context, int keyCode, boolean receive) {
+        boolean handle = false;
+        if (!receive) {
+            if (!Media_IF.hasAudioOrBtFocus()) {
+                Log.d(TAG, "handleMediaKey hasAudioOrBtFocus return!");
+                return handle;
+            }
+        }
+        context = context.getApplicationContext();
+        switch (keyCode) {
+        case KeyEvent.KEYCODE_MEDIA_PLAY: //126
+            if (!Image_Activity_Main.isPlayImage(context)) {
+                handle = play();
+            } else {
+                Log.d(TAG, "isPlayImage!");
+            }
+            break;
+        case KeyEvent.KEYCODE_MEDIA_PAUSE: //127
+            if (!Image_Activity_Main.isPlayImage(context)) {
+                handle = pause();
+            } else {
+                Log.d(TAG, "isPlayImage!");
+            }
+            break;
+        case KeyEvent.KEYCODE_MEDIA_PREVIOUS: //88
+            handle = prev();
+            break;
+        case KeyEvent.KEYCODE_MEDIA_NEXT: //87
+            handle = next();
+            break;
+        }
+        Log.d(TAG, "handleMediaKey   keyCode="+keyCode+"; handle="+handle);
+        return handle;
+    }
+    
+    private static boolean play() {
         int source = Media_IF.getCurSource();
         int playState = Media_IF.getInstance().getPlayState();
         boolean btPlaying = BT_IF.getInstance().music_isPlaying();
@@ -74,20 +105,24 @@ public class AmdMediaButtonReceiver extends BroadcastReceiver {
             if (playState != PlayState.PLAY) {
                 Media_IF.getInstance().setPlayState(PlayState.PLAY);
             }
+            return true;
         } else if (Source.isAudioSource(source)) {
             Media_IF.getInstance().setRecordPlayState(PlayState.STOP);
             if (playState != PlayState.PLAY) {
                 Media_IF.getInstance().setPlayState(PlayState.PLAY);
             }
+            return true;
         } else if (Source.isBTMusicSource(source)) {
             BT_IF.getInstance().setRecordPlayState(PlayState.STOP);
             if (!btPlaying) {
             	BT_IF.getInstance().music_play();
             }
+            return true;
         }
+        return false;
     }
     
-    private static void pause() {
+    private static boolean pause() {
         int source = Media_IF.getCurSource();
         int playState = Media_IF.getInstance().getPlayState();
         boolean btPlaying = BT_IF.getInstance().music_isPlaying();
@@ -100,15 +135,18 @@ public class AmdMediaButtonReceiver extends BroadcastReceiver {
             if (playState == PlayState.PLAY) {
                 Media_IF.getInstance().setPlayState(PlayState.PAUSE);
             }
+            return true;
         }else if (Source.isBTMusicSource(source)) {
             BT_IF.getInstance().setRecordPlayState(PlayState.STOP);
             if (btPlaying) {
             	BT_IF.getInstance().music_pause();
             }
+            return true;
         }
+        return false;
     }
     
-    private static void prev() {
+    private static boolean prev() {
         int source = Media_IF.getCurSource();
         Log.d(TAG, "prev source="+source);
         if (source == Source.NULL) {
@@ -118,6 +156,7 @@ public class AmdMediaButtonReceiver extends BroadcastReceiver {
                 Media_IF.getInstance().setScanMode(false);
                 Media_IF.getInstance().setPlayState(PlayState.PLAY);
             }
+            return true;
         } else if (Source.isAudioSource(source)) {
             Media_IF.getInstance().setRecordPlayState(PlayState.STOP);
             Media_IF.getInstance().setScanMode(false);
@@ -125,13 +164,16 @@ public class AmdMediaButtonReceiver extends BroadcastReceiver {
                 Log.d(TAG, "prev mIF.playPre is false");
                 Media_IF.getInstance().setPlayState(PlayState.PLAY);
             }
+            return true;
         }  else if (Source.isBTMusicSource(source)) {
             BT_IF.getInstance().setRecordPlayState(PlayState.STOP);
         	BT_IF.getInstance().music_pre();
+        	return true;
         }
+        return false;
     }
     
-    private static void next() {
+    private static boolean next() {
         int source = Media_IF.getCurSource();
         Log.d(TAG, "next source="+source);
         if (source == Source.NULL) {
@@ -141,6 +183,7 @@ public class AmdMediaButtonReceiver extends BroadcastReceiver {
                 Media_IF.getInstance().setScanMode(false);
             	Media_IF.getInstance().setPlayState(PlayState.PLAY);
             }
+            return true;
         } else if (Source.isAudioSource(source)) {
             Media_IF.getInstance().setRecordPlayState(PlayState.STOP);
             Media_IF.getInstance().setScanMode(false);
@@ -148,9 +191,12 @@ public class AmdMediaButtonReceiver extends BroadcastReceiver {
                 Log.d(TAG, "next mIF.playNext is false");
                 Media_IF.getInstance().setPlayState(PlayState.PLAY);
             }
+            return true;
         }  else if (Source.isBTMusicSource(source)) {
             BT_IF.getInstance().setRecordPlayState(PlayState.STOP);
         	BT_IF.getInstance().music_next();
+        	return true;
         }
+        return false;
     }
 }

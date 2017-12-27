@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.RemoteException;
 import android.util.Log;
 
+import com.amd.bt.BTMusic_IF;
 import com.amd.bt.BT_IF;
 import com.amd.media.AmdMediaManager;
 import com.amd.media.MediaInterfaceUtil;
@@ -409,8 +410,19 @@ public class Media_IF extends CarService_IF {
 		return val;
 	}
 	
-	public AudioFocus getAudioFocus() {
-		return null;
+	public static boolean hasAudioOrBtFocus() {
+	    int focus = 0;
+	    if (Source.isBTMusicSource()) {
+	        if (BTMusic_IF.getInstance().hasAudioFocus()) {
+	            focus = 1;
+	        }
+	    } else if (Source.isAudioSource()) {
+	        if (getInstance().mMediaManager.hasAudioFocus()) {
+	            focus = 2;
+	        }
+	    }
+	    Log.d(TAG, "hasAudioOrBtFocus focus="+focus);
+		return focus > 0;
 	}
 	
 	// 设置当前音频焦点
