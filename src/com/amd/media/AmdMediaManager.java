@@ -1013,7 +1013,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		RecordDevicePlay.instance().sourceChanged(source);
 	}
 	
-	private boolean hasAudioFocus() {
+	public boolean hasAudioFocus() {
 		boolean ret = false;
 		int audioFocusState = mAudioFocus.getFocusState();
 		if (audioFocusState == AudioManager.AUDIOFOCUS_GAIN

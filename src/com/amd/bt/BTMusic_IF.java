@@ -101,7 +101,7 @@ public class BTMusic_IF extends CarService_IF {
 		mCarCallBack.onDataChange(com.haoke.define.ModeDef.MCU, McuFunc.SOURCE, source);
 	}
 	
-	private boolean hasAudioFocus() {
+	public boolean hasAudioFocus() {
 		boolean ret = false;
 		int audioFocusState = BTMusicService.getInstance().getAudioFocus().getFocusState();
 		if (audioFocusState == AudioManager.AUDIOFOCUS_GAIN
