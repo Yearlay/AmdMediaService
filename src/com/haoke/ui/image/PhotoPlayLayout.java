@@ -35,6 +35,7 @@ import com.haoke.mediaservice.R;
 import com.haoke.ui.photoview.Media_Photo_View;
 import com.haoke.ui.photoview.PhotoViewAttacher.OnMatrixChangedListener;
 import com.haoke.ui.photoview.PhotoViewAttacher.OnPhotoTapListener;
+import com.haoke.ui.photoview.PhotoViewAttacher.OnViewTapListener;
 import com.haoke.ui.widget.MyViewPaper;
 import com.haoke.ui.widget.MyViewPaper.OnPageChangeListener;
 import com.haoke.util.DebugLog;
@@ -42,7 +43,7 @@ import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
-        OnMatrixChangedListener, OnPhotoTapListener, OperateListener, ImageLoadingListener {
+        OnMatrixChangedListener, OnPhotoTapListener, OperateListener, ImageLoadingListener, OnViewTapListener {
     public PhotoPlayLayout(Context context) {
         super(context);
     }
@@ -505,6 +506,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
             Media_Photo_View photoView = (Media_Photo_View) view.findViewById(R.id.photopager_imageview);
             photoView.setOnMatrixChangeListener(PhotoPlayLayout.this);
             photoView.setOnPhotoTapListener(PhotoPlayLayout.this);
+            photoView.setOnViewTapListener(PhotoPlayLayout.this);
             if (fileNode.isUnSupportFlag() || fileNode.getFile().length() > 52428800) {
                 if (position == mCurPosition) {
                 	DebugLog.e("luke","instantiateItem Image Loading Error");
@@ -702,5 +704,13 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
 		// TODO Auto-generated method stub
 		DebugLog.d("Yearlay","onPhotoDoubleTap");
 		setPlayState(PlayState.PAUSE);
+	}
+
+	@Override
+	public void onViewTap(View view, float x, float y) {
+		// TODO Auto-generated method stub
+		DebugLog.d("luke","onViewTap");
+        slaverShow(mCtrlBar.getVisibility() != View.VISIBLE);
+        checkPlayStatus(); // 重新计时
 	}
 }
