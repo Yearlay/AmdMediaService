@@ -7,12 +7,16 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.RemoteException;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.util.Source;
 import com.haoke.aidl.ICarCallBack;
+import com.haoke.application.MediaApplication;
+import com.haoke.bean.UserBean;
+import com.haoke.constant.MediaUtil;
 import com.haoke.define.McuDef.McuFunc;
 import com.haoke.define.RadioDef.Area;
 import com.haoke.define.RadioDef.Band_5;
@@ -645,7 +649,8 @@ public class Radio_IF extends CarService_IF {
 	
 	private RadioDatabaseHelper dbHelper;
 	private static final String RADIO_LOVE_STORE = "RadioLoveStore.db";
-	private static final int DBVERSION = 1;
+	private static final int DBVERSION = 2;
+	private static final String USERNAME_HEAD = "radio_love_";
 	
 	public static int sfreqToInt(final String sfreq) {
 		Log.d(TAG, "sfreqToInt sfreq="+sfreq);
@@ -667,6 +672,10 @@ public class Radio_IF extends CarService_IF {
 		return freq_data;
 	}
 	
+	public static String getCurrUserName() {
+	    return USERNAME_HEAD + MediaUtil.getUserName();
+	}
+	
 	public ArrayList<RadioStation> initFavoriteData(Context context) {
 		if (dbHelper == null) {
 			dbHelper = new RadioDatabaseHelper(context, RADIO_LOVE_STORE, null, DBVERSION);
@@ -675,7 +684,8 @@ public class Radio_IF extends CarService_IF {
 			return Data_Common.collectAllFreqs;
 		}
 		Data_Common.collectAllFreqs = new ArrayList<RadioStation>();
-		Cursor cursor = dbHelper.getWritableDatabase().query("Radio_FM", null, null, null, null, null, null, null);
+		String username = getCurrUserName();
+		Cursor cursor = dbHelper.getWritableDatabase().query("Radio_FM", null, "username=?", new String[]{username}, null, null, null, null);
 		try {
 			if (cursor.moveToFirst()) {
 				int freqIndex = cursor.getColumnIndex("freq");
@@ -727,7 +737,7 @@ public class Radio_IF extends CarService_IF {
 //		int freq = sfreqToInt(sfreq);
 		String sname = Radio_SimpleSave.getInstance().getStationName(freq);
 		ContentValues values = new ContentValues();
-		values.put("name", sfreq);
+		values.put("username", getCurrUserName());
 		values.put("freq", sfreq);
 		values.put("ifreq", freq);
 		values.put("sname", sname);
@@ -772,19 +782,22 @@ public class Radio_IF extends CarService_IF {
 			dbHelper = new RadioDatabaseHelper(context, RADIO_LOVE_STORE, null, DBVERSION);
 		}
 		SQLiteDatabase db = dbHelper.getWritableDatabase();
+		String username = getCurrUserName();
 		try {
-/*			StringBuffer buffer = new StringBuffer();
+			/*StringBuffer buffer = new StringBuffer();
 			for (int i=0; i<list.size(); i++) {
 				RadioStation station = list.get(i);
+				buffer.append('\'');
 				buffer.append(station.getSfreq());
+				buffer.append('\'');
 				if (i != list.size()-1) {
 					buffer.append(",");
 				}
 			}
-			db.delete("Radio_FM", "freq=?", new String[]{buffer.toString()});*/
+			db.delete("Radio_FM", "username=? AND freq IN (?)", new String[]{username, buffer.toString()});*/
 			for (int i=0; i<list.size(); i++) {
 				RadioStation station = list.get(i);
-				db.delete("Radio_FM", "freq=?", new String[]{station.getSfreq()});
+				db.delete("Radio_FM", "username=? AND freq=?", new String[]{username, station.getSfreq()});
 				Data_Common.removeCollectFreq(station.getFreq(), null);
 			}
 			mCarCallBack.onDataChange(mMode, RadioFunc.FREQ, getCurFreq());
@@ -796,13 +809,29 @@ public class Radio_IF extends CarService_IF {
 		}
 		return true;
 	}
-	public void clearColloctFreq(Context context) {
-		ArrayList<RadioStation> stations = new ArrayList<RadioStation>();
-		stations.addAll(initFavoriteData(context));
-		if (stations.size() != 0) {
-			uncollectFreq(context, stations, false);
-		}
+	public void clearColloctFreq() {
+	    Context context = MediaApplication.getInstance();
+	    ArrayList<UserBean> users = MediaUtil.getUserList(context);
+	    if (dbHelper == null) {
+            dbHelper = new RadioDatabaseHelper(context, RADIO_LOVE_STORE, null, DBVERSION);
+        }
+	    SQLiteDatabase db = dbHelper.getWritableDatabase();
+	    StringBuffer buffer = new StringBuffer();
+	    for (int i=0; i<users.size(); i++) {
+	        UserBean user = users.get(i);
+	        buffer.append('\'');
+	        buffer.append(USERNAME_HEAD);
+	        buffer.append(user.getUsername());
+	        buffer.append('\'');
+            if (i != users.size()-1) {
+                buffer.append(",");
+            }
+        }
+	    String sql = "delete from Radio_FM where username NOT IN ("+ buffer.toString() +");";
+	    Log.d(TAG, "clearColloctFreq sql="+sql);
+	    db.execSQL(sql);
 	}
+	
 	public void playCollectFistFreq(Context context, boolean showToast) {
 		ArrayList<RadioStation> stations = initFavoriteData(context);
 		if (stations == null || stations.size() == 0) {

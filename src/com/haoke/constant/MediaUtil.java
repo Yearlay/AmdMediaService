@@ -612,7 +612,7 @@ public class MediaUtil {
                 }
             }
         }
-        return sUserName == null ? "" : sUserName;
+        return sUserName == null ? "default_user_name" : sUserName;
     }
     
     public static void updateUserName() {

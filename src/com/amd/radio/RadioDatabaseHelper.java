@@ -4,27 +4,26 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class RadioDatabaseHelper extends SQLiteOpenHelper {
+    private static final String TAG = "RadioDatabaseHelper";
 	
 	public static final String CREATE_RADIO_FM = "create table Radio_FM ("
-			+ "name text primary key, "
+	        + "username text, "
 			+ "ifreq integer, "
 			+ "sname text, "
 			+ "freq text)";
 	
 	
 	public static final String CREATE_RADIO_AM = "create table Radio_AM ("
-			+ "name text primary key, "
+            + "username text, "
 			+ "ifreq integer, "
 			+ "sname text, "
 			+ "freq text)";
 	
-//	private Context mContext;
-	
 	public RadioDatabaseHelper(Context context, String name, CursorFactory factory, int version) {
 		super(context.getApplicationContext(), name, factory, version);
-//		mContext = context;
 	}
 
 	@Override
@@ -35,8 +34,12 @@ public class RadioDatabaseHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		// TODO Auto-generated method stub
-
+	    Log.d(TAG, "onUpgrade oldVersion="+oldVersion+"; newVersion="+newVersion);
+	    int curVersion = oldVersion;
+		if (curVersion == 1) {
+		    db.execSQL("DROP TABLE IF EXISTS Radio_FM");
+		}
+		onCreate(db);
 	}
 
 }

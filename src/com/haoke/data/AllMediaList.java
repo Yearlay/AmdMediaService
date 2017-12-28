@@ -402,6 +402,7 @@ public class AllMediaList {
             MediaUtil.updateUserName();
             mMediaDbHelper.updateCollectDataFromChangeUseList();
             mMediaDbHelper.notifyCollectChange();
+            com.amd.radio.Radio_IF.getInstance().clearColloctFreq();
             super.onChange(selfChange);
         }
     }

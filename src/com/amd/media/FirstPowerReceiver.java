@@ -27,7 +27,7 @@ public class FirstPowerReceiver extends BroadcastReceiver{
 	public static void clearAppDataFromBoot(Context context) {
 		if (!clearedFlag) {
 			clearedFlag = true;
-			Radio_IF.getInstance().clearColloctFreq(context);
+			//Radio_IF.getInstance().clearColloctFreq(context);
 			Media_IF.getInstance().setRepeatMode(CIRCLE);
 			Media_IF.resetSource(context);
 		}
