@@ -647,6 +647,8 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     };
     
     private void updateCollectView() {
+    	if(mPhotoList.size() == 0)
+    		return;
         FileNode fileNode = mPhotoList.get(mCurPosition);
         if (fileNode == null || mCollectView == null) {
             return;
