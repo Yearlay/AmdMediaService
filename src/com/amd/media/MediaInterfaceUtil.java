@@ -782,9 +782,18 @@ public class MediaInterfaceUtil {
         }
     }
     
-    public static void insertUsbAndScanComplete(int deviceType) {
+    public static void insertUsbAndScanComplete(final int deviceType) {
         if (AmdConfig.INSERT_USB_AUTO_PLAY_MUSIC) {
-            UsbAutoPlay.playDefaultMusic(deviceType);
+            int ms = UsbAutoPlay.playDefaultMusic(deviceType);
+            Log.d(TAG, "insertUsbAndScanComplete ms="+ms);
+            if (ms > 0) {
+                MediaService.getInstance().getHandler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        UsbAutoPlay.playDefaultMusic(deviceType);
+                    }
+                }, ms);
+            }
         } else if (AmdConfig.INSERT_USB_RECODRD_PLAY_MUSIC){
             RecordDevicePlay.instance().checkUsbPlay(deviceType);
         }

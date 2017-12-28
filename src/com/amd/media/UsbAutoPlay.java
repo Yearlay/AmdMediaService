@@ -35,20 +35,20 @@ public class UsbAutoPlay {
         }
     }
     
-    public static void playDefaultMusic(int deviceType) {
+    public static int playDefaultMusic(int deviceType) {
         if (!AmdConfig.INSERT_USB_AUTO_PLAY_MUSIC) {
-            return;
+            return -1;
         }
         if (deviceType != DeviceType.USB1 && deviceType != DeviceType.USB2) {
-            return;
+            return -1;
         }
         if (!Media_IF.isBootSourceChanged()) {
             Log.d(TAG, "playDefaultMusic return! BootSource not changed!");
-            return;
+            return -1;
         }
         if (!Media_IF.isPowerOn() && !Media_IF.getScreenOn()) {
             Log.d(TAG, "playDefaultMusic return! PowerOff and ScreenOff!");
-            return;
+            return -1;
         }
         if (!sDonotDelay) {
             setServiceStartTime();
@@ -59,23 +59,30 @@ public class UsbAutoPlay {
                 sDonotDelay = true;
             } else {
                 Log.d(TAG, "playDefaultMusic interval="+interval);
-                return;
+                return -1;
             }
         }
         Log.d(TAG, "playDefaultMusic deviceType="+deviceType+"; isBootInsertUsb1="+isBootInsertUsb1+"; isBootInsertUsb2="+isBootInsertUsb2);
         if (isBootInsertUsb1 && deviceType == DeviceType.USB1) {
             isBootInsertUsb1 = false;
-            return;
+            return -1;
         } else if (isBootInsertUsb2 && deviceType == DeviceType.USB2) {
             isBootInsertUsb2 = false;
-            return;
+            return -1;
         }
         Media_IF mIF = Media_IF.getInstance();
         Context context = MediaApplication.getInstance();
         AllMediaList allMediaList = AllMediaList.instance(context);
         if (mIF.isPlayState() && mIF.getPlayingDevice() == deviceType) {
             Log.d(TAG, "playDefaultMusic Media_IF is playing!");
-            return;
+            return -1;
+        }
+        StorageBean storage = allMediaList.getStoragBean(deviceType);
+        if (storage.isMounted()) {
+            if (!storage.isLoadCompleted()) {
+                Log.d(TAG, "playDefaultMusic must wait device load completed!");
+                return 1000;
+            }
         }
         String filePath = allMediaList.getLastPlayPath(deviceType, FileType.AUDIO);
         if (!TextUtils.isEmpty(filePath)) {
@@ -112,6 +119,6 @@ public class UsbAutoPlay {
                 }
             }
         }
-        return;
+        return -1;
     }
 }
