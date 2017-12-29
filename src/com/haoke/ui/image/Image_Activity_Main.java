@@ -375,6 +375,16 @@ public class Image_Activity_Main extends Activity implements
     public Handler getHandler() {
         return mHandler;
     }
+
+	private boolean isAllSelect(){
+		for(FileNode filenode : mImageList){
+			if(!filenode.isSelected()){
+				return false;
+			}
+		}
+		
+		return true;
+	}
     
     public static final int SWITCH_TO_LIST_FRAGMENT = 0;
     public static final int SWITCH_TO_PLAY_FRAGMENT = 1;
@@ -395,7 +405,7 @@ public class Image_Activity_Main extends Activity implements
             case CLICK_LIST_ITEM:
                 if (mListLayout.isEditMode()) {
                     mListLayout.selectItem(msg.arg1);
-                    if (AllMediaList.checkSelected(Image_Activity_Main.this, mImageList)) {
+                    if (isAllSelect()) {
                         mSelectAllView.setText(R.string.music_choose_remove);
                     } else {
                         mSelectAllView.setText(R.string.music_choose_all);
@@ -433,7 +443,7 @@ public class Image_Activity_Main extends Activity implements
                 break;
             case DISMISS_COPY_DIALOG:
             	if (mListLayout.isEditMode()) {
-            		if (AllMediaList.checkSelected(Image_Activity_Main.this, mImageList)) {
+            		if (isAllSelect()) {
                         mSelectAllView.setText(R.string.music_choose_remove);
                     } else {
                         mSelectAllView.setText(R.string.music_choose_all);
