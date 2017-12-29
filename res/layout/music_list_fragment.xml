@@ -24,23 +24,6 @@
 			android:dividerHeight="1px"
             android:listSelector="@android:color/transparent" />
 
-        <!-- 空列表提示 -->
-        <LinearLayout
-            android:id="@+id/music_list_empty"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="gone" >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/media_no_file"
-                android:textColor="@color/hk_custom_text"
-                android:textSize="26sp" />
-        </LinearLayout>
     </RelativeLayout>
 
 </LinearLayout>

@@ -10,9 +10,9 @@
         layout="@layout/music_list_fragment"/>
 
     <include 
-        android:id="@+id/music_list_layout_nodevice"
+        android:id="@+id/music_list_layout_tip"
         android:visibility="gone"
-        layout="@layout/media_nodevice_fragment"/>
+        layout="@layout/media_tip_fragment"/>
 
     <include 
         android:id="@+id/music_list_layout_loading"

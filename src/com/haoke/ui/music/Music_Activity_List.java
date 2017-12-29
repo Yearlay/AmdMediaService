@@ -12,7 +12,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -63,13 +62,12 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     private ImageView mLoadImageView;
     private TextView mLoadTextView;
     
-    private View mNoDeviceLayout = null;
-    private TextView mNodeviceTextView;
+    private View mTipLayout = null;
+    private TextView mTipTextView;
     
     private View mListLayout = null;
     private Music_Adapter_List mAdapter = null;
     private ListView mListView;
-    private View mEmptyTip;
     private Music_List_Tab mListTab = null;
     
     private CustomDialog mProgressDialog;
@@ -176,11 +174,10 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         mLoadImageView = (ImageView) mLoadingLayout.findViewById(R.id.media_loading_img);
         mLoadTextView = (TextView) mLoadingLayout.findViewById(R.id.media_text);
         
-        mNoDeviceLayout = findViewById(R.id.music_list_layout_nodevice);
-        mNodeviceTextView = (TextView) mNoDeviceLayout.findViewById(R.id.music_no_device_text);
+        mTipLayout = findViewById(R.id.music_list_layout_tip);
+        mTipTextView = (TextView) mTipLayout.findViewById(R.id.music_tip_text);
         
         mListLayout = findViewById(R.id.music_activity_list);
-        mEmptyTip = mListLayout.findViewById(R.id.music_list_empty);
         mListView = (ListView) mListLayout.findViewById(R.id.music_list_view);
         mListTab = (Music_List_Tab) mListLayout.findViewById(R.id.music_list_tab_id);
         mListTab.setOnTabClickListener(new OnClickListener() {
@@ -624,13 +621,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     private void updateListWithoutSelection() {
         int total = mIF.getListTotal();
         if (total <= 0) {
-            try {
-                mEmptyTip.setVisibility(View.VISIBLE);
-                mListView.setVisibility(View.GONE);
-                mListTab.setVisibility(View.GONE);
-                backToList();
-            } catch (Exception e) {
-            }
+            showEmptyList();
             return;
         }
         mAdapter.resetLastPlayItem();
@@ -641,12 +632,6 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         return view.getVisibility() == View.VISIBLE;
     }
     
-    private void hideAllLayout() {
-        mLoadingLayout.setVisibility(View.GONE);
-        mNoDeviceLayout.setVisibility(View.GONE);
-        mListLayout.setVisibility(View.GONE);
-    }
-    
     private void showNodeviceLayout() {
         String text;
         if (mDeviceType == DeviceType.USB2) {
@@ -654,13 +639,23 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         } else {
             text = getString(R.string.no_device_usb_one);
         }
-        mNodeviceTextView.setText(text);
-        hideAllLayout();
-        mNoDeviceLayout.setVisibility(View.VISIBLE);
+        mTipTextView.setText(text);
+        mTipLayout.setVisibility(View.VISIBLE);
+        mLoadingLayout.setVisibility(View.GONE);
+        mListLayout.setVisibility(View.GONE);
         backToList();
         if (mErrorDialog != null) {
             mErrorDialog.CloseDialog();
+            mErrorDialog = null;
         }
+    }
+    
+    private void showEmptyList() {
+        mTipLayout.setVisibility(View.VISIBLE);
+        mTipTextView.setText(R.string.media_no_file);
+        mListLayout.setVisibility(View.GONE);
+        mLoadingLayout.setVisibility(View.GONE);
+        backToList();
     }
     
     private void showLoadingLayout() {
@@ -678,13 +673,15 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         }
         mLoadImageView.setImageResource(drawableId);
         mLoadTextView.setText(textId);
-        hideAllLayout();
         mLoadingLayout.setVisibility(View.VISIBLE);
+        mListLayout.setVisibility(View.GONE);
+        mTipLayout.setVisibility(View.GONE);
     }
     
     private void showListLayout() {
-        hideAllLayout();
         mListLayout.setVisibility(View.VISIBLE);
+        mTipLayout.setVisibility(View.GONE);
+        mLoadingLayout.setVisibility(View.GONE);
     }
 
     @Override
@@ -749,14 +746,9 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     private void refreshList() {
         int total = mIF.getListTotal();
         if (total <= 0) {
-            mEmptyTip.setVisibility(View.VISIBLE);
-            mListView.setVisibility(View.GONE);
-            mListTab.setVisibility(View.GONE);
-            backToList();
+            showEmptyList();
         } else {
-            mEmptyTip.setVisibility(View.GONE);
-            mListView.setVisibility(View.VISIBLE);
-            mListTab.setVisibility(View.VISIBLE);
+            showListLayout();
         }
         mAdapter.updateDeviceType(mDeviceType, true);
         
