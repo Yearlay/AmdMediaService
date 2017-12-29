@@ -1,29 +1,38 @@
 package com.amd.media;
 
+import static com.haoke.service.MediaService.KEY_COMMAND_FROM;
+import static com.haoke.service.MediaService.VALUE_FROM_SCAN;
+import static com.haoke.service.MediaService.VALUE_FROM_VR_APP;
+import static com.haoke.service.MediaService.VALUE_FROM_VR_IMAGE;
+import static com.haoke.service.MediaService.VALUE_FROM_VR_MUSIC;
+import static com.haoke.service.MediaService.VALUE_FROM_VR_RADIO;
+import static com.haoke.service.MediaService.VALUE_FROM_VR_VIDEO;
+import android.content.Intent;
+import android.text.TextUtils;
+import android.util.Log;
+
 import com.amd.bt.BT_IF;
 import com.amd.radio.Radio_IF;
 import com.amd.util.Source;
 import com.haoke.application.MediaApplication;
 import com.haoke.bean.FileNode;
 import com.haoke.btjar.main.BTDef.BTConnState;
-import com.haoke.constant.MediaUtil.FileType;
-
-import static com.haoke.constant.VRConstant.*;
-
-import com.haoke.data.ModeSwitch;
 import com.haoke.constant.MediaUtil.DeviceType;
+import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.constant.MediaUtil.RepeatMode;
+import com.haoke.constant.VRConstant.VRApp;
+import com.haoke.constant.VRConstant.VRImage;
+import com.haoke.constant.VRConstant.VRIntent;
+import com.haoke.constant.VRConstant.VRMusic;
+import com.haoke.constant.VRConstant.VRRadio;
+import com.haoke.constant.VRConstant.VRVideo;
+import com.haoke.data.ModeSwitch;
 import com.haoke.service.MediaService;
 import com.haoke.ui.image.Image_Activity_Main;
 import com.haoke.ui.video.Video_Activity_Main;
 import com.haoke.util.DebugLog;
 import com.haoke.util.Media_IF;
-
-import android.content.Intent;
-import android.text.TextUtils;
-import android.util.Log;
-import static com.haoke.service.MediaService.*;
 
 public class VRInterfaceUtil {
     private static final String TAG = "VRInterfaceUtil";
@@ -166,7 +175,9 @@ public class VRInterfaceUtil {
         DebugLog.d(TAG, "operateImage");
         if (yesOperate) {
             Intent intent = new Intent(MediaApplication.getInstance(), Image_Activity_Main.class);
+            intent.putExtra(MediaService.KEY_COMMAND_FROM, MediaService.VALUE_FROM_VR_APP);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            DebugLog.d(TAG, "operateImage startActivity: " + intent.toString());
             startActivity(intent);
         } else {
             Intent intent = new Intent(VRIntent.ACTION_OPERATE_IMAGE);

@@ -771,17 +771,15 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 		return mVideoController;
 	}
 
-	public void playDefault() {
+	public FileNode playDefault() {
+		ArrayList<FileNode> videoList = null;
 		if (mFileNode == null) {
-			// 取系统存储的默认的路径来进行播放。
 			PlayStateSharedPreferences sPreferences = PlayStateSharedPreferences.instance();
 			int deviceType = sPreferences.getLastDeviceTypeVideo();
-			Log.e("luke", "---playDefault deviceType: " + deviceType);
-			String videoInfo = sPreferences.getPlayTime(deviceType, FileType.VIDEO);
-			String splitStr = PlayStateSharedPreferences.SPLIT_STR;
-			Log.e("luke", "---playDefault videoInfo: " + videoInfo);
-			ArrayList<FileNode> videoList;
-			if (deviceType == 0) {
+			Log.e("luke","playDefault record deviceType： " + deviceType);
+			
+			if(deviceType == 0){//没有记忆文件，播放(本地>USB1>USB2)
+				Log.e("luke", "playDefault record video file is not exsit!!!!!");
 				videoList = AllMediaList.instance(mContext).getMediaList(DeviceType.FLASH, FileType.VIDEO);
 				if (videoList.size() == 0) {
 					videoList = AllMediaList.instance(mContext).getMediaList(DeviceType.USB1, FileType.VIDEO);
@@ -789,28 +787,86 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 				if (videoList.size() == 0) {
 					videoList = AllMediaList.instance(mContext).getMediaList(DeviceType.USB2, FileType.VIDEO);
 				}
-			} else {
-				videoList = AllMediaList.instance(mContext).getMediaList(deviceType, FileType.VIDEO);
-			}
-
-			if (videoInfo == null || videoInfo.length() == 0) { // 没有记忆文件，播放本地第一个视频
-				if (videoList.size() > 0) {
-					Log.e("luke","playDefault play local first video!!");
+				if (videoList.size() > 0 ) {//播放(本地>USB1>USB2)中第一个文件
 					mFileNode = videoList.get(0);
+					Log.e("luke","playDefault deviceType: " + mFileNode.getDeviceType());
+				} else {
+					Log.e("luke","playDefault Device have no any video!!!!!");
+					mFileNode = null;
 				}
-			} else { // 播放记忆文件
-				String filePath = videoInfo.substring(0, videoInfo.indexOf(splitStr));
-				String playTimeStr = videoInfo.substring(videoInfo.indexOf(splitStr) + 2, videoInfo.length());
-				int playTime = Integer.valueOf(playTimeStr);
-				if (videoList.size() > 0 && !TextUtils.isEmpty(filePath)) {
-					for (FileNode fileNode : videoList) {
-						if (filePath.equals(fileNode.getFilePath())) {
-							Log.e("luke","playDefault play record file video!!");
-							mFileNode = fileNode;
-							mFileNode.setPlayTime(playTime);
-							break;
+			} else { //存在记忆文件
+				videoList = AllMediaList.instance(mContext).getMediaList(deviceType, FileType.VIDEO);
+				if(videoList.size() > 0){
+					String videoInfo = sPreferences.getPlayTime(deviceType, FileType.VIDEO);
+					Log.e("luke","playDefault record video： " + videoInfo);
+					String splitStr = PlayStateSharedPreferences.SPLIT_STR;
+					String filePath = videoInfo.substring(0, videoInfo.indexOf(splitStr));
+					String playTimeStr = videoInfo.substring(videoInfo.indexOf(splitStr) + 2, videoInfo.length());
+					int playTime = Integer.valueOf(playTimeStr);
+					
+					if (!TextUtils.isEmpty(filePath)) { 
+						for (FileNode fileNode : videoList) {
+							if (filePath.equals(fileNode.getFilePath())) {
+								mFileNode = fileNode;
+								mFileNode.setPlayTime(playTime);
+								break;
+							}
 						}
 					}
+					
+					if(mFileNode == null){ //记录视频不存在，当前DeviceType第一个视频作为播放视频
+						Log.e("luke", "playDefault record video no exsit!!!!");
+						mFileNode = videoList.get(0);
+					}
+				} else {//记录deviceType中没有任何文件
+					Log.e("luke", "playDefault record deviceType have no any video");
+					videoList = AllMediaList.instance(mContext).getMediaList(DeviceType.FLASH, FileType.VIDEO);
+					if (videoList.size() == 0) {
+						videoList = AllMediaList.instance(mContext).getMediaList(DeviceType.USB1, FileType.VIDEO);
+					} 
+					if (videoList.size() == 0) {
+						videoList = AllMediaList.instance(mContext).getMediaList(DeviceType.USB2, FileType.VIDEO);
+					}
+					if (videoList.size() > 0 ) { //播放(本地>USB1>USB2)中第一个文件
+						mFileNode = videoList.get(0);
+						Log.e("luke","playDefault deviceType: " + mFileNode.getDeviceType());
+					} else {
+						Log.e("luke","playDefault Device have no any video!!!!!");
+						mFileNode = null;
+					}
+				}
+			}
+		} else {
+			videoList = AllMediaList.instance(mContext).getMediaList(mFileNode.getDeviceType(), FileType.VIDEO);
+			boolean fileNodeExsitFlag = false;
+			if(videoList.size() > 0){
+				for (FileNode fileNode : videoList) {
+					if (mFileNode.isSamePathAndFrom(fileNode)) {
+						fileNodeExsitFlag = true;
+						break;
+					}
+				}
+				if(fileNodeExsitFlag){ //
+					Log.e("luke", "playDefault mFileNode is exsit!!!");
+				} else {//之前视频文件不存在，播放第一个文件
+					Log.e("luke", "playDefault mFileNode delete!!!");
+					mFileNode = videoList.get(0);
+				}
+			} else {//当前filenode的devicetype没有文件
+				Log.e("luke", "playDefault mFileNode deviceType have no any video");
+				videoList = AllMediaList.instance(mContext).getMediaList(DeviceType.FLASH, FileType.VIDEO);
+				if (videoList.size() == 0) {
+					videoList = AllMediaList.instance(mContext).getMediaList(DeviceType.USB1, FileType.VIDEO);
+				} 
+				if (videoList.size() == 0) {
+					videoList = AllMediaList.instance(mContext).getMediaList(DeviceType.USB2, FileType.VIDEO);
+				}
+				if (videoList.size() > 0 ) { //播放(本地>USB1>USB2)中第一个文件
+					mFileNode = videoList.get(0);
+					Log.e("luke","playDefault deviceType: " + mFileNode.getDeviceType());
+				} else {
+					Log.e("luke","playDefault Device have no any video!!!!!");
+					mFileNode = null;
 				}
 			}
 		}
@@ -818,5 +874,6 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 		Log.e("luke", "playDefault setBeforePlaystate: " + getBeforePlaystate());
 		setFileNode(mFileNode);
 		mVideoController.playDefaultVideo(true);
+		return mFileNode;
 	}
 }

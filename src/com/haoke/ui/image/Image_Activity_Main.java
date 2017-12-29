@@ -11,6 +11,7 @@ import android.database.ContentObserver;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -34,6 +35,7 @@ import com.haoke.data.AllMediaList;
 import com.haoke.data.LoadListener;
 import com.haoke.data.PlayStateSharedPreferences;
 import com.haoke.mediaservice.R;
+import com.haoke.service.MediaService;
 import com.haoke.ui.media.MediaSearchActivity;
 import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
@@ -43,6 +45,7 @@ public class Image_Activity_Main extends Activity implements
         OnClickListener, LoadListener, OnCheckedChangeListener {
     
     private int mLayoutProps = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+    public static final String TAG = "ImageActivity";
 
     private PlayStateSharedPreferences mPlayPreferences;
     
@@ -63,6 +66,7 @@ public class Image_Activity_Main extends Activity implements
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+    	Log.e(TAG,"--------image onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.image_activity_main);
         AllMediaList.launcherTocheckAllStorageScanState(this);
@@ -95,22 +99,54 @@ public class Image_Activity_Main extends Activity implements
         
         registerReceiver(mOperateAppReceiver, new IntentFilter(VRIntent.ACTION_OPERATE_IMAGE));
         
-        checkFromSearchActivity(getIntent());
+        initIntent(getIntent());
     }
     
+    private void initIntent(Intent intent){
+    	Log.e(TAG, "-------- initIntent: " + intent.toString());
+        if("MediaSearchActivity".equals(intent.getStringExtra("isfrom"))){ //search入口
+        	Log.e(TAG, "onNewIntent MediaSearchActivity");
+        	mFilePathFromSearch = intent.getStringExtra("filepath");
+        } else if(intent != null && intent.getIntExtra(MediaService.KEY_COMMAND_FROM, 100) == MediaService.VALUE_FROM_VR_APP) { // VR打开图片
+        	Log.e(TAG, "initIntent VALUE_FROM_VR_APP");
+        	ArrayList<FileNode> imageList = null;
+        	int deviceType;
+        	imageList = AllMediaList.instance(getApplicationContext()).getMediaList(DeviceType.FLASH, FileType.IMAGE);
+        	deviceType = DeviceType.FLASH;
+			if (imageList.size() == 0) {
+				imageList = AllMediaList.instance(getApplicationContext()).getMediaList(DeviceType.USB1, FileType.IMAGE);
+				deviceType = DeviceType.USB1;
+				
+				if (imageList.size() == 0) {
+					imageList = AllMediaList.instance(getApplicationContext()).getMediaList(DeviceType.USB2, FileType.IMAGE);
+					deviceType = DeviceType.USB2;
+				}
+			} 
+			if(imageList.size() > 0){
+				Log.e(TAG,"initIntent deviceType: " + deviceType);
+				updateDevice(deviceType);
+                mPlayLayout.setPlayState(PlayState.PLAY);
+                mPlayLayout.setCurrentPosition(0);;
+                onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
+			} else {
+				Log.e(TAG, "initIntent device have no images!!!!");
+				updateDevice(DeviceType.FLASH);
+				onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
+			}
+			
+        }
+    }
+
     @Override
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        checkFromSearchActivity(intent);
+        Log.e(TAG, "--------image onNewIntent");
+        initIntent(intent);
     }
 
-    public void checkFromSearchActivity(Intent intent) {
-        if ("MediaSearchActivity".equals(intent.getStringExtra("isfrom"))) {
-            mFilePathFromSearch = intent.getStringExtra("filepath");
-        }
-    }
-    
     public void updateDevice(final int deviceType) {
+    	Log.e(TAG,"updateDevice: " + deviceType);
+    	 mPlayPreferences.saveImageDeviceType(deviceType);
         int checkId = R.id.image_device_flash;
         if (deviceType == DeviceType.USB1) {
             checkId = R.id.image_device_usb1;
@@ -120,6 +156,7 @@ public class Image_Activity_Main extends Activity implements
             checkId = R.id.image_device_collect;
         }
         if (mRadioGroup.getCheckedRadioButtonId() != checkId) {
+        	Log.e(TAG,"set mRadioGroup");
             mRadioGroup.check(checkId);
         }
 
@@ -140,6 +177,7 @@ public class Image_Activity_Main extends Activity implements
 
     @Override
     protected void onResume() {
+    	Log.e(TAG,"--------image onResume");
         isShow = true;
         AllMediaList.notifyAllLabelChange(getApplicationContext(), R.string.pub_image);
         if (mFilePathFromSearch != null) {
@@ -193,6 +231,7 @@ public class Image_Activity_Main extends Activity implements
 
     @Override
     protected void onPause() {
+    	Log.e(TAG,"--------image onPause");
     	mPlayLayout.mRecordPlayState = mPlayLayout.mPlayState;
         isShow = false;
         mListLayout.dismissDialog();
@@ -204,6 +243,7 @@ public class Image_Activity_Main extends Activity implements
 
     @Override
     public void onDestroy() {
+    	Log.e(TAG,"--------image onDestroy");
         super.onDestroy();
         AllMediaList.instance(getApplicationContext()).unRegisterLoadListener(this);
         unregisterReceiver(mOperateAppReceiver);
@@ -294,7 +334,7 @@ public class Image_Activity_Main extends Activity implements
     }
     
     private void touchEvent(int deviceType) {
-        mPlayPreferences.saveImageDeviceType(deviceType);
+        //mPlayPreferences.saveImageDeviceType(deviceType);
         if (mPlayPreferences.getImageShowFragment() != SWITCH_TO_LIST_FRAGMENT) {
             onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
         }
@@ -303,6 +343,7 @@ public class Image_Activity_Main extends Activity implements
     
     @Override
     public void onBackPressed() {
+    	Log.e(TAG,"--------image onBackPressed");
         if (mPlayLayout.getVisibility() == View.VISIBLE) {
             onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
         } else if (mListLayout.isEditMode()) {
@@ -315,6 +356,22 @@ public class Image_Activity_Main extends Activity implements
         }
     }
 
+    public boolean isAllSelect(ArrayList<FileNode> list){
+    	if(list.size() <= 0){
+    		return false;
+    	}
+        ArrayList<FileNode> selectList = new ArrayList<FileNode>();
+        for (FileNode fileNode : list) {
+            if (fileNode.isSelected()) {
+                selectList.add(fileNode);
+            }
+        }
+        if(selectList.size() > 0){
+        	return true;
+        }
+        return false;
+    }
+    
     public Handler getHandler() {
         return mHandler;
     }
@@ -398,6 +455,7 @@ public class Image_Activity_Main extends Activity implements
     private void onChangeFragment(int index) {
         mPlayPreferences.saveImageShowFragment(index);
         //Thread.dumpStack();
+        Log.e(TAG,"onChangeFragment: " + index);
         if (index == SWITCH_TO_PLAY_FRAGMENT) {
             mListLayout.setVisibility(View.INVISIBLE);
             mPlayLayout.setVisibility(View.VISIBLE);
@@ -483,6 +541,7 @@ public class Image_Activity_Main extends Activity implements
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
+    	Log.e(TAG,"onCheckedChanged");
         View view = group.findViewById(checkedId);
         switch (view.getId()) {
         case R.id.image_device_flash:

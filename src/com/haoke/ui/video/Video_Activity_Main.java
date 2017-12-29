@@ -156,10 +156,11 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 		} else if (intent != null && intent.getIntExtra("isfrom", 100) == MediaService.VALUE_FROM_VR_APP) { // VR
 			// VR play default file
 			Log.e("luke", "onNewInten VR");
-			mPlayLayout.playDefault();
-			if (mPlayLayout.getCurFileNode() == null || mPlayLayout.getCurFileNode().getFilePath().length() == 0) {
-				onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
+			FileNode temp = mPlayLayout.playDefault();
+			if (temp == null || temp.getFilePath().length() == 0) {
+				updateDevice(DeviceType.FLASH);
 			} else {
+				updateDevice(temp.getDeviceType());
 				onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
 			}
 		} else if (intent != null && "modeSwitch".equals(intent.getStringExtra("isfrom"))) { // 没有视频文件入口
@@ -604,9 +605,9 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 			mPlayLayout.onResume();
 			mListLayout.setVisibility(View.GONE);
 			
-			 HKWindowManager.hideWallpaper(this);
+/*			 HKWindowManager.hideWallpaper(this);
 			 HKWindowManager.fullScreen(this, true);
-			 getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
+			 getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);*/
 			 
 		} else {
 			mPlayLayout.onPause();
