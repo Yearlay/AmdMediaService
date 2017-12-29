@@ -510,6 +510,16 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 	public Handler getHandler() {
 		return mHandler;
 	}
+	
+	private boolean isAllSelect(){
+		for(FileNode filenode : mVideoList){
+			if(!filenode.isSelected()){
+				return false;
+			}
+		}
+		
+		return true;
+	}
 
 	public static final int SWITCH_TO_LIST_FRAGMENT = 0;
 	public static final int SWITCH_TO_PLAY_FRAGMENT = 1;
@@ -535,7 +545,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 				Log.e("luke", "-----item click, playing!!!!");
 				if (mListLayout.isEditMode()) {
 					mListLayout.selectItem(msg.arg1);
-					if (AllMediaList.checkSelected(Video_Activity_Main.this, mVideoList)) {
+					if (isAllSelect()) {
 						mSelectAllView.setText(R.string.music_choose_remove);
 					} else {
 						mSelectAllView.setText(R.string.music_choose_all);
@@ -572,7 +582,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 				break;
 			case DISMISS_COPY_DIALOG:
 				if (mListLayout.isEditMode()) {
-					if (AllMediaList.checkSelected(Video_Activity_Main.this, mVideoList)) {
+					if (isAllSelect()) {
 						mSelectAllView.setText(R.string.music_choose_remove);
 					} else {
 						mSelectAllView.setText(R.string.music_choose_all);
