@@ -402,15 +402,18 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 		debugClock.calculateTime("luke", "updateVideoLayout checkSpeedAndRefreshView");
 	}
 
+	public void goVideoList(){
+		if (mActivityHandler != null) {
+			mActivityHandler.sendEmptyMessage(Video_Activity_Main.SWITCH_TO_LIST_FRAGMENT);
+		}
+	}
 	@Override
 	public void onClick(View view) {
 		stopHideTimer();
 		setBeforePlaystate(mVideoController.isVideoPlaying);
 		switch (view.getId()) {
 		case R.id.video_ctrlbar_list:
-			if (mActivityHandler != null) {
-				mActivityHandler.sendEmptyMessage(Video_Activity_Main.SWITCH_TO_LIST_FRAGMENT);
-			}
+			goVideoList();
 			break;
 		case R.id.video_ctrlbar_pre:
 			if (MediaInterfaceUtil.mediaCannotPlay()) {

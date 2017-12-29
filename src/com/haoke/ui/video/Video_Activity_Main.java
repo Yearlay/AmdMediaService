@@ -47,7 +47,7 @@ import com.haoke.window.HKWindowManager;
 
 public class Video_Activity_Main extends Activity implements OnClickListener, LoadListener, OnCheckedChangeListener, Media_CarListener {
 
-	private final String TAG = this.getClass().getSimpleName();
+	private final String TAG = "luke";
 	private int mLayoutProps = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
 	private VideoListLayout mListLayout;
 	private VideoPlayLayout mPlayLayout;
@@ -134,7 +134,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 		if (intent != null && "MediaSearchActivity".equals(intent.getStringExtra("isfrom"))) { // search、开机播放
 			String filePath = intent.getStringExtra("filepath");
 			String flag = intent.getStringExtra("flag");
-			if(flag != null && flag.equals("bootStartPlay")){
+			if (flag != null && flag.equals("bootStartPlay")) {
 				mPlayLayout.getVideoController().playDefaultVideo(true);
 			}
 			int deviceType = MediaUtil.getDeviceType(filePath);
@@ -277,7 +277,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 		Log.v("luke", "HMI------------onPause BeforePlaystate: " + mPlayLayout.getBeforePlaystate());
 		mListLayout.dismissDialog();
 		getContentResolver().unregisterContentObserver(mContentObserver);
-		
+
 		mListLayout.onPause();
 	}
 
@@ -388,7 +388,8 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 	@Override
 	public void onLoadCompleted(int deviceType, int fileType) {
 		// 处理数据加载完成的事件: 主要是处理数据。
-		if (deviceType == getCurrentDeviceType() && fileType == FileType.VIDEO && mPlayLayout.getVisibility() != View.VISIBLE) {
+		Log.e(TAG, "onLoadCompleted deviceType: " + deviceType + "  ,fileType: " + fileType);
+		if (deviceType == getCurrentDeviceType() && fileType == FileType.VIDEO /*&& mPlayLayout.getVisibility() != View.VISIBLE*/) {
 			updateDevice(deviceType);
 		}
 	}
@@ -396,6 +397,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 	@Override
 	public void onScanStateChange(StorageBean storageBean) {
 		// 处理磁盘状态 和 扫描状态发生改变的状态： 主要是更新UI的显示效果。
+		Log.e(TAG, "onScanStateChange storageBean: " + storageBean.toString());
 		if (storageBean.getDeviceType() == getCurrentDeviceType()) {
 			updateDevice(getCurrentDeviceType());
 			onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
@@ -405,6 +407,17 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 				}
 				if (isShow) {
 					new CustomDialog().ShowDialog(Video_Activity_Main.this, DIALOG_TYPE.NONE_BTN, R.string.music_device_pullout_usb);
+				}
+			}
+		} else if (getCurrentDeviceType() == DeviceType.COLLECT && mPlayLayout.getCurFileNode() != null) {
+			if (mPlayLayout.getCurFileNode().getFromDeviceType() == storageBean.getDeviceType()) {
+				if (!storageBean.isMounted()) {
+					if (mListLayout != null) {
+						mListLayout.dismissDialog();
+					}
+					if (isShow) {
+						new CustomDialog().ShowDialog(Video_Activity_Main.this, DIALOG_TYPE.NONE_BTN, R.string.music_device_pullout_usb);
+					}
 				}
 			}
 		}
@@ -604,27 +617,29 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 			mPlayLayout.setVisibility(View.VISIBLE);
 			mPlayLayout.onResume();
 			mListLayout.setVisibility(View.GONE);
+
 			
-/*			 HKWindowManager.hideWallpaper(this);
-			 HKWindowManager.fullScreen(this, true);
-			 getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);*/
+			HKWindowManager.hideWallpaper(this);
+			HKWindowManager.fullScreen(this, true);
+			getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 			 
+
 		} else {
 			mPlayLayout.onPause();
 			mPlayLayout.setVisibility(View.GONE);
 			mListLayout.setVisibility(View.VISIBLE);
 			if (!mListLayout.isEditMode()) {
 				mRadioGroup.setVisibility(View.VISIBLE);
-				if(mSearchButton != null){
+				if (mSearchButton != null) {
 					mSearchButton.setVisibility(View.VISIBLE);
 				}
 			}
-			
-			 HKWindowManager.showWallpaper(this);
-			 HKWindowManager.fullScreen(this, false);
-			 getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-			 getWindow().getDecorView().setSystemUiVisibility(mLayoutProps);
-			 
+
+			HKWindowManager.showWallpaper(this);
+			HKWindowManager.fullScreen(this, false);
+			getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+			getWindow().getDecorView().setSystemUiVisibility(mLayoutProps);
+
 		}
 	}
 

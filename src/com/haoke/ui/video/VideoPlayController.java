@@ -34,7 +34,7 @@ import com.haoke.util.Media_IF;
 
 public class VideoPlayController implements AudioFocusListener {
 
-	private static final String TAG = "VideoPlayController";
+	private static final String TAG = "luke";
 	public static final int MEDIA_MODE_AUDIO = 1;
 	public static final int MEDIA_MODE_VIDEO = 2;
 
@@ -131,7 +131,7 @@ public class VideoPlayController implements AudioFocusListener {
 			} else if (mPlayingDeviceType == DeviceType.COLLECT && mCurFileNode != null) {
 				if (mCurFileNode.getFromDeviceType() == storageBean.getDeviceType()) {
 					if (!storageBean.isMounted()) {
-						//resetMediaPlayer();
+						resetMediaPlayer();
 						resetPlayingData(true);
 					}
 				}
@@ -663,7 +663,7 @@ public class VideoPlayController implements AudioFocusListener {
 			case MSG_SAVE_PLAYTIME:
 				int time = getPosition();
 				savePlayTime(getPlayFileNode(), time);
-				Log.e("luke","----MSG_SAVE_PLAYTIME: " + time);
+				//Log.e("luke","----MSG_SAVE_PLAYTIME: " + time);
 				removeMessages(MSG_SAVE_PLAYTIME);
 				sendEmptyMessageDelayed(MSG_SAVE_PLAYTIME, MSG_DELAY_PLAYTIME);
 				break;

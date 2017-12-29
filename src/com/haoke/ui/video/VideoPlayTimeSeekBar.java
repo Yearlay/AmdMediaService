@@ -57,7 +57,7 @@ public class VideoPlayTimeSeekBar extends RelativeLayout implements OnSeekBarCha
 	// ------------------------------外部接口 end------------------------------
 
 	// 内部变量
-	private static final String TAG = "VideoPlayTimeSeekBar";
+	private static final String TAG = "luke";
 	private SeekBar mSeekBar;
 
 	public SeekBar getSeekBar() {
@@ -190,7 +190,6 @@ public class VideoPlayTimeSeekBar extends RelativeLayout implements OnSeekBarCha
 	private Handler mTimeHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			int what = msg.what;
-			Log.d(TAG, "mTimeHandler what=" + what);
 			removeMessages(what);
 			switch (msg.what) {
 			case MSG_UPDATE_TIME:
