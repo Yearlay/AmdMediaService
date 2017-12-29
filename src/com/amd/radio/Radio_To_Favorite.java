@@ -123,7 +123,7 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
         } else if(id == R.id.radio_edit) {
             enterEditMode();
         } else if(id == R.id.radio_edit_select_all) {
-            selectAll(!checkSelected());
+            selectAll(!checkAllSelected());
         } else if(id == R.id.radio_edit_select_cancel) {
             exitEditMode();
         } else if(id == R.id.radio_edit_select_del) {
@@ -242,14 +242,14 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
     }
     
     private void updateSelectAllTextView() {
-        if (checkSelected()) {
+        if (checkAllSelected()) {
             mSelectAllTextView.setText("撤销");
         } else {
             mSelectAllTextView.setText("全选");
         }
     }
     
-    public boolean checkSelected() {
+    private boolean checkSelected() {
         boolean existSelectFlag = false;
         for (boolean selectFlag : adapter.getSelectedList()) {
             if (selectFlag) {
@@ -258,6 +258,17 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
             }
         }
         return existSelectFlag;
+    }
+    
+    private boolean checkAllSelected() {
+        boolean allSelectFlag = true;
+        for (boolean selectFlag : adapter.getSelectedList()) {
+            if (!selectFlag) {
+                allSelectFlag = false;
+                break;
+            }
+        }
+        return allSelectFlag;
     }
     
     private void deleteSelected() {

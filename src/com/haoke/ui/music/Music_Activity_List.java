@@ -469,7 +469,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     }
     
     private void selectAllItems(){
-        if (isItemsSeleted()) {
+        if (isAllItemsSeleted()) {
             mIF.selectAll(false);
             mListTab.updateBtndate(false);
         } else {
@@ -718,12 +718,10 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         } else if (mEditMode){//编辑列表
             if (mIF.isCurItemSelected(position)) {
                 mIF.selectFile(position, false);
-                mListTab.updateBtndate(isItemsSeleted());
             } else {
                 mIF.selectFile(position, true);
-                mListTab.updateBtndate(true);
             }
-            
+            mListTab.updateBtndate(isAllItemsSeleted());
             notifyDataSetChanged();
         }
     }
@@ -735,6 +733,17 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             }
         }
         return false;
+    }
+    
+    private boolean isAllItemsSeleted() {
+        boolean all = true;
+        for (int pos = 0; pos < mIF.getListTotal(); pos++) {
+            if (!mIF.isCurItemSelected(pos)) {
+                all = false;
+                break;
+            }
+        }
+        return all;
     }
     
     private void refreshList() {
