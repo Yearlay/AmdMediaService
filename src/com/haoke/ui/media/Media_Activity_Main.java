@@ -272,10 +272,12 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
     public void replaceBtMusicFragment() {
         if (isShowRadioLayout()) {
             mViewPager.setCurrentItem(VIEWPAGER_ID_MUSIC, false);
+            mHomeFragment.replaceBtMusicFragment();
             mHomeFragment.onResume();
             mRadioFragment.onPause();
+        } else {
+            mHomeFragment.replaceBtMusicFragment();
         }
-        mHomeFragment.replaceBtMusicFragment();
     }
     
     public void setCurPlayViewState() {
