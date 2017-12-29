@@ -906,10 +906,10 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	}
 	
 	private void setPlayingData(int deviceType, int fileType, boolean force) {
-		Log.d(TAG, "setPlayingData deviceType="+deviceType+"; fileType="+fileType+"; force="+force);
-		Log.d(TAG, "setPlayingData mPlayingDeviceType="+mPlayingDeviceType+"; mPlayingFileType="+mPlayingFileType+"; mPlayingPos="+mPlayingPos);
 		ArrayList<FileNode> lists = mAllMediaList.getMediaList(deviceType, fileType);
 		int size = lists.size();
+        Log.d(TAG, "setPlayingData deviceType="+deviceType+"; fileType="+fileType+"; force="+force+"; size="+size);
+        Log.d(TAG, "setPlayingData mPlayingDeviceType="+mPlayingDeviceType+"; mPlayingFileType="+mPlayingFileType+"; mPlayingPos="+mPlayingPos);
 		if (mPlayingDeviceType == deviceType && mPlayingFileType == fileType) {
 			if (size != mPlayingListSize) {
 				force = true;

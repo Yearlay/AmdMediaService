@@ -756,20 +756,16 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
 //                SystemClock.uptimeMillis(), SystemClock.uptimeMillis(),
 //                MotionEvent.ACTION_CANCEL, 0, 0, 0));
         
-        final Runnable checkSelection = new Runnable() {
-            @Override
-            public void run() {
-                setCurPlaySelection();
-            }
-        };
-
-        checkSelection.run();
-        mListView.postDelayed(checkSelection, 20);
+        setCurPlaySelection();
     }
     
     private void setCurPlaySelection() {
         if (mIF.getPlayingDevice() == mDeviceType && mIF.getPlayingFileType() == FileType.AUDIO) {
-            setSelection(mIF.getPlayPos());
+            int pos = mIF.getPlayPos();
+            if (pos == -1) {
+                pos = mIF.getLastPlayItem(mDeviceType, FileType.AUDIO);
+            }
+            setSelection(pos);
         } else {
             if (mPlayDefault) {
                 int index = mIF.getPlayDefaultIndex(mDeviceType, FileType.AUDIO);
@@ -790,7 +786,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     }
     
     private void notifyDataSetChanged() {
-        mAdapter.notifyDataSetChanged();
+        mAdapter.notifyDataSetChangedEx();
     }
 
     @Override

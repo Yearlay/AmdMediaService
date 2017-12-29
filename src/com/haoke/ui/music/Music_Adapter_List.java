@@ -49,20 +49,26 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
 
     // 设备有改变，重新加载数据
     public boolean updateDeviceType(int deviceType, boolean force) {
+        int oldSize = mTotal;
+        int oldDevice = mDeviceType;
+        boolean val = false;
         if (mDeviceType != deviceType || force) {
             mTotal = mIF.getMediaListSize(deviceType, FileType.AUDIO);
             mDeviceType = deviceType;
             resetLastPlayItem();
-            return true;
+            notifyDataSetChangedEx();
+            val = true;
         } else if (mDeviceType == deviceType) {
-            int size = mIF.getMediaListSize(deviceType, FileType.AUDIO);
-            if (size != mTotal) {
-                mTotal = size;
+            int sizeTemp = mIF.getMediaListSize(deviceType, FileType.AUDIO);
+            if (sizeTemp != mTotal) {
+                mTotal = sizeTemp;
                 resetLastPlayItem();
-                return true;
+                notifyDataSetChangedEx();
+                val = true;
             }
         }
-        return false;
+        Log.d(TAG, "updateDeviceType oldSize="+oldSize+"; oldDevice="+oldDevice+"; mDeviceType="+mDeviceType+"; mTotal="+mTotal);
+        return val;
     }
     
     public void resetLastPlayItem() {
@@ -73,9 +79,13 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
         if (mEditMode != editMode) {
             mEditMode = editMode;
             if (notifyDataChange) {
-                notifyDataSetChanged();
+                notifyDataSetChangedEx();
             }
         }
+    }
+    
+    public void notifyDataSetChangedEx() {
+        notifyDataSetChanged();
     }
     
     @Override
@@ -99,7 +109,7 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
             convertView.setTag(holder);
         }
         
-        setDate(holder, position);
+        setData(holder, position);
         
         long end = System.currentTimeMillis();
         Log.d(TAG, "getView consume time="+(end-start)+"ms");
@@ -107,13 +117,13 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
         return convertView;
     }
     
-    private void setDate(ViewHolder holder, int position) {
-        Log.v(TAG, "setDate() mTotal=" +mTotal);
+    private void setData(ViewHolder holder, int position) {
+        Log.v(TAG, "setData() mTotal=" +mTotal);
         int itemNo = position;
         // 控制内容显示
         Bitmap thumb = null;
         if (itemNo < mTotal) {
-            Log.v(TAG, "setDate() itemNo=" +itemNo +", mTotal=" +mTotal);
+            Log.v(TAG, "setData() itemNo=" +itemNo +", mTotal=" +mTotal);
             FileNode fileNode = mIF.getItem(itemNo);
             if (fileNode != null) {
                 holder.mItemBg.setBackgroundDrawable(skinManager.getDrawable(R.drawable.music_list_item_selector));
@@ -162,7 +172,7 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
                     holder.mTitleText.setTextColor(skinManager.getColor(R.color.hk_custom_text));
                 }
             } else {
-                Log.e(TAG, "setDate why fileNode is null ?");
+                Log.e(TAG, "setData why fileNode is null ?");
             }
         }
         
