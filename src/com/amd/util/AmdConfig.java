@@ -10,7 +10,7 @@ public class AmdConfig {
     /**
      * app的时间,会与ID3专辑图的暗码合并成Toast输出
      */
-    public static final String APP_VERSION_TIME = "16:50";
+    public static final String APP_VERSION_TIME = "17:50";
     /**
      * 激活ID3专辑图的暗码
      */
