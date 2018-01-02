@@ -35,8 +35,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.view.ActionMode;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -108,6 +111,7 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
         mInputEditText = (EditText) findViewById(R.id.search_input);
         mInputEditText.setOnEditorActionListener(this);
         mInputEditText.addTextChangedListener(this);
+        disableEditTextLongClick(mInputEditText);
         mSearchIcon = (ImageButton) findViewById(R.id.search_icon);
         mClearButton = (ImageButton) findViewById(R.id.search_num_clear);
         mClearButton.setOnClickListener(this);
@@ -121,6 +125,27 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
         mResultListView.setOnItemClickListener(this);
         
         mNotifyText = (TextView) findViewById(R.id.search_notify_text);
+    }
+    
+    private void disableEditTextLongClick(EditText view) {
+        view.setLongClickable(false);
+        view.setCustomSelectionActionModeCallback(new android.view.ActionMode.Callback() {
+            @Override
+            public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+            @Override
+            public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+                return false;
+            }
+            @Override
+            public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+                return false;
+            }
+            @Override
+            public void onDestroyActionMode(ActionMode mode) {
+            }
+        });
     }
     
     private void updateLabel() {
