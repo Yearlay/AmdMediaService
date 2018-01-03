@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.util.SkinManager;
+import com.amd.util.Source;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.ID3Parse;
 import com.haoke.bean.ImageLoad;
@@ -228,7 +229,19 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
         }
         FileNode fileNode = mSearchAdapter.mResultStationList.get(position);
         if (mFileType == FileType.AUDIO) {
-            Media_IF.getInstance().play(fileNode);
+            boolean isPlayClick = false;
+            if (fileNode != null && Source.isAudioSource() 
+                    && Media_IF.getInstance().getPlayingDevice() == fileNode.getDeviceType()) {
+                if (Media_IF.getInstance().isPlayState()) {
+                    FileNode playFileNode = Media_IF.getInstance().getPlayItem();
+                    if (playFileNode != null && playFileNode.isSamePathAndFrom(fileNode)) {
+                        isPlayClick = true;
+                    }
+                }
+            }
+            if (!isPlayClick) {
+                Media_IF.getInstance().play(fileNode);
+            }
             Intent musicIntent = new Intent();
             musicIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             musicIntent.setClassName("com.haoke.mediaservice", "com.haoke.ui.media.Media_Activity_Main");
