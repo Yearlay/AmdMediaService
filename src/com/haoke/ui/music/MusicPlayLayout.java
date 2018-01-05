@@ -16,6 +16,7 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
+import com.amd.bt.BTMusic_IF;
 import com.amd.bt.BT_IF;
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.util.Source;
@@ -611,6 +612,15 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 						btIF.music_play();
 						setCurPlayViewState();
 					}
+				} else {
+				    if (btPlaying) {
+				        boolean hasFocus = BTMusic_IF.getInstance().hasAudioFocus();
+				        boolean calling = Media_IF.getCallState();
+				        if (!hasFocus && !calling) {
+	                        Log.d(TAG, "refreshFromViewPagerMaybePlayBT hasFocus="+hasFocus+"; calling="+calling);
+	                        BTMusic_IF.getInstance().requestAudioFocus(true);
+				        }
+				    }
 				}
 			}
 		}
