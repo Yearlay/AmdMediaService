@@ -54,6 +54,10 @@ public class StorageBean {
         this.onlyRead = onlyRead;
     }
     
+    public boolean isUnmounted() {
+        return mState == EJECT;
+    }
+    
     public boolean isMounted() {
         if (storagePath == null) {
             return false;

@@ -425,7 +425,14 @@ public class MediaInterfaceUtil {
     private static final String DEVICE_PATH_USB_1 = "/mnt/media_rw/usb_storage";
     private static final String DEVICE_PATH_USB_2 = "/mnt/media_rw/usb_storage1";
     public static boolean isUsbOn(int deviceType) {
-        String str = deviceType == DeviceType.USB1 ? DEVICE_PATH_USB_1 : DEVICE_PATH_USB_2;
+        String str = null;
+        if (deviceType == DeviceType.USB1) {
+            str = DEVICE_PATH_USB_1;
+        } else if (deviceType == DeviceType.USB2) {
+            str = DEVICE_PATH_USB_2;
+        } else {
+            return true;
+        }
         File file = new File(str);
         if (file.exists() && file.isDirectory() && file.canRead()
                 && file.canExecute()) {
