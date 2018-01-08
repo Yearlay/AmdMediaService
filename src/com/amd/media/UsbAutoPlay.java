@@ -35,6 +35,15 @@ public class UsbAutoPlay {
         }
     }
     
+    public static void resetUsbAutoPlay(boolean isUsb1, boolean isUsb2) {
+        if (isUsb1) {
+            isBootInsertUsb1 = false;
+        }
+        if (isUsb2) {
+            isBootInsertUsb2 = false;
+        }
+    }
+    
     public static int playDefaultMusic(int deviceType) {
         if (!AmdConfig.INSERT_USB_AUTO_PLAY_MUSIC) {
             return -1;

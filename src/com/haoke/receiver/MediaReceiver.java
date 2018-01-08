@@ -1,6 +1,8 @@
 package com.haoke.receiver;
 
+import com.amd.media.UsbAutoPlay;
 import com.haoke.constant.MediaUtil;
+import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.ScanType;
 import com.haoke.service.MediaService;
 import com.haoke.util.DebugLog;
@@ -44,16 +46,25 @@ public class MediaReceiver extends BroadcastReceiver {
             startFileService(context, ScanType.SCAN_STORAGE, devicePath);
         } else if (action.equals(Intent.ACTION_MEDIA_EJECT) || action.equals(Intent.ACTION_MEDIA_UNMOUNTED)) {
             DebugLog.d("Yearlay", "MediaReceiver Intent.ACTION_MEDIA_EJECT or ACTION_MEDIA_UNMOUNTED: " + devicePath);
-            if (MediaUtil.DEVICE_PATH_USB_1.equals(devicePath) && !sUsb1Mounted) {
-                return;
-            }
-            if (MediaUtil.DEVICE_PATH_USB_2.equals(devicePath) && !sUsb2Mounted) {
-                return;
+            boolean isUsb1 = false;
+            boolean isUsb2 = false;
+            if (MediaUtil.DEVICE_PATH_USB_1.equals(devicePath)) {
+                isUsb1 = true;
+                UsbAutoPlay.resetUsbAutoPlay(true, false);
+                if (!sUsb1Mounted) {
+                    return;
+                }
+            } else if (MediaUtil.DEVICE_PATH_USB_2.equals(devicePath)) {
+                isUsb2 = true;
+                UsbAutoPlay.resetUsbAutoPlay(false, true);
+                if (!sUsb2Mounted) {
+                    return;
+                }
             }
             startFileService(context, ScanType.REMOVE_STORAGE, devicePath);
-            if (MediaUtil.DEVICE_PATH_USB_1.equals(devicePath)) {
+            if (isUsb1) {
                 sUsb1Mounted = false;
-            } else if (MediaUtil.DEVICE_PATH_USB_2.equals(devicePath)) {
+            } else if (isUsb2) {
                 sUsb2Mounted = false;
             }
         }
