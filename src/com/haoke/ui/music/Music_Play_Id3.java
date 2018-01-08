@@ -29,7 +29,7 @@ public class Music_Play_Id3 extends LinearLayout implements OnClickListener, ID3
     private static final String TAG = "Music_Play_Id3";
     
     private static final String VERSION_INFO = 
-            "当前媒体apk版本为 2017" + AmdConfig.APP_VERSION_DATE + " " +AmdConfig.APP_VERSION_TIME;
+            "当前媒体apk版本为 2018" + AmdConfig.APP_VERSION_DATE + " " +AmdConfig.APP_VERSION_TIME;
     
     private TextView mTrack;
     private TextView mAlbum;

@@ -14,10 +14,20 @@ import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.mediaservice.R;
 import com.haoke.util.DebugLog;
 import com.haoke.util.Media_IF;
+import com.amd.media.MediaInterfaceUtil;
 import com.amd.radio.Radio_IF;
 import com.amd.util.Source;
 
 public class MediaWidgetProvider {
+    
+    private static void showToastNoMedia(Context context) {
+        try {
+            //MediaInterfaceUtil.showToast(R.string.no_media_can_play, Toast.LENGTH_SHORT);
+            Toast.makeText(context, R.string.no_media_can_play, Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            android.util.Log.e("MediaWidgetProvider", "showToast e="+e);
+        }
+    }
 
     public static void onClickMusicPlayButton(Context context) {
         int source = Media_IF.getCurSource();
@@ -33,7 +43,7 @@ public class MediaWidgetProvider {
             if (getFileNode(context) != null) {
                 Media_IF.getInstance().changePlayState();
             } else {
-                Toast.makeText(context, R.string.no_media_can_play, Toast.LENGTH_SHORT).show();
+                showToastNoMedia(context);
             }
         } else {
             if (Source.isBTMusicSource(Media_IF.sLastSource)) {
@@ -48,7 +58,7 @@ public class MediaWidgetProvider {
                     if (fileNode != null) {
                         Media_IF.getInstance().play(getFileNode(context));
                     } else {
-                        Toast.makeText(context, R.string.no_media_can_play, Toast.LENGTH_SHORT).show();
+                        showToastNoMedia(context);
                     }
                 }
             }
@@ -66,7 +76,7 @@ public class MediaWidgetProvider {
                     DebugLog.e("Yearlay", "Error AppWidget#playPre ...");
                 }
             } else {
-                Toast.makeText(context, R.string.no_media_can_play, Toast.LENGTH_SHORT).show();
+                showToastNoMedia(context);
             }
         } else {
             if (Source.isBTMusicSource(Media_IF.sLastSource)) {
@@ -79,7 +89,7 @@ public class MediaWidgetProvider {
                         Media_IF.getInstance().changePlayState();
                     }
                 } else {
-                    Toast.makeText(context, R.string.no_media_can_play, Toast.LENGTH_SHORT).show();
+                    showToastNoMedia(context);
                 }
             }
         }
@@ -96,7 +106,7 @@ public class MediaWidgetProvider {
                     DebugLog.e("Yearlay", "Error AppWidget#playNext ...");
                 }
             } else {
-                Toast.makeText(context, R.string.no_media_can_play, Toast.LENGTH_SHORT).show();
+                showToastNoMedia(context);
             }
         } else {
             if (Source.isBTMusicSource(Media_IF.sLastSource)) {
@@ -109,7 +119,7 @@ public class MediaWidgetProvider {
                         Media_IF.getInstance().changePlayState();
                     }
                 } else {
-                    Toast.makeText(context, R.string.no_media_can_play, Toast.LENGTH_SHORT).show();
+                    showToastNoMedia(context);
                 }
             }
         }

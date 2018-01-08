@@ -35,6 +35,15 @@ public class UsbAutoPlay {
         }
     }
     
+    public static void resetUsbAutoPlay(boolean isUsb1, boolean isUsb2) {
+        if (isUsb1) {
+            isBootInsertUsb1 = false;
+        }
+        if (isUsb2) {
+            isBootInsertUsb2 = false;
+        }
+    }
+    
     public static int playDefaultMusic(int deviceType) {
         if (!AmdConfig.INSERT_USB_AUTO_PLAY_MUSIC) {
             return -1;
@@ -48,6 +57,10 @@ public class UsbAutoPlay {
         }
         if (!Media_IF.isPowerOn() && !Media_IF.getScreenOn()) {
             Log.d(TAG, "playDefaultMusic return! PowerOff and ScreenOff!");
+            return -1;
+        }
+        if (!MediaInterfaceUtil.isUsbOn(deviceType)) {
+            Log.d(TAG, "playDefaultMusic return! deviceType="+deviceType+" unmounted!");
             return -1;
         }
         if (!sDonotDelay) {
@@ -71,18 +84,21 @@ public class UsbAutoPlay {
             return -1;
         }
         Media_IF mIF = Media_IF.getInstance();
-        Context context = MediaApplication.getInstance();
-        AllMediaList allMediaList = AllMediaList.instance(context);
         if (mIF.isPlayState() && mIF.getPlayingDevice() == deviceType) {
             Log.d(TAG, "playDefaultMusic Media_IF is playing!");
             return -1;
         }
+        Context context = MediaApplication.getInstance();
+        AllMediaList allMediaList = AllMediaList.instance(context);
         StorageBean storage = allMediaList.getStoragBean(deviceType);
         if (storage.isMounted()) {
             if (!storage.isLoadCompleted()) {
                 Log.d(TAG, "playDefaultMusic must wait device load completed!");
                 return 1000;
             }
+        } else if (storage.isUnmounted()) {
+            Log.d(TAG, "playDefaultMusic return! deviceType="+deviceType+" isUnmounted!");
+            return -1;
         }
         String filePath = allMediaList.getLastPlayPath(deviceType, FileType.AUDIO);
         if (!TextUtils.isEmpty(filePath)) {
