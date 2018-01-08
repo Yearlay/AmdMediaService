@@ -36,6 +36,7 @@ public class Radio_IF extends CarService_IF {
 	private boolean mServiceConn = false;
     private boolean isScan5S = false;
     private boolean isRescan = false;
+    private boolean isScanAutoNext = false;
 	
 	public Radio_IF() {
 		mMode = com.haoke.define.ModeDef.RADIO;
@@ -870,6 +871,11 @@ public class Radio_IF extends CarService_IF {
 		return isScan5S;
 	}
 	
+	//获取是否在扫描到下一电台状态
+	public boolean isScanAutoNextState() {
+	    return isScanAutoNext;
+	}
+	
     public boolean exitScan5S() {
         boolean state = isScan5S;
         if (isScan5S) {
@@ -903,9 +909,15 @@ public class Radio_IF extends CarService_IF {
     	if (data == 2) {
     		isScan5S = true;
     		isRescan = false;
+    		isScanAutoNext = false;
     	} else if (data == 3) {
     		isRescan = true;
     		isScan5S = false;
+    		isScanAutoNext = false;
+    	} else if (data == 4) {
+    	    isRescan = false;
+    	    isScan5S = false;
+    	    isScanAutoNext = true;
     	}
     	if (isRescan) {
         	boolean enable = isEnable();
@@ -923,6 +935,11 @@ public class Radio_IF extends CarService_IF {
     		if (data == 0) {
     			isScan5S = false;
             }
+    	}
+    	if (isScanAutoNext) {
+    	    if (data == 0) {
+    	        isScanAutoNext = false;
+    	    }
     	}
     }
 }

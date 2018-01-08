@@ -600,7 +600,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     }
     
     private boolean isRescanOrScan5S() {
-        return mIF.isRescanState() || mIF.isScan5SState();
+        return mIF.isRescanState() || mIF.isScan5SState() || mIF.isScanAutoNextState();
     }
     
     private void isScanStateChange(int data) {
