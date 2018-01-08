@@ -678,6 +678,16 @@ public class Media_IF extends CarService_IF {
 		}
 	}
 	
+	// 只设音频源和焦点
+	public void setAudioSourceAndRequestFocus(int deviceType) {
+	    if (MediaInterfaceUtil.mediaCannotPlay()) {
+            return;
+        }
+	    if (mMediaManager.requestAudioFocus(true)) {
+	        setCurSource(Source.getAudioSource(deviceType));
+	    }
+	}
+	
 	// 播放指定设备的默认歌曲（在mode切源后调用），与getPlayDefaultIndex对应
 	public boolean playDefault(int deviceType, int fileType) {
 		try {
