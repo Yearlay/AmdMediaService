@@ -20,7 +20,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="80px"
         android:gravity="center"
-        android:orientation="horizontal" > 
+        android:orientation="horizontal"
+        android:splitMotionEvents="false" > 
         
         <com.amd.widget.BeepRadioButton
             android:id="@+id/image_device_flash"
@@ -96,7 +97,8 @@
         android:layout_marginTop="80px"
         android:layout_alignParentRight="true"
         android:layout_marginRight="30dp"
-        android:visibility="gone" >
+        android:visibility="gone"
+        android:splitMotionEvents="false" >
 
         <TextView
             android:id="@+id/edit_delete"
