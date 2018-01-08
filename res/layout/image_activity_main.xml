@@ -20,7 +20,8 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="80px"
         android:gravity="center"
-        android:orientation="horizontal" > 
+        android:orientation="horizontal"
+        android:splitMotionEvents="false" > 
         
         <com.amd.widget.BeepRadioButton
             android:id="@+id/image_device_flash"
