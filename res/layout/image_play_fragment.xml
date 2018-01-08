@@ -16,7 +16,8 @@
         android:layout_height="wrap_content"
         android:background="#60000000"
         android:gravity="center_vertical"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:splitMotionEvents="false">
         <ImageView
             android:id="@+id/image_ctrlbar_list"
             android:layout_width="wrap_content"
