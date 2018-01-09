@@ -2,6 +2,7 @@ package com.haoke.ui.video;
 
 import java.util.ArrayList;
 
+import android.R.color;
 import android.content.Context;
 import android.media.AudioManager;
 import android.os.Handler;
@@ -444,6 +445,7 @@ public class VideoPlayController implements AudioFocusListener {
 
 		mPlayState = PlayState.PLAY;
 		resetMediaPlayer();
+		mVideView.setBackgroundColor(color.transparent);;
 		DebugClock debugClock = new DebugClock();
 		mVideView.setVideoPath(path); // 主要的耗时操作
 		debugClock.calculateTime(TAG, "mVideView setVideoPath");

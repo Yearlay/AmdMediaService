@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
@@ -180,12 +181,15 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 		mVideoView.setOnPreparedListener(new OnPreparedListener() {
 			@Override
 			public void onPrepared(MediaPlayer mp) {
-				Log.e("luke", "----onPrepared!!");
 				Video_Activity_Main.mErrorCount = 0;
 				FileNode temp = mVideoController.getPlayFileNode();
+				Log.e("luke", "------onPrepared filePlayTime: " + temp.getPlayTime() + "  ,width: " + mp.getVideoWidth() + "  ,height: " + mp.getVideoHeight());
+				
+				if(mp.getVideoWidth() == 0 || mp.getVideoHeight() == 0){ //没有图像，只有声音的文件处理
+					mVideoView.setBackgroundColor(Color.BLACK);
+				}
 				try {
 					if (temp != null) {
-						Log.e("luke", "------onPrepared filePlayTime: " + temp.getPlayTime());
 						mVideoController.playOrPause(getBeforePlaystate());
 						mVideoController.setPosition(temp.getPlayTime());
 						if (getBeforePlaystate()) {
