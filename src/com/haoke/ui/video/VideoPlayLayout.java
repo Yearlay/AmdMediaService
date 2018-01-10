@@ -203,9 +203,9 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 				updateTimeBar();
 				mLoading.setVisibility(View.GONE);
 
-				// mActivityHandler.removeMessages(Video_Activity_Main.FORBIDDEN_VIEW_TEST);
-				// mActivityHandler.sendEmptyMessageDelayed(Video_Activity_Main.FORBIDDEN_VIEW_TEST,
-				// 5000);
+/*				 mActivityHandler.removeMessages(Video_Activity_Main.FORBIDDEN_VIEW_TEST);
+				 mActivityHandler.sendEmptyMessageDelayed(Video_Activity_Main.FORBIDDEN_VIEW_TEST,
+				 5000);*/
 			}
 		});
 
@@ -396,6 +396,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 	}
 
 	public void updateVideoLayout(boolean checkSpeed) {
+		Log.e("luke", "------VideoPlayLayout updateVideoLayout " + checkSpeed);
 		DebugClock debugClock = new DebugClock();
 		mVideoController.getVideoView().setVisibility(View.VISIBLE);
 		debugClock.calculateTime("luke", "updateVideoLayout setVisibility");
@@ -731,6 +732,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 	}
 
 	public void checkSpeedAndRefreshView(float speed) {
+		DebugLog.d("luke", "checkSpeedAndRefreshView : " + speed);
 		boolean showForbiddenViewFlag = false;
 		try {
 			boolean sysLimitFlag = mVideoController.limitToPlayVideoWhenDrive();
@@ -740,14 +742,15 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 			e.printStackTrace();
 		}
 		if (showForbiddenViewFlag) {
-			DebugLog.d("Yearlay", "show Forbidden View... speed : " + speed);
+			DebugLog.d("luke", "show Forbidden View... speed : " + speed);
 		} else {
-			DebugLog.d("Yearlay", "hide Forbidden View... speed : " + speed);
+			DebugLog.d("luke", "hide Forbidden View... speed : " + speed);
 		}
 		mForbiddenView.setVisibility(showForbiddenViewFlag ? View.VISIBLE : View.GONE);
 	}
 
 	public void showOrHideForbiddenView(boolean showForbiddenView) {
+		DebugLog.d("luke", "showOrHideForbiddenView : " + showForbiddenView);
 		boolean showForbiddenViewFlag = false;
 		try {
 			boolean sysLimitFlag = mVideoController.limitToPlayVideoWhenDrive();
@@ -756,9 +759,9 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 			e.printStackTrace();
 		}
 		if (showForbiddenViewFlag) {
-			DebugLog.d("Yearlay", "show Forbidden View... speed : " + AllMediaList.sCarSpeed);
+			DebugLog.d("luke", "show Forbidden View... speed : " + AllMediaList.sCarSpeed);
 		} else {
-			DebugLog.d("Yearlay", "hide Forbidden View... speed : " + AllMediaList.sCarSpeed);
+			DebugLog.d("luke", "hide Forbidden View... speed : " + AllMediaList.sCarSpeed);
 		}
 		mForbiddenView.setVisibility(showForbiddenViewFlag ? View.VISIBLE : View.GONE);
 	}

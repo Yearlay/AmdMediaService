@@ -209,7 +209,9 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 	@Override
 	public void onStart() {
 		super.onStart();
-		AllMediaList.sCarSpeed = Media_IF.getCarSpeed();
+		if(AllMediaList.sCarSpeed == 0) {
+			AllMediaList.sCarSpeed = Media_IF.getCarSpeed();
+		}
 		Log.v(TAG, "HMI------------onStart sCarSpeed: " + AllMediaList.sCarSpeed);
 		Media_IF.getInstance().registerModeCallBack(this);
 		updateDevice(getCurrentDeviceType());
@@ -592,11 +594,13 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 			case SHOW_FORBIDDEN_VIEW:
 				if (mPlayLayout != null && AllMediaList.sCarSpeed >= 20.0f) {
 					mPlayLayout.showOrHideForbiddenView(true);
+					
 				}
 				break;
 			case HIDE_FORBIDDEN_VIEW:
 				if (mPlayLayout != null && AllMediaList.sCarSpeed < 20.0f) {
 					mPlayLayout.showOrHideForbiddenView(false);
+					
 				}
 				break;
 			case CANCEL_EDIT:
