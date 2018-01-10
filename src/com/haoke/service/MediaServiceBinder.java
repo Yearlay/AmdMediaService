@@ -199,7 +199,9 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
                 bmp = null;
             }
         } else {
-            bmp = mLastAlbumBitmap;
+            if (mLastAlbumBitmap != null && !mLastAlbumBitmap.isRecycled()) {
+                bmp = mLastAlbumBitmap;
+            }
         }
     	if (bmp != null) {
     	    mLastAlbumBitmap = bmp;
