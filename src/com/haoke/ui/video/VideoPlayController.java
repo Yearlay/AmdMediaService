@@ -162,14 +162,10 @@ public class VideoPlayController implements AudioFocusListener {
 	public void resetMediaPlayer() {
 		DebugClock debugClock = new DebugClock();
 		try {
-			mVideView.stopPlayback();
+			//mVideView.stopPlayback();
 			mPlayState = PlayState.STOP;
 			mVideView.suspend();
-			//mVideView.invalidate();
-			//mVideView.setBackgroundColor(Color.BLACK);
-			//videoLayout.setVisibility(View.GONE);
-			//videoLayout.invalidate();
-			//mVideView.refreshDrawableState();
+			
 		} catch (Exception e) {
 			Log.e(TAG, "resetMediaPlayer e=" + e);
 		}

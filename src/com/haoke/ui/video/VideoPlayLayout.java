@@ -188,6 +188,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 				if(mp.getVideoWidth() == 0 || mp.getVideoHeight() == 0){ //没有图像，只有声音的文件处理
 					mVideoView.setBackgroundColor(Color.BLACK);
 				}
+				mVideoView.invalidate();
 				try {
 					if (temp != null) {
 						mVideoController.playOrPause(getBeforePlaystate());
@@ -358,6 +359,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 		mNextImageView.setImageDrawable(skinManager.getDrawable(R.drawable.image_next_icon_selector));
 		mUnsupportView.setBackground(skinManager.getDrawable(R.drawable.pub_msgbox_bg1));
 		updateCollectView();
+		updatePlayState(!mVideoController.isVideoPlaying);
 		mTimeSeekBar.refreshSkin();
 	}
 
