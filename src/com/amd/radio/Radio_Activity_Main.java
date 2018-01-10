@@ -479,6 +479,9 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
             mIF.setNextStep();
         } else if (id == R.id.radio_fragment_pause_play) {
             boolean enable = mIF.isEnable();
+            if (enable) {
+                mIF.exitScan5S();
+            }
             mIF.setEnable(!enable);
         }
     }

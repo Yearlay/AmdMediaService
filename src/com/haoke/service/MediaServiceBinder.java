@@ -36,6 +36,7 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
 	private String mOldId3Info = null;
 	private Bitmap mBtDefBmp = null;
 	private Bitmap mAlbumBitmap = null;
+	private Bitmap mLastAlbumBitmap = null;
 
 	public static class MediaClientEx {
 		public String mMode = null;
@@ -197,7 +198,12 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
             } else {
                 bmp = null;
             }
+        } else {
+            bmp = mLastAlbumBitmap;
         }
+    	if (bmp != null) {
+    	    mLastAlbumBitmap = bmp;
+    	}
 		return bmp;
 	}
 

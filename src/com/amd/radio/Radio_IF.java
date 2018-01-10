@@ -203,7 +203,6 @@ public class Radio_IF extends CarService_IF {
 					mServiceIF.radio_setEnable(enable);
 				}
 			} else {
-			    //exitRescanAndScan5S(true);
 				mServiceIF.radio_setEnable(enable);
 			}
 		} catch (Exception e) {
