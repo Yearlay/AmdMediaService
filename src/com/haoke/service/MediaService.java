@@ -83,7 +83,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         
         mBinder = new MediaServiceBinder(this);
         
-        UsbAutoPlay.setServiceStartTime();
+        //UsbAutoPlay.setServiceStartTime();
 
         // 发广播通知服务已经启动
         Intent intent = new Intent();
