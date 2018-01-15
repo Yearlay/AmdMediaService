@@ -179,11 +179,13 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
             }
         }
     	if (Source.isBTMusicSource(source)) {
+    	    mLastAlbumBitmap = null;
     		if (mBtDefBmp == null) {
     			mBtDefBmp = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_bt_default);
     		}
     		bmp = mBtDefBmp;
         } else if (Source.isAudioSource(source) || source == Source.NULL) {
+            mLastAlbumBitmap = null;
             FileNode fileNode = getFileNode(mContext);
             if (fileNode != null) {
                 if (fileNode.getParseId3() == 1 && fileNode.getThumbnailPath() != null) {

@@ -20,8 +20,8 @@ public class Radio_SimpleSave {
 	private final String DBNAME = "city_store";
 	
 	private static Radio_SimpleSave simpleSave = null;
-	private static String  province_name ="江苏省";
-	private static String city_name ="宿迁市";
+	private static String province_name = "";
+	private static String city_name = "";
 	
 	private final String BAND_FM = "BAND.FM";
 	//private final String BAND_AM = "BAND.AM";
@@ -43,6 +43,7 @@ public class Radio_SimpleSave {
 	public static Radio_SimpleSave getInstance(){
 		if (simpleSave == null) {
 			simpleSave = new Radio_SimpleSave();
+			simpleSave.getCity();
 		}
 		return simpleSave;
 	}
