@@ -68,6 +68,9 @@ public class AmdMediaButtonReceiver extends BroadcastReceiver {
                 return handle;
             }
         }
+        if (MediaInterfaceUtil.isButtonClickTooFast()) {
+            return true;
+        }
         context = context.getApplicationContext();
         switch (keyCode) {
         case KeyEvent.KEYCODE_MEDIA_PLAY: //126
