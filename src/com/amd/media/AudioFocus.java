@@ -10,7 +10,7 @@ import android.util.Log;
 
 public class AudioFocus {
 
-	private final String TAG = this.getClass().getSimpleName();
+	private static final String TAG = "AMD_AudioFocus";
 	private Context mContext = null;
 	private int mAudioFocusState = AudioManager.AUDIOFOCUS_LOSS;
 	private AudioManager mAudioManager = null;
