@@ -122,6 +122,11 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 
 		} else if (Source.isRadioMode(mode)) {
 			switch (func) {
+			case RadioFunc.FREQ:
+			    if(data>5000 && data%10 > 0){//纠错
+			        mIF.setCurFreq(8750);
+	            }
+			    break;
 			case RadioFunc.STATE:
 				mIF.isScanStateChange(data);
 				break;

@@ -6,11 +6,11 @@ public class AmdConfig {
      * 1.会与Media_IF合并成一个TAG，方便log打印<p>
      * 2.会与ID3专辑图的暗码合并成Toast输出
      */
-    public static final String APP_VERSION_DATE = "0105";
+    public static final String APP_VERSION_DATE = "0112";
     /**
      * app的时间,会与ID3专辑图的暗码合并成Toast输出
      */
-    public static final String APP_VERSION_TIME = "17:30";
+    public static final String APP_VERSION_TIME = "17:40";
     /**
      * 激活ID3专辑图的暗码
      */
@@ -47,4 +47,8 @@ public class AmdConfig {
      * 支持音乐、蓝牙音乐在音乐界面的onkeyup的媒体按键的处理
      */
     public static final boolean ENABLE_MEDIA_KEY_HANDLE_IN_ACTIVITY = true;
+    /**
+     * 是否有AP来控制收音的按键互斥逻辑处理，默认为true； false表示交由mcu来处理
+     */
+    public static final boolean ENABLE_RADIO_MUTEX_LOGIC = true;
 }

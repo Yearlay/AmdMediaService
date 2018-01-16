@@ -36,6 +36,7 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
 	private String mOldId3Info = null;
 	private Bitmap mBtDefBmp = null;
 	private Bitmap mAlbumBitmap = null;
+	private Bitmap mLastAlbumBitmap = null;
 
 	public static class MediaClientEx {
 		public String mMode = null;
@@ -178,11 +179,13 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
             }
         }
     	if (Source.isBTMusicSource(source)) {
+    	    mLastAlbumBitmap = null;
     		if (mBtDefBmp == null) {
     			mBtDefBmp = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.card_bt_default);
     		}
     		bmp = mBtDefBmp;
         } else if (Source.isAudioSource(source) || source == Source.NULL) {
+            mLastAlbumBitmap = null;
             FileNode fileNode = getFileNode(mContext);
             if (fileNode != null) {
                 if (fileNode.getParseId3() == 1 && fileNode.getThumbnailPath() != null) {
@@ -197,7 +200,14 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
             } else {
                 bmp = null;
             }
+        } else {
+            if (mLastAlbumBitmap != null && !mLastAlbumBitmap.isRecycled()) {
+                bmp = mLastAlbumBitmap;
+            }
         }
+    	if (bmp != null) {
+    	    mLastAlbumBitmap = bmp;
+    	}
 		return bmp;
 	}
 

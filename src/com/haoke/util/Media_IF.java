@@ -11,7 +11,6 @@ import com.amd.media.AmdMediaManager;
 import com.amd.media.MediaInterfaceUtil;
 import com.haoke.aidl.ICarCallBack;
 import com.haoke.aidl.IMediaCallBack;
-import com.amd.media.AudioFocus;
 import com.amd.util.AmdConfig;
 import com.amd.util.Source;
 import com.haoke.bean.FileNode;
@@ -224,7 +223,7 @@ public class Media_IF extends CarService_IF {
 	// 设置当前源
 	public static boolean setCurSource(int source) {
 		boolean success = false;
-		int mcuSource = com.haoke.define.ModeDef.NULL;
+		//int mcuSource = com.haoke.define.ModeDef.NULL;
 		int lastSource = getCurSource();
 		if (lastSource != source) {
             try {
@@ -238,16 +237,18 @@ public class Media_IF extends CarService_IF {
                     }
                     ModeSwitch.setCurSourceMode(source);
                 }
-                mcuSource = Source.changeToMcuSource(source);
+                //mcuSource = Source.changeToMcuSource(source);
                 // getInstance().mServiceIF.mcu_setCurSource(mcuSource);
                 int exSource = Source.getDeviceFromSource(source);
                 int exType = Source.getTypeFromSource(source);
-                getInstance().mServiceIF.mcu_setCurSourceEx(exSource, exType);
+                if (exSource != com.haoke.define.ModeDef.NULL) {
+                    getInstance().mServiceIF.mcu_setCurSourceEx(exSource, exType);
+                }
                 DebugLog.d(TAG, "mcu_setCurSourceEx exSource: " + exSource + " && exType: " + exType);
             } catch (Exception e) {
                 DebugLog.e(TAG, "setCurSource exception: " + e);
             }
-            DebugLog.d(TAG, "setCurSource from: " + lastSource + " && to: " + source + "; success=" + success + "; mcuSource="+mcuSource);
+            DebugLog.d(TAG, "setCurSource from: " + lastSource + " && to: " + source + "; success=" + success);
         }
 		return success;
 	}
@@ -676,6 +677,16 @@ public class Media_IF extends CarService_IF {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+	
+	// 只设音频源和焦点
+	public void setAudioSourceAndRequestFocus(int deviceType) {
+	    if (MediaInterfaceUtil.mediaCannotPlay()) {
+            return;
+        }
+	    if (mMediaManager.requestAudioFocus(true)) {
+	        setCurSource(Source.getAudioSource(deviceType));
+	    }
 	}
 	
 	// 播放指定设备的默认歌曲（在mode切源后调用），与getPlayDefaultIndex对应

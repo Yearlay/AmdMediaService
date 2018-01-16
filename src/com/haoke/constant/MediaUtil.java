@@ -30,6 +30,7 @@ import android.os.Environment;
 import android.os.StatFs;
 import android.os.storage.StorageManager;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.util.Log;
 
 public class MediaUtil {
@@ -601,6 +602,15 @@ public class MediaUtil {
     }
     
     private static String sUserName = null;
+    public static boolean isLogin() {
+        Context context = MediaApplication.getInstance();
+        String infoStr = Settings.System.getString(context.getContentResolver(),"personal_user_info");
+        if (TextUtils.isEmpty(infoStr)) {
+            return true;
+        }
+        return false;
+    }
+    
     public static String getUserName() {
         if (sUserName == null) {
             Context context = MediaApplication.getInstance();

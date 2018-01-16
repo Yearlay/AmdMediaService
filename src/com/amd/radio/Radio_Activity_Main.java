@@ -446,25 +446,15 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
             return;
         }
         if(id == R.id.radio_fragment_rescan){
-//            if (mIF.isRescanState()) {
-//                mIF.exitRescan();
-//            } else {
-//                mIF.scanStore();
-//            }
             if (exitRescan()) {
             } else {
-                exitScan5S();
+                exitScan5S();//ENABLE_RADIO_MUTEX_LOGIC
                 enterRescan();
             }
         } else if (id == R.id.radio_fragment_scan_5s) {
-//            if (mIF.isScan5SState()) {
-//                mIF.exitScan5S();
-//            } else {
-//                mIF.setScan();
-//            }
             if (exitScan5S()) {
             } else {
-                exitRescan();
+                exitRescan();//ENABLE_RADIO_MUTEX_LOGIC
                 enterScan5S();
             }
         } else if (id == R.id.radio_fragment_add) {
@@ -479,6 +469,9 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
             mIF.setNextStep();
         } else if (id == R.id.radio_fragment_pause_play) {
             boolean enable = mIF.isEnable();
+            if (enable) {
+                mIF.exitScan5S();//ENABLE_RADIO_MUTEX_LOGIC
+            }
             mIF.setEnable(!enable);
         }
     }
@@ -600,7 +593,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     }
     
     private boolean isRescanOrScan5S() {
-        return mIF.isRescanState() || mIF.isScan5SState();
+        return mIF.isRescanState() || mIF.isScan5SState() || mIF.isScanAutoNextState();
     }
     
     private void isScanStateChange(int data) {

@@ -399,10 +399,13 @@ public class AllMediaList {
         
         @Override
         public void onChange(boolean selfChange) {
-            MediaUtil.updateUserName();
-            mMediaDbHelper.updateCollectDataFromChangeUseList();
-            mMediaDbHelper.notifyCollectChange();
-            com.amd.radio.Radio_IF.getInstance().clearColloctFreq();
+            Log.d(TAG, "onChange personal_user_info");
+            if (!MediaUtil.isLogin()) {
+                MediaUtil.updateUserName();
+                mMediaDbHelper.updateCollectDataFromChangeUseList();
+                mMediaDbHelper.notifyCollectChange();
+                com.amd.radio.Radio_IF.getInstance().clearColloctFreq();
+            }
             super.onChange(selfChange);
         }
     }

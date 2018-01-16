@@ -548,6 +548,7 @@ public class MediaInterfaceUtil {
         int display = intent.getIntExtra(KEY_MODE_RECORD_DISPLAY, DISPLAY_OFF);
         int ourSource = Source.changeToOurSource(source, type);
         Log.d(TAG, "checkModeRecord source="+source+"; type="+type+"; display="+display+"; ourSource="+ourSource);
+        UsbAutoPlay.setServiceStartTime();
         checkModeRecordInternal(service, username, ourSource, display);
     }
     
