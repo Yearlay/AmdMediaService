@@ -84,7 +84,7 @@
     <string name="music_device_usb">USB设备</string>
     <string name="music_edit">编辑</string>
     <string name="music_edit_load">读取中...</string>
-    <string name="music_scan_bt">BT</string>
+    <string name="music_scan_bt">蓝牙音乐</string>
     <string name="music_scan_bt_free">未识别</string>
     <string name="music_my_save">我的收藏</string>
     <string name="media_unknow">未知</string>
