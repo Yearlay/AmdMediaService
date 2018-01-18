@@ -12,6 +12,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,6 +23,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amd.media.AmdMediaButtonReceiver;
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.util.Source;
 import com.amd.util.SkinManager;
@@ -269,6 +271,15 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         Log.d(TAG, "onDestroy");
         mHandler.removeCallbacksAndMessages(null);
         super.onDestroy();
+    }
+    
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        Log.d(TAG, "onKeyUp keyCode="+keyCode);
+        if (AmdMediaButtonReceiver.onKeyUp(this, keyCode)) {
+            return true;
+        }
+        return super.onKeyUp(keyCode, event);
     }
     
     @Override

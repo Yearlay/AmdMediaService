@@ -127,7 +127,7 @@ public class MediaWidgetProvider {
     
     public static void onClickRadioPlayButton() {
         boolean radioPlay = Radio_IF.getInstance().isEnable();
-        Radio_IF.getInstance().exitRescanAndScan5S(true);//ENABLE_RADIO_MUTEX_LOGIC
+        //Radio_IF.getInstance().exitRescanAndScan5S(true);//ENABLE_RADIO_MUTEX_LOGIC
         Radio_IF.getInstance().setEnable(!radioPlay);
     }
     

@@ -199,7 +199,7 @@ public class Radio_IF extends CarService_IF {
 				Log.d(TAG, "setEnable enable="+enable+"; focus="+focus);
 				if (focus) {
 					setRadioSource();
-		        	exitRescanAndScan5S(true);//ENABLE_RADIO_MUTEX_LOGIC
+		        	//exitRescanAndScan5S(true);//ENABLE_RADIO_MUTEX_LOGIC
 					mServiceIF.radio_setEnable(enable);
 				}
 			} else {
@@ -328,9 +328,9 @@ public class Radio_IF extends CarService_IF {
 	public void setScan() {
 		try {
 			Log.d(TAG, "setScan");
-			if (!isEnable()) {
-	        	setEnable(true);
-	        }
+			//if (!isEnable()) { //ENABLE_RADIO_MUTEX_LOGIC
+	        	//setEnable(true);
+	        //}
 			isRescan = false;
 			isScan5S = true;
 			setRadioSource();
@@ -359,7 +359,7 @@ public class Radio_IF extends CarService_IF {
 			Log.d(TAG, "setPreStep focus="+focus);
 			if (focus) {
 				setRadioSource();
-	        	exitRescanAndScan5S(false);//ENABLE_RADIO_MUTEX_LOGIC
+	        	//exitRescanAndScan5S(false);//ENABLE_RADIO_MUTEX_LOGIC
 				mServiceIF.radio_scanManualPre();
 			}
 		} catch (Exception e) {
@@ -374,7 +374,7 @@ public class Radio_IF extends CarService_IF {
 			Log.d(TAG, "setNextStep focus="+focus);
 			if (focus) {
 				setRadioSource();
-	        	exitRescanAndScan5S(false);//ENABLE_RADIO_MUTEX_LOGIC
+	        	//exitRescanAndScan5S(false);//ENABLE_RADIO_MUTEX_LOGIC
 				mServiceIF.radio_scanManualNext();
 			}
 		} catch (Exception e) {
@@ -922,11 +922,11 @@ public class Radio_IF extends CarService_IF {
     	if (isRescan) {
         	boolean enable = isEnable();
             if (data == 3 && enable) {
-            	setEnable(false);//ENABLE_RADIO_MUTEX_LOGIC
+            	//setEnable(false);//ENABLE_RADIO_MUTEX_LOGIC
             }
             if (data == 0) {
             	if (Source.isRadioSource() && !enable) {
-                	setEnable(true);//ENABLE_RADIO_MUTEX_LOGIC
+                	//setEnable(true);//ENABLE_RADIO_MUTEX_LOGIC
             	}
             	isRescan = false;
             }
