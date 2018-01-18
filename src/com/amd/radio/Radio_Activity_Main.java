@@ -448,13 +448,13 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
         if(id == R.id.radio_fragment_rescan){
             if (exitRescan()) {
             } else {
-                exitScan5S();//ENABLE_RADIO_MUTEX_LOGIC
+                //exitScan5S();//ENABLE_RADIO_MUTEX_LOGIC
                 enterRescan();
             }
         } else if (id == R.id.radio_fragment_scan_5s) {
             if (exitScan5S()) {
             } else {
-                exitRescan();//ENABLE_RADIO_MUTEX_LOGIC
+                //exitRescan();//ENABLE_RADIO_MUTEX_LOGIC
                 enterScan5S();
             }
         } else if (id == R.id.radio_fragment_add) {
@@ -470,7 +470,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
         } else if (id == R.id.radio_fragment_pause_play) {
             boolean enable = mIF.isEnable();
             if (enable) {
-                mIF.exitScan5S();//ENABLE_RADIO_MUTEX_LOGIC
+                //mIF.exitScan5S();//ENABLE_RADIO_MUTEX_LOGIC
             }
             mIF.setEnable(!enable);
         }
