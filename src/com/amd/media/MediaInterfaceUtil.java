@@ -36,7 +36,6 @@ import com.haoke.define.ModeDef.MediaType;
 import com.haoke.mediaservice.R;
 import com.haoke.service.BTMusicService;
 import com.haoke.service.MediaService;
-import com.haoke.service.RadioService;
 import com.haoke.ui.media.Media_Activity_Main;
 import com.haoke.ui.music.Music_Activity_List;
 import com.haoke.ui.video.Video_Activity_Main;
@@ -448,10 +447,10 @@ public class MediaInterfaceUtil {
      * 返回值大于等于0为需要延时的时间数，单位毫秒， -1为无需再次调用
      */
     public static int checkSourceFromBoot(final MediaService service) {
-        if (BTMusicService.getInstance() == null || RadioService.getInstance() == null) {
-            Log.d(TAG, "checkSourceFromBoot BTMusicService or RadioService not startup!");
-            return 200;
-        }
+        //if (BTMusicService.getInstance() == null || RadioService.getInstance() == null) {
+        //    Log.d(TAG, "checkSourceFromBoot BTMusicService or RadioService not startup!");
+        //    return 200;
+        //}
         if (!BT_IF.getInstance().isServiceConnected() || !BTMusic_IF.getInstance().isServiceConnected()
                 || !Media_IF.getInstance().isServiceConnected() || !Radio_IF.getInstance().isServiceConnected()) {
             Log.d(TAG, "checkSourceFromBoot BT_IF or BTMusic_IF or Media_IF or Radio_IF cannot bind service!");
@@ -583,10 +582,10 @@ public class MediaInterfaceUtil {
     private static int checkModeRecordInternalEx(
             final MediaService service, final String username, 
             final int ourSource, final int display) {
-        if (BTMusicService.getInstance() == null || RadioService.getInstance() == null) {
-            Log.d(TAG, "checkModeRecordInternalEx BTMusicService or RadioService not startup!");
-            return 200;
-        }
+        //if (BTMusicService.getInstance() == null || RadioService.getInstance() == null) {
+        //    Log.d(TAG, "checkModeRecordInternalEx BTMusicService or RadioService not startup!");
+        //    return 200;
+        //}
         if (!BT_IF.getInstance().isServiceConnected() || !BTMusic_IF.getInstance().isServiceConnected()
                 || !Media_IF.getInstance().isServiceConnected() || !Radio_IF.getInstance().isServiceConnected()) {
             Log.d(TAG, "checkModeRecordInternalEx BT_IF or BTMusic_IF or Media_IF or Radio_IF cannot bind service!");

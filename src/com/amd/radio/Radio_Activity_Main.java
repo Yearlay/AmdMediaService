@@ -363,7 +363,6 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     /**
      * 获取所有频率
      */
-    boolean aaaa = false;
     private void updateAllStations() {
         //exitRescanAndScan5S(false);
         //exitRescan();

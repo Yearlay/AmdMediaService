@@ -1,5 +1,6 @@
 package com.amd.radio;
 
+import android.app.Service;
 import android.media.AudioManager;
 import android.util.Log;
 
@@ -7,9 +8,8 @@ import com.amd.media.AudioFocus.AudioFocusListener;
 import com.haoke.define.McuDef.McuFunc;
 import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.define.RadioDef.RadioFunc;
-import com.haoke.service.RadioService;
 import com.haoke.serviceif.CarService_Listener;
-import com.amd.media.MediaInterfaceUtil;
+import com.amd.media.AudioFocus;
 import com.amd.radio.Radio_CarListener;
 import com.amd.radio.Radio_IF;
 import com.amd.util.Source;
@@ -18,21 +18,22 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 		AudioFocusListener {
 
 	private static final String TAG = "RadioManager";
-	private RadioService mParent = null;
 	private Radio_IF mIF = null;
+	private AudioFocus mAudioFocus = null;
 
-	public RadioManager(RadioService parent) {
-		mParent = parent;
+	public RadioManager(Service parent) {
+		
+		mAudioFocus = new AudioFocus(parent);
 
 		mIF = Radio_IF.getInstance();
+		mIF.setContext(parent);
 		mIF.registerModeCallBack(this); // 注册服务监听
 		mIF.registerCarCallBack(this); // 注册服务监听
 		mIF.bindCarService();
 
-		mParent.getAudioFocus().registerListener(this); // 注册焦点监听
+		mAudioFocus.registerListener(this); // 注册焦点监听
 	}
 
-	// add by lyb 20170405
 	// 注册接收器
 	public void registerReceiver() {
 		Log.v(TAG, "registerReceiver");
@@ -61,7 +62,7 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 	
 	private boolean hasAudioFocus() {
 		boolean ret = false;
-		int audioFocusState = mParent.getAudioFocus().getFocusState();
+		int audioFocusState = mAudioFocus.getFocusState();
 		if (audioFocusState == AudioManager.AUDIOFOCUS_GAIN
 				|| audioFocusState == AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
 			ret = true;
@@ -73,7 +74,7 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 		boolean focus = hasAudioFocus();
 		Log.d(TAG, "requestAudioFocus request="+request+"; focus="+focus);
 		if (!focus) {
-			return mParent.getAudioFocus().requestAudioFocus(request);
+			return mAudioFocus.requestAudioFocus(request);
 		}
 		return true;
 	}

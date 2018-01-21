@@ -5,6 +5,7 @@ import android.media.AudioManager;
 import android.os.RemoteException;
 import android.util.Log;
 
+import com.amd.media.AudioFocus;
 import com.amd.util.Source;
 import com.haoke.aidl.ICarCallBack;
 import com.haoke.btjar.main.BTDef.BTConnState;
@@ -12,6 +13,7 @@ import com.haoke.define.McuDef.KeyCode;
 import com.haoke.define.McuDef.KeyState;
 import com.haoke.define.McuDef.McuFunc;
 import com.haoke.service.BTMusicService;
+import com.haoke.service.MediaService;
 import com.haoke.serviceif.CarService_IF;
 import com.haoke.serviceif.CarService_Listener;
 import com.haoke.util.Media_IF;
@@ -101,9 +103,13 @@ public class BTMusic_IF extends CarService_IF {
 		mCarCallBack.onDataChange(com.haoke.define.ModeDef.MCU, McuFunc.SOURCE, source);
 	}
 	
+   public AudioFocus getAudioFocus() {
+        return MediaService.getInstance().getBtMusicManager().getAudioFocus();
+    }
+	
 	public boolean hasAudioFocus() {
 		boolean ret = false;
-		int audioFocusState = BTMusicService.getInstance().getAudioFocus().getFocusState();
+		int audioFocusState = getAudioFocus().getFocusState();
 		if (audioFocusState == AudioManager.AUDIOFOCUS_GAIN
 				|| audioFocusState == AudioManager.AUDIOFOCUS_GAIN_TRANSIENT)
 			ret = true;
@@ -115,7 +121,7 @@ public class BTMusic_IF extends CarService_IF {
 	public boolean requestAudioFocus(boolean request) {
 		try {
 			if (!hasAudioFocus()) {
-				return BTMusicService.getInstance().getAudioFocus().requestAudioFocus(request);
+				return getAudioFocus().requestAudioFocus(request);
 			}
 		} catch (Exception e) {
 			Log.e(TAG, "HMI------------interface e=" + e.getMessage());

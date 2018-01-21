@@ -1,10 +1,12 @@
 package com.amd.bt;
 
+import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.media.AudioManager;
 import android.util.Log;
 
+import com.amd.media.AudioFocus;
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.media.AudioFocus.AudioFocusListener;
 import com.amd.util.Source;
@@ -23,7 +25,7 @@ public class BTMusicManager implements CarService_Listener,
 		AudioFocusListener {
 
 	private final String TAG = this.getClass().getSimpleName();
-	private BTMusicService mParent = null;
+	private Service mParent = null;
 	private BTMusic_IF mIF = null;
 	private BT_IF mBTIF = null;
 	private final int SOURCE_NULL = Source.NULL;
@@ -31,21 +33,27 @@ public class BTMusicManager implements CarService_Listener,
 	
 	private AudioManager mAudioManager;
 	private ComponentName mComponentName;
+	
+	private AudioFocus mAudioFocus = null;
 
-	public BTMusicManager(BTMusicService parent) {
+	public BTMusicManager(Service parent) {
 		mParent = parent;
+		
+		mAudioFocus = new AudioFocus(parent);
 
 		mIF = BTMusic_IF.getInstance();
+		mIF.setContext(parent);
 		mIF.registerModeCallBack(this); // 注册服务监听
 		mIF.registerCarCallBack(this); // 注册服务监听
 		mIF.bindCarService();
 
 		mBTIF = BT_IF.getInstance();
+		mBTIF.setContext(parent);
 		mBTIF.registerModeCallBack(this); // 注册服务监听
 		mBTIF.registerBTCallBack(this); // 注册服务监听
 		mBTIF.bindBTService();
 
-		mParent.getAudioFocus().registerListener(this); // 注册焦点监听
+		mAudioFocus.registerListener(this); // 注册焦点监听
 		
 		mAudioManager = (AudioManager)mParent.getSystemService(Context.AUDIO_SERVICE);
 		mComponentName = new ComponentName(mParent, BTMediaButtonReceiver.class); 
@@ -109,6 +117,10 @@ public class BTMusicManager implements CarService_Listener,
 			setRecordPlayState(PlayState.STOP);
 			break;
 		}
+	}
+	
+	public AudioFocus getAudioFocus() {
+	    return mAudioFocus;
 	}
 	
 	public int getRecordPlayState() {
