@@ -544,7 +544,11 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
         	mIF.setScanMode(true);
         	mScanStartPos = mIF.getPlayPos();
         	if (mIF.getPlayState() != PlayState.PLAY) {
-        		mIF.setPlayState(PlayState.PLAY);
+        	    if (mIF.getPosition() > 10) {
+        	        mTimeHandler.sendEmptyMessage(MSG_SCAN_MUSIC_CHANGE);
+        	    } else {
+                    mIF.setPlayState(PlayState.PLAY);
+        	    }
         	}
         	mScanImg.setImageDrawable(sSkinManager.getDrawable(R.drawable.radio_scan_5s_normal));
     	}
