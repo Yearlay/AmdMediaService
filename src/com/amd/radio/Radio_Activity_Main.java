@@ -204,6 +204,8 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
         mNextPagerView.setVisibility(Data_Common.pager > 1 ? View.VISIBLE : View.INVISIBLE);
         mPrePagerView.setVisibility(Data_Common.pager > 1 ? View.VISIBLE : View.INVISIBLE);
         mPagerAdapter.notifyDataSetChanged();
+        viewPager.setCurrentItem(0, false);
+        onPageSelected(0);
     }
 
     class RadioPagerAdapter<T extends View> extends PagerAdapter {
@@ -361,6 +363,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     /**
      * 获取所有频率
      */
+    boolean aaaa = false;
     private void updateAllStations() {
         //exitRescanAndScan5S(false);
         //exitRescan();
