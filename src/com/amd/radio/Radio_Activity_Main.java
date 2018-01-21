@@ -340,8 +340,14 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
             mCollectButton.setImageDrawable(skinManager.getDrawable(R.drawable.media_uncollect));
         }
         
+//        if (!isRescanOrScan5S()) {
+//            Radio_IF.sendRadioInfo(mIF.getCurBand(), tempFreq);
+//        }
+    }
+    
+    private void sendMeterFreq(int freq) {
         if (!isRescanOrScan5S()) {
-            Radio_IF.sendRadioInfo(mIF.getCurBand(), tempFreq);
+            Radio_IF.sendRadioInfo(mIF.getCurBand(), freq);
         }
     }
 
@@ -515,6 +521,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
             case RadioFunc.FREQ:
                 updatePlayStation();
                 updateFreq(data);
+                sendMeterFreq(data);
                 break;
             case RadioFunc.BAND:
                 updateBand(data);
@@ -562,6 +569,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
         mIF.setCurBand();    
         if (mFreqNumTextView!=null) {
             updateFreq(mIF.getCurFreq());
+            sendMeterFreq(mIF.getCurFreq());
             mSTTextView.setVisibility(mIF.getST() ? View.VISIBLE : View.INVISIBLE);
             mPlayImageView.setImageDrawable(skinManager.getDrawable(mIF.isEnable() ? R.drawable.pause : R.drawable.play));
         }
