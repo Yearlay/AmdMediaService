@@ -188,6 +188,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
         mTurnImageView.setImageDrawable(skinManager.getDrawable(R.drawable.image_turn_icon_selector));
         mUnsupportView.setBackground(skinManager.getDrawable(R.drawable.pub_msgbox_bg1));
         updateCollectView();
+        updatePlayState(mPlayState);
     }
 
     public void onPause() {
