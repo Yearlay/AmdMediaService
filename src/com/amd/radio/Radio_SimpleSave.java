@@ -1,16 +1,13 @@
 package com.amd.radio;
 
 import java.util.ArrayList;
-import com.haoke.service.RadioService;
 
+import com.haoke.application.MediaApplication;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-
-
-
 
 public class Radio_SimpleSave {
 	private final String TAG = this.getClass().getSimpleName();
@@ -32,7 +29,7 @@ public class Radio_SimpleSave {
 
 	public Radio_SimpleSave() {
 		try {
-			mPreferences = 	RadioService.getInstance().getSharedPreferences(DBNAME, Context.MODE_MULTI_PROCESS);
+			mPreferences = 	MediaApplication.getInstance().getSharedPreferences(DBNAME, Context.MODE_MULTI_PROCESS);
 			mEditor = mPreferences.edit();
 			
 		} catch (Exception e) {
@@ -110,7 +107,7 @@ public class Radio_SimpleSave {
 				if(province_name!=null && province_name.length()>0 && city_name!=null && city_name.length()>0){				
 					sqlstr = "select FREQ,NAME,CITY from radio_fm where PROVINCE like '%"+province_name+"%'";
 					Cursor cursor=null;
-					SQLiteDatabase db = AssetsDatabaseManager.getInstance(RadioService.getInstance()).getDatabase("radio_station.db");
+					SQLiteDatabase db = AssetsDatabaseManager.getInstance(MediaApplication.getInstance()).getDatabase("radio_station.db");
 					cursor = db.rawQuery(sqlstr, null);
 					if(cursor!=null){
 						FMlistStationName = new ArrayList<RadioStation>();

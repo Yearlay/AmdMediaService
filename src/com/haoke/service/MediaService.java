@@ -1,5 +1,6 @@
 package com.haoke.service;
 
+import com.amd.bt.BTMusicManager;
 import com.amd.bt.BT_IF;
 import com.amd.bt.BT_Listener;
 import com.haoke.btjar.main.BTDef.BTFunc;
@@ -28,6 +29,7 @@ import com.haoke.util.Media_Listener;
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.media.UsbAutoPlay;
 import com.amd.media.VRInterfaceUtil;
+import com.amd.radio.RadioManager;
 import com.amd.radio.Radio_IF;
 import com.amd.util.Source;
 import com.jsbd.util.Meter_IF;
@@ -65,6 +67,9 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     private BT_IF mBTIF = null;
     private Radio_IF mRadioIF = null;
     private MediaScanner mScanner;
+    
+    private RadioManager mRadioManager = null;
+    private BTMusicManager mBTMusicManager = null;
 
     public static MediaService getInstance() {
         return mSelf;
@@ -80,6 +85,11 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         mMediaIF.setContext(this);
         mMediaIF.bindCarService();
         mMediaIF.initMedia();
+        
+        mRadioManager = new RadioManager(this);
+        mRadioManager.registerReceiver();
+        
+        mBTMusicManager = new BTMusicManager(this);
         
         mBinder = new MediaServiceBinder(this);
         
@@ -154,6 +164,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         mMediaIF.unregisterModeCallBack(this);
         mMediaIF.unregisterLocalCallBack(this);
         mBTIF.unregisterModeCallBack(this);
+        mRadioManager.unregisterReceiver();
         super.onDestroy();
     }
 
@@ -166,6 +177,14 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     @Override
     public boolean onUnbind(Intent intent) {
         return super.onUnbind(intent);
+    }
+    
+    public RadioManager getRadioManager() {
+        return mRadioManager;
+    }
+    
+    public BTMusicManager getBtMusicManager() {
+        return mBTMusicManager;
     }
 
     public static final int MSG_UPDATE_APPWIDGET_BASE = 100;

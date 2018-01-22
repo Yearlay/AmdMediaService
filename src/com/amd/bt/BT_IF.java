@@ -14,6 +14,7 @@ import com.haoke.btjar.main.BTDef.BTPairState;
 import com.haoke.btjar.main.BTDef.BTSearchState;
 import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.service.BTMusicService;
+import com.haoke.service.MediaService;
 import com.haoke.serviceif.BTService_IF;
 import com.haoke.serviceif.BTService_Listener;
 
@@ -590,7 +591,7 @@ public class BT_IF extends BTService_IF {
 	// 设置历史播放状态
 	public void setRecordPlayState(int state) {
 		try {
-			BTMusicService.getInstance().getBTManager().setRecordPlayState(state);
+			MediaService.getInstance().getBtMusicManager().setRecordPlayState(state);
         } catch (Exception e) {
     		Log.e(TAG, "HMI------------setRecordPlayState e="+e.getMessage());
         }	
@@ -599,7 +600,7 @@ public class BT_IF extends BTService_IF {
 	// 获取历史播放状态
 	public int getRecordPlayState() {
 		try {
-			return BTMusicService.getInstance().getBTManager().getRecordPlayState();
+			return MediaService.getInstance().getBtMusicManager().getRecordPlayState();
         } catch (Exception e) {
     		Log.e(TAG, "HMI------------getRecordPlayState e="+e.getMessage());
         }	

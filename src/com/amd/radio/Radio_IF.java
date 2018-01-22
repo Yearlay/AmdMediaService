@@ -7,7 +7,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.RemoteException;
-import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -22,7 +21,6 @@ import com.haoke.define.RadioDef.Area;
 import com.haoke.define.RadioDef.Band_5;
 import com.haoke.define.RadioDef.RadioFunc;
 import com.haoke.define.RadioDef.RadioState;
-import com.haoke.service.RadioService;
 import com.haoke.serviceif.CarService_Listener;
 import com.haoke.serviceif.CarService_IF;
 import com.haoke.util.Media_IF;
@@ -125,11 +123,21 @@ public class Radio_IF extends CarService_IF {
 	public int getCurSource() {
 	    return Media_IF.getCurSource();
 	}
+	
+	public static RadioManager getRadioManager() {
+	    RadioManager radioManager = null;
+	    try {
+	        radioManager = com.haoke.service.MediaService.getInstance().getRadioManager();
+        } catch (Exception e) {
+            Log.e(TAG, "getRadioManager e="+e);
+        }
+	    return radioManager;
+	}
 
 	// 设置当前音频焦点
 	public boolean requestAudioFocus(boolean request) {
 		try {
-			return RadioService.getInstance().getRadioManager()
+			return getRadioManager()
 					.requestAudioFocus(request);
 		} catch (Exception e) {
 			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
@@ -195,7 +203,7 @@ public class Radio_IF extends CarService_IF {
 	            if (MediaInterfaceUtil.mediaCannotPlay()) {
 	                return;
 	            }
-				focus = RadioService.getInstance().getRadioManager().requestAudioFocus(true);
+				focus = getRadioManager().requestAudioFocus(true);
 				Log.d(TAG, "setEnable enable="+enable+"; focus="+focus);
 				if (focus) {
 					setRadioSource();
@@ -355,7 +363,7 @@ public class Radio_IF extends CarService_IF {
 	// 左步进
 	public void setPreStep() {
 		try {
-			boolean focus = RadioService.getInstance().getRadioManager().requestAudioFocus(true);
+			boolean focus = getRadioManager().requestAudioFocus(true);
 			Log.d(TAG, "setPreStep focus="+focus);
 			if (focus) {
 				setRadioSource();
@@ -370,7 +378,7 @@ public class Radio_IF extends CarService_IF {
 	// 右步进
 	public void setNextStep() {
 		try {
-			boolean focus = RadioService.getInstance().getRadioManager().requestAudioFocus(true);
+			boolean focus = getRadioManager().requestAudioFocus(true);
 			Log.d(TAG, "setNextStep focus="+focus);
 			if (focus) {
 				setRadioSource();
@@ -385,7 +393,7 @@ public class Radio_IF extends CarService_IF {
 	// 左搜索
 	public void setPreSearch() {
 		try {
-			boolean focus = RadioService.getInstance().getRadioManager().requestAudioFocus(true);
+			boolean focus = getRadioManager().requestAudioFocus(true);
 			Log.d(TAG, "setPreSearch focus="+focus);
 			if (focus) {
 				setRadioSource();
@@ -399,7 +407,7 @@ public class Radio_IF extends CarService_IF {
 	// 右搜索
 	public void setNextSearch() {
 		try {
-			boolean focus = RadioService.getInstance().getRadioManager().requestAudioFocus(true);
+			boolean focus = getRadioManager().requestAudioFocus(true);
 			Log.d(TAG, "setNextSearch focus="+focus);
 			if (focus) {
 				setRadioSource();
@@ -541,7 +549,7 @@ public class Radio_IF extends CarService_IF {
 	// 扫描
 	public void scanStore() {
 		try {
-			boolean focus = RadioService.getInstance().getRadioManager().requestAudioFocus(true);
+			boolean focus = getRadioManager().requestAudioFocus(true);
 			Log.d(TAG, "scanStore focus="+focus);
 			if (focus) {
 				isRescan = true;
@@ -558,7 +566,7 @@ public class Radio_IF extends CarService_IF {
 	// 上一电台
 	public void setPreChannel() {
 		try {
-			boolean focus = RadioService.getInstance().getRadioManager().requestAudioFocus(true);
+			boolean focus = getRadioManager().requestAudioFocus(true);
 			Log.d(TAG, "setPreChannel focus="+focus);
 			if (focus) {
 				setRadioSource();
@@ -572,7 +580,7 @@ public class Radio_IF extends CarService_IF {
 	// 下一电台
 	public void setNextChannel() {
 		try {
-			boolean focus = RadioService.getInstance().getRadioManager().requestAudioFocus(true);
+			boolean focus = getRadioManager().requestAudioFocus(true);
 			Log.d(TAG, "setNextChannel focus="+focus);
 			if (focus) {
 				setRadioSource();
@@ -851,12 +859,12 @@ public class Radio_IF extends CarService_IF {
 	// 设置播放状态（被抢焦点前）
 	public void setRecordRadioOnOff(boolean on) {
 		Log.d(TAG, "setRecordRadioOnOff on="+on);
-		RadioService.getInstance().getRadioManager().setRecordRadioOnOff(on);
+		getRadioManager().setRecordRadioOnOff(on);
 	}
 
 	// 获取播放状态（被抢焦点前）
 	public boolean getRecordRadioOn() {
-		boolean on = RadioService.getInstance().getRadioManager().getRecordRadioOn();
+		boolean on = getRadioManager().getRecordRadioOn();
 		Log.d(TAG, "setRecordRadioOnOff on="+on);
 		return on;
 	}
