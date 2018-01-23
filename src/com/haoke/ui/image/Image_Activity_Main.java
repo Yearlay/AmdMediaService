@@ -22,6 +22,7 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
 
 import com.amd.media.MediaInterfaceUtil;
+import com.amd.util.AmdConfig;
 import com.amd.util.SkinManager;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.StorageBean;
@@ -93,7 +94,7 @@ public class Image_Activity_Main extends Activity implements
         mSelectAllView.setOnClickListener(this);
         mCopyTextView = (TextView) mEditView.findViewById(R.id.copy_to_local);
         mCopyTextView.setOnClickListener(this);
-        if (DebugConstant.DEBUG) {
+        if (AmdConfig.ENABLE_LOCAl_SKIN_MANAGE) {
             findViewById(R.id.textview_skinmanager).setOnClickListener(this);
         }
         

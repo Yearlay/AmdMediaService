@@ -51,4 +51,8 @@ public class AmdConfig {
      * 是否有AP来控制收音的按键互斥逻辑处理，默认为true； false表示交由mcu来处理
      */
     public static final boolean ENABLE_RADIO_MUTEX_LOGIC = true;
+    /**
+     * 本地调试皮肤skinManager
+     */
+    public static final boolean ENABLE_LOCAl_SKIN_MANAGE = false;
 }

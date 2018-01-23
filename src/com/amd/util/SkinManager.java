@@ -33,7 +33,7 @@ public class SkinManager {
     public static final int SKIN_ONE = 1;    // 红色主题。
     
     private static final String TAG = "SkinManager";
-    private static final String SKIN_MANAGER_PACKAGE_NAME = "com.archermind.skin";
+    private static final String SKIN_MANAGER_PACKAGE_NAME = AmdConfig.ENABLE_LOCAl_SKIN_MANAGE ? "com.archermind.skin" : "com.jsbd.skin";
     private static SkinManager sManager;
     
     private Context mContext;
