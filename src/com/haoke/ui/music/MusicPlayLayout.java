@@ -307,10 +307,10 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 			if (isBTPlay) {
 				if (BT_IF.getInstance().music_isPlaying()) {
 					BT_IF.getInstance().music_pause();
-					BT_IF.getInstance().setRecordPlayState(PlayState.PAUSE);
+//					BT_IF.getInstance().setRecordPlayState(PlayState.PAUSE);
 				} else {
 					BT_IF.getInstance().music_play();
-					BT_IF.getInstance().setRecordPlayState(PlayState.PLAY);
+//					BT_IF.getInstance().setRecordPlayState(PlayState.PLAY);
 				}
 			} else {
 				exitScanMode();

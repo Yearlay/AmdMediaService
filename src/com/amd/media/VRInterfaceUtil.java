@@ -197,7 +197,7 @@ public class VRInterfaceUtil {
             if (mBTIF.music_isPlaying()) {
                 mBTIF.music_pause();
             }
-            mBTIF.setRecordPlayState(PlayState.PAUSE);
+//            mBTIF.setRecordPlayState(PlayState.PAUSE);
             sendBroadcast(new Intent(VRIntent.ACTION_FINISH_MUSIC_RADIO));
         }
     }

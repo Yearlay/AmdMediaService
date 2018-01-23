@@ -34,10 +34,10 @@ public class MediaWidgetProvider {
         if (Source.isBTMusicSource(source)) {
             if (BT_IF.getInstance().music_isPlaying()) {
                 BT_IF.getInstance().music_pause();
-                BT_IF.getInstance().setRecordPlayState(PlayState.PAUSE);
+//                BT_IF.getInstance().setRecordPlayState(PlayState.PAUSE);
             } else {
                 BT_IF.getInstance().music_play();
-                BT_IF.getInstance().setRecordPlayState(PlayState.PLAY);
+//                BT_IF.getInstance().setRecordPlayState(PlayState.PLAY);
             }
         } else if (Source.isAudioSource(source)) {
             if (getFileNode(context) != null) {
