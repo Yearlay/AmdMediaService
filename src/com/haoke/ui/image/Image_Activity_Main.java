@@ -26,7 +26,6 @@ import com.amd.util.AmdConfig;
 import com.amd.util.SkinManager;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.StorageBean;
-import com.haoke.constant.DebugConstant;
 import com.haoke.constant.MediaUtil;
 import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.FileType;
@@ -299,7 +298,7 @@ public class Image_Activity_Main extends Activity implements
         } else if (v.getId() == R.id.edit_cancel) {
             cancelEdit();
         } else if (v.getId() == R.id.edit_all) {
-            if (AllMediaList.checkSelected(this, mImageList)) {
+            if (isAllSelect()) {
                 mListLayout.unSelectAll();
                 mSelectAllView.setText(R.string.music_choose_all);
             } else {
@@ -378,6 +377,9 @@ public class Image_Activity_Main extends Activity implements
     }
 
 	private boolean isAllSelect(){
+		if(mImageList.size() <= 0){
+			return false;
+		}
 		for(FileNode filenode : mImageList){
 			if(!filenode.isSelected()){
 				return false;

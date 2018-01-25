@@ -368,7 +368,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 		} else if (v.getId() == R.id.edit_cancel) {
 			cancelEdit();
 		} else if (v.getId() == R.id.edit_all) {
-			if (AllMediaList.checkSelected(this, mVideoList)) {
+			if (isAllSelect()) {
 				mListLayout.unSelectAll();
 				mSelectAllView.setText(R.string.music_choose_all);
 			} else {
@@ -514,6 +514,9 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 	}
 	
 	private boolean isAllSelect(){
+		if(mVideoList.size() <= 0){
+			return false;
+		}
 		for(FileNode filenode : mVideoList){
 			if(!filenode.isSelected()){
 				return false;

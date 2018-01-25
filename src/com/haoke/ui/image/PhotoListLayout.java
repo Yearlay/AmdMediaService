@@ -349,12 +349,12 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
                 mHolder = new ViewHolder();
                 convertView = LayoutInflater.from(mContext).inflate(R.layout.photo_list_item, null);
                 mHolder.mPhotoImageView = (ImageView) convertView.findViewById(R.id.item_photo);
-                mHolder.mPhotoImageView.setBackgroundDrawable(skinManager.getDrawable(R.drawable.image_item_selector));
                 mHolder.mItemSelectView = (ImageView) convertView.findViewById(R.id.item_select);
                 mHolder.mPhotoName = (HKTextView) convertView.findViewById(R.id.item_filename);
                 mHolder.mFromTextView = (TextView) convertView.findViewById(R.id.image_from_text);
                 convertView.setTag(mHolder);
             }
+            mHolder.mPhotoImageView.setBackgroundDrawable(skinManager.getDrawable(R.drawable.image_item_selector));
             Log.e(Image_Activity_Main.TAG,"getView size: " + mPhotoList.size() + "   ,position: " + position);
             FileNode fileNode = mPhotoList.get(position);
             mHolder.mPhotoName.setText(fileNode.getFileName());
