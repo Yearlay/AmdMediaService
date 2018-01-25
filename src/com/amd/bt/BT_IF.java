@@ -13,7 +13,6 @@ import com.haoke.btjar.main.BTDef.BTOnOffState;
 import com.haoke.btjar.main.BTDef.BTPairState;
 import com.haoke.btjar.main.BTDef.BTSearchState;
 import com.haoke.constant.MediaUtil.PlayState;
-import com.haoke.service.BTMusicService;
 import com.haoke.service.MediaService;
 import com.haoke.serviceif.BTService_IF;
 import com.haoke.serviceif.BTService_Listener;

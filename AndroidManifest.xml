@@ -38,22 +38,6 @@
             </intent-filter>
         </service>
         
-        <service
-            android:name="com.haoke.service.RadioService"
-            android:exported="true" >
-            <intent-filter android:priority="1000">
-                <action android:name="action.haoke.RADIOSERVICE" />
-            </intent-filter>
-        </service>
-        
-        <service
-            android:name="com.haoke.service.BTMusicService"
-            android:exported="true" >
-            <intent-filter android:priority="1000" >
-                <action android:name="action.haoke.BTMUSICSERVICE" />
-            </intent-filter>
-        </service>
-        
         <activity
             android:name="com.haoke.ui.media.Media_Activity_Main"
             android:launchMode="singleTask"

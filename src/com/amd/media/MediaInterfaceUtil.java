@@ -34,7 +34,6 @@ import com.haoke.data.ModeSwitch;
 import com.haoke.define.ModeDef;
 import com.haoke.define.ModeDef.MediaType;
 import com.haoke.mediaservice.R;
-import com.haoke.service.BTMusicService;
 import com.haoke.service.MediaService;
 import com.haoke.ui.media.Media_Activity_Main;
 import com.haoke.ui.music.Music_Activity_List;

@@ -12,7 +12,6 @@ import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.define.McuDef.KeyCode;
 import com.haoke.define.McuDef.KeyState;
 import com.haoke.define.McuDef.McuFunc;
-import com.haoke.service.BTMusicService;
 import com.haoke.service.MediaService;
 import com.haoke.serviceif.CarService_IF;
 import com.haoke.serviceif.CarService_Listener;

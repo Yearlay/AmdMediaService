@@ -22,6 +22,7 @@ import com.haoke.data.PlayStateSharedPreferences;
 import com.haoke.define.CMSStatusDef.BootChangeSsourceStatus;
 import com.haoke.define.CMSStatusDef.CMSStatusFuc;
 import com.haoke.define.CMSStatusDef.CarplayCallState;
+import com.haoke.define.CMSStatusDef.TBOXStatus;
 import com.haoke.define.CMSStatusDef.TrafficRestriction;
 import com.haoke.define.CMSStatusDef.VehicleStatus;
 import com.haoke.define.McuDef;
@@ -324,6 +325,15 @@ public class Media_IF extends CarService_IF {
             int carplayState = getInstance().mServiceIF.getCMSStatus(CMSStatusFuc.CARPLAY_CALL_STS);
             Log.d(TAG, "getCallState carplayState="+carplayState);
             if (carplayState != CarplayCallState.CARPLAY_NOT_CALLING) {
+                return true;
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "getCallState error2 e="+e);
+        }
+		try {
+            int tboxState = getInstance().mServiceIF.getCMSStatus(CMSStatusFuc.TBOX_STATUS);
+            Log.d(TAG, "getCallState tboxState="+tboxState);
+            if (tboxState != TBOXStatus.HANGUP) {
                 return true;
             }
         } catch (Exception e) {
