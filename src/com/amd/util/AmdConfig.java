@@ -14,7 +14,7 @@ public class AmdConfig {
     /**
      * 激活ID3专辑图的暗码
      */
-    public static final boolean ENABLE_ID3_ALBUM_SECRET_CODE = true;
+    public static final boolean ENABLE_ID3_ALBUM_SECRET_CODE = false;
     /**
      * 插入U盘，自动播放歌曲，与 {@link INSERT_USB_RECODRD_PLAY_MUSIC} 冲突，不能同时为true
      */
