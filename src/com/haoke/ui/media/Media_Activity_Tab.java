@@ -154,7 +154,11 @@ public class Media_Activity_Tab extends RelativeLayout implements OnCheckedChang
             mBtnLayout.setEnabled(false);
             mBtnCurPlay.setVisibility(View.INVISIBLE);
         } else {
-            mBtnLayout.setEnabled(true);
+            if (state == VIEW_CURRENT_PLAYING) {
+                mBtnLayout.setEnabled(false);
+            } else {
+                mBtnLayout.setEnabled(true);
+            }
             mBtnCurPlay.setVisibility(View.VISIBLE);
             mBtnCurPlay.setImageDrawable(SkinManager.instance(getContext()).getDrawable(playResId));
         }
