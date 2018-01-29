@@ -89,6 +89,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
         intent.setAction("AUTONAVI_STANDARD_BROADCAST_RECV");
         intent.putExtra("KEY_TYPE", 10029);
         this.getContext().sendBroadcast(intent);
+        LocationUtils.sendGpsLonLatToAutoNavi();
         RelativeLayout rootView = this;
         mCollectButton = (ImageButton) rootView.findViewById(R.id.radio_fragment_ib_collect);
         viewPager = (ViewPager) rootView.findViewById(R.id.radio_fragment_viewpager);
@@ -454,12 +455,14 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
             return;
         }
         if(id == R.id.radio_fragment_rescan){
+            LocationUtils.sendGpsLonLatToAutoNavi();
             if (exitRescan()) {
             } else {
                 //exitScan5S();//ENABLE_RADIO_MUTEX_LOGIC
                 enterRescan();
             }
         } else if (id == R.id.radio_fragment_scan_5s) {
+            LocationUtils.sendGpsLonLatToAutoNavi();
             if (exitScan5S()) {
             } else {
                 //exitRescan();//ENABLE_RADIO_MUTEX_LOGIC

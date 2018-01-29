@@ -30,9 +30,23 @@ public class BDBroadcastReceiver extends BroadcastReceiver {
 				if(CITY_NAME==null){
 					CITY_NAME="";
 				}
+				LocationUtils.setReceiveFlag();
 		        Radio_SimpleSave.getInstance().setCity(PROVINCE_NAME, CITY_NAME);
 				Log.d(TAG,
 						"AUTONAVI_STANDARD_BROADCAST_SEND  PROVINCE_NAME:" + PROVINCE_NAME + " CITY_NAME:" + CITY_NAME);
+			} else if (KEY_TYPE == 10077) {
+			    String PROVINCE_NAME = intent.getStringExtra("PROVINCE_NAME");
+                String CITY_NAME = intent.getStringExtra("CITY_NAME");
+                if(PROVINCE_NAME==null){
+                    PROVINCE_NAME="";
+                }
+                if(CITY_NAME==null){
+                    CITY_NAME="";
+                }
+                LocationUtils.setReceiveFlag();
+                Radio_SimpleSave.getInstance().setCity(PROVINCE_NAME, CITY_NAME);
+                Log.d(TAG,
+                        "AUTONAVI_STANDARD_BROADCAST_SEND  PROVINCE_NAME:" + PROVINCE_NAME + " CITY_NAME:" + CITY_NAME);
 			}
 		}
 	}
