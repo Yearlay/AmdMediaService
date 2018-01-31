@@ -23,6 +23,7 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
 
 import com.amd.media.MediaInterfaceUtil;
+import com.amd.util.AmdConfig;
 import com.amd.util.SkinManager;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.StorageBean;
@@ -595,13 +596,13 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 				}
 				break;
 			case SHOW_FORBIDDEN_VIEW:
-				if (mPlayLayout != null && AllMediaList.sCarSpeed >= 20.0f) {
+				if (mPlayLayout != null && AllMediaList.sCarSpeed >= AmdConfig.CAR_SPEED_LIMIT) {
 					mPlayLayout.showOrHideForbiddenView(true);
 					
 				}
 				break;
 			case HIDE_FORBIDDEN_VIEW:
-				if (mPlayLayout != null && AllMediaList.sCarSpeed < 20.0f) {
+				if (mPlayLayout != null && AllMediaList.sCarSpeed < AmdConfig.CAR_SPEED_LIMIT) {
 					mPlayLayout.showOrHideForbiddenView(false);
 					
 				}
@@ -667,13 +668,13 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 			AllMediaList.sCarSpeed = speed;
 			DebugLog.d("Yearlay", "onUartDataChange 0D 00 2D current speed: " + speed);
 			if (mPlayLayout.isShowForbiddenView()) { // 限制播放视频View，显示状态。
-				if (speed < 20.0f) {
+				if (speed < AmdConfig.CAR_SPEED_LIMIT) {
 					mHandler.sendEmptyMessageDelayed(HIDE_FORBIDDEN_VIEW, 3000);
 				} else {
 					mHandler.removeMessages(HIDE_FORBIDDEN_VIEW);
 				}
 			} else { // 限制播放视频View，不显示状态。
-				if (speed >= 20.0f) {
+				if (speed >= AmdConfig.CAR_SPEED_LIMIT) {
 					mHandler.sendEmptyMessageDelayed(SHOW_FORBIDDEN_VIEW, 3000);
 				} else {
 					mHandler.removeMessages(SHOW_FORBIDDEN_VIEW);

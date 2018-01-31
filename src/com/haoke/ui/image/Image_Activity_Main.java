@@ -264,6 +264,7 @@ public class Image_Activity_Main extends Activity implements
     @Override
     public void onLoadCompleted(int deviceType, int fileType) {
         // 处理数据加载完成的事件: 主要是处理数据。
+    	Log.e(TAG,"-----onLoadCompleted deviceType: " + deviceType + " fileType: " + fileType);
         if (deviceType == getCurrentDeviceType() && fileType == FileType.IMAGE) {
             updateDevice(deviceType);
         }
@@ -272,6 +273,7 @@ public class Image_Activity_Main extends Activity implements
     @Override
     public void onScanStateChange(StorageBean storageBean) {
         // 处理磁盘状态 和 扫描状态发生改变的状态： 主要是更新UI的显示效果。
+    	Log.e(TAG, "onScanStateChange storageBean: " + storageBean.toString());
         if (storageBean.getDeviceType() == getCurrentDeviceType()) {
             updateDevice(getCurrentDeviceType());
             onChangeFragment(SWITCH_TO_LIST_FRAGMENT);

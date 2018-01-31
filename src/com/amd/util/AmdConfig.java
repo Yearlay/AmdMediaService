@@ -6,11 +6,11 @@ public class AmdConfig {
      * 1.会与Media_IF合并成一个TAG，方便log打印<p>
      * 2.会与ID3专辑图的暗码合并成Toast输出
      */
-    public static final String APP_VERSION_DATE = "0124";
+    public static final String APP_VERSION_DATE = "0131";
     /**
      * app的时间,会与ID3专辑图的暗码合并成Toast输出
      */
-    public static final String APP_VERSION_TIME = "18:00";
+    public static final String APP_VERSION_TIME = "09:30";
     /**
      * 激活ID3专辑图的暗码
      */
@@ -55,4 +55,9 @@ public class AmdConfig {
      * 本地调试皮肤skinManager
      */
     public static final boolean ENABLE_LOCAl_SKIN_MANAGE = false;
+    /**
+     * 车速限制
+     */
+    public static final float CAR_SPEED_LIMIT = 30.0f;
+    
 }

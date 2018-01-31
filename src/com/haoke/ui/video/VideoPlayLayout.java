@@ -30,6 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amd.media.MediaInterfaceUtil;
+import com.amd.util.AmdConfig;
 import com.amd.util.SkinManager;
 import com.haoke.bean.FileNode;
 import com.haoke.constant.MediaUtil;
@@ -364,7 +365,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 	}
 
 	public void onResume() {
-		Log.e("luke", "------VideoPlayLayout onResume " + getBeforePlaystate());
+		Log.e("luke", "------VideoPlayLayout onResume " + getBeforePlaystate() + "  ,version: " + AmdConfig.APP_VERSION_DATE + " : " + AmdConfig.APP_VERSION_TIME);
 		if (mFileNode != null) {
 			mTitleTextView.setText(mFileNode.getFileName());
 		}
@@ -736,7 +737,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 		boolean showForbiddenViewFlag = false;
 		try {
 			boolean sysLimitFlag = mVideoController.limitToPlayVideoWhenDrive();
-			boolean speedLimitFlag = (speed >= 20.0f);
+			boolean speedLimitFlag = (speed >= AmdConfig.CAR_SPEED_LIMIT);
 			showForbiddenViewFlag = (sysLimitFlag && speedLimitFlag);
 		} catch (Exception e) {
 			e.printStackTrace();
