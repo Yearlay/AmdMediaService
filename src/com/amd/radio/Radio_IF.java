@@ -335,14 +335,17 @@ public class Radio_IF extends CarService_IF {
 	// 扫描
 	public void setScan() {
 		try {
-			Log.d(TAG, "setScan");
 			//if (!isEnable()) { //ENABLE_RADIO_MUTEX_LOGIC
 	        	//setEnable(true);
 	        //}
-			isRescan = false;
-			isScan5S = true;
-			setRadioSource();
-			mServiceIF.radio_scan();
+			boolean focus = getRadioManager().requestAudioFocus(true);
+            Log.d(TAG, "setScan focus="+focus);
+            if (focus) {
+                isRescan = false;
+                isScan5S = true;
+                setRadioSource();
+                mServiceIF.radio_scan();
+            }
 		} catch (Exception e) {
 			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
 		}
