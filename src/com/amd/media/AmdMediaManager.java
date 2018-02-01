@@ -467,6 +467,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 			if (mMediaPlayer.getMediaState() == MediaState.PREPARED) {
 				mMediaPlayer.stop();
 				mPlayState = PlayState.STOP;
+				onDataChanged(mMediaMode, MediaFunc.PLAY_STATE, getPlayState(), 0);
 			}
 			mMediaPlayer.reset();
 
