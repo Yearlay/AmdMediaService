@@ -219,6 +219,11 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
         String info = null;
         int source = Media_IF.getCurSource();
         if (!Source.isBTMusicSource(source)) {
+            if (!(Source.isAudioSource(source) || source == Source.NULL)) {
+                if (Source.isBTMusicSource(Media_IF.sLastSource)) {
+                    source = Media_IF.sLastSource;
+                }
+            }
             if (!(BT_IF.getInstance().getConnState() == BTConnState.CONNECTED)) {
                 source = Source.NULL;
             }
