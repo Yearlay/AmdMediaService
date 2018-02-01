@@ -78,8 +78,10 @@ public class ID3ParseThread extends Thread {
     }
     
     private boolean checkMounted(String devicePath) {
-        return MediaUtil.checkMounted(mMediaDbHelper.getContext(), devicePath) &&
+        boolean checkFlag = MediaUtil.checkMounted(mMediaDbHelper.getContext(), devicePath) &&
                 AllMediaList.instance(mMediaDbHelper.getContext()).getStoragBean(devicePath).isMounted();
+        DebugLog.d(TAG, "checkMounted devicePath: " + devicePath + " checkFlag: " + checkFlag);
+        return checkFlag;
     }
     
     public void parseId3InfoOfAudio() {
