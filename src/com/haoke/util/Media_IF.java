@@ -510,11 +510,6 @@ public class Media_IF extends CarService_IF {
 		return FileType.NULL;
 	}
 
-	// 当前设备是否存在
-	public boolean isDeviceExist(String path) {
-		return MediaUtil.checkMounted(mContext, path);
-	}
-
 	// 获取扫描状态
 	public int getScanState(int deviceType) {
 		try {

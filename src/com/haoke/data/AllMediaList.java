@@ -427,8 +427,7 @@ public class AllMediaList {
         StorageBean storageBean = null;
         storageBean = mScanStateHash.get(devicePath);
         if (storageBean == null) {
-            storageBean = new StorageBean(devicePath, 
-                    MediaUtil.checkMounted(mContext, devicePath) ? StorageBean.MOUNTED : StorageBean.EJECT);
+            storageBean = new StorageBean(devicePath, StorageBean.EJECT);
             mScanStateHash.put(devicePath, storageBean);
         }
         if (MediaUtil.DEVICE_PATH_COLLECT.equals(devicePath)) {
