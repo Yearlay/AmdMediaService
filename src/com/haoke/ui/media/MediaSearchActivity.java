@@ -2,23 +2,6 @@ package com.haoke.ui.media;
 
 import java.util.ArrayList;
 
-import com.amd.media.MediaInterfaceUtil;
-import com.amd.util.SkinManager;
-import com.amd.util.Source;
-import com.haoke.bean.FileNode;
-import com.haoke.bean.ID3Parse;
-import com.haoke.bean.ImageLoad;
-import com.haoke.bean.StorageBean;
-import com.haoke.constant.MediaUtil.FileType;
-import com.haoke.data.AllMediaList;
-import com.haoke.data.LoadListener;
-import com.haoke.data.SearchListener;
-import com.haoke.constant.MediaUtil.DeviceType;
-import com.haoke.mediaservice.R;
-import com.haoke.ui.image.Image_Activity_Main;
-import com.haoke.ui.video.Video_Activity_Main;
-import com.haoke.util.Media_IF;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -32,18 +15,18 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.view.ActionMode;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
@@ -53,6 +36,23 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.amd.media.MediaInterfaceUtil;
+import com.amd.util.SkinManager;
+import com.amd.util.Source;
+import com.haoke.bean.FileNode;
+import com.haoke.bean.ID3Parse;
+import com.haoke.bean.ImageLoad;
+import com.haoke.bean.StorageBean;
+import com.haoke.constant.MediaUtil.DeviceType;
+import com.haoke.constant.MediaUtil.FileType;
+import com.haoke.data.AllMediaList;
+import com.haoke.data.LoadListener;
+import com.haoke.data.SearchListener;
+import com.haoke.mediaservice.R;
+import com.haoke.ui.image.Image_Activity_Main;
+import com.haoke.ui.video.Video_Activity_Main;
+import com.haoke.util.Media_IF;
 
 public class MediaSearchActivity extends Activity implements OnClickListener, LoadListener,
         OnItemClickListener, TextView.OnEditorActionListener, SearchListener, TextWatcher {
@@ -459,11 +459,12 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
 
     @Override
     public void onLoadCompleted(int deviceType, int fileType) {
+    	doSearch();
     }
 
     @Override
     public void onScanStateChange(StorageBean storageBean) {
-        doSearch();
+        //doSearch();
     }
 
     private ContentObserver mContentObserver = new ContentObserver(new Handler()) {
