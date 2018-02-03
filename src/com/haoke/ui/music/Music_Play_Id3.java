@@ -156,7 +156,12 @@ public class Music_Play_Id3 extends LinearLayout implements OnClickListener, ID3
                 mBitmap.recycle();
                 mBitmap = null;
             }
-            Bitmap bitmap = BitmapFactory.decodeFile(fileNode.getThumbnailPath());
+            Bitmap bitmap = null;
+            try {
+                bitmap = BitmapFactory.decodeFile(fileNode.getThumbnailPath());
+            } catch (Exception e) {
+                Log.e(TAG, "updateAudioInfo Exception e="+e);
+            }
             if (bitmap != null) {
                 mBitmap = scaleBitmap(bitmap);
                 mAlbumView.setImageBitmap(mBitmap);
