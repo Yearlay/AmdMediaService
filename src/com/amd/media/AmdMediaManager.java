@@ -917,6 +917,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 			}
 		} else if (mPlayingDeviceType != deviceType || mPlayingFileType != fileType) {
 			force = true;
+			mPlayingFileNode = null;
 		}
 		if (force) {
 			mPlayingDeviceType = deviceType;
