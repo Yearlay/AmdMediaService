@@ -606,8 +606,11 @@ public class BT_IF extends BTService_IF {
 		return PlayState.STOP;
 	}
 	
-	// 获取通话状态
+	// 获取通话状态，getCallState废弃，请用isTalking
 	public static int getCallState() throws RemoteException{
         return getInstance().mServiceIF.getCallState();
+	}
+	public static boolean isTalking() throws RemoteException{
+	    return getInstance().mServiceIF.isTalking();
 	}
 }

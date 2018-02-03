@@ -103,7 +103,11 @@ public class BTMusicManager implements CarService_Listener,
             if (recordPlayState == PlayState.PLAY
                     && MediaInterfaceUtil.mediaCannotPlayNoToast()) {
             } else {
-                setRecordPlayState(playing ? PlayState.PLAY : PlayState.STOP);
+                if (Media_IF.getOnlyBtCallState()) {
+                    setRecordPlayState(PlayState.STOP);
+                } else {
+                    setRecordPlayState(playing ? PlayState.PLAY : PlayState.STOP);
+                }
             }
 			break;
 			

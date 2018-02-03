@@ -311,15 +311,25 @@ public class Media_IF extends CarService_IF {
 		}
 	}
 	
+	public static boolean getOnlyBtCallState() {
+        try {
+            /*int state = BT_IF.getCallState();
+            if (state != BTCallState.IDLE) {
+                Log.d(TAG, "BT_IF.getCallState state="+state);
+                return true;
+            }*/
+            boolean state = BT_IF.isTalking();
+            Log.d(TAG, "BT_IF.isTalking state="+state);
+            return state;
+        } catch (Exception e) {
+            Log.e(TAG, "getCallState error1 e="+e);
+        }
+        return false;
+	}
+	
 	public static boolean getCallState() {
-		try {
-			int state = BT_IF.getCallState();
-			if (state != BTCallState.IDLE) {
-			    Log.d(TAG, "BT_IF.getCallState state="+state);
-			    return true;
-			}
-		} catch (Exception e) {
-			Log.e(TAG, "getCallState error1 e="+e);
+		if (getOnlyBtCallState()) {
+		    return true;
 		}
 		try {
             int carplayState = getInstance().mServiceIF.getCMSStatus(CMSStatusFuc.CARPLAY_CALL_STS);
