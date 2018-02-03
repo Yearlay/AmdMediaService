@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.radio.Radio_IF;
 import com.amd.util.SkinManager;
+import com.amd.util.SkinManager.SkinListener;
 import com.haoke.data.AllMediaList;
 import com.haoke.mediaservice.R;
 import com.haoke.ui.widget.CustomDialog;
@@ -14,7 +15,9 @@ import com.haoke.ui.widget.CustomDialog.OnDialogListener;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.database.ContentObserver;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.AttributeSet;
@@ -47,6 +50,10 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
     private CustomDialog mErrorDialog;
     
     private SkinManager skinManager;
+    private Drawable gridViewDrawable;
+    private Drawable mReturnButtonDrawable;
+    private Drawable mEditButtonDrawable;
+    private ColorStateList mTextViewColorStateList;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,21 +147,30 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
     protected void onResume() {
         super.onResume();
         AllMediaList.notifyAllLabelChange(this, R.string.pub_radio);
-        refreshSkin();
-        getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, mContentObserver);
+        refreshSkin(false);
+        SkinManager.registerSkin(mSkinListener);
+        //getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, mContentObserver);
     }
     
-    private void refreshSkin() {
-    	gridView.setSelector(skinManager.getDrawable(R.drawable.radio_listselector));
-        mReturnButton.setBackground(skinManager.getDrawable(R.drawable.all_faverite));
-        mEditButton.setCompoundDrawablesWithIntrinsicBounds(skinManager.getDrawable(R.drawable.music_date_edit), null, null, null);
-        mEditButton.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
-        mSelectAllTextView.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
-        mCancelTextView.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
-        mDeleteTextView.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
-        if (adapter != null) {
-            adapter.notifyDataSetChanged();
-            SkinManager.setScrollViewDrawable(gridView, skinManager.getDrawable(R.drawable.scrollbar_thumb));
+    private void refreshSkin(boolean loading) {
+        if (loading || gridViewDrawable==null) {
+            gridViewDrawable = skinManager.getDrawable(R.drawable.radio_listselector);
+            mReturnButtonDrawable = skinManager.getDrawable(R.drawable.all_faverite);
+            mEditButtonDrawable = skinManager.getDrawable(R.drawable.music_date_edit);
+            mTextViewColorStateList = skinManager.getColorStateList(R.drawable.text_color_selector);
+        }
+        if (!loading) {
+            gridView.setSelector(gridViewDrawable);
+            mReturnButton.setBackground(mReturnButtonDrawable);
+            mEditButton.setCompoundDrawablesWithIntrinsicBounds(mEditButtonDrawable, null, null, null);
+            mEditButton.setTextColor(mTextViewColorStateList);
+            mSelectAllTextView.setTextColor(mTextViewColorStateList);
+            mCancelTextView.setTextColor(mTextViewColorStateList);
+            mDeleteTextView.setTextColor(mTextViewColorStateList);
+            if (adapter != null) {
+                adapter.notifyDataSetChanged();
+                SkinManager.setScrollViewDrawable(gridView, skinManager.getDrawable(R.drawable.scrollbar_thumb));
+            }
         }
     }
 
@@ -163,7 +179,8 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
         if (mErrorDialog != null) {
             mErrorDialog.CloseDialog();
         }
-        getContentResolver().unregisterContentObserver(mContentObserver);
+        SkinManager.unregisterSkin(mSkinListener);
+        //getContentResolver().unregisterContentObserver(mContentObserver);
         super.onPause();
     }
 
@@ -316,9 +333,16 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
         startActivity(radioIntent);
     }
     
-    private ContentObserver mContentObserver = new ContentObserver(new Handler()) {
-        public void onChange(boolean selfChange) {
-            refreshSkin();
+    private SkinListener mSkinListener = new SkinListener(new Handler()) {
+        @Override
+        public void loadingSkinData() {
+            refreshSkin(true);
+        }
+
+        @Override
+        public void refreshViewBySkin() {
+            Log.d(TAG, "onChange skin");
+            refreshSkin(false);
         };
     };
 }

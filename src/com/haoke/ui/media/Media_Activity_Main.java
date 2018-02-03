@@ -27,6 +27,8 @@ import com.amd.media.AmdMediaButtonReceiver;
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.radio.Radio_Activity_Main;
 import com.amd.radio.SearchRadioActivity;
+import com.amd.util.SkinManager;
+import com.amd.util.SkinManager.SkinListener;
 import com.amd.util.Source;
 import com.haoke.ui.widget.MyViewPaper;
 import com.haoke.util.Media_IF;
@@ -51,6 +53,8 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
     
     //private MediaPageChangeListener mPageChangeListener = new MediaPageChangeListener();
     private boolean pressBackToHome = false;
+    private boolean mActResume = false;
+    private boolean mMustFresh = false;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,9 +82,10 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
 
         registerReceiver(mReceiver, new IntentFilter(VRConstant.VRIntent.ACTION_FINISH_MUSIC_RADIO));
         initCurSource();
-        getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, mContentObserver);
+        SkinManager.registerSkin(mSkinListener);
+        //getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, mContentObserver);
         AllMediaList.notifyUpdateAppWidgetByAll();// 通知MediaWidgetProvider更新UI
-        refreshSkin();
+        refreshSkin(false);
         Log.d(TAG, "onCreate");
     }
     
@@ -111,6 +116,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
     @Override
     protected void onPause() {
         Log.d(TAG, "onPause");
+        mActResume = false;
         mRadioFragment.onPause();
         mHomeFragment.onPause();
         pressBackToHome = false;
@@ -121,6 +127,10 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
     protected void onResume() {
         super.onResume();
         Log.d(TAG, "onResume ");
+        mActResume = true;
+        if (mMustFresh) {
+            refreshSkin(false);
+        }
         if (isShowRadioLayout()) {
             mRadioFragment.onResume();
         } else {
@@ -144,7 +154,8 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
         mHomeFragment.onDestroy();
         super.onDestroy();
         unregisterReceiver(mReceiver);
-        getContentResolver().unregisterContentObserver(mContentObserver);
+        SkinManager.unregisterSkin(mSkinListener);
+        //getContentResolver().unregisterContentObserver(mContentObserver);
     }
     
     @Override
@@ -169,10 +180,13 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
         return super.onTouchEvent(ev);
     }
     
-    private void refreshSkin() {
-        mActivityTab.refreshSkin();
-        mHomeFragment.refreshSkin();
-        mRadioFragment.refreshSkin();
+    private void refreshSkin(boolean loading) {
+        mActivityTab.refreshSkin(loading);
+        mHomeFragment.refreshSkin(loading);
+        mRadioFragment.refreshSkin(loading);
+        if (!loading) {
+            mMustFresh = false;
+        }
     }
 
     private boolean isShowRadioLayout() {
@@ -433,10 +447,20 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
         return super.onKeyUp(keyCode, event);
     }
     
-    private ContentObserver mContentObserver = new ContentObserver(new Handler()) {
-        public void onChange(boolean selfChange) {
+    private SkinListener mSkinListener = new SkinListener(new Handler()) {
+        @Override
+        public void loadingSkinData() {
+            refreshSkin(true);
+        }
+
+        @Override
+        public void refreshViewBySkin() {
             Log.d(TAG, "onChange skin");
-            refreshSkin();
+            if (mActResume) {
+                refreshSkin(false);
+            } else {
+                mMustFresh = true;
+            }
         };
     };
 

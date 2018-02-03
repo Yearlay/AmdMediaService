@@ -1,6 +1,8 @@
 package com.haoke.ui.music;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -36,6 +38,9 @@ public class Music_List_Tab extends RelativeLayout implements OnClickListener {
 	
 	private Animation mAnim = null;
 	LinearInterpolator mInterpolator = null;
+
+	private Drawable mEditIconDrawable;
+	private ColorStateList mTextColorStateList;
 
 	public Music_List_Tab(Context context) {
 		this(context, null);
@@ -82,14 +87,18 @@ public class Music_List_Tab extends RelativeLayout implements OnClickListener {
 		initViewFlag = true;
 	}
 	
-	public void refreshSkin(SkinManager skinManager) {
-		if (initViewFlag) {
-			mEditIcon.setImageDrawable(skinManager.getDrawable(R.drawable.music_date_edit));
-			mEditTextView.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
-			mAllButton.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
-			mCancleButton.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
-			mDelectButton.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
-			mCopyButton.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
+	public void refreshSkin(boolean loading, SkinManager skinManager) {
+	    if (loading || mEditIconDrawable==null) {
+	        mEditIconDrawable = skinManager.getDrawable(R.drawable.music_date_edit);
+	        mTextColorStateList = skinManager.getColorStateList(R.drawable.text_color_selector);
+	    }
+		if (initViewFlag && !loading) {
+			mEditIcon.setImageDrawable(mEditIconDrawable);
+			mEditTextView.setTextColor(mTextColorStateList);
+			mAllButton.setTextColor(mTextColorStateList);
+			mCancleButton.setTextColor(mTextColorStateList);
+			mDelectButton.setTextColor(mTextColorStateList);
+			mCopyButton.setTextColor(mTextColorStateList);
 		}
 	}
 	

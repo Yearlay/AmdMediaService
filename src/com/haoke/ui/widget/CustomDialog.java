@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.util.SkinManager;
+import com.amd.util.SkinManager.SkinListener;
 import com.haoke.bean.FileNode;
 import com.haoke.constant.MediaUtil;
 import com.haoke.mediaservice.R;
@@ -14,6 +15,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.database.ContentObserver;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -34,6 +36,10 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 	private TextView mTextView;
 	private TextView mTitleTextView;
 	private LinearLayout mLinearLayout;
+	
+	private Drawable mRootViewDrawable;
+	private Drawable mOkButtonDrawable;
+	private Drawable mCancelButtonDrawable;
 	
 	// 对话框类型枚举
 	public enum DIALOG_TYPE {
@@ -59,24 +65,31 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 		return mDialog;
 	}
 	
-	private void refreshSkin() {
+	private void refreshSkin(boolean loading) {
 	    if (mContext != null) {
 	        SkinManager skinManager = SkinManager.instance(mContext);
-	        if (mRootView != null) {
-	            mRootView.setBackgroundDrawable(skinManager.getDrawable(R.drawable.pub_msgbox_bg1));
+	        if (loading || mRootViewDrawable==null) {
+                mRootViewDrawable = skinManager.getDrawable(R.drawable.pub_msgbox_bg1);
+                mOkButtonDrawable = skinManager.getDrawable(R.drawable.bd_dialog_button);
+                mCancelButtonDrawable = skinManager.getDrawable(R.drawable.bd_dialog_button);
 	        }
-	        if (mOkButton != null) {
-	            mOkButton.setBackgroundDrawable(skinManager.getDrawable(R.drawable.bd_dialog_button));
-	        }
-	        if (mCancelButton != null) {
-	            mCancelButton.setBackgroundDrawable(skinManager.getDrawable(R.drawable.bd_dialog_button));
-	        }
-	        if (mLinearLayout != null && mLinearLayout.getChildCount() > 0) {
-	            for (int index = 0; index < mLinearLayout.getChildCount(); index++) {
-	                View view = mLinearLayout.getChildAt(index);
-	                if (view instanceof AmdCheckBox) {
-	                    AmdCheckBox amdCheckBox = ((AmdCheckBox) view);
-	                    amdCheckBox.setChecked(amdCheckBox.isChecked());
+	        if (!loading) {
+	            if (mRootView != null) {
+	                mRootView.setBackgroundDrawable(mRootViewDrawable);
+	            }
+	            if (mOkButton != null) {
+	                mOkButton.setBackgroundDrawable(mOkButtonDrawable);
+	            }
+	            if (mCancelButton != null) {
+	                mCancelButton.setBackgroundDrawable(mCancelButtonDrawable);
+	            }
+	            if (mLinearLayout != null && mLinearLayout.getChildCount() > 0) {
+	                for (int index = 0; index < mLinearLayout.getChildCount(); index++) {
+	                    View view = mLinearLayout.getChildAt(index);
+	                    if (view instanceof AmdCheckBox) {
+	                        AmdCheckBox amdCheckBox = ((AmdCheckBox) view);
+	                        amdCheckBox.setChecked(amdCheckBox.isChecked());
+	                    }
 	                }
 	            }
 	        }
@@ -88,7 +101,8 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 		mContext = context;
 		mDialog = new MyDialog(context, R.style.pub_dialog);
 		mDialog.setOnDismissListener(this);
-		mDialog.setContentObserver(mContentObserver);
+		//mDialog.setContentObserver(mContentObserver);
+		mDialog.setSkinListener(mSkinListener);
 		switch (type) {
 			case NONE_BTN:
 				mDialog.setContentView(R.layout.custom_dialog_none);
@@ -105,7 +119,7 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 		mRootView = mDialog.findViewById(R.id.pub_dialog_layout);
 		mOkButton = (Button) mDialog.findViewById(R.id.pub_dialog_ok);
 		mCancelButton = (Button) mDialog.findViewById(R.id.pub_dialog_cancel);
-		refreshSkin();
+		refreshSkin(false);
 		setDialogClickListener(mOkButton, this);
 		setDialogClickListener(mCancelButton, this);
 		mDialog.findViewById(R.id.pub_dialog_layout)
@@ -151,12 +165,13 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 	    CloseDialog();
 		mContext = context;
 		mDialog = new MyDialog(context, R.style.pub_dialog);
-		mDialog.setContentObserver(mContentObserver);
+		//mDialog.setContentObserver(mContentObserver);
+		mDialog.setSkinListener(mSkinListener);
 		mOtherOnDismissListener = listener;
 		mDialog.setOnDismissListener(this);
 		mDialog.setContentView(R.layout.custom_dialog_progress);
 		mRootView = mDialog.findViewById(R.id.pub_dialog_layout);
-		refreshSkin();
+		refreshSkin(false);
 		mTitleTextView = (TextView) mDialog.findViewById(R.id.pub_dialog_title);
 		mTitleTextView.setText(titleID);
 		mTextView = (TextView) mDialog.findViewById(R.id.pub_dialog_text);
@@ -178,14 +193,15 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 	    CloseDialog();
 		mContext = context;
 		mDialog = new MyDialog(context, R.style.pub_dialog);
-		mDialog.setContentObserver(mContentObserver);
+		//mDialog.setContentObserver(mContentObserver);
+		mDialog.setSkinListener(mSkinListener);
 		mDialog.setOnDismissListener(this);
 		mDialog.setContentView(R.layout.custom_dialog_two_cover);
 		// 初始化界面
 		mRootView = mDialog.findViewById(R.id.pub_dialog_layout);
 		mOkButton = (Button) mDialog.findViewById(R.id.pub_dialog_ok);
 		mCancelButton = (Button) mDialog.findViewById(R.id.pub_dialog_cancel);
-		refreshSkin();
+		refreshSkin(false);
 		setDialogClickListener(mDialog.findViewById(R.id.pub_dialog_ok), this);
 		setDialogClickListener(mDialog.findViewById(R.id.pub_dialog_cancel), this);
 		mDialog.findViewById(R.id.pub_dialog_layout)
@@ -256,14 +272,20 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 		}
 	}
 	
-	private ContentObserver mContentObserver = new ContentObserver(new Handler()) {
-        public void onChange(boolean selfChange) {
-            refreshSkin();
+	private SkinListener mSkinListener = new SkinListener(new Handler()) {
+        @Override
+        public void loadingSkinData() {
+            refreshSkin(true);
+        }
+
+        @Override
+        public void refreshViewBySkin() {
+            refreshSkin(false);
         };
     };
     
     class MyDialog extends Dialog {
-        ContentObserver contentObserver = null;
+        SkinListener skinListener = null;
         
         public MyDialog(Context context) {
             super(context);
@@ -277,14 +299,16 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
             super(context, cancelable, cancelListener);
         }
 
-        public void setContentObserver(ContentObserver cObserver) {
-            contentObserver = cObserver;
-            getContext().getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, contentObserver);
+        public void setSkinListener(SkinListener listener) {
+            skinListener = listener;
+            //getContext().getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, contentObserver);
+            SkinManager.registerSkin(skinListener);
         }
 
         @Override
         public void dismiss() {
-            getContext().getContentResolver().unregisterContentObserver(contentObserver);
+            //getContext().getContentResolver().unregisterContentObserver(contentObserver);
+            SkinManager.unregisterSkin(skinListener);
             super.dismiss();
         }
         

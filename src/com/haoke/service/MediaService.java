@@ -71,6 +71,8 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     private RadioManager mRadioManager = null;
     private BTMusicManager mBTMusicManager = null;
 
+    private Handler mSkinHandler;
+    
     public static MediaService getInstance() {
         return mSelf;
     }
@@ -79,6 +81,9 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     public void onCreate() {
         super.onCreate();
         mSelf = this;
+        
+        mSkinHandler = new Handler();
+        
         mMediaIF = Media_IF.getInstance();
         mBTIF = BT_IF.getInstance();
         mRadioIF = Radio_IF.getInstance();
@@ -224,6 +229,10 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     public void removeModeHandlerMsg() {
         Log.d(TAG, "removeModeHandlerMsg");
         mModeHandler.removeCallbacksAndMessages(null);
+    }
+    
+    public Handler getSkinHandler() {
+        return mSkinHandler;
     }
     
     @Override

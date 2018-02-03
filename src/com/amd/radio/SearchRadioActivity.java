@@ -9,7 +9,9 @@ import com.haoke.mediaservice.R;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.database.ContentObserver;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -35,6 +37,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amd.util.SkinManager;
+import com.amd.util.SkinManager.SkinListener;
 
 // FM: 87.5 ~ 108.0
 public class SearchRadioActivity extends Activity implements OnClickListener,
@@ -54,8 +57,30 @@ public class SearchRadioActivity extends Activity implements OnClickListener,
 	private ImageButton mSearchClear;
 	private Button mSearchcancel;
 	private ImageButton mSearchIcon;
-	private SkinManager mSkinManager;
 	
+	private SkinManager mSkinManager;
+	private Drawable mInputEditTextDrawable;
+	private Drawable mSearchIconDrawable;
+	private Drawable mSearchClearDrawable;
+	private Drawable mSearchcancelDrawable;
+	private ColorStateList mSearchcancelColorStateList;
+	private Drawable mButton0Drawable;
+	private Drawable mButton1Drawable;
+    private Drawable mButton2Drawable;
+    private Drawable mButton3Drawable;
+    private Drawable mButton4Drawable;
+    private Drawable mButton5Drawable;
+    private Drawable mButton6Drawable;
+    private Drawable mButton7Drawable;
+    private Drawable mButton8Drawable;
+    private Drawable mButton9Drawable;
+    private Drawable mBackButtonBgDrawable;
+    private Drawable mHideButtonBgDrawable;
+    private Drawable mButtonPointBgDrawable;
+    private Drawable mSearchNumBackDrawable;
+    private Drawable mSearchNumHideDrawable;
+    private Drawable mSearchNumOkDrawable;
+    
 	private Button mButton0;
 	private Button mButton1;
 	private Button mButton2;
@@ -82,34 +107,60 @@ public class SearchRadioActivity extends Activity implements OnClickListener,
 		initView();
 	}
 	
-	private void refreshSkin() {
-		mInputEditText.setBackground(mSkinManager.getDrawable(R.drawable.search_input_bg));
-		
-		mSearchIcon.setBackground(mSkinManager.getDrawable(R.drawable.search_icon));
-		mSearchClear.setBackgroundDrawable(mSkinManager.getDrawable(R.drawable.search_num_clear));
-		
-		mSearchcancel.setBackgroundDrawable(mSkinManager.getDrawable(R.drawable.search_cancel_bg));
-		mSearchcancel.setTextColor(mSkinManager.getColorStateList(R.drawable.text_color_selector));
-		
-		mButton0.setBackground(mSkinManager.getDrawable(R.drawable.search_num_bg));
-		mButton1.setBackground(mSkinManager.getDrawable(R.drawable.search_num_bg));
-		mButton2.setBackground(mSkinManager.getDrawable(R.drawable.search_num_bg));
-		mButton3.setBackground(mSkinManager.getDrawable(R.drawable.search_num_bg));
-		mButton4.setBackground(mSkinManager.getDrawable(R.drawable.search_num_bg));
-		mButton5.setBackground(mSkinManager.getDrawable(R.drawable.search_num_bg));
-		mButton6.setBackground(mSkinManager.getDrawable(R.drawable.search_num_bg));
-		mButton7.setBackground(mSkinManager.getDrawable(R.drawable.search_num_bg));
-		mButton8.setBackground(mSkinManager.getDrawable(R.drawable.search_num_bg));
-		mButton9.setBackground(mSkinManager.getDrawable(R.drawable.search_num_bg));
-		
-		mBackButton.setBackground(mSkinManager.getDrawable(R.drawable.search_num_bg));
-		mBackButton.setImageDrawable(mSkinManager.getDrawable(R.drawable.search_num_back));
-		
-		mHideButton.setBackground(mSkinManager.getDrawable(R.drawable.search_num_bg));
-		mHideButton.setImageDrawable(mSkinManager.getDrawable(R.drawable.search_num_hide));
-		
-		mOkButton.setBackground(mSkinManager.getDrawable(R.drawable.search_num_ok));
-		mButtonPoint.setBackground(mSkinManager.getDrawable(R.drawable.search_num_bg));
+	private void refreshSkin(boolean loading) {
+	    if (loading || mInputEditTextDrawable==null) {
+	        mInputEditTextDrawable = mSkinManager.getDrawable(R.drawable.search_input_bg);
+	        mSearchIconDrawable = mSkinManager.getDrawable(R.drawable.search_icon);
+	        mSearchClearDrawable = mSkinManager.getDrawable(R.drawable.search_num_clear);
+	        mSearchcancelDrawable = mSkinManager.getDrawable(R.drawable.search_cancel_bg);
+	        mSearchcancelColorStateList = mSkinManager.getColorStateList(R.drawable.text_color_selector);
+	        mButton0Drawable = mSkinManager.getDrawable(R.drawable.search_num_bg);
+	        mButton1Drawable = mSkinManager.getDrawable(R.drawable.search_num_bg);
+	        mButton2Drawable = mSkinManager.getDrawable(R.drawable.search_num_bg);
+	        mButton3Drawable = mSkinManager.getDrawable(R.drawable.search_num_bg);
+	        mButton4Drawable = mSkinManager.getDrawable(R.drawable.search_num_bg);
+	        mButton5Drawable = mSkinManager.getDrawable(R.drawable.search_num_bg);
+	        mButton6Drawable = mSkinManager.getDrawable(R.drawable.search_num_bg);
+	        mButton7Drawable = mSkinManager.getDrawable(R.drawable.search_num_bg);
+	        mButton8Drawable = mSkinManager.getDrawable(R.drawable.search_num_bg);
+	        mButton9Drawable = mSkinManager.getDrawable(R.drawable.search_num_bg);
+	        mBackButtonBgDrawable = mSkinManager.getDrawable(R.drawable.search_num_bg);
+	        mHideButtonBgDrawable = mSkinManager.getDrawable(R.drawable.search_num_bg);
+	        mButtonPointBgDrawable = mSkinManager.getDrawable(R.drawable.search_num_bg);
+	        
+	        mSearchNumBackDrawable = mSkinManager.getDrawable(R.drawable.search_num_back);
+	        mSearchNumHideDrawable = mSkinManager.getDrawable(R.drawable.search_num_hide);
+	        mSearchNumOkDrawable = mSkinManager.getDrawable(R.drawable.search_num_ok);
+	    }
+        if (!loading) {
+            mInputEditText.setBackground(mInputEditTextDrawable);
+            
+            mSearchIcon.setBackground(mSearchIconDrawable);
+            mSearchClear.setBackgroundDrawable(mSearchClearDrawable);
+            
+            mSearchcancel.setBackgroundDrawable(mSearchcancelDrawable);
+            mSearchcancel.setTextColor(mSearchcancelColorStateList);
+            
+            mButton0.setBackground(mButton0Drawable);
+            mButton1.setBackground(mButton1Drawable);
+            mButton2.setBackground(mButton2Drawable);
+            mButton3.setBackground(mButton3Drawable);
+            mButton4.setBackground(mButton4Drawable);
+            mButton5.setBackground(mButton5Drawable);
+            mButton6.setBackground(mButton6Drawable);
+            mButton7.setBackground(mButton7Drawable);
+            mButton8.setBackground(mButton8Drawable);
+            mButton9.setBackground(mButton9Drawable);
+            
+            mBackButton.setBackground(mBackButtonBgDrawable);
+            mBackButton.setImageDrawable(mSearchNumBackDrawable);
+            
+            mHideButton.setBackground(mHideButtonBgDrawable);
+            mHideButton.setImageDrawable(mSearchNumHideDrawable);
+            
+            mOkButton.setBackground(mSearchNumOkDrawable);
+            mButtonPoint.setBackground(mButtonPointBgDrawable);
+        }
 	}
 
 	private void initView() {
@@ -165,14 +216,16 @@ public class SearchRadioActivity extends Activity implements OnClickListener,
 	@Override
 	protected void onResume() {
 		super.onResume();
-		refreshSkin();
-		getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, mContentObserver);
+		refreshSkin(false);
+		SkinManager.registerSkin(mSkinListener);
+		//getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, mContentObserver);
 		AllMediaList.notifyAllLabelChange(this, R.string.pub_radio);
 	}
 	
 	@Override
     protected void onPause() {
-        getContentResolver().unregisterContentObserver(mContentObserver);
+	    SkinManager.unregisterSkin(mSkinListener);
+        //getContentResolver().unregisterContentObserver(mContentObserver);
         super.onPause();
     }
 
@@ -518,9 +571,15 @@ public class SearchRadioActivity extends Activity implements OnClickListener,
         startActivity(radioIntent);
 	}
 
-	private ContentObserver mContentObserver = new ContentObserver(new Handler()) {
-        public void onChange(boolean selfChange) {
-            refreshSkin();
+	private SkinListener mSkinListener = new SkinListener(new Handler()) {
+        @Override
+        public void loadingSkinData() {
+            refreshSkin(true);
+        }
+
+        @Override
+        public void refreshViewBySkin() {
+            refreshSkin(false);
         };
     };
 }

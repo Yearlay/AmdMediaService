@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.util.SkinManager;
 import com.amd.util.Source;
+import com.amd.util.SkinManager.SkinListener;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.ID3Parse;
 import com.haoke.bean.ImageLoad;
@@ -24,8 +25,10 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.database.ContentObserver;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
@@ -67,6 +70,12 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
     private TextView mNotifyText;
     private String unknown;
     private SkinManager skinManager;
+    private Drawable mInputEditTextDrawable;
+    private Drawable mSearchIconDrawable;
+    private Drawable mClearButtonDrawable;
+    private Drawable mCancelButtonDrawable;
+    private ColorStateList mCancelButtonColorStateList;
+
     
     private static final int PROGRESS_DIALOG = 1;
     @Override
@@ -163,26 +172,37 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
         }
     }
     
-    private void refreshSkin() {
-        mInputEditText.setBackgroundDrawable(skinManager.getDrawable(R.drawable.search_input_bg));
-        mSearchIcon.setBackgroundDrawable(skinManager.getDrawable(R.drawable.search_icon));
-        mClearButton.setBackgroundDrawable(skinManager.getDrawable(R.drawable.search_num_clear));
-        mCancelButton.setBackgroundDrawable(skinManager.getDrawable(R.drawable.search_cancel_bg));
-        mCancelButton.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
-        mSearchAdapter.notifyDataSetChanged();
+    private void refreshSkin(boolean loading) {
+        if (loading || mInputEditTextDrawable==null) {
+            mInputEditTextDrawable = skinManager.getDrawable(R.drawable.search_input_bg);
+            mSearchIconDrawable = skinManager.getDrawable(R.drawable.search_icon);
+            mClearButtonDrawable = skinManager.getDrawable(R.drawable.search_num_clear);
+            mCancelButtonDrawable = skinManager.getDrawable(R.drawable.search_cancel_bg);
+            mCancelButtonColorStateList = skinManager.getColorStateList(R.drawable.text_color_selector);
+        }
+        if (!loading) {
+            mInputEditText.setBackgroundDrawable(mInputEditTextDrawable);
+            mSearchIcon.setBackgroundDrawable(mSearchIconDrawable);
+            mClearButton.setBackgroundDrawable(mClearButtonDrawable);
+            mCancelButton.setBackgroundDrawable(mCancelButtonDrawable);
+            mCancelButton.setTextColor(mCancelButtonColorStateList);
+            mSearchAdapter.notifyDataSetChanged();
+        }
     }
     
     @Override
     protected void onResume() {
         super.onResume();
         updateLabel();
-        refreshSkin();
-        getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, mContentObserver);
+        refreshSkin(false);
+        SkinManager.registerSkin(mSkinListener);
+        //getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, mContentObserver);
     }
 
     @Override
     protected void onPause() {
-        getContentResolver().unregisterContentObserver(mContentObserver);
+        SkinManager.unregisterSkin(mSkinListener);
+        //getContentResolver().unregisterContentObserver(mContentObserver);
         super.onPause();
     }
 
@@ -466,9 +486,15 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
         doSearch();
     }
 
-    private ContentObserver mContentObserver = new ContentObserver(new Handler()) {
-        public void onChange(boolean selfChange) {
-            refreshSkin();
+    private SkinListener mSkinListener = new SkinListener(new Handler()) {
+        @Override
+        public void loadingSkinData() {
+            refreshSkin(true);
+        }
+
+        @Override
+        public void refreshViewBySkin() {
+            refreshSkin(false);
         };
     };
 }

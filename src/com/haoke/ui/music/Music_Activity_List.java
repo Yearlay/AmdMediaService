@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.database.ContentObserver;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -27,6 +28,7 @@ import com.amd.media.AmdMediaButtonReceiver;
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.util.Source;
 import com.amd.util.SkinManager;
+import com.amd.util.SkinManager.SkinListener;
 import com.haoke.bean.FileNode;
 import com.haoke.constant.MediaUtil;
 import com.haoke.constant.MediaUtil.CopyState;
@@ -79,6 +81,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     private Handler mHandler = new Handler();
     
     private SkinManager skinManager;
+    private Drawable mLoadAnimationViewDrawable;
     private boolean isShow = false;
     
     @Override
@@ -242,13 +245,19 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         AllMediaList.notifyAllLabelChange(getApplicationContext(), labelRes);
         
         playDefault();
-        refreshSkin();
-        getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, mContentObserver);
+        refreshSkin(false);
+        SkinManager.registerSkin(mSkinListener);
+        //getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, mContentObserver);
     }
     
-    private void refreshSkin() {
-        mListTab.refreshSkin(skinManager);
-        mLoadAnimationView.setImageDrawable(skinManager.getDrawable(R.drawable.media_loading_anim));
+    private void refreshSkin(boolean loading) {
+        mListTab.refreshSkin(loading, skinManager);
+        if (loading || mLoadAnimationViewDrawable==null) {
+            mLoadAnimationViewDrawable = skinManager.getDrawable(R.drawable.media_loading_anim);
+        }
+        if (!loading) {
+            mLoadAnimationView.setImageDrawable(mLoadAnimationViewDrawable);
+        }
     }
     
     @Override
@@ -263,7 +272,8 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             mProgressDialog.CloseDialog();
             Toast.makeText(this, R.string.file_operate_cancel, Toast.LENGTH_SHORT).show();
         }
-        getContentResolver().unregisterContentObserver(mContentObserver);
+        SkinManager.unregisterSkin(mSkinListener);
+        //getContentResolver().unregisterContentObserver(mContentObserver);
     }
     
     @Override
@@ -808,10 +818,16 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         AllMediaList.instance(this).stopOperateThread();
     }
     
-    private ContentObserver mContentObserver = new ContentObserver(new Handler()) {
-        public void onChange(boolean selfChange) {
+    private SkinListener mSkinListener = new SkinListener(new Handler()) {
+        @Override
+        public void loadingSkinData() {
+            refreshSkin(true);
+        }
+
+        @Override
+        public void refreshViewBySkin() {
             notifyDataSetChanged();
-            refreshSkin();
+            refreshSkin(false);
         };
     };
 }

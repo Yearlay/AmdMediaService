@@ -93,7 +93,7 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 				mPlayLayout = (MusicPlayLayout) mPlayLayoutStub.inflate();
 				mPlayLayout.setBTPlayMode(mShowLayout == ShowLayout.BT_PLAY_LAYOUT);
 				mPlayLayout.setVisibility(View.VISIBLE);
-				mPlayLayout.refreshSkin();
+				mPlayLayout.refreshSkin(false);
 			}
 		}
 		setCurPlayViewState();
@@ -160,12 +160,14 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
         return mShowLayout == ShowLayout.HOME_LAYOUT;
     }
 	
-	public void refreshSkin() {
-		mHomeLayout.refreshSkin();
+	public void refreshSkin(boolean loading) {
+		mHomeLayout.refreshSkin(loading);
 		if (mPlayLayout != null) {
-			mPlayLayout.refreshSkin();
+			mPlayLayout.refreshSkin(loading);
 		}
-		setCurPlayViewState();
+		if (!loading) {
+	        setCurPlayViewState();
+		}
 	}
 	
 	private void setCurPlayViewState() {

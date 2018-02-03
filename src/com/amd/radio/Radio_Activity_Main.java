@@ -14,6 +14,7 @@ import com.amd.util.SkinManager;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
@@ -58,6 +59,11 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     private boolean mAutoPlay = false;
     
     private SkinManager skinManager;
+    private Drawable mAllImageViewDrawable;
+    private Drawable mPreImageViewDrawable;
+    private Drawable mNextImageViewDrawable;
+    private Drawable mPlayImageViewDrawable;
+    private Drawable mPauseImageViewDrawable;
 
     public Radio_Activity_Main(Context context) {
         super(context);
@@ -170,14 +176,23 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
         //refreshSkin();
     }
     
-    public void refreshSkin() {
-        mAllImageView.setImageDrawable(skinManager.getDrawable(R.drawable.all));
-        mPreImageView.setImageDrawable(skinManager.getDrawable(R.drawable.pre));
-        mNextImageView.setImageDrawable(skinManager.getDrawable(R.drawable.next));
-        mPlayImageView.setImageDrawable(skinManager.getDrawable(mIF.isEnable() ? R.drawable.pause : R.drawable.play));
-        updateFreq(mIF.getCurFreq());
-        refreshScanIcon();
-        onPageSelected(viewPager.getCurrentItem());
+    public void refreshSkin(boolean loading) {
+        if (loading || mAllImageViewDrawable==null) {
+            mAllImageViewDrawable = skinManager.getDrawable(R.drawable.all);
+            mPreImageViewDrawable = skinManager.getDrawable(R.drawable.pre);
+            mNextImageViewDrawable = skinManager.getDrawable(R.drawable.next);
+            mPlayImageViewDrawable = skinManager.getDrawable(R.drawable.play);
+            mPauseImageViewDrawable = skinManager.getDrawable(R.drawable.pause);
+        }
+        if (!loading) {
+            mAllImageView.setImageDrawable(mAllImageViewDrawable);
+            mPreImageView.setImageDrawable(mPreImageViewDrawable);
+            mNextImageView.setImageDrawable(mNextImageViewDrawable);
+            mPlayImageView.setImageDrawable(mIF.isEnable() ? mPauseImageViewDrawable : mPlayImageViewDrawable);
+            updateFreq(mIF.getCurFreq());
+            refreshScanIcon();
+            onPageSelected(viewPager.getCurrentItem());
+        }
     }
     
     public void onPause() {

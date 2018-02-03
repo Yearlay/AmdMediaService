@@ -4,6 +4,8 @@ import com.amd.util.SkinManager;
 import com.haoke.mediaservice.R;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageButton;
@@ -65,7 +67,14 @@ public class Media_Activity_Tab extends RelativeLayout implements OnCheckedChang
     private View mBtnLayout;
     private OnClickListener mOnClickListener = null;
     private int mCurMode = -1;
-    SkinManager skinManager;
+    private SkinManager skinManager;
+    private ColorStateList mBtnRadioColorStateList;
+    private Drawable mBtnRadioDrawable;
+    private ColorStateList mBtnMusicColorStateList;
+    private Drawable mBtnMusicDrawable;
+    private Drawable mBtnSearchDrawable;
+    private Drawable mCurPlayUnderLineViewDrawable;
+
 
     public Media_Activity_Tab(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -89,14 +98,24 @@ public class Media_Activity_Tab extends RelativeLayout implements OnCheckedChang
         mBtnLayout.setEnabled(true);
     }
     
-    public void refreshSkin() {
-    	skinManager = SkinManager.instance(getContext());
-        mBtnRadio.setTextColor(skinManager.getColorStateList(R.drawable.tab_textcolor_selector));
-        mBtnRadio.setBackgroundDrawable(skinManager.getDrawable(R.drawable.tab_backgroud_selector));
-        mBtnMusic.setTextColor(skinManager.getColorStateList(R.drawable.tab_textcolor_selector));
-        mBtnMusic.setBackgroundDrawable(skinManager.getDrawable(R.drawable.tab_backgroud_selector));
-        mBtnSearch.setImageDrawable(skinManager.getDrawable(R.drawable.media_search_selector));
-        mCurPlayUnderLineView.setBackground(skinManager.getDrawable(R.drawable.top_bar_underlined_p));
+    public void refreshSkin(boolean loading) {
+        if (loading || mBtnRadioColorStateList==null) {
+            skinManager = SkinManager.instance(getContext());
+            mBtnRadioColorStateList = skinManager.getColorStateList(R.drawable.tab_textcolor_selector);
+            mBtnRadioDrawable = skinManager.getDrawable(R.drawable.tab_backgroud_selector);
+            mBtnMusicColorStateList = skinManager.getColorStateList(R.drawable.tab_textcolor_selector);
+            mBtnMusicDrawable = skinManager.getDrawable(R.drawable.tab_backgroud_selector);
+            mBtnSearchDrawable = skinManager.getDrawable(R.drawable.media_search_selector);
+            mCurPlayUnderLineViewDrawable = skinManager.getDrawable(R.drawable.top_bar_underlined_p);
+        }
+        if (!loading) {
+            mBtnRadio.setTextColor(mBtnRadioColorStateList);
+            mBtnRadio.setBackgroundDrawable(mBtnRadioDrawable);
+            mBtnMusic.setTextColor(mBtnMusicColorStateList);
+            mBtnMusic.setBackgroundDrawable(mBtnMusicDrawable);
+            mBtnSearch.setImageDrawable(mBtnSearchDrawable);
+            mCurPlayUnderLineView.setBackground(mCurPlayUnderLineViewDrawable);
+        }
     }
     
     @Override

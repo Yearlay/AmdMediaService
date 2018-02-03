@@ -56,6 +56,13 @@ public class MusicHomeLayout extends LinearLayout implements OnClickListener,
 	private int mLocalCount = 123;
 	
 	private SkinManager skinManager;
+	private Drawable mLayoutCollectDrawable;
+	private Drawable mLayoutFlashDrawable;
+	private Drawable mLayoutBTDrawable;
+	private Drawable mLayoutUsb1Drawable;
+	private Drawable mLayoutUsb1GrayDrawable;
+    private Drawable mLayoutUsb2Drawable;
+    private Drawable mLayoutUsb2GrayDrawable;
 
     public MusicHomeLayout(Context context) {
     	super(context);
@@ -118,16 +125,22 @@ public class MusicHomeLayout extends LinearLayout implements OnClickListener,
 		//refreshSkin();
 	}
 	
-	public void refreshSkin() {
-		mLayoutCollect.setBackground(skinManager.getDrawable(R.drawable.music_back_ground));
-		mLayoutFlash.setBackground(skinManager.getDrawable(R.drawable.music_back_ground));
-		mLayoutBT.setBackground(skinManager.getDrawable(R.drawable.music_back_ground));
-		refreshUsbBackground();
-//		mCollectIcon.setBackground(skinManager.getDrawable(R.drawable.music_save));
-//		mFlashIcon.setBackground(skinManager.getDrawable(R.drawable.music_local));
-//		mBTIcon.setBackground(skinManager.getDrawable(R.drawable.music_scan_bt));
-//		mUSB1Icon.setBackground(skinManager.getDrawable(R.drawable.music_scan_usb));
-//		mUSB2Icon.setBackground(skinManager.getDrawable(R.drawable.music_scan_usb));
+	public void refreshSkin(boolean loading) {
+		if (loading || mLayoutCollectDrawable==null) {
+	        mLayoutCollectDrawable = skinManager.getDrawable(R.drawable.music_back_ground);
+	        mLayoutFlashDrawable = skinManager.getDrawable(R.drawable.music_back_ground);
+	        mLayoutBTDrawable = skinManager.getDrawable(R.drawable.music_back_ground);
+	        mLayoutUsb1Drawable = skinManager.getDrawable(R.drawable.music_back_ground);
+	        mLayoutUsb1GrayDrawable = skinManager.getDrawable(R.drawable.music_back_ground_gray);
+            mLayoutUsb2Drawable = skinManager.getDrawable(R.drawable.music_back_ground);
+            mLayoutUsb2GrayDrawable = skinManager.getDrawable(R.drawable.music_back_ground_gray);
+		}
+		if (!loading) {
+	        mLayoutCollect.setBackground(mLayoutCollectDrawable);
+	        mLayoutFlash.setBackground(mLayoutFlashDrawable);
+	        mLayoutBT.setBackground(mLayoutBTDrawable);
+	        refreshUsbBackground();
+		}
 	}
 
     @Override
@@ -167,16 +180,24 @@ public class MusicHomeLayout extends LinearLayout implements OnClickListener,
     
     private void refreshUsbBackground(int deviceType, boolean noDevice) {
         if (deviceType == DeviceType.USB1) {
+            if (mLayoutUsb1Drawable == null) {
+                mLayoutUsb1Drawable = skinManager.getDrawable(R.drawable.music_back_ground);
+                mLayoutUsb1GrayDrawable = skinManager.getDrawable(R.drawable.music_back_ground_gray);
+            }
             if (noDevice) {
-                mLayoutUsb1.setBackground(skinManager.getDrawable(R.drawable.music_back_ground_gray));
+                mLayoutUsb1.setBackground(mLayoutUsb1GrayDrawable);
             } else {
-                mLayoutUsb1.setBackground(skinManager.getDrawable(R.drawable.music_back_ground));
+                mLayoutUsb1.setBackground(mLayoutUsb1Drawable);
             }
         } else if (deviceType == DeviceType.USB2) {
+            if (mLayoutUsb2Drawable == null) {
+                mLayoutUsb2Drawable = skinManager.getDrawable(R.drawable.music_back_ground);
+                mLayoutUsb2GrayDrawable = skinManager.getDrawable(R.drawable.music_back_ground_gray);
+            }
             if (noDevice) {
-                mLayoutUsb2.setBackground(skinManager.getDrawable(R.drawable.music_back_ground_gray));
+                mLayoutUsb2.setBackground(mLayoutUsb2GrayDrawable);
             } else {
-                mLayoutUsb2.setBackground(skinManager.getDrawable(R.drawable.music_back_ground));
+                mLayoutUsb2.setBackground(mLayoutUsb2Drawable);
             }
         }
     }

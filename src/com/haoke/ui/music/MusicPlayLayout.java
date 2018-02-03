@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -55,6 +56,11 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 	private Media_IF mIF = Media_IF.getInstance();
 	
 	private SkinManager sSkinManager;
+	private Drawable mListImgDrawable;
+	private Drawable mBtnPreDrawable;
+	private Drawable mBtnNextDrawable;
+	private Drawable mTimeSeekBarThumbDrawable;
+	private Drawable mTimeSeekBarProgressDrawable;
 	
 	private FileNode mFileNode;
 	public FileNode getFileNode() {
@@ -155,23 +161,32 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 		sSkinManager = SkinManager.instance(getContext());
 	}
 	
-	public void refreshSkin() {
+	public void refreshSkin(boolean loading) {
 		if (sSkinManager == null) {
 			sSkinManager = SkinManager.instance(getContext());
 		}
-		mListImg.setImageDrawable(sSkinManager.getDrawable(R.drawable.all));
-		mBtnPre.setImageDrawable(sSkinManager.getDrawable(R.drawable.pre));
-		mBtnNext.setImageDrawable(sSkinManager.getDrawable(R.drawable.next));
-		updateCtrlBar(); // 更新播放按钮。
-		updateRepeatMode();
-		if (mIF.getScanMode()) {
-			mScanImg.setImageDrawable(sSkinManager.getDrawable(R.drawable.radio_scan_5s_normal));
-		} else {
-			mScanImg.setImageDrawable(sSkinManager.getDrawable(R.drawable.radio_scan_5s_pressed));
+		if (loading || mListImgDrawable==null) {
+	        mListImgDrawable = sSkinManager.getDrawable(R.drawable.all);
+	        mBtnPreDrawable = sSkinManager.getDrawable(R.drawable.pre);
+	        mBtnNextDrawable = sSkinManager.getDrawable(R.drawable.next);
+	        mTimeSeekBarThumbDrawable = sSkinManager.getDrawable(R.drawable.media_seekbar_block_g11);
+	        mTimeSeekBarProgressDrawable = sSkinManager.getProgressDrawable(R.drawable.play_time_seekbar_progress);
 		}
-		mId3.refreshSkin(sSkinManager);
-		mTimeSeekBar.setThumb(sSkinManager.getDrawable(R.drawable.media_seekbar_block_g11));
-		mTimeSeekBar.setProgressDrawable(sSkinManager.getProgressDrawable(R.drawable.play_time_seekbar_progress));
+		if (!loading) {
+	        mListImg.setImageDrawable(mListImgDrawable);
+	        mBtnPre.setImageDrawable(mBtnPreDrawable);
+	        mBtnNext.setImageDrawable(mBtnNextDrawable);
+	        updateCtrlBar(); // 更新播放按钮。
+	        updateRepeatMode();
+	        if (mIF.getScanMode()) {
+	            mScanImg.setImageDrawable(sSkinManager.getDrawable(R.drawable.radio_scan_5s_normal));
+	        } else {
+	            mScanImg.setImageDrawable(sSkinManager.getDrawable(R.drawable.radio_scan_5s_pressed));
+	        }
+	        mId3.refreshSkin(sSkinManager);
+	        mTimeSeekBar.setThumb(mTimeSeekBarThumbDrawable);
+	        mTimeSeekBar.setProgressDrawable(mTimeSeekBarProgressDrawable);
+		}
 	}
 	
 	private void updateCollectIcon() {
