@@ -1,6 +1,7 @@
 package com.haoke.ui.video;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -143,10 +144,22 @@ public class VideoPlayTimeSeekBar extends RelativeLayout implements OnSeekBarCha
 		durationText = (TextView) findViewById(R.id.toast_show_duration);
 	}
 
-	public void refreshSkin() {
-		mSeekBar.setThumb(skinManager.getDrawable(R.drawable.video_seekbar_block));
-		mSeekBar.setProgressDrawable(skinManager.getProgressDrawable(R.drawable.video_seekbar_progress));
-		showText.setTextColor(skinManager.getColor(R.color.hk_custom_text_d));
+	private Drawable mSeekbarScrollbarThumb;
+	private Drawable mSeekbarProgressDrawable;
+	private int mTextColor;
+	
+	public void refreshSkin(boolean loading) {
+		if(loading || mSeekbarScrollbarThumb == null){
+			mSeekbarScrollbarThumb = skinManager.getDrawable(R.drawable.video_seekbar_block);
+			mSeekbarProgressDrawable = skinManager.getProgressDrawable(R.drawable.video_seekbar_progress);
+			mTextColor = skinManager.getColor(R.color.hk_custom_text_d);
+		}
+		
+		if(!loading){
+			mSeekBar.setThumb(mSeekbarScrollbarThumb);
+			mSeekBar.setProgressDrawable(mSeekbarProgressDrawable);
+			showText.setTextColor(mTextColor);
+		}
 	}
 
 	@Override

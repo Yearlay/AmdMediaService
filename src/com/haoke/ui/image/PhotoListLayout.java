@@ -69,6 +69,8 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
     private ArrayList<FileNode> mPhotoList = new ArrayList<FileNode>();
     
     private SkinManager skinManager;
+    private Drawable mLoadingImageDrawable;
+    private Drawable mGridViewScrollbarThumb;
     
     public void updataList(ArrayList<FileNode> dataList, StorageBean storageBean) {
     	Log.e(Image_Activity_Main.TAG,"updataList  size: " + dataList.size());
@@ -144,10 +146,17 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
         skinManager = SkinManager.instance(getContext());
     }
     
-    public void refreshSkin() {
-        mLoadingImageView.setImageDrawable(skinManager.getDrawable(R.drawable.media_loading_anim));
-        mPhotoAdapter.notifyDataSetChanged();
-        SkinManager.setScrollViewDrawable(mGridView, skinManager.getDrawable(R.drawable.scrollbar_thumb));
+    public void refreshSkin(boolean loading) {
+    	if(loading || mLoadingImageDrawable == null){
+    		mLoadingImageDrawable = skinManager.getDrawable(R.drawable.media_loading_anim);
+    		mGridViewScrollbarThumb = skinManager.getDrawable(R.drawable.scrollbar_thumb);
+    	}
+    	
+    	if(!loading){
+    		mLoadingImageView.setImageDrawable(mLoadingImageDrawable);
+    		mPhotoAdapter.notifyDataSetChanged();
+    		SkinManager.setScrollViewDrawable(mGridView, mGridViewScrollbarThumb);
+    	}
     }
     
     public void dismissDialog() {

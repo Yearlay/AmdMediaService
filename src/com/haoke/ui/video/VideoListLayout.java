@@ -54,6 +54,8 @@ public class VideoListLayout extends RelativeLayout implements
     private StorageBean mCurrentStorageBean;
     
     private SkinManager skinManager;
+    private Drawable mLoadingImageDrawable;
+    private Drawable mGridViewScrollbarThumb;
     
     private ArrayList<FileNode> mVideoList = new ArrayList<FileNode>();
     
@@ -85,10 +87,17 @@ public class VideoListLayout extends RelativeLayout implements
         skinManager = SkinManager.instance(mContext);
     }
     
-    public void refreshSkin() {
-        mLoadingImageView.setImageDrawable(skinManager.getDrawable(R.drawable.media_loading_anim));
-        mVideoAdapter.notifyDataSetChanged();
-        SkinManager.setScrollViewDrawable(mGridView, skinManager.getDrawable(R.drawable.scrollbar_thumb));
+    public void refreshSkin(boolean loading) {
+    	if(loading || mLoadingImageDrawable == null){
+    		mLoadingImageDrawable = skinManager.getDrawable(R.drawable.media_loading_anim);
+    		mGridViewScrollbarThumb = skinManager.getDrawable(R.drawable.scrollbar_thumb);
+    	}
+    	
+    	if(!loading){
+    		mLoadingImageView.setImageDrawable(mLoadingImageDrawable);
+    		mVideoAdapter.notifyDataSetChanged();
+    		SkinManager.setScrollViewDrawable(mGridView, mGridViewScrollbarThumb);
+    	}
     }
     
     public void onPause() {

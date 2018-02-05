@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
@@ -352,16 +353,34 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 		}
 	}
 
-	public void refreshSkin() {
-		mBackImageView.setImageDrawable(skinManager.getDrawable(R.drawable.image_back_icon_selector));
-		mPreImageView.setImageDrawable(skinManager.getDrawable(R.drawable.image_pre_icon_selector));
-		mFastPreImageView.setImageDrawable(skinManager.getDrawable(R.drawable.video_ctrl_fastpre_selector));
-		mFastNextImageView.setImageDrawable(skinManager.getDrawable(R.drawable.video_ctrl_fastnext_selector));
-		mNextImageView.setImageDrawable(skinManager.getDrawable(R.drawable.image_next_icon_selector));
-		mUnsupportView.setBackground(skinManager.getDrawable(R.drawable.pub_msgbox_bg1));
-		updateCollectView();
-		updatePlayState(!mVideoController.isVideoPlaying);
-		mTimeSeekBar.refreshSkin();
+    private Drawable mBackImageDrawable;
+    private Drawable mPreImageDrawable;
+    private Drawable mFastPreDrawable;
+    private Drawable mFastNextDrawable;
+    private Drawable mNextImageDrawable;
+    private Drawable mUnsupportDrawable;
+    
+	public void refreshSkin(boolean loading) {
+		if(loading || mBackImageDrawable == null){
+    		mBackImageDrawable = skinManager.getDrawable(R.drawable.image_back_icon_selector);
+    		mPreImageDrawable = skinManager.getDrawable(R.drawable.image_pre_icon_selector);
+    		mNextImageDrawable = skinManager.getDrawable(R.drawable.image_next_icon_selector);
+    		mUnsupportDrawable = skinManager.getDrawable(R.drawable.pub_msgbox_bg1);
+    		mFastPreDrawable = skinManager.getDrawable(R.drawable.video_ctrl_fastpre_selector);
+    		mFastNextDrawable = skinManager.getDrawable(R.drawable.video_ctrl_fastnext_selector);
+		}
+		
+		if(!loading){
+    		mBackImageView.setImageDrawable(mBackImageDrawable);
+    		mPreImageView.setImageDrawable(mPreImageDrawable);
+    		mNextImageView.setImageDrawable(mNextImageDrawable);
+    		mUnsupportView.setBackground(mUnsupportDrawable);
+    		mFastPreImageView.setImageDrawable(mFastPreDrawable);
+    		mFastNextImageView.setImageDrawable(mFastNextDrawable);
+    		updateCollectView();
+    		updatePlayState(!mVideoController.isVideoPlaying);
+		}
+		mTimeSeekBar.refreshSkin(loading);
 	}
 
 	public void onResume() {

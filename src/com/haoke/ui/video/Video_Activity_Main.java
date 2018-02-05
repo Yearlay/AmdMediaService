@@ -7,7 +7,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.ContentObserver;
+import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -25,6 +26,7 @@ import android.widget.TextView;
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.util.AmdConfig;
 import com.amd.util.SkinManager;
+import com.amd.util.SkinManager.SkinListener;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.StorageBean;
 import com.haoke.constant.MediaUtil;
@@ -116,6 +118,12 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 		mCopyTextView = (TextView) mEditView.findViewById(R.id.copy_to_local);
 		mCopyTextView.setOnClickListener(this);
 
+		skinManager = SkinManager.instance(getApplicationContext());
+		localRadioButton = (RadioButton) mRadioGroup.findViewById(R.id.video_device_flash);
+		usb1RadioButton = (RadioButton) mRadioGroup.findViewById(R.id.video_device_usb1);
+		usb2RadioButton = (RadioButton) mRadioGroup.findViewById(R.id.video_device_usb2);
+		collectRadioButton = (RadioButton) mRadioGroup.findViewById(R.id.video_device_collect);
+		
 		registerReceiver(mOperateAppReceiver, new IntentFilter(VRIntent.ACTION_OPERATE_VIDEO));
 		mPlayLayout.registerMediaButtonReceiver();
 
@@ -231,32 +239,60 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 		if (mPlayLayout.getVisibility() == View.VISIBLE) {
 			mPlayLayout.onResume();
 		}
-		refreshSkin();
-		getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, mContentObserver);
+		refreshSkin(true);
+        refreshSkin(false);
+        SkinManager.registerSkin(mSkinListener);
 		super.onResume();
 	}
 
-	private void refreshSkin() {
-		SkinManager skinManager = SkinManager.instance(getApplicationContext());
-		RadioButton localRadioButton = (RadioButton) mRadioGroup.findViewById(R.id.video_device_flash);
-		localRadioButton.setTextColor(skinManager.getColorStateList(R.drawable.tab_textcolor_selector));
-		localRadioButton.setBackgroundDrawable(skinManager.getDrawable(R.drawable.tab_backgroud_selector));
-		RadioButton usb1RadioButton = (RadioButton) mRadioGroup.findViewById(R.id.video_device_usb1);
-		usb1RadioButton.setTextColor(skinManager.getColorStateList(R.drawable.tab_textcolor_selector));
-		usb1RadioButton.setBackgroundDrawable(skinManager.getDrawable(R.drawable.tab_backgroud_selector));
-		RadioButton usb2RadioButton = (RadioButton) mRadioGroup.findViewById(R.id.video_device_usb2);
-		usb2RadioButton.setTextColor(skinManager.getColorStateList(R.drawable.tab_textcolor_selector));
-		usb2RadioButton.setBackgroundDrawable(skinManager.getDrawable(R.drawable.tab_backgroud_selector));
-		RadioButton collectRadioButton = (RadioButton) mRadioGroup.findViewById(R.id.video_device_collect);
-		collectRadioButton.setTextColor(skinManager.getColorStateList(R.drawable.tab_textcolor_selector));
-		collectRadioButton.setBackgroundDrawable(skinManager.getDrawable(R.drawable.tab_backgroud_selector));
-		mSearchButton.setImageDrawable(skinManager.getDrawable(R.drawable.media_search_selector));
-		mSelectAllView.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
-		mDeleteView.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
-		mCancelView.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
-		mCopyTextView.setTextColor(skinManager.getColorStateList(R.drawable.text_color_selector));
-		mListLayout.refreshSkin();
-		mPlayLayout.refreshSkin();
+	SkinManager skinManager;
+    private RadioButton localRadioButton;
+    private RadioButton usb1RadioButton;
+    private RadioButton usb2RadioButton;
+    private RadioButton collectRadioButton;
+    private ColorStateList mRadioLocalColorStateList;
+    private Drawable mRadioLocalBgDrawable;
+    private ColorStateList mRadioUSB1ColorStateList;
+    private Drawable mRadioUSB1BgDrawable;
+    private ColorStateList mRadioUSB2ColorStateList;
+    private Drawable mRadioUSB2BgDrawable;
+    private ColorStateList mRadioCollectColorStateList;
+    private Drawable mRadioCollectBgDrawable;
+    private Drawable mSearchButtonImageDrawable;
+    private ColorStateList mTextColorStateList;
+	
+	private void refreshSkin(boolean loading) {
+		if(loading || mTextColorStateList == null){
+			mRadioLocalColorStateList = skinManager.getColorStateList(R.drawable.tab_textcolor_selector);
+			mRadioLocalBgDrawable = skinManager.getDrawable(R.drawable.tab_backgroud_selector);
+			mRadioUSB1ColorStateList = skinManager.getColorStateList(R.drawable.tab_textcolor_selector);
+			mRadioUSB1BgDrawable = skinManager.getDrawable(R.drawable.tab_backgroud_selector);
+			mRadioUSB2ColorStateList = skinManager.getColorStateList(R.drawable.tab_textcolor_selector);
+			mRadioUSB2BgDrawable = skinManager.getDrawable(R.drawable.tab_backgroud_selector);
+			mRadioCollectColorStateList = skinManager.getColorStateList(R.drawable.tab_textcolor_selector);
+			mRadioCollectBgDrawable = skinManager.getDrawable(R.drawable.tab_backgroud_selector);
+        	
+        	mSearchButtonImageDrawable = skinManager.getDrawable(R.drawable.media_search_selector);
+        	mTextColorStateList = skinManager.getColorStateList(R.drawable.text_color_selector);
+		}
+		
+		if(!loading){
+        	localRadioButton.setTextColor(mRadioLocalColorStateList);
+        	localRadioButton.setBackgroundDrawable(mRadioLocalBgDrawable);
+        	usb1RadioButton.setTextColor(mRadioUSB1ColorStateList);
+        	usb1RadioButton.setBackgroundDrawable(mRadioUSB1BgDrawable);
+        	usb2RadioButton.setTextColor(mRadioUSB2ColorStateList);
+        	usb2RadioButton.setBackgroundDrawable(mRadioUSB2BgDrawable);
+        	collectRadioButton.setTextColor(mRadioCollectColorStateList);
+        	collectRadioButton.setBackgroundDrawable(mRadioCollectBgDrawable);
+        	mSearchButton.setImageDrawable(mSearchButtonImageDrawable);
+        	mSelectAllView.setTextColor(mTextColorStateList);
+        	mDeleteView.setTextColor(mTextColorStateList);
+        	mCancelView.setTextColor(mTextColorStateList);
+        	mCopyTextView.setTextColor(mTextColorStateList);
+		}
+		mListLayout.refreshSkin(loading);
+		mPlayLayout.refreshSkin(loading);
 	}
 
 	@Override
@@ -279,7 +315,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 		}
 		Log.v("luke", "HMI------------onPause BeforePlaystate: " + mPlayLayout.getBeforePlaystate());
 		mListLayout.dismissDialog();
-		getContentResolver().unregisterContentObserver(mContentObserver);
+		SkinManager.unregisterSkin(mSkinListener);
 
 		mListLayout.onPause();
 	}
@@ -687,9 +723,17 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 	public void onUartDataChange(int mode, int len, byte[] datas) {
 	}
 
-	private ContentObserver mContentObserver = new ContentObserver(new Handler()) {
-		public void onChange(boolean selfChange) {
-			refreshSkin();
-		};
-	};
+    private SkinListener mSkinListener = new SkinListener(new Handler()) {
+        @Override
+        public void loadingSkinData() {
+        	DebugLog.d(TAG, "Load Resource!!!!!");
+            refreshSkin(true);
+        }
+
+        @Override
+        public void refreshViewBySkin() {
+        	DebugLog.d(TAG, "Update UI!!!!");
+            refreshSkin(false);
+        };
+    };
 }

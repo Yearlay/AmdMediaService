@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.PagerAdapter;
@@ -181,14 +182,40 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
         mViewPager.setOnTouchListener(mTouchListener);
     }
     
-    public void refreshSkin() {
-        mBackImageView.setImageDrawable(skinManager.getDrawable(R.drawable.image_back_icon_selector));
-        mPreImageView.setImageDrawable(skinManager.getDrawable(R.drawable.image_pre_icon_selector));
-        mNextImageView.setImageDrawable(skinManager.getDrawable(R.drawable.image_next_icon_selector));
-        mTurnImageView.setImageDrawable(skinManager.getDrawable(R.drawable.image_turn_icon_selector));
-        mUnsupportView.setBackground(skinManager.getDrawable(R.drawable.pub_msgbox_bg1));
-        updateCollectView();
-        updatePlayState(mPlayState);
+    private Drawable mBackImageDrawable;
+    private Drawable mPreImageDrawable;
+    private Drawable mNextImageDrawable;
+    private Drawable mTurnImageDrawable;
+    private Drawable mUnsupportDrawable;
+    private Drawable mPlayDrawable;
+    private Drawable mPauseDrawable;
+    private Drawable mCollectDrawable;
+    private Drawable mUnCollectDrawable;
+    
+    public void refreshSkin(boolean loading) {
+    	if(loading || mBackImageDrawable == null){
+    		mBackImageDrawable = skinManager.getDrawable(R.drawable.image_back_icon_selector);
+    		mPreImageDrawable = skinManager.getDrawable(R.drawable.image_pre_icon_selector);
+    		mNextImageDrawable = skinManager.getDrawable(R.drawable.image_next_icon_selector);
+    		mTurnImageDrawable = skinManager.getDrawable(R.drawable.image_turn_icon_selector);
+    		mUnsupportDrawable = skinManager.getDrawable(R.drawable.pub_msgbox_bg1);
+    		
+    		mPlayDrawable = skinManager.getDrawable(R.drawable.image_play_icon_selector);
+    		mPauseDrawable = skinManager.getDrawable(R.drawable.image_pause_icon_selector);
+    		
+    		mCollectDrawable = skinManager.getDrawable(R.drawable.media_collect);
+    		mUnCollectDrawable = skinManager.getDrawable(R.drawable.media_uncollect);
+    	}
+    	
+    	if(!loading){
+    		mBackImageView.setImageDrawable(mBackImageDrawable);
+    		mPreImageView.setImageDrawable(mPreImageDrawable);
+    		mNextImageView.setImageDrawable(mNextImageDrawable);
+    		mTurnImageView.setImageDrawable(mTurnImageDrawable);
+    		mUnsupportView.setBackground(mUnsupportDrawable);
+            updateCollectView();
+            updatePlayState(mPlayState);
+    	}
     }
 
     public void onPause() {
@@ -201,8 +228,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
 
     private void updatePlayState(int playState) {
         checkPlayStatus();
-        mPlayImageView.setImageDrawable(skinManager.getDrawable(playState == PlayState.PLAY ?
-                R.drawable.image_pause_icon_selector : R.drawable.image_play_icon_selector));
+        mPlayImageView.setImageDrawable(playState == PlayState.PLAY ? mPauseDrawable : mPlayDrawable);
     }
 
     @Override
@@ -660,8 +686,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
         }
         boolean showFlag = !fileNode.isFromCollectTable();
         if (showFlag) {
-            mCollectView.setImageDrawable(skinManager.getDrawable(fileNode.getCollect() == 1 ?
-                    R.drawable.media_collect : R.drawable.media_uncollect));
+            mCollectView.setImageDrawable(fileNode.getCollect() == 1 ? mCollectDrawable : mUnCollectDrawable);
         }
         if (mCtrlBar.getVisibility() == View.VISIBLE) {
             mCollectView.setVisibility(showFlag ? View.VISIBLE : View.GONE);
