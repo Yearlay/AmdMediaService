@@ -216,6 +216,7 @@ public class SearchRadioActivity extends Activity implements OnClickListener,
 	@Override
 	protected void onResume() {
 		super.onResume();
+		refreshSkin(true);
 		refreshSkin(false);
 		SkinManager.registerSkin(mSkinListener);
 		//getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, mContentObserver);

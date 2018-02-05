@@ -147,6 +147,7 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
     protected void onResume() {
         super.onResume();
         AllMediaList.notifyAllLabelChange(this, R.string.pub_radio);
+        refreshSkin(true);
         refreshSkin(false);
         SkinManager.registerSkin(mSkinListener);
         //getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, mContentObserver);

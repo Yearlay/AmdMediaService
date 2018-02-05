@@ -245,6 +245,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         AllMediaList.notifyAllLabelChange(getApplicationContext(), labelRes);
         
         playDefault();
+        refreshSkin(true);
         refreshSkin(false);
         SkinManager.registerSkin(mSkinListener);
         //getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, mContentObserver);

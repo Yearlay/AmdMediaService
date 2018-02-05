@@ -194,6 +194,7 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
     protected void onResume() {
         super.onResume();
         updateLabel();
+        refreshSkin(true);
         refreshSkin(false);
         SkinManager.registerSkin(mSkinListener);
         //getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, mContentObserver);
