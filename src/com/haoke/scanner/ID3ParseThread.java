@@ -4,6 +4,7 @@ package com.haoke.scanner;
 import java.util.ArrayList;
 
 import android.content.Intent;
+import android.text.TextUtils;
 
 import com.amd.util.AmdConfig;
 import com.haoke.bean.FileNode;
@@ -87,7 +88,10 @@ public class ID3ParseThread extends Thread {
     public void parseId3InfoOfAudio() {
         DebugClock debugClock = new DebugClock();
         AllMediaList allMediaList = AllMediaList.instance(mMediaDbHelper.getContext());
-        for (int devicetype : DBConfig.sScan3zaDefaultList) {
+        int deviceSize = DBConfig.sScan3zaDefaultList.size();
+        String[] storagesStr = new String[deviceSize];
+        for (int index = 0; index < deviceSize; index++ ) {
+            int devicetype = DBConfig.sScan3zaDefaultList.get(index);
             if (Thread.interrupted()) { // 线程中断的话，就直接return；
                 debugClock.calculateTime(TAG, "Thread.interrupted! parseId3InfoOfAudio interrupted!");
                 return;
@@ -102,6 +106,9 @@ public class ID3ParseThread extends Thread {
                         }
                         if (fileNode.getParseId3() == 0) {
                             fileNode.parseID3Info();
+                            if (TextUtils.isEmpty(storagesStr[index])) {
+                                storagesStr[index] = MediaUtil.getDevicePath(devicetype);
+                            }
                         }
                     }
                 } catch (Exception e) {
@@ -111,6 +118,8 @@ public class ID3ParseThread extends Thread {
         }
         debugClock.calculateTime(TAG, "parseId3InfoOfAudio over!");
         
-        mMediaDbHelper.getContext().sendBroadcast(new Intent("com.haoke.scanner.id3parse.over"));
+        Intent intent = new Intent("com.haoke.scanner.id3parse.over");
+        intent.putExtra("storages", storagesStr);
+        mMediaDbHelper.getContext().sendBroadcast(intent);
     }
 }
