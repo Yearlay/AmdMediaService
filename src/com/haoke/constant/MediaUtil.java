@@ -640,4 +640,13 @@ public class MediaUtil {
         }
         return userList;
     }
+    
+    public static boolean sSdcardMountedEndToID3Over = false;
+    public static boolean sUSB1MountedEndToID3Over = false;
+    public static boolean sUSB2MountedEndToID3Over = false;
+    public static void resetAllMountedEndToID3Over() {
+        sSdcardMountedEndToID3Over = false;
+        sUSB1MountedEndToID3Over = false;
+        sUSB2MountedEndToID3Over = false;
+    }
 }

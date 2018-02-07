@@ -89,7 +89,6 @@ public class ID3ParseThread extends Thread {
         DebugClock debugClock = new DebugClock();
         AllMediaList allMediaList = AllMediaList.instance(mMediaDbHelper.getContext());
         int deviceSize = DBConfig.sScan3zaDefaultList.size();
-        String[] storagesStr = new String[deviceSize];
         for (int index = 0; index < deviceSize; index++ ) {
             int devicetype = DBConfig.sScan3zaDefaultList.get(index);
             if (Thread.interrupted()) { // 线程中断的话，就直接return；
@@ -106,9 +105,6 @@ public class ID3ParseThread extends Thread {
                         }
                         if (fileNode.getParseId3() == 0) {
                             fileNode.parseID3Info();
-                            if (TextUtils.isEmpty(storagesStr[index])) {
-                                storagesStr[index] = MediaUtil.getDevicePath(devicetype);
-                            }
                         }
                     }
                 } catch (Exception e) {
@@ -119,7 +115,12 @@ public class ID3ParseThread extends Thread {
         debugClock.calculateTime(TAG, "parseId3InfoOfAudio over!");
         
         Intent intent = new Intent("com.haoke.scanner.id3parse.over");
+        String[] storagesStr = new String[3];
+        storagesStr[0] = MediaUtil.sSdcardMountedEndToID3Over ? MediaUtil.LOCAL_COPY_DIR : null;
+        storagesStr[1] = MediaUtil.sUSB1MountedEndToID3Over ? MediaUtil.DEVICE_PATH_USB_1 : null;
+        storagesStr[2] = MediaUtil.sUSB2MountedEndToID3Over ? MediaUtil.DEVICE_PATH_USB_2 : null;
         intent.putExtra("storages", storagesStr);
         mMediaDbHelper.getContext().sendBroadcast(intent);
+        MediaUtil.resetAllMountedEndToID3Over();
     }
 }

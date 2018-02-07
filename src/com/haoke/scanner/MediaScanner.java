@@ -70,6 +70,13 @@ public class MediaScanner {
             rootPath = MediaUtil.LOCAL_COPY_DIR;
         }
         interruptID3ParseThread();
+        if (MediaUtil.LOCAL_COPY_DIR.equals(rootPath)) {
+            MediaUtil.sSdcardMountedEndToID3Over = true;
+        } else if (MediaUtil.DEVICE_PATH_USB_1.equals(rootPath)) {
+            MediaUtil.sUSB1MountedEndToID3Over = true;
+        } else if (MediaUtil.DEVICE_PATH_USB_2.equals(rootPath)) {
+            MediaUtil.sUSB2MountedEndToID3Over = true;
+        }
         getScanRootPathThread().addDeviceTask(ScanTaskType.MOUNTED, rootPath);
     }
     
