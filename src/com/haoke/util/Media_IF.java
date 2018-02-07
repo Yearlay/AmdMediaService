@@ -225,6 +225,8 @@ public class Media_IF extends CarService_IF {
 	public static boolean setCurSource(int source) {
 		boolean success = false;
 		//int mcuSource = com.haoke.define.ModeDef.NULL;
+        int exSource = Source.getDeviceFromSource(source);
+        int exType = Source.getTypeFromSource(source);
 		int lastSource = getCurSource();
 		if (lastSource != source) {
             try {
@@ -240,8 +242,6 @@ public class Media_IF extends CarService_IF {
                 }
                 //mcuSource = Source.changeToMcuSource(source);
                 // getInstance().mServiceIF.mcu_setCurSource(mcuSource);
-                int exSource = Source.getDeviceFromSource(source);
-                int exType = Source.getTypeFromSource(source);
                 if (exSource != com.haoke.define.ModeDef.NULL) {
                     getInstance().mServiceIF.mcu_setCurSourceEx(exSource, exType);
                 }
@@ -250,6 +250,16 @@ public class Media_IF extends CarService_IF {
                 DebugLog.e(TAG, "setCurSource exception: " + e);
             }
             DebugLog.d(TAG, "setCurSource from: " + lastSource + " && to: " + source + "; success=" + success);
+        } else {
+            try {
+                int mcu_source = getInstance().mServiceIF.mcu_getCurSource();
+                if (mcu_source != exSource && exSource != com.haoke.define.ModeDef.NULL) {
+                    getInstance().mServiceIF.mcu_setCurSourceEx(exSource, exType);
+                    DebugLog.d(TAG, "mcu_setCurSourceEx11 mcu_source: " + mcu_source +"; exSource: " + exSource + " && exType: " + exType);
+                }
+            } catch (RemoteException e) {
+                DebugLog.e(TAG, "setCurSource exception11: " + e);
+            }
         }
 		return success;
 	}
@@ -257,6 +267,7 @@ public class Media_IF extends CarService_IF {
 	// 获取当前源
 	public static int getCurSource() {
 		try {
+		    
 			if (sCurSource == -1) {
 				sCurSource = getSourceFromSettings();
 			}
