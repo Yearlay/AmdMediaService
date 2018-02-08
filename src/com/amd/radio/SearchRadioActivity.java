@@ -527,6 +527,7 @@ public class SearchRadioActivity extends Activity implements OnClickListener,
 			} else {
 				holder = (ViewHolder) convertView.getTag();
 			}
+			convertView.setBackgroundDrawable(SkinManager.instance().getDrawable(R.drawable.music_list_item_selector));
 			RadioStation station = mResultStationList.get(position);
 			holder.freq.setText(station.getSfreq());
 			holder.freq_name.setText(station.getStationName());

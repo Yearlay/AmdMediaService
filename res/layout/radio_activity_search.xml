@@ -162,6 +162,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="5px"
+        android:listSelector="@android:color/transparent"
         android:layout_below="@id/input_layout"
         android:layout_above="@id/search_num_group" />
 </RelativeLayout>
