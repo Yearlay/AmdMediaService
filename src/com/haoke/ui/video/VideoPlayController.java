@@ -377,6 +377,7 @@ public class VideoPlayController implements AudioFocusListener {
 				Log.e(TAG, "playOrPause requestAudioFocus fail!");
 			}
 			mPlayState = PlayState.PLAY;
+			setCurSource(mCurFileNode.getDeviceType());
 			mVideView.start();
 		} else {
 			mPlayState = PlayState.PAUSE;
