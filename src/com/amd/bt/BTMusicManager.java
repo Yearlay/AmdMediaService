@@ -11,6 +11,7 @@ import com.amd.media.MediaInterfaceUtil;
 import com.amd.media.AudioFocus.AudioFocusListener;
 import com.amd.util.Source;
 import com.haoke.data.AllMediaList;
+import com.haoke.define.McuDef.McuFunc;
 import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.btjar.main.BTDef.BTFunc;
 import com.haoke.constant.MediaUtil.PlayState;
@@ -136,6 +137,14 @@ public class BTMusicManager implements CarService_Listener,
 	@Override
 	public void onCarDataChange(int mode, int func, int data) {
 		Log.v(TAG, "onCarDataChange mode=" + mode + ", func=" + func + ", data=" + data);
+		if (Source.isMcuMode(mode)) {
+		    if (func == McuFunc.SOURCE) {
+		        if (Source.isBTMusicSource(data)) {
+		            //source change to BT, fix bug 20541
+		            AllMediaList.notifyUpdateAppWidgetByBTMusic();
+		        }
+		    }
+		}
 	}
 	
 	@Override
