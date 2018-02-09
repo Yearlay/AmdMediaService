@@ -8,7 +8,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.database.ContentObserver;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -75,6 +74,7 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
     private Drawable mClearButtonDrawable;
     private Drawable mCancelButtonDrawable;
     private ColorStateList mCancelButtonColorStateList;
+    private ProgressDialog mProgressDialog;
 
     
     private static final int PROGRESS_DIALOG = 1;
@@ -82,9 +82,11 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
     protected Dialog onCreateDialog(int id) {
         switch(id) {
         case PROGRESS_DIALOG:
-            ProgressDialog progressDialog = new ProgressDialog(MediaSearchActivity.this);
-            progressDialog.setMessage(getResources().getText(R.string.search_media_waiting_msg));
-            return progressDialog;
+        	if(mProgressDialog == null) {
+        		mProgressDialog = new ProgressDialog(MediaSearchActivity.this);
+        		mProgressDialog.setMessage(getResources().getText(R.string.search_media_waiting_msg));
+        	}
+            return mProgressDialog;
         default:
             return null;
         }
@@ -454,7 +456,8 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
         mSearchAdapter.mResultStationList.clear();
         mSearchAdapter.mResultStationList.addAll(searchList);
         mSearchAdapter.notifyDataSetChanged();
-        dismissDialog(PROGRESS_DIALOG);
+        //dismissDialog(PROGRESS_DIALOG);
+        removeDialog(PROGRESS_DIALOG);
         if (searchList.size() == 0) {
             mNotifyText.setText(R.string.search_media_list_empty);
             mNotifyText.setVisibility(View.VISIBLE);
