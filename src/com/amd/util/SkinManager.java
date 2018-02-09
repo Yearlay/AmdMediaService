@@ -72,6 +72,30 @@ public class SkinManager {
         public SkinListener(Handler handler) {
             mHandler = handler;
         }
+        private void postLoadingSkinData() {
+            if (mHandler != null) {
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        loadingSkinData();
+                    }
+                });
+            } else {
+                loadingSkinData();
+            }
+        }
+        private void postRefreshViewBySkin() {
+            if (mHandler != null) {
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        refreshViewBySkin();
+                    }
+                });
+            } else {
+                refreshViewBySkin();
+            }
+        }
         public abstract void loadingSkinData();//加载资源文件
         public abstract void refreshViewBySkin();//刷新UI即可
     }
@@ -102,7 +126,12 @@ public class SkinManager {
     private SkinManager(Context context) {
         try {
             mContext = context;
-            mServiceHandler = MediaService.getInstance().getSkinHandler();
+            try {
+                mServiceHandler = MediaService.getInstance().getSkinHandler();
+            } catch (Exception e) {
+                Log.e(TAG, "mServiceHandler is null ! why?");
+                mServiceHandler = null;
+            }
             
             ContentResolver contentResolver = mContext.getContentResolver();
             contentResolver.registerContentObserver(URI_SKIN_PRELOADING, false, 
@@ -138,7 +167,11 @@ public class SkinManager {
             for (int i=0; i<mSkinListeners.size(); i++) {
                 SkinListener skinListener = mSkinListeners.get(i).get();
                 if (skinListener != null) {
-                    skinListener.loadingSkinData();
+                    if (mServiceHandler == null) {
+                        skinListener.postLoadingSkinData();
+                    } else {
+                        skinListener.loadingSkinData();
+                    }
                 }
             }
             mPreLoading = -1;
@@ -150,7 +183,11 @@ public class SkinManager {
         for (int i=0; i<mSkinListeners.size(); i++) {
             SkinListener skinListener = mSkinListeners.get(i).get();
             if (skinListener != null) {
-                skinListener.refreshViewBySkin();
+                if (mServiceHandler == null) {
+                    skinListener.postRefreshViewBySkin();
+                } else {
+                    skinListener.refreshViewBySkin();
+                }
             }
         }
     }
