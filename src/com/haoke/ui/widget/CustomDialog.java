@@ -37,10 +37,6 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 	private TextView mTitleTextView;
 	private LinearLayout mLinearLayout;
 	
-	private Drawable mRootViewDrawable;
-	private Drawable mOkButtonDrawable;
-	private Drawable mCancelButtonDrawable;
-	
 	// 对话框类型枚举
 	public enum DIALOG_TYPE {
 		NULL,
@@ -68,20 +64,15 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 	private void refreshSkin(boolean loading) {
 	    if (mContext != null) {
 	        SkinManager skinManager = SkinManager.instance(mContext);
-	        if (loading || mRootViewDrawable==null) {
-                mRootViewDrawable = skinManager.getDrawable(R.drawable.pub_msgbox_bg1);
-                mOkButtonDrawable = skinManager.getDrawable(R.drawable.bd_dialog_button);
-                mCancelButtonDrawable = skinManager.getDrawable(R.drawable.bd_dialog_button);
-	        }
 	        if (!loading) {
 	            if (mRootView != null) {
-	                mRootView.setBackgroundDrawable(mRootViewDrawable);
+	                mRootView.setBackgroundDrawable(skinManager.getDrawable(R.drawable.pub_msgbox_bg1));
 	            }
 	            if (mOkButton != null) {
-	                mOkButton.setBackgroundDrawable(mOkButtonDrawable);
+	                mOkButton.setBackgroundDrawable(skinManager.getDrawable(R.drawable.bd_dialog_button));
 	            }
 	            if (mCancelButton != null) {
-	                mCancelButton.setBackgroundDrawable(mCancelButtonDrawable);
+	                mCancelButton.setBackgroundDrawable(skinManager.getDrawable(R.drawable.bd_dialog_button));
 	            }
 	            if (mLinearLayout != null && mLinearLayout.getChildCount() > 0) {
 	                for (int index = 0; index < mLinearLayout.getChildCount(); index++) {
