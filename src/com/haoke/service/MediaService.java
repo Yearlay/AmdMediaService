@@ -1,39 +1,5 @@
 package com.haoke.service;
 
-import com.amd.bt.BTMusicManager;
-import com.amd.bt.BT_IF;
-import com.amd.bt.BT_Listener;
-import com.haoke.btjar.main.BTDef.BTFunc;
-import com.haoke.constant.MediaUtil;
-import com.haoke.constant.MediaUtil.ScanState;
-import com.haoke.constant.MediaUtil.ScanType;
-import com.haoke.data.AllMediaList;
-import com.haoke.data.ModeSwitch;
-import com.haoke.data.PlayStateSharedPreferences;
-import com.haoke.define.GlobalDef;
-import com.haoke.define.McuDef;
-import com.haoke.define.EQDef.EQFunc;
-import com.haoke.define.McuDef.McuFunc;
-import com.haoke.define.McuDef.PowerState;
-import com.haoke.constant.MediaUtil.MediaFunc;
-import com.haoke.constant.MediaUtil.MediaState;
-import com.haoke.constant.MediaUtil.PlayState;
-import com.haoke.receiver.MediaReceiver;
-import com.haoke.scanner.MediaScanner;
-import com.haoke.scanner.MediaScannerListner;
-import com.haoke.ui.widget.MediaWidgetProvider;
-import com.haoke.util.DebugLog;
-import com.haoke.util.Media_CarListener;
-import com.haoke.util.Media_IF;
-import com.haoke.util.Media_Listener;
-import com.amd.media.MediaInterfaceUtil;
-import com.amd.media.UsbAutoPlay;
-import com.amd.media.VRInterfaceUtil;
-import com.amd.radio.RadioManager;
-import com.amd.radio.Radio_IF;
-import com.amd.util.Source;
-import com.jsbd.util.Meter_IF;
-
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -45,6 +11,40 @@ import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
+
+import com.amd.bt.BTMusicManager;
+import com.amd.bt.BT_IF;
+import com.amd.bt.BT_Listener;
+import com.amd.media.MediaInterfaceUtil;
+import com.amd.media.VRInterfaceUtil;
+import com.amd.radio.RadioManager;
+import com.amd.radio.Radio_IF;
+import com.amd.util.Source;
+import com.haoke.btjar.main.BTDef.BTFunc;
+import com.haoke.constant.MediaUtil;
+import com.haoke.constant.MediaUtil.MediaFunc;
+import com.haoke.constant.MediaUtil.MediaState;
+import com.haoke.constant.MediaUtil.PlayState;
+import com.haoke.constant.MediaUtil.ScanState;
+import com.haoke.constant.MediaUtil.ScanType;
+import com.haoke.data.AllMediaList;
+import com.haoke.data.ModeSwitch;
+import com.haoke.data.PlayStateSharedPreferences;
+import com.haoke.define.CMSStatusDef.CMSStatusFuc;
+import com.haoke.define.EQDef.EQFunc;
+import com.haoke.define.GlobalDef;
+import com.haoke.define.McuDef;
+import com.haoke.define.McuDef.McuFunc;
+import com.haoke.define.McuDef.PowerState;
+import com.haoke.define.ModeDef;
+import com.haoke.receiver.MediaReceiver;
+import com.haoke.scanner.MediaScanner;
+import com.haoke.scanner.MediaScannerListner;
+import com.haoke.util.DebugLog;
+import com.haoke.util.Media_CarListener;
+import com.haoke.util.Media_IF;
+import com.haoke.util.Media_Listener;
+import com.jsbd.util.Meter_IF;
 
 public class MediaService extends Service implements Media_CarListener, MediaScannerListner,
                 Media_Listener, BT_Listener {
@@ -252,6 +252,9 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
                 }
             }
         }
+        if (mode == ModeDef.CMS_STATUS && func == CMSStatusFuc.CAR_SPEED) {
+			AllMediaList.sCarSpeed = data;
+		}
         if (Source.isMcuMode(mode)) {
             Log.v(TAG, "onCarDataChange MCU func=" + func + ", data=" + data);
             switch (func) {

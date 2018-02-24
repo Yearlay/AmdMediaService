@@ -218,9 +218,9 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 	@Override
 	public void onStart() {
 		super.onStart();
-		if(AllMediaList.sCarSpeed == 0) {
+/*		if(AllMediaList.sCarSpeed == 0) {
 			AllMediaList.sCarSpeed = Media_IF.getCarSpeed();
-		}
+		}*/
 		Log.v(TAG, "HMI------------onStart sCarSpeed: " + AllMediaList.sCarSpeed);
 		Media_IF.getInstance().registerModeCallBack(this);
 		updateDevice(getCurrentDeviceType());
