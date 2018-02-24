@@ -163,6 +163,7 @@ public class SkinManager {
     private void loadingSkinData() {
         //加载资源文件
         synchronized (mLock) {
+            Log.d(TAG, "loadingSkinData start mServiceHandler="+mServiceHandler);
             mPreLoading = Settings.System.getInt(mContext.getContentResolver(), SKIN_KEY_NAME_PRELOADING, SKIN_DEFAULT);;
             for (int i=0; i<mSkinListeners.size(); i++) {
                 SkinListener skinListener = mSkinListeners.get(i).get();
@@ -175,11 +176,13 @@ public class SkinManager {
                 }
             }
             mPreLoading = -1;
+            Log.d(TAG, "loadingSkinData end");
         }
     }
     
     private void refreshViewBySkin() {
         //刷新UI即可
+        Log.d(TAG, "refreshViewBySkin start mServiceHandler="+mServiceHandler);
         for (int i=0; i<mSkinListeners.size(); i++) {
             SkinListener skinListener = mSkinListeners.get(i).get();
             if (skinListener != null) {
@@ -190,10 +193,20 @@ public class SkinManager {
                 }
             }
         }
+        Log.d(TAG, "refreshViewBySkin end");
     }
     
     //注册监听
     public static void registerSkin(SkinListener listener) {
+        registerSkinIntenal(listener, false);
+    }
+    
+    //注册监听,置顶
+    public static void registerSkinTop(SkinListener listener) {
+        registerSkinIntenal(listener, true);
+    }
+    
+    private static void registerSkinIntenal(SkinListener listener, boolean top) {
         boolean found = false;
         ArrayList<WeakReference<SkinListener>> listeners = instance().mSkinListeners;
         for (int i = 0; i < listeners.size(); i++) {
@@ -203,8 +216,13 @@ public class SkinManager {
                 break;
             }
         }
-        if (!found)
-            listeners.add(new WeakReference<SkinListener>(listener));
+        if (!found) {
+            if (top) {
+                listeners.add(0, new WeakReference<SkinListener>(listener));
+            } else {
+                listeners.add(new WeakReference<SkinListener>(listener));
+            }
+        }
     }
     
     //取消监听
