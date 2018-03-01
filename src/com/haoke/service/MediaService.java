@@ -253,7 +253,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
             }
         }
         if (mode == ModeDef.CMS_STATUS && func == CMSStatusFuc.CAR_SPEED) {
-			AllMediaList.sCarSpeed = data;
+			AllMediaList.sCarSpeed = data / 100.0f;
 		}
         if (Source.isMcuMode(mode)) {
             Log.v(TAG, "onCarDataChange MCU func=" + func + ", data=" + data);

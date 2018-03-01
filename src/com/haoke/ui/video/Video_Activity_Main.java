@@ -700,7 +700,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 	@Override
 	public void onCarDataChange(int mode, int func, int data) {
 		if (mode == ModeDef.CMS_STATUS && func == CMSStatusFuc.CAR_SPEED) {
-			int speed = data;
+			float speed = data / 100.0f;
 			AllMediaList.sCarSpeed = speed;
 			DebugLog.d("Yearlay", "onUartDataChange 0D 00 2D current speed: " + speed);
 			if (mPlayLayout.isShowForbiddenView()) { // 限制播放视频View，显示状态。
