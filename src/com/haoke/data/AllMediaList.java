@@ -746,6 +746,11 @@ public class AllMediaList {
         int currentprogress = 0;
         mMediaDbHelper.setStartFlag(true);
         for (FileNode fileNode : list) {
+          //czg modify debug 20315 begin 
+            if(fileNode.getCollect()==1){
+                break;
+            }
+          //czg modify debug 20315 end
             int resultCode = OperateListener.OPERATE_SUCEESS;
             fileNode.setCollect(1);
             fileNode.setCollectPath(fileNode.getFilePath());

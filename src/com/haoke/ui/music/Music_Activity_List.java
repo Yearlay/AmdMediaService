@@ -792,12 +792,16 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             }
             setSelection(pos);
         } else {
-            if (mPlayDefault) {
-                int index = mIF.getPlayDefaultIndex(mDeviceType, FileType.AUDIO);
-                setSelection(index);
-            } else {
-                setSelection(0);
-            }
+//            if (mPlayDefault) {
+//                int index = mIF.getPlayDefaultIndex(mDeviceType, FileType.AUDIO);
+//                setSelection(index);
+//            } else {
+//                setSelection(0);
+//            }
+            //czg modify debug 20648 begin
+            int index = mIF.getPlayDefaultIndex(mDeviceType, FileType.AUDIO);
+            setSelection(index);
+            //czg modify debug 20648 end
         }
     }
     

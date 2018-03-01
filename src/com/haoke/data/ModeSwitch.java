@@ -1,12 +1,14 @@
 package com.haoke.data;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.amd.bt.BT_IF;
 import com.amd.util.Source;
 import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.constant.MediaUtil;
 import com.haoke.util.Media_IF;
+import android.util.Log;
 
 public class ModeSwitch {
     private static final String TAG = "ModeSwitch";
@@ -52,7 +54,14 @@ public class ModeSwitch {
     
     private static int sCurSourceMode = EMPTY_MODE;
     public static void setCurSourceMode(int source) {
-        sCurSourceMode = source;
+      //czg modify debug 20470/20493 begin
+        for (int index = 0; index < sModeList.length; index++) {
+            if (source == sModeList[index]) {
+                sCurSourceMode = source;
+            }
+        }
+      //czg modify debug 20470/20493 end
+//        sCurSourceMode = source;
     }
     
     public int getNextMode(Context context) {
