@@ -40,6 +40,7 @@ import com.haoke.service.MediaService;
 import com.haoke.ui.media.MediaSearchActivity;
 import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
+import com.haoke.util.DebugLog;
 import com.haoke.window.HKWindowManager;
 
 public class Image_Activity_Main extends Activity implements
@@ -130,13 +131,13 @@ public class Image_Activity_Main extends Activity implements
 			} 
 			if(imageList.size() > 0){
 				Log.e(TAG,"initIntent deviceType: " + deviceType);
-				updateDevice(deviceType);
+				updateDevice(deviceType, false);
                 mPlayLayout.setPlayState(PlayState.PLAY);
                 mPlayLayout.setCurrentPosition(0);;
                 onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
 			} else {
 				Log.e(TAG, "initIntent device have no images!!!!");
-				updateDevice(DeviceType.FLASH);
+				updateDevice(DeviceType.FLASH, false);
 				onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
 			}
 			
@@ -150,36 +151,33 @@ public class Image_Activity_Main extends Activity implements
         initIntent(intent);
     }
 
-    public void updateDevice(final int deviceType) {
-    	Log.e(TAG,"updateDevice: " + deviceType);
-    	 mPlayPreferences.saveImageDeviceType(deviceType);
-        int checkId = R.id.image_device_flash;
-        if (deviceType == DeviceType.USB1) {
-            checkId = R.id.image_device_usb1;
-        } else if (deviceType == DeviceType.USB2) {
-            checkId = R.id.image_device_usb2;
-        } else if (deviceType == DeviceType.COLLECT) {
-            checkId = R.id.image_device_collect;
+    public void updateDevice(final int deviceType, boolean forceUpdate) {
+        DebugLog.d(TAG,"updateDevice: " + deviceType);
+        int oldDeviceType = mPlayPreferences.getImageDeviceType();
+        if (oldDeviceType != deviceType) {
+            mPlayPreferences.saveImageDeviceType(deviceType);
         }
-        if (mRadioGroup.getCheckedRadioButtonId() != checkId) {
-        	Log.e(TAG,"set mRadioGroup");
-            mRadioGroup.check(checkId);
-        }
+        updateRadioGroup(deviceType); // 更新RadioGroup的状态。
 
         StorageBean storageBean = AllMediaList.instance(getApplicationContext()).getStoragBean(deviceType);
-        mImageList.clear();
-        mImageList.addAll(AllMediaList.instance(getApplicationContext())
-                .getMediaList(deviceType, FileType.IMAGE));
-        mListLayout.updataList(mImageList, storageBean);
-        mPlayLayout.updateList(mImageList, deviceType);
+        if (!storageBean.isMounted() || !storageBean.isId3ParseCompleted()) {
+            onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
+            forceUpdate = true; // 如果未扫描完成或者未解析完成，强制更新。
+        }
+        if (deviceType == oldDeviceType && !forceUpdate) {
+            // 如果deviceType相等，且不强制更新，什么也不做。
+        } else {
+            mImageList.clear();
+            mImageList.addAll(AllMediaList.instance(getApplicationContext())
+                    .getMediaList(deviceType, FileType.IMAGE));
+            mListLayout.updataList(mImageList, storageBean);
+            mPlayLayout.updateList(mImageList, deviceType);
+        }
         if (mImageList.size() == 0 && mListLayout.isEditMode()) {
             cancelEdit();
         }
-        
-        if (!storageBean.isMounted() || !storageBean.isId3ParseCompleted()) {
-            onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
-        }
     }
+
 
     @Override
     protected void onResume() {
@@ -190,7 +188,7 @@ public class Image_Activity_Main extends Activity implements
             int deviceType = MediaUtil.getDeviceType(mFilePathFromSearch);
             int position = 0;
             mPlayPreferences.saveImageDeviceType(deviceType);
-            updateDevice(deviceType);
+            updateDevice(deviceType, false);
             for (int index = 0; index < mImageList.size(); index++) {
                 if (mFilePathFromSearch.equals(mImageList.get(index).getFilePath())) {
                     position = index;
@@ -202,7 +200,7 @@ public class Image_Activity_Main extends Activity implements
             onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
             mFilePathFromSearch = null;
         } else {
-            updateDevice(mPlayPreferences.getImageDeviceType());
+            updateDevice(mPlayPreferences.getImageDeviceType(), false);
             mPlayLayout.setPlayState(mPlayLayout.mRecordPlayState);
         }
         mRadioGroup.setOnCheckedChangeListener(this);
@@ -284,6 +282,21 @@ public class Image_Activity_Main extends Activity implements
         unregisterReceiver(mOperateAppReceiver);
     }
 
+    private void updateRadioGroup(final int deviceType) {
+        int checkId = R.id.image_device_flash;
+        if (deviceType == DeviceType.USB1) {
+            checkId = R.id.image_device_usb1;
+        } else if (deviceType == DeviceType.USB2) {
+            checkId = R.id.image_device_usb2;
+        } else if (deviceType == DeviceType.COLLECT) {
+            checkId = R.id.image_device_collect;
+        }
+        if (mRadioGroup.getCheckedRadioButtonId() != checkId) {
+            DebugLog.e(TAG,"set mRadioGroup");
+            mRadioGroup.check(checkId);
+        }
+    }
+
     private int getCurrentDeviceType() {
         int deviceType = DeviceType.FLASH;
         if (mRadioGroup.getCheckedRadioButtonId() == R.id.image_device_usb1) {
@@ -301,7 +314,7 @@ public class Image_Activity_Main extends Activity implements
         // 处理数据加载完成的事件: 主要是处理数据。
     	Log.e(TAG,"-----onLoadCompleted deviceType: " + deviceType + " fileType: " + fileType);
         if (deviceType == getCurrentDeviceType() && fileType == FileType.IMAGE) {
-            updateDevice(deviceType);
+            updateDevice(deviceType, true);
         }
     }
 
@@ -310,7 +323,7 @@ public class Image_Activity_Main extends Activity implements
         // 处理磁盘状态 和 扫描状态发生改变的状态： 主要是更新UI的显示效果。
     	Log.e(TAG, "onScanStateChange storageBean: " + storageBean.toString());
         if (storageBean.getDeviceType() == getCurrentDeviceType()) {
-            updateDevice(getCurrentDeviceType());
+            updateDevice(getCurrentDeviceType(), true);
             onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
             if (!storageBean.isMounted()) {
                 if (mListLayout != null) {
@@ -375,7 +388,7 @@ public class Image_Activity_Main extends Activity implements
         if (mPlayPreferences.getImageShowFragment() != SWITCH_TO_LIST_FRAGMENT) {
             onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
         }
-        updateDevice(deviceType);
+        updateDevice(deviceType, false);
     }
     
     @Override
