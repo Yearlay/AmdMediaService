@@ -171,6 +171,12 @@
             </intent-filter>
         </receiver>
         
+        <receiver android:name="com.amd.radio.RadioMediaButtonReceiver">
+            <intent-filter >
+                <action android:name="android.intent.action.MEDIA_BUTTON"/>
+            </intent-filter>
+        </receiver>
+        
         <receiver android:name="com.amd.media.FirstPowerReceiver">
             <intent-filter >
                 <action android:name="com.haoke.action.firstpower"/>

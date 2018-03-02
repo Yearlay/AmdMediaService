@@ -1,6 +1,7 @@
 package com.amd.media;
 
 import com.amd.bt.BT_IF;
+import com.amd.radio.Radio_IF;
 import com.amd.util.AmdConfig;
 import com.amd.util.Source;
 import com.haoke.constant.MediaUtil.PlayState;
@@ -104,6 +105,7 @@ public class AmdMediaButtonReceiver extends BroadcastReceiver {
         int source = Media_IF.getCurSource();
         int playState = Media_IF.getInstance().getPlayState();
         boolean btPlaying = BT_IF.getInstance().music_isPlaying();
+        boolean radioPlaying = Radio_IF.getInstance().isEnable();
         Log.d(TAG, "play source="+source+"; playState="+playState+"; btPlaying="+btPlaying);
         if (source == Source.NULL) {
             Media_IF.getInstance().setRecordPlayState(PlayState.STOP);
@@ -123,6 +125,12 @@ public class AmdMediaButtonReceiver extends BroadcastReceiver {
             	BT_IF.getInstance().music_play();
             }
             return true;
+        }else if(Source.isRadioSource(source)){
+            Radio_IF.getInstance().setRecordRadioOnOff(false);
+            if (!radioPlaying) {
+                Radio_IF.getInstance().setEnable(true);
+            }
+            return true;
         }
         return false;
     }
@@ -131,6 +139,7 @@ public class AmdMediaButtonReceiver extends BroadcastReceiver {
         int source = Media_IF.getCurSource();
         int playState = Media_IF.getInstance().getPlayState();
         boolean btPlaying = BT_IF.getInstance().music_isPlaying();
+        boolean radioPlaying = Radio_IF.getInstance().isEnable();
         Log.d(TAG, "pause source="+source+"; playState="+playState+"; btPlaying="+btPlaying);
         if (source == Source.NULL) {
             // do nothing
@@ -145,6 +154,12 @@ public class AmdMediaButtonReceiver extends BroadcastReceiver {
             BT_IF.getInstance().setRecordPlayState(PlayState.STOP);
             if (btPlaying) {
             	BT_IF.getInstance().music_pause();
+            }
+            return true;
+        }else if(Source.isRadioSource(source)){
+            Radio_IF.getInstance().setRecordRadioOnOff(false);
+            if (radioPlaying) {
+                Radio_IF.getInstance().setEnable(false);
             }
             return true;
         }
@@ -174,6 +189,11 @@ public class AmdMediaButtonReceiver extends BroadcastReceiver {
             BT_IF.getInstance().setRecordPlayState(PlayState.STOP);
         	BT_IF.getInstance().music_pre();
         	return true;
+        }else if(Source.isRadioSource(source)){
+            Log.d(TAG, "prev setPreChannel");
+            Radio_IF.getInstance().setRecordRadioOnOff(false);
+            Radio_IF.getInstance().setPreStep();
+            return true;
         }
         return false;
     }
@@ -193,7 +213,6 @@ public class AmdMediaButtonReceiver extends BroadcastReceiver {
             Media_IF.getInstance().setRecordPlayState(PlayState.STOP);
             Media_IF.getInstance().setScanMode(false);
             if (!Media_IF.getInstance().playNext()) {
-                Log.d(TAG, "next mIF.playNext is false");
                 Media_IF.getInstance().setPlayState(PlayState.PLAY);
             }
             return true;
@@ -201,6 +220,10 @@ public class AmdMediaButtonReceiver extends BroadcastReceiver {
             BT_IF.getInstance().setRecordPlayState(PlayState.STOP);
         	BT_IF.getInstance().music_next();
         	return true;
+        }else if(Source.isRadioSource(source)){
+            Radio_IF.getInstance().setRecordRadioOnOff(false);
+            Radio_IF.getInstance().setNextStep();
+            return true;
         }
         return false;
     }

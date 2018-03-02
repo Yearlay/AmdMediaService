@@ -1,6 +1,8 @@
 package com.amd.radio;
 
 import android.app.Service;
+import android.content.ComponentName;
+import android.content.Context;
 import android.media.AudioManager;
 import android.util.Log;
 
@@ -20,6 +22,8 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 	private static final String TAG = "RadioManager";
 	private Radio_IF mIF = null;
 	private AudioFocus mAudioFocus = null;
+    private AudioManager mAudioManager;
+    private ComponentName mComponentName;
 
 	public RadioManager(Service parent) {
 		
@@ -32,6 +36,10 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 		mIF.bindCarService();
 
 		mAudioFocus.registerListener(this); // 注册焦点监听
+		
+		Service mParent = parent;
+		mAudioManager = (AudioManager)mParent.getSystemService(Context.AUDIO_SERVICE);
+        mComponentName = new ComponentName(mParent, RadioMediaButtonReceiver.class);
 	}
 
 	// 注册接收器
@@ -91,6 +99,9 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 				setRecordRadioOnOff(false);
 				mIF.setEnable(true);
 			}
+			if (mComponentName != null) {
+                mAudioManager.registerMediaButtonEventReceiver(mComponentName);
+            }
 			break;
 		case PlayState.PAUSE:
 			if (!enable) {
@@ -106,6 +117,9 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 //				Log.v(TAG, "HMI------------audioFocusChanged STOP 2");
 //				return;
 //			}
+		    if (mComponentName != null) {
+                mAudioManager.unregisterMediaButtonEventReceiver(mComponentName);
+            }
 			setRecordRadioOnOff(false);
 			mIF.setEnable(false);
 			break;
