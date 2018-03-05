@@ -177,6 +177,13 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
             if (!(BT_IF.getInstance().getConnState() == BTConnState.CONNECTED)) {
                 source = Source.NULL;
             }
+            //czg modify debug 20469 begin
+            //如果源不是music中的任意一种，则置为默认值
+            if (!Source.isAudioSource(source)
+                    && !Source.isBTMusicSource(source) && source != Source.NULL) {
+                source = Source.NULL;
+            }
+            //czg modify debug 20469 end
         }
     	if (Source.isBTMusicSource(source)) {
     	    mLastAlbumBitmap = null;
@@ -227,6 +234,13 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
             if (!(BT_IF.getInstance().getConnState() == BTConnState.CONNECTED)) {
                 source = Source.NULL;
             }
+            //czg modify debug 20469 begin
+            //如果源不是music中的任意一种，则置为默认值
+            if (!Source.isAudioSource(source)
+                    && !Source.isBTMusicSource(source) && source != Source.NULL) {
+                source = Source.NULL;
+            }
+            //czg modify debug 20469 end
         }
         if (Source.isBTMusicSource(source)) {
             musicTitle = BT_IF.getInstance().music_getTitle();

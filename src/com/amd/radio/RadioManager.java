@@ -1,8 +1,11 @@
 package com.amd.radio;
 
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.util.Log;
 
@@ -11,6 +14,7 @@ import com.haoke.define.McuDef.McuFunc;
 import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.define.RadioDef.RadioFunc;
 import com.haoke.serviceif.CarService_Listener;
+import com.haoke.util.DebugLog;
 import com.amd.media.AudioFocus;
 import com.amd.radio.Radio_CarListener;
 import com.amd.radio.Radio_IF;
@@ -37,9 +41,32 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 
 		mAudioFocus.registerListener(this); // 注册焦点监听
 		
-		Service mParent = parent;
-		mAudioManager = (AudioManager)mParent.getSystemService(Context.AUDIO_SERVICE);
-        mComponentName = new ComponentName(mParent, RadioMediaButtonReceiver.class);
+		mAudioManager = (AudioManager)parent.getSystemService(Context.AUDIO_SERVICE);
+        mComponentName = new ComponentName(parent, RadioMediaButtonReceiver.class);
+        
+        IntentFilter intentFilter=new IntentFilter();
+        intentFilter.addAction("com.jsbd.media.KeyCode.TRACKDN");
+        intentFilter.addAction("com.jsbd.media.KeyCode.TRACKUP");
+        BroadcastReceiver receiver = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                boolean isRadioSource = Source.isRadioSource();
+                boolean hasFocus = hasAudioFocus();
+                DebugLog.d(TAG, "action =" + action + ", isRadioSource ="
+                        + isRadioSource + ", hasFocus =" + hasFocus);
+                //判断由当前源时收音机  有焦点
+                if(isRadioSource && hasFocus){
+                    if (action.equals("com.jsbd.media.KeyCode.TRACKDN")) {
+                        mIF.setNextSearch();
+                    } else if (action.equals("com.jsbd.media.KeyCode.TRACKUP")) {
+                        mIF.setPreSearch();
+                    }
+                }
+            }
+        };
+        parent.registerReceiver(receiver, intentFilter);
 	}
 
 	// 注册接收器
