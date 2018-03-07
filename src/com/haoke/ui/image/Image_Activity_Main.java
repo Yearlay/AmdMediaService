@@ -65,6 +65,7 @@ public class Image_Activity_Main extends Activity implements
     private boolean isShow;
     
     private ArrayList<FileNode> mImageList = new ArrayList<FileNode>();
+    private BroadcastReceiver mPowerRreceiver;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +108,29 @@ public class Image_Activity_Main extends Activity implements
         registerReceiver(mOperateAppReceiver, new IntentFilter(VRIntent.ACTION_OPERATE_IMAGE));
 
         initIntent(getIntent());
+        
+      //czg modify debug 20762 begin
+        IntentFilter intentFilter=new IntentFilter();
+        intentFilter.addAction("power_off");
+        intentFilter.addAction("power_on");
+        mPowerRreceiver = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                DebugLog.d(TAG, "action =" + action);
+                if (action.equals("power_off")) {
+                    mPlayLayout.setPlayState(PlayState.PAUSE);
+                } else if (action.equals("power_on")) {
+                    int fragmentIndex = PlayStateSharedPreferences.instance(context).getImageShowFragment();
+                    if (fragmentIndex == SWITCH_TO_PLAY_FRAGMENT) {
+                        mPlayLayout.setPlayState(PlayState.PLAY);
+                    }
+                }
+            }
+        };
+        registerReceiver(mPowerRreceiver, intentFilter);
+      //czg modify debug 20762 end
     }
     
     private void initIntent(Intent intent){
@@ -131,7 +155,7 @@ public class Image_Activity_Main extends Activity implements
 			} 
 			if(imageList.size() > 0){
 				Log.e(TAG,"initIntent deviceType: " + deviceType);
-				updateDevice(deviceType, false);
+				updateDevice(deviceType, mListLayout.getPhotoListSize() == 0);
                 mPlayLayout.setPlayState(PlayState.PLAY);
                 mPlayLayout.setCurrentPosition(0);;
                 onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
@@ -190,7 +214,7 @@ public class Image_Activity_Main extends Activity implements
             int deviceType = MediaUtil.getDeviceType(mFilePathFromSearch);
             int position = 0;
             mPlayPreferences.saveImageDeviceType(deviceType);
-            updateDevice(deviceType, false);
+            updateDevice(deviceType, mListLayout.getPhotoListSize() == 0);
             for (int index = 0; index < mImageList.size(); index++) {
                 if (mFilePathFromSearch.equals(mImageList.get(index).getFilePath())) {
                     position = index;
@@ -202,7 +226,7 @@ public class Image_Activity_Main extends Activity implements
             onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
             mFilePathFromSearch = null;
         } else {
-            updateDevice(mPlayPreferences.getImageDeviceType(), false);
+            updateDevice(mPlayPreferences.getImageDeviceType(), mListLayout.getPhotoListSize() == 0);
             mPlayLayout.setPlayState(mPlayLayout.mRecordPlayState);
         }
         mRadioGroup.setOnCheckedChangeListener(this);
@@ -282,6 +306,9 @@ public class Image_Activity_Main extends Activity implements
         super.onDestroy();
         AllMediaList.instance(getApplicationContext()).unRegisterLoadListener(this);
         unregisterReceiver(mOperateAppReceiver);
+        //czg modify debug 20762 begin
+        unregisterReceiver(mPowerRreceiver);
+        //czg modify debug 20762 begin
     }
 
     private void updateRadioGroup(final int deviceType) {
@@ -390,7 +417,7 @@ public class Image_Activity_Main extends Activity implements
         if (mPlayPreferences.getImageShowFragment() != SWITCH_TO_LIST_FRAGMENT) {
             onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
         }
-        updateDevice(deviceType, false);
+        updateDevice(deviceType, mListLayout.getPhotoListSize() == 0);
     }
     
     @Override

@@ -1,5 +1,6 @@
 package com.haoke.ui.video;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import android.app.AlertDialog;
@@ -60,7 +61,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 	private ImageView mCollectView;
 	private TextView mTitleTextView;
 	private VideoPlayTimeSeekBar mTimeSeekBar;
-	private View mUnsupportView;
+	private TextView mUnsupportView;
 	private ImageView mLoading;
 	private Handler mActivityHandler;
 
@@ -119,7 +120,28 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 		if (mUnsupportView != null) {
 			mUnsupportView.setVisibility(showFlag ? View.VISIBLE : View.GONE);
 		}
-
+		/*
+         *  TODO 
+         *  1）判断mFileNode所在的磁盘是否挂载上（播放错误，磁盘已经拔出。）？ 
+         *  2）判断mFileNode文件是否存在（播放错误，视频文件已经被删除。）？
+         *  3）如果文件存在，才提示“不支持格式”。
+         */
+		//czg modify bug 20360 begin 
+        if (mFileNode != null) {
+            String devicePath = mFileNode.getDevicePath();
+            File file = new File(devicePath);
+            File[] listFiles = file.listFiles();
+            if (listFiles.length == 0) {
+                // 提示磁盘拔出
+	            mUnsupportView.setText(R.string.disks_pull_out);
+            } else if (!mFileNode.getFile().exists()) {
+                // 提示文件已删除
+	            mUnsupportView.setText(R.string.Video_file_delete);
+            } else {
+                mUnsupportView.setText(R.string.media_play_nosupport);
+            }
+		}
+        //czg modify bug 20360 end 
 		if (!showFlag) {
 			if (mNextPlay) {
 				mVideoController.playNext();
@@ -217,12 +239,6 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 				Log.e("luke", "-----------setOnErrorListener");
 				//if (getVisibility() == View.VISIBLE) {
 					Log.e("luke", "send error message!!!");
-					/*
-					 *  TODO 
-					 *  1）判断mFileNode所在的磁盘是否挂载上（播放错误，磁盘已经拔出。）？ 
-					 *  2）判断mFileNode文件是否存在（播放错误，视频文件已经被删除。）？
-					 *  3）如果文件存在，才提示“不支持格式”。
-					 */
 					setUnsupportViewShow(true);
 					mActivityHandler.removeMessages(Video_Activity_Main.HIDE_UNSUPPORT_VIEW);
 					mActivityHandler.sendEmptyMessageDelayed(Video_Activity_Main.HIDE_UNSUPPORT_VIEW, 1000);
@@ -265,7 +281,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 		mTitleTextView = (TextView) findViewById(R.id.title_video);
 		mForbiddenView = findViewById(R.id.video_play_forbidden);
 		mForbiddenView.setOnTouchListener(this);
-		mUnsupportView = findViewById(R.id.not_support_text);
+		mUnsupportView = (TextView)findViewById(R.id.not_support_text);
 		mVideoController.setVideoPlayLayout(this);
 
 		initTouchSlop();

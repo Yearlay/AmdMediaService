@@ -105,5 +105,6 @@
     <string name="in_call_cannot_play">In the call, the media can\'t be played!</string>
     <string name="usb1_no_music">USB1 non media file</string>
     <string name="usb2_no_music">USB2 non media file</string>
-    
+    <string name="disks_pull_out">Play error, disks have been pulled out</string>
+    <string name="Video_file_delete">Play error, video file has been deleted</string>
 </resources>

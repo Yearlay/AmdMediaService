@@ -650,7 +650,7 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
     	if (post) {
     		mTimeHandler.sendMessageDelayed(
         			mTimeHandler.obtainMessage(MSG_MAYBE_PLAY_BT, fragmentVisible?1:0, 0),
-        			1500);
+        			200);
     	} else {
     		refreshFromViewPagerMaybePlayBTEx(fragmentVisible);
     	}
