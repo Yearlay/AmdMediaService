@@ -77,7 +77,6 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
         mCurrentStorageBean = storageBean;
         mPhotoList.clear();
         mPhotoList.addAll(dataList);
-        mPhotoAdapter.notifyDataSetChanged();
     }
 
     public void refreshView(StorageBean storageBean) {
@@ -86,7 +85,6 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
         }
         mGridView.requestFocusFromTouch();
         mGridView.setSelection(0);
-        mPhotoAdapter.notifyDataSetChanged();
         if (storageBean.isMounted()) {
         	Log.e(Image_Activity_Main.TAG,"refreshView  isMounted");
             if (storageBean.isId3ParseCompleted()) {
