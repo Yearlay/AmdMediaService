@@ -780,16 +780,13 @@ public class VideoPlayController implements AudioFocusListener {
 			}
 			videoLayout.registerMediaButtonReceiver();
 			break;
-		case PlayState.PAUSE: // 失去焦点
+		case PlayState.PAUSE: // 失去短焦点
+		case PlayState.STOP:  // 失去长焦点
 			mPlayStateBeforeLoseFocus = playState;
 			videoLayout.setBeforePlaystate(playStateTransformation(mPlayStateBeforeLoseFocus));
 			Log.v("luke", "audioFocusChanged setBeforePlaystate " + videoLayout.getBeforePlaystate());
 			playOrPause(false);
-			break;
-		case PlayState.STOP:
 			videoLayout.unRegisterMediaButtonReceiver();
-			mPlayStateBeforeLoseFocus = PlayState.STOP;
-			playOrPause(false);
 			break;
 		}
 

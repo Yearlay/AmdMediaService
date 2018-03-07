@@ -125,7 +125,6 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 		collectRadioButton = (RadioButton) mRadioGroup.findViewById(R.id.video_device_collect);
 		
 		registerReceiver(mOperateAppReceiver, new IntentFilter(VRIntent.ACTION_OPERATE_VIDEO));
-		mPlayLayout.registerMediaButtonReceiver();
 
 		mPlaying = false;
 
@@ -239,6 +238,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 		if (mPlayLayout.getVisibility() == View.VISIBLE) {
 			mPlayLayout.onResume();
 		}
+		mPlayLayout.registerMediaButtonReceiver();
 		refreshSkin(true);
         refreshSkin(false);
         SkinManager.registerSkin(mSkinListener);
@@ -316,7 +316,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 		Log.v("luke", "HMI------------onPause BeforePlaystate: " + mPlayLayout.getBeforePlaystate());
 		mListLayout.dismissDialog();
 		SkinManager.unregisterSkin(mSkinListener);
-
+		mPlayLayout.unRegisterMediaButtonReceiver();
 		mListLayout.onPause();
 	}
 
@@ -331,8 +331,6 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 	public void onDestroy() {
 		Log.v(TAG, "HMI------------onDestroy");
 		super.onDestroy();
-		// Media_IF.getInstance().setVideoActivity(null);
-		mPlayLayout.unRegisterMediaButtonReceiver();
 		AllMediaList.instance(getApplicationContext()).unRegisterLoadListener(this);
 		unregisterReceiver(mOperateAppReceiver);
 
