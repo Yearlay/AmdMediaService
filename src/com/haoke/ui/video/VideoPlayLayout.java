@@ -217,6 +217,12 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 				Log.e("luke", "-----------setOnErrorListener");
 				//if (getVisibility() == View.VISIBLE) {
 					Log.e("luke", "send error message!!!");
+					/*
+					 *  TODO 
+					 *  1）判断mFileNode所在的磁盘是否挂载上（播放错误，磁盘已经拔出。）？ 
+					 *  2）判断mFileNode文件是否存在（播放错误，视频文件已经被删除。）？
+					 *  3）如果文件存在，才提示“不支持格式”。
+					 */
 					setUnsupportViewShow(true);
 					mActivityHandler.removeMessages(Video_Activity_Main.HIDE_UNSUPPORT_VIEW);
 					mActivityHandler.sendEmptyMessageDelayed(Video_Activity_Main.HIDE_UNSUPPORT_VIEW, 1000);
