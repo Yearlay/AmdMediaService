@@ -78,12 +78,12 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
         mPhotoList.clear();
         mPhotoList.addAll(dataList);
         mPhotoAdapter.notifyDataSetChanged();
-        if (mGridView != null) {
-            refreshView(storageBean);
-        }
     }
 
-    private void refreshView(StorageBean storageBean) {
+    public void refreshView(StorageBean storageBean) {
+        if (mGridView == null) {
+            return;
+        }
         mGridView.requestFocusFromTouch();
         mGridView.setSelection(0);
         mPhotoAdapter.notifyDataSetChanged();

@@ -173,6 +173,8 @@ public class Image_Activity_Main extends Activity implements
             mListLayout.updataList(mImageList, storageBean);
             mPlayLayout.updateList(mImageList, deviceType);
         }
+        // refreshView函数中有更新加载框和是否显示无媒体的逻辑。
+        mListLayout.refreshView(storageBean);
         if (mImageList.size() == 0 && mListLayout.isEditMode()) {
             cancelEdit();
         }
