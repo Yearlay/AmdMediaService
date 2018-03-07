@@ -1,1 +1,0 @@
-adb shell am broadcast -a "com.jsbd.vr.video.operation.action" --ei commandCode 2
