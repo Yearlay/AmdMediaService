@@ -20,6 +20,7 @@ import com.amd.media.VRInterfaceUtil;
 import com.amd.radio.RadioManager;
 import com.amd.radio.Radio_IF;
 import com.amd.util.Source;
+import com.haoke.application.MediaApplication;
 import com.haoke.btjar.main.BTDef.BTFunc;
 import com.haoke.constant.MediaUtil;
 import com.haoke.constant.MediaUtil.MediaFunc;
@@ -40,6 +41,7 @@ import com.haoke.define.ModeDef;
 import com.haoke.receiver.MediaReceiver;
 import com.haoke.scanner.MediaScanner;
 import com.haoke.scanner.MediaScannerListner;
+import com.haoke.ui.image.Image_Activity_Main;
 import com.haoke.util.DebugLog;
 import com.haoke.util.Media_CarListener;
 import com.haoke.util.Media_IF;
@@ -267,8 +269,26 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
             case McuFunc.POWER_STATE:
                 if (data == PowerState.POWER_OFF) {
                     MediaInterfaceUtil.setMuteRecordPlayState(KeyEvent.KEYCODE_POWER);
+                    //czg modify debug 20762 begin
+                    //操作图片播放,暂停
+                    boolean playImage = Image_Activity_Main.isPlayImage(MediaApplication.getInstance());
+                    if (playImage) {
+                        Intent intent = new Intent();
+                        intent.setAction("power_off");
+                        sendBroadcast(intent);
+                    }
+                  //czg modify debug 20762 end
                 } else if (data == PowerState.POWER_ON) {
                     MediaInterfaceUtil.cancelMuteRecordPlayState(KeyEvent.KEYCODE_POWER);
+                    //czg modify debug 20762 begin 
+                    //操作图片播放,播放
+                    boolean playImage = Image_Activity_Main.isPlayImage(MediaApplication.getInstance());
+                    if (!playImage) {
+                        Intent intent = new Intent();
+                        intent.setAction("power_on");
+                        sendBroadcast(intent);
+                    }
+                  //czg modify debug 20762 end
                 }
                 break;
             }

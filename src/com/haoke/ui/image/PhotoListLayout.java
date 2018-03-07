@@ -168,6 +168,10 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
             Toast.makeText(mContext, R.string.file_operate_cancel, Toast.LENGTH_SHORT).show();
         }
     }
+    
+    public int getPhotoListSize() {
+        return mPhotoList.size();
+    }
 
     public FileNode getFileNode(int position) {
         FileNode fileNode = null;
