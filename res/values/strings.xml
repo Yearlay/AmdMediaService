@@ -107,4 +107,6 @@
     <string name="usb2_no_music">USB2 non media file</string>
     <string name="disks_pull_out">Play error, disks have been pulled out</string>
     <string name="Video_file_delete">Play error, video file has been deleted</string>
+    
+    <string name="copy_dialog_title">Copy tips</string>
 </resources>
