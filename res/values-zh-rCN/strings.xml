@@ -106,5 +106,5 @@
     <string name="disks_pull_out">播放错误，磁盘已经拔出</string>
     <string name="Video_file_delete">播放错误，视频文件已经被删除</string>
     
-    <string name="copy_dialog_title">覆盖提示</string>
+    <string name="copy_dialog_title">拷贝提示</string>
 </resources>

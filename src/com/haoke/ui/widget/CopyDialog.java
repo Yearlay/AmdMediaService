@@ -40,7 +40,8 @@ public class CopyDialog implements OnClickListener, OnDismissListener {
     private TextView mTextView;
     
     private Drawable mRootViewDrawable;
-    private Drawable mButtonDrawable;
+    private Drawable mOkButtonDrawable;
+    private Drawable mCancelButtonDrawable;
     
     private ArrayList<FileNode> mDataList;
     
@@ -84,6 +85,7 @@ public class CopyDialog implements OnClickListener, OnDismissListener {
         mCancelButton.setOnClickListener(this);
         // 3) 文件拷贝layout;
         mProgressLayout = (LinearLayout) mDialog.findViewById(R.id.progress_layout);
+        mTextView = (TextView) mDialog.findViewById(R.id.copy_progress_text);
         
         refreshSkin(true);
         refreshSkin(false);
@@ -224,17 +226,18 @@ public class CopyDialog implements OnClickListener, OnDismissListener {
             SkinManager skinManager = SkinManager.instance(mContext);
             if (loading || mRootViewDrawable==null) {
                 mRootViewDrawable = skinManager.getDrawable(R.drawable.pub_msgbox_bg1);
-                mButtonDrawable = skinManager.getDrawable(R.drawable.bd_dialog_button);
+                mOkButtonDrawable = skinManager.getDrawable(R.drawable.bd_dialog_button);
+                mCancelButtonDrawable = skinManager.getDrawable(R.drawable.bd_dialog_button);
             }
             if (!loading) {
                 if (mRootView != null) {
                     mRootView.setBackgroundDrawable(mRootViewDrawable);
                 }
                 if (mOkButton != null) {
-                    mOkButton.setBackgroundDrawable(mButtonDrawable);
+                    mOkButton.setBackgroundDrawable(mOkButtonDrawable);
                 }
                 if (mCancelButton != null) {
-                    mCancelButton.setBackgroundDrawable(mButtonDrawable);
+                    mCancelButton.setBackgroundDrawable(mCancelButtonDrawable);
                 }
                 if (mCoverList != null && mCoverList.getChildCount() > 0) {
                     for (int index = 0; index < mCoverList.getChildCount(); index++) {

@@ -34,6 +34,7 @@ import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.data.AllMediaList;
 import com.haoke.data.OperateListener;
 import com.haoke.mediaservice.R;
+import com.haoke.ui.widget.CopyDialog;
 import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
 import com.haoke.ui.widget.CustomDialog.OnDialogListener;
@@ -49,6 +50,7 @@ public class VideoListLayout extends RelativeLayout implements
     private VideoAdapter mVideoAdapter;
     private Handler mActivityHandler;
     private boolean isEditMode;
+    private CopyDialog mCopyDialog;
     private CustomDialog mProgressDialog;
     private CustomDialog mErrorDialog;
     private StorageBean mCurrentStorageBean;
@@ -153,6 +155,11 @@ public class VideoListLayout extends RelativeLayout implements
             mProgressDialog.CloseDialog();
             Toast.makeText(mContext, R.string.file_operate_cancel, Toast.LENGTH_SHORT).show();
         }
+        if (mCopyDialog != null && mCopyDialog.getDialog() != null &&
+                mCopyDialog.getDialog().isShowing()) {
+            mCopyDialog.closeCopyDialog();
+            Toast.makeText(mContext, R.string.file_operate_cancel, Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -251,18 +258,19 @@ public class VideoListLayout extends RelativeLayout implements
     }
     
     public void copySelected() {
-        if (mErrorDialog == null) {
-            mErrorDialog = new CustomDialog();
+        if (mCopyDialog == null) {
+            mCopyDialog = new CopyDialog();
         }
         if (AllMediaList.checkSelected(mContext, mVideoList)) {
-            mErrorDialog.SetDialogListener(new OnDialogListener() {
+            mCopyDialog.SetDialogListener(new CopyDialog.OnDialogListener() {
                 @Override
                 public void OnDialogEvent(int id) {
                     switch (id) {
-                    case R.id.pub_dialog_ok:
+                    case R.id.copy_ok:
                         doCopy();
                         break;
-                    case R.id.pub_dialog_cancel:
+                    case R.id.copy_cancel:
+                        mCopyDialog.closeCopyDialog();
                         break;
                     }
                 }
@@ -272,8 +280,11 @@ public class VideoListLayout extends RelativeLayout implements
                     mVideoAdapter.notifyDataSetChanged();
                 }
             });
-            mErrorDialog.showCoverDialog(mContext, mVideoList);
+            mCopyDialog.showCopyDialog(mContext, mVideoList);
         } else {
+            if (mErrorDialog == null) {
+                mErrorDialog = new CustomDialog();
+            }
             mErrorDialog.ShowDialog(mContext, DIALOG_TYPE.ONE_BTN, R.string.video_copy_empty);
         }
     }
@@ -291,11 +302,9 @@ public class VideoListLayout extends RelativeLayout implements
                         Toast.LENGTH_SHORT).show();
             }
             if (selectList.size() > 0) {
-                if (mProgressDialog == null) {
-                    mProgressDialog = new CustomDialog();
-                }
-                mProgressDialog.showProgressDialog(mContext, R.string.copy_video_progress_title, this);
                 AllMediaList.instance(mContext).copyToLocal(selectList, VideoListLayout.this);
+            } else if (mCopyDialog != null) {
+                mCopyDialog.closeCopyDialog();
             }
         } else {
             new CustomDialog().ShowDialog(mContext, DIALOG_TYPE.ONE_BTN, R.string.failed_check_available_size);
@@ -304,8 +313,8 @@ public class VideoListLayout extends RelativeLayout implements
     
     private Toast mDeleteErrorToast;
     private Toast mCopyErrorEndToast;
-    @Override
-    public void onOperateCompleted(int operateValue, int progress, int resultCode) {
+    
+    private void doOperateDelete(int progress, int resultCode) {
         if (mProgressDialog != null) {
             mProgressDialog.updateProgressValue(progress);
         }
@@ -313,11 +322,10 @@ public class VideoListLayout extends RelativeLayout implements
             if (mProgressDialog != null) {
                 mProgressDialog.CloseDialog();
                 if (mActivityHandler != null) {
-                	mActivityHandler.sendEmptyMessage(Video_Activity_Main.CANCEL_EDIT);
+                    mActivityHandler.sendEmptyMessage(Video_Activity_Main.CANCEL_EDIT);
                 }
             }
-            if ((operateValue == OperateListener.OPERATE_DELETE || operateValue == OperateListener.OPERATE_UNCOLLECT)
-                    && resultCode == OperateListener.OPERATE_SUCEESS) {
+            if (resultCode == OperateListener.OPERATE_SUCEESS) {
                 for (int i = 0; i < mVideoList.size();) {
                     if (mVideoList.get(i).isSelected()) {
                         mVideoList.remove(i);
@@ -329,22 +337,76 @@ public class VideoListLayout extends RelativeLayout implements
             unSelectAll();
             mActivityHandler.sendEmptyMessage(Video_Activity_Main.DISMISS_COPY_DIALOG);
         }
-        if (operateValue == OperateListener.OPERATE_DELETE &&
-                resultCode != OperateListener.OPERATE_SUCEESS) {
-			if (mDeleteErrorToast == null) {
-				mDeleteErrorToast = Toast.makeText(mContext, "删除视频文件异常", Toast.LENGTH_SHORT);
-			}
-			mDeleteErrorToast.show();
+        if (resultCode != OperateListener.OPERATE_SUCEESS) {
+            if (mDeleteErrorToast == null) {
+                mDeleteErrorToast = Toast.makeText(mContext, "删除视频文件异常", Toast.LENGTH_SHORT);
+            }
+            mDeleteErrorToast.show();
         }
-        if (operateValue == OperateListener.OPERATE_COPY_TO_LOCAL &&
-                resultCode != OperateListener.OPERATE_SUCEESS) {
-			if (mCopyErrorEndToast == null) {
-				mCopyErrorEndToast = Toast.makeText(mContext, "拷贝视频文件异常", Toast.LENGTH_SHORT);
-			}
-			mCopyErrorEndToast.show();
+    }
+    
+    private void doOperateUnCollect(int progress, int resultCode) {
+        if (mProgressDialog != null) {
+            mProgressDialog.updateProgressValue(progress);
         }
-        if (operateValue == OperateListener.OPERATE_UNCOLLECT) { // 取消收藏操作完成。
-            AllMediaList.instance(mContext).reLoadAllMedia(FileType.VIDEO);
+        if (progress == 100) {
+            if (mProgressDialog != null) {
+                mProgressDialog.CloseDialog();
+                if (mActivityHandler != null) {
+                    mActivityHandler.sendEmptyMessage(Video_Activity_Main.CANCEL_EDIT);
+                }
+            }
+            if (resultCode == OperateListener.OPERATE_SUCEESS) {
+                for (int i = 0; i < mVideoList.size();) {
+                    if (mVideoList.get(i).isSelected()) {
+                        mVideoList.remove(i);
+                    } else {
+                        i++;
+                    }
+                }
+            }
+            unSelectAll();
+            mActivityHandler.sendEmptyMessage(Video_Activity_Main.DISMISS_COPY_DIALOG);
+        }
+        AllMediaList.instance(mContext).reLoadAllMedia(FileType.VIDEO);
+    }
+    
+    private void doOperateCopy(int progress, int resultCode) {
+        if (mCopyDialog == null) {
+            return;
+        }
+        mCopyDialog.updateProgressValue(progress);
+        if (progress == 100) {
+            mCopyDialog.closeCopyDialog();
+            if (mActivityHandler != null) {
+                mActivityHandler.sendEmptyMessage(Video_Activity_Main.CANCEL_EDIT);
+            }
+            unSelectAll();
+            mActivityHandler.sendEmptyMessage(Video_Activity_Main.DISMISS_COPY_DIALOG);
+        }
+        if (resultCode != OperateListener.OPERATE_SUCEESS) {
+            if (mCopyErrorEndToast == null) {
+                mCopyErrorEndToast = Toast.makeText(mContext, "拷贝视频文件异常", Toast.LENGTH_SHORT);
+            }
+            mCopyErrorEndToast.show();
+        }
+    }
+    
+    @Override
+    public void onOperateCompleted(int operateValue, int progress, int resultCode) {
+        switch (operateValue) {
+            case OperateListener.OPERATE_DELETE:
+                doOperateDelete(progress, resultCode);
+                break;
+            case OperateListener.OPERATE_UNCOLLECT:
+                doOperateUnCollect(progress, resultCode);
+                break;
+            case OperateListener.OPERATE_COPY_TO_LOCAL:
+                doOperateCopy(progress, resultCode);
+                break;
+
+            default:
+                break;
         }
     }
     
