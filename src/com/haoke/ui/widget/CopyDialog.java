@@ -193,6 +193,10 @@ public class CopyDialog implements OnClickListener, OnDismissListener {
             mTextView.setText(value + "%");
         }
     }
+    
+    public boolean isCopying() {
+        return mDialog != null && mDialog.isShowing() && mCopyState == PROGRESS_SHOW;
+    }
 
     public void updateProgressValue(int value) {
         mHandler.obtainMessage(PROGRESS_SHOW, value, 0).sendToTarget();
