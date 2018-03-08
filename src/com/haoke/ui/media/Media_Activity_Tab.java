@@ -1,6 +1,7 @@
 package com.haoke.ui.media;
 
 import com.amd.util.SkinManager;
+import com.amd.util.Source;
 import com.haoke.mediaservice.R;
 
 import android.content.Context;
@@ -142,7 +143,9 @@ public class Media_Activity_Tab extends RelativeLayout implements OnCheckedChang
     public static final int VIEW_NORMAL_PLAYING = 2; //白色有动画
     public static final int VIEW_CURRENT = 3; //蓝色无动画
     public static final int VIEW_CURRENT_PLAYING = 4; //蓝色有动画
-    public void setCurPlayViewState(Boolean showUnderline, Integer viewState) {
+    public void setCurPlayViewState(Boolean showUnderline, Integer viewState,
+            boolean isAudioMusicPlayFragment, boolean isBtMusicPlayFragment,
+            boolean isAudioMusicPlay) {
         boolean underline = (showUnderline == null) ? mShowCurPlayUnderLine : showUnderline;
         int state = (viewState == null) ? mViewState : viewState;
         int playResId = R.drawable.ico_media_play_n;
@@ -176,7 +179,15 @@ public class Media_Activity_Tab extends RelativeLayout implements OnCheckedChang
             if (state == VIEW_CURRENT_PLAYING) {
                 mBtnLayout.setEnabled(false);
             } else {
-                mBtnLayout.setEnabled(true);
+                //modify bug 20831 begin
+                if (isAudioMusicPlayFragment && !isAudioMusicPlay) {
+                    mBtnLayout.setEnabled(false);
+                } else if (isBtMusicPlayFragment && Source.isBTMusicSource()) {
+                    mBtnLayout.setEnabled(false);
+                }else{
+                    mBtnLayout.setEnabled(true);
+                }
+                //modify bug 20831 end
             }
             mBtnCurPlay.setVisibility(View.VISIBLE);
             mBtnCurPlay.setImageDrawable(SkinManager.instance(getContext()).getDrawable(playResId));

@@ -95,7 +95,7 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 		return mRecordRadioOn;
 	}
 	
-	private boolean hasAudioFocus() {
+	public boolean hasAudioFocus() {
 		boolean ret = false;
 		int audioFocusState = mAudioFocus.getFocusState();
 		if (audioFocusState == AudioManager.AUDIOFOCUS_GAIN

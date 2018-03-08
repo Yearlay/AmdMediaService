@@ -11,6 +11,7 @@ import com.amd.media.AmdMediaManager;
 import com.amd.media.MediaInterfaceUtil;
 import com.haoke.aidl.ICarCallBack;
 import com.haoke.aidl.IMediaCallBack;
+import com.amd.radio.Radio_IF;
 import com.amd.util.AmdConfig;
 import com.amd.util.Source;
 import com.haoke.bean.FileNode;
@@ -452,6 +453,10 @@ public class Media_IF extends CarService_IF {
 	        if (getInstance().mMediaManager.hasAudioFocus()) {
 	            focus = 2;
 	        }
+	    }else if (Source.isRadioSource()){
+	        if (Radio_IF.getInstance().hasAudioFocus()) {
+                focus = 3;
+            }
 	    }
 	    Log.d(TAG, "hasAudioOrBtFocus focus="+focus);
 		return focus > 0;

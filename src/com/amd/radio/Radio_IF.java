@@ -133,6 +133,16 @@ public class Radio_IF extends CarService_IF {
         }
 	    return radioManager;
 	}
+	
+	// 判断收音机是否有焦点
+    public boolean hasAudioFocus() {
+        try {
+            return getRadioManager().hasAudioFocus();
+        } catch (Exception e) {
+            Log.e(TAG, "HMI------------hasAudioFocus e=" + e.getMessage());
+        }
+        return false;
+    }
 
 	// 设置当前音频焦点
 	public boolean requestAudioFocus(boolean request) {

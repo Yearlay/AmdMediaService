@@ -367,7 +367,10 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 		// 更新界面状态
 		if (Source.isAudioSource(curSource) && playState != PlayState.STOP) {
 			changeShowLayout(ShowLayout.AUDIO_PLAY_LAYOUT);
-		} else if (Source.isBTMusicSource(curSource) && btPlaying) {
+//		} else if (Source.isBTMusicSource(curSource) && btPlaying) {
+			//modify bug 20830 begin
+        } else if (Source.isBTMusicSource(curSource)) {
+		    //modify bug 20830 end
 			changeShowLayout(ShowLayout.BT_PLAY_LAYOUT);
 		} else {
 		    DebugLog.e(TAG, "goPlay no song playing!");

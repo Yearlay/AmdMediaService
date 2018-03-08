@@ -126,7 +126,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
          *  2）判断mFileNode文件是否存在（播放错误，视频文件已经被删除。）？
          *  3）如果文件存在，才提示“不支持格式”。
          */
-		//czg modify bug 20360 begin 
+		//modify bug 20360 begin 
         if (mFileNode != null) {
             String devicePath = mFileNode.getDevicePath();
             File file = new File(devicePath);
@@ -141,7 +141,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
                 mUnsupportView.setText(R.string.media_play_nosupport);
             }
 		}
-        //czg modify bug 20360 end 
+        //modify bug 20360 end 
 		if (!showFlag) {
 			if (mNextPlay) {
 				mVideoController.playNext();

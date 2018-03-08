@@ -172,9 +172,9 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 				Log.d(TAG, "mHandler MSG_SAVE_PLAYTIME time="+time+"; mPlayingPos="+mPlayingPos+"; mPlayingListSize="+mPlayingListSize);
 				removeMessages(MSG_SAVE_PLAYTIME);
 //				mHandler.sendEmptyMessageDelayed(MSG_SAVE_PLAYTIME, MSG_DELAY_PLAYTIME);
-				//czg modify debug 20798 begin
+				//modify bug 20798 begin
 				sendEmptyMessageDelayed(MSG_SAVE_PLAYTIME, 200);
-				//czg modify debug 20798 end
+				//modify bug 20798 end
 				break;
 			case MSG_SAVE_PLAYSTATE:
 				if (!hasMessages(msg.what)) {
@@ -212,9 +212,9 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	private void startRecordTimer() {
 		mHandler.removeMessages(MSG_SAVE_PLAYTIME);
 //		mHandler.sendEmptyMessageDelayed(MSG_SAVE_PLAYTIME, MSG_DELAY_PLAYTIME);
-		//czg modify debug 20798 begin
+		//modify bug 20798 begin
 		mHandler.sendEmptyMessageDelayed(MSG_SAVE_PLAYTIME, 200);
-		//czg modify debug 20798 end
+		//modify bug 20798 end
 	}
 
 	// 停止播放时间记录

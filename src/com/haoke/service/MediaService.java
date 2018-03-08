@@ -269,7 +269,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
             case McuFunc.POWER_STATE:
                 if (data == PowerState.POWER_OFF) {
                     MediaInterfaceUtil.setMuteRecordPlayState(KeyEvent.KEYCODE_POWER);
-                    //czg modify debug 20762 begin
+                    //modify bug 20762 begin
                     //操作图片播放,暂停
                     boolean playImage = Image_Activity_Main.isPlayImage(MediaApplication.getInstance());
                     if (playImage) {
@@ -277,10 +277,10 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
                         intent.setAction("power_off");
                         sendBroadcast(intent);
                     }
-                  //czg modify debug 20762 end
+                  //modify bug 20762 end
                 } else if (data == PowerState.POWER_ON) {
                     MediaInterfaceUtil.cancelMuteRecordPlayState(KeyEvent.KEYCODE_POWER);
-                    //czg modify debug 20762 begin 
+                    //modify bug 20762 begin 
                     //操作图片播放,播放
                     boolean playImage = Image_Activity_Main.isPlayImage(MediaApplication.getInstance());
                     if (!playImage) {
@@ -288,7 +288,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
                         intent.setAction("power_on");
                         sendBroadcast(intent);
                     }
-                  //czg modify debug 20762 end
+                  //modify bug 20762 end
                 }
                 break;
             }

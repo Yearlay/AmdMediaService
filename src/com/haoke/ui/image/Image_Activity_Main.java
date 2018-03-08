@@ -109,7 +109,7 @@ public class Image_Activity_Main extends Activity implements
 
         initIntent(getIntent());
         
-      //czg modify debug 20762 begin
+      //modify bug 20762 begin
         IntentFilter intentFilter=new IntentFilter();
         intentFilter.addAction("power_off");
         intentFilter.addAction("power_on");
@@ -130,7 +130,7 @@ public class Image_Activity_Main extends Activity implements
             }
         };
         registerReceiver(mPowerRreceiver, intentFilter);
-      //czg modify debug 20762 end
+      //modify bug 20762 end
     }
     
     private void initIntent(Intent intent){
@@ -306,9 +306,9 @@ public class Image_Activity_Main extends Activity implements
         super.onDestroy();
         AllMediaList.instance(getApplicationContext()).unRegisterLoadListener(this);
         unregisterReceiver(mOperateAppReceiver);
-        //czg modify debug 20762 begin
+        //modify bug 20762 begin
         unregisterReceiver(mPowerRreceiver);
-        //czg modify debug 20762 begin
+        //modify bug 20762 begin
     }
 
     private void updateRadioGroup(final int deviceType) {

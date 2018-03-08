@@ -16,7 +16,7 @@
         android:id="@+id/music_play_layout_stub"
         android:layout_marginTop="15dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="428px"
         android:inflatedId="@+id/music_play_layout"
         android:visibility="gone"
         android:layout="@layout/music_fragment_play"/>

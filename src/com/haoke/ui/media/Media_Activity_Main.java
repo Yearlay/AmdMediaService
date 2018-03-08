@@ -347,7 +347,12 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
         Log.d(TAG, "setCurPlayViewState isHomeFragment="+isHomeFragment+"; isAudioMusicPlayFragment="+isAudioMusicPlayFragment
                 +"; isBtMusicPlayFragment="+isBtMusicPlayFragment+"; isAudioMusicPlay="+isAudioMusicPlay
                 +"; isBTMusicPlay="+isBTMusicPlay+"; showSearchButton="+showSearchButton);
-        mActivityTab.setCurPlayViewState(showUnderline, viewState);
+//        mActivityTab.setCurPlayViewState(showUnderline, viewState);
+        //modify bug 20831 begin
+        mActivityTab.setCurPlayViewState(showUnderline, viewState,
+                isAudioMusicPlayFragment, isBtMusicPlayFragment,
+                isAudioMusicPlay);
+        //modify bug 20831 end
         mSearchButton.setVisibility(showSearchButton ? View.VISIBLE : View.INVISIBLE);
     }
     

@@ -54,13 +54,13 @@ public class ModeSwitch {
     
     private static int sCurSourceMode = EMPTY_MODE;
     public static void setCurSourceMode(int source) {
-      //czg modify debug 20470/20493 begin
+      //modify bug 20470/20493 begin
         for (int index = 0; index < sModeList.length; index++) {
             if (source == sModeList[index]) {
                 sCurSourceMode = source;
             }
         }
-      //czg modify debug 20470/20493 end
+      //modify bug 20470/20493 end
 //        sCurSourceMode = source;
     }
     
