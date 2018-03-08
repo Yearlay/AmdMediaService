@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/copy_main_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/pub_msgbox_bg1" >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:gravity = "center"
+        android:orientation="vertical" >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="68px"
+            android:gravity="center" >
+            <TextView
+                android:id="@+id/pub_dialog_title"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="@string/copy_dialog_title"
+                android:textColor="#FFFFFF"
+                android:textSize="22dp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="645px"
+            android:layout_height="2px"
+            android:layout_marginLeft="15px"
+            android:layout_marginRight="20px"
+            android:alpha="0.1"
+            android:background="@android:color/white" />
+        
+        <FrameLayout 
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            
+            <LinearLayout
+                android:id="@+id/check_layout"
+                android:layout_width="match_parent"
+                android:layout_height="202px"
+                android:gravity="center" >
+                <TextView
+                    android:id="@+id/pub_dialog_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:ellipsize="end"
+                    android:textSize="22sp"
+                    android:textColor="#FFFFFF"
+                    android:text="检查拷贝的文件是否存在……">
+                </TextView>
+            </LinearLayout>
+            
+            <LinearLayout
+                android:id="@+id/cover_layout"
+                android:layout_width="fill_parent"
+                android:layout_height="284px"
+                android:orientation="vertical" >
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="202px"
+                    android:layout_marginLeft="10px"
+                    android:layout_marginRight="15px"
+                    android:gravity="center" >
+                    <LinearLayout
+                        android:id="@+id/cover_list"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:paddingLeft="15dip"
+                        android:paddingRight="15dip"
+                        android:orientation="vertical" >
+                    </LinearLayout>
+                </ScrollView>
+        
+                <View
+                    android:layout_width="645px"
+                    android:layout_height="2px"
+                    android:layout_marginLeft="15px"
+                    android:layout_marginRight="20px"
+                    android:alpha="0.1"
+                    android:background="@android:color/white" />
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="80px"
+                    android:gravity="center" > 
+                    
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="80px"
+                        android:layout_weight="1"
+                        android:gravity="center" >
+                        <Button
+                            android:id="@+id/copy_ok"
+                            android:layout_width="fill_parent"
+                            android:layout_height="80px"
+                            android:paddingTop="18px"
+                            android:paddingBottom="18px"
+                            android:background="@drawable/bd_dialog_button"
+                            android:text="@string/music_dialog_btn_ok"
+                            android:textColor="@color/hk_custom_text"
+                            android:textSize="22dp" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="2px"
+                        android:layout_height="70px"
+                        android:layout_marginTop="0px"
+                        android:alpha="0.1"
+                        android:background="@android:color/white" />
+                
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="80px"
+                        android:layout_weight="1"
+                        android:gravity="center" >
+                        <Button
+                            android:id="@+id/copy_cancel"
+                            android:layout_width="fill_parent"
+                            android:layout_height="80px"
+                            android:paddingTop="18px"
+                            android:paddingBottom="18px"
+                            android:background="@drawable/bd_dialog_button"
+                            android:text="@string/music_dialog_btn_cancle"
+                            android:textColor="@color/hk_custom_text"
+                            android:textSize="22dp" />
+                    </LinearLayout>
+                </LinearLayout>
+           </LinearLayout>
+
+           <LinearLayout
+               android:id="@+id/progress_layout"
+                android:layout_width="match_parent"
+                android:layout_height="250px"
+                android:layout_gravity="top"
+                android:orientation="vertical"
+                android:gravity="center" >
+                <ImageView
+                    android:id="@+id/progress_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/file_operate_loading_anim" />
+                <TextView
+                    android:id="@+id/pub_dialog_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/progress_view"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="#FFFFFF"
+                    android:textSize="22dp" />
+            </LinearLayout>
+        </FrameLayout>
+    </LinearLayout>
+
+</FrameLayout>

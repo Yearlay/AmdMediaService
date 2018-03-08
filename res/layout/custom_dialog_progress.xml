@@ -26,9 +26,10 @@
         </LinearLayout>
 
         <View
-            android:layout_width="match_parent"
+            android:layout_width="645px"
             android:layout_height="2px"
-            android:layout_marginTop="0px"
+            android:layout_marginLeft="15px"
+            android:layout_marginRight="15px"
             android:alpha="0.1"
             android:background="@android:color/white" />
 

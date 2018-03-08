@@ -446,6 +446,16 @@ public class FileNode {
         this.isSelected = isSelected;
     }
     
+    private boolean copyDestExist;
+    
+    public boolean isCopyDestExist() {
+        return copyDestExist;
+    }
+    
+    public void setCopyDestExist(boolean copyDestExist) {
+        this.copyDestExist = copyDestExist;
+    }
+    
     public String getLastDate() {
         if (lastDate == null) {
             File file = getFile();
