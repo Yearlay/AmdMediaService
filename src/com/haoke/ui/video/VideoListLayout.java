@@ -156,10 +156,10 @@ public class VideoListLayout extends RelativeLayout implements
             Toast.makeText(mContext, R.string.file_operate_cancel, Toast.LENGTH_SHORT).show();
         }
         if (mCopyDialog != null) {
-            mCopyDialog.closeCopyDialog();
             if (mCopyDialog.isCopying()) {
                 Toast.makeText(mContext, R.string.file_operate_cancel, Toast.LENGTH_SHORT).show();
             }
+            mCopyDialog.closeCopyDialog();
         }
     }
 

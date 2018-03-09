@@ -152,7 +152,7 @@ public class Image_Activity_Main extends Activity implements
 					imageList = AllMediaList.instance(getApplicationContext()).getMediaList(DeviceType.USB2, FileType.IMAGE);
 					deviceType = DeviceType.USB2;
 				}
-			} 
+			}
 			if(imageList.size() > 0){
 				Log.e(TAG,"initIntent deviceType: " + deviceType);
 				updateDevice(deviceType, mListLayout.getPhotoListSize() == 0);
@@ -417,7 +417,7 @@ public class Image_Activity_Main extends Activity implements
         if (mPlayPreferences.getImageShowFragment() != SWITCH_TO_LIST_FRAGMENT) {
             onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
         }
-        updateDevice(deviceType, mListLayout.getPhotoListSize() == 0);
+        updateDevice(deviceType, true);
     }
     
     @Override

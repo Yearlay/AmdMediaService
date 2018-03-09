@@ -35,6 +35,7 @@ import com.haoke.data.AllMediaList;
 import com.haoke.data.OperateListener;
 import com.haoke.mediaservice.R;
 import com.haoke.ui.video.Video_Activity_Main;
+import com.haoke.ui.widget.CopyDialog;
 import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
 import com.haoke.ui.widget.CustomDialog.OnDialogListener;
@@ -71,24 +72,26 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
     private SkinManager skinManager;
     private Drawable mLoadingImageDrawable;
     private Drawable mGridViewScrollbarThumb;
+    private CopyDialog mCopyDialog;
     
     public void updataList(ArrayList<FileNode> dataList, StorageBean storageBean) {
-    	Log.e(Image_Activity_Main.TAG,"updataList  size: " + dataList.size());
+        Log.e(Image_Activity_Main.TAG,"updataList  size: " + dataList.size());
         mCurrentStorageBean = storageBean;
         mPhotoList.clear();
         mPhotoList.addAll(dataList);
     }
 
     public void refreshView(StorageBean storageBean) {
-        if (mGridView == null) {
+        if (mGridView == null || mPhotoAdapter == null) {
             return;
         }
         mGridView.requestFocusFromTouch();
         mGridView.setSelection(0);
+        mPhotoAdapter.notifyDataSetChanged();
         if (storageBean.isMounted()) {
-        	Log.e(Image_Activity_Main.TAG,"refreshView  isMounted");
+            Log.e(Image_Activity_Main.TAG,"refreshView  isMounted");
             if (storageBean.isId3ParseCompleted()) {
-            	Log.e(Image_Activity_Main.TAG,"refreshView  isId3ParseCompleted");
+                Log.e(Image_Activity_Main.TAG,"refreshView  isId3ParseCompleted");
                 mEmptyView.setText(R.string.media_no_file);
                 mEmptyView.setVisibility(mPhotoList.size() <= 0 ? View.VISIBLE : View.GONE);
                 mGridView.setVisibility(mPhotoList.size() <= 0 ? View.GONE : View.VISIBLE);
@@ -107,7 +110,7 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
                 mLoadingView.setVisibility(View.VISIBLE);
             }
         } else {
-        	Log.e(Image_Activity_Main.TAG,"refreshView  is not Mounted");
+            Log.e(Image_Activity_Main.TAG,"refreshView  is not Mounted");
             int noDataStr = (storageBean.getDeviceType() == DeviceType.USB1 ?
                     R.string.no_device_usb_one : R.string.no_device_usb_two);
             mEmptyView.setText(noDataStr);
@@ -115,7 +118,6 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
             mGridView.setVisibility(View.GONE);
             mLoadingView.setVisibility(View.GONE);
         }
-        
     }
 
     public void setActivityHandler(Handler handler, Context context) {
@@ -145,20 +147,20 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
     }
     
     public void refreshSkin(boolean loading) {
-    	if(loading || mLoadingImageDrawable == null){
-    		mLoadingImageDrawable = skinManager.getDrawable(R.drawable.media_loading_anim);
-    		mGridViewScrollbarThumb = skinManager.getDrawable(R.drawable.scrollbar_thumb);
-    	}
-    	
-    	if(!loading){
-    		mLoadingImageView.setImageDrawable(mLoadingImageDrawable);
-    		mPhotoAdapter.notifyDataSetChanged();
-    		SkinManager.setScrollViewDrawable(mGridView, mGridViewScrollbarThumb);
-    	}
+        if(loading || mLoadingImageDrawable == null){
+            mLoadingImageDrawable = skinManager.getDrawable(R.drawable.media_loading_anim);
+            mGridViewScrollbarThumb = skinManager.getDrawable(R.drawable.scrollbar_thumb);
+        }
+        
+        if(!loading){
+            mLoadingImageView.setImageDrawable(mLoadingImageDrawable);
+            mPhotoAdapter.notifyDataSetChanged();
+            SkinManager.setScrollViewDrawable(mGridView, mGridViewScrollbarThumb);
+        }
     }
     
     public void dismissDialog() {
-    	Log.e(Image_Activity_Main.TAG,"dismissDialog");
+        Log.e(Image_Activity_Main.TAG,"dismissDialog");
         if (mErrorDialog != null) {
             mErrorDialog.CloseDialog();
         }
@@ -166,6 +168,12 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
                 mProgressDialog.getDialog().isShowing()) {
             mProgressDialog.CloseDialog();
             Toast.makeText(mContext, R.string.file_operate_cancel, Toast.LENGTH_SHORT).show();
+        }
+        if (mCopyDialog != null) {
+            if (mCopyDialog.isCopying()) {
+                Toast.makeText(mContext, R.string.file_operate_cancel, Toast.LENGTH_SHORT).show();
+            }
+            mCopyDialog.closeCopyDialog();
         }
     }
     
@@ -262,18 +270,19 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
     }
     
     public void copySelected() {
-        if (mErrorDialog == null) {
-            mErrorDialog = new CustomDialog();
+        if (mCopyDialog == null) {
+            mCopyDialog = new CopyDialog();
         }
         if (AllMediaList.checkSelected(mContext, mPhotoList)) {
-            mErrorDialog.SetDialogListener(new OnDialogListener() {
+            mCopyDialog.SetDialogListener(new CopyDialog.OnDialogListener() {
                 @Override
                 public void OnDialogEvent(int id) {
                     switch (id) {
-                    case R.id.pub_dialog_ok:
+                    case R.id.copy_ok:
                         doCopy();
                         break;
-                    case R.id.pub_dialog_cancel:
+                    case R.id.copy_cancel:
+                        mCopyDialog.closeCopyDialog();
                         break;
                     }
                 }
@@ -282,8 +291,11 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
                     mPhotoAdapter.notifyDataSetChanged();
                 }
             });
-            mErrorDialog.showCoverDialog(mContext, mPhotoList);
+            mCopyDialog.showCopyDialog(mContext, mPhotoList);
         } else {
+            if (mErrorDialog == null) {
+                mErrorDialog = new CustomDialog();
+            }
             mErrorDialog.ShowDialog(mContext, DIALOG_TYPE.ONE_BTN, R.string.image_copy_empty);
         }
     }
@@ -301,19 +313,36 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
                         Toast.LENGTH_SHORT).show();
             }
             if (selectList.size() > 0) {
-                if (mProgressDialog == null) {
-                    mProgressDialog = new CustomDialog();
-                }
-                mProgressDialog.showProgressDialog(mContext, R.string.copy_image_progress_title, this);
-                AllMediaList.instance(mContext).copyToLocal(selectList, PhotoListLayout.this);
+                AllMediaList.instance(mContext).copyToLocal(selectList,PhotoListLayout.this);
+            } else if (mCopyDialog != null) {
+                mCopyDialog.closeCopyDialog();
             }
         } else {
             new CustomDialog().ShowDialog(mContext, DIALOG_TYPE.ONE_BTN, R.string.failed_check_available_size);
         }
     }
     
-    @Override
-    public void onOperateCompleted(int operateValue, int progress, int resultCode) {
+    private void doOperateCopy(int progress, int resultCode) {
+        if (mCopyDialog == null) {
+            return;
+        }
+        mCopyDialog.updateProgressValue(progress);
+        if (progress == 100) {
+            if (mCopyDialog != null) {
+                mCopyDialog.closeCopyDialog();;
+                if (mActivityHandler != null) {
+                    mActivityHandler.sendEmptyMessage(Video_Activity_Main.CANCEL_EDIT);
+                }
+            }
+            unSelectAll();
+            mActivityHandler.sendEmptyMessage(Image_Activity_Main.DISMISS_COPY_DIALOG);
+        }
+        if (resultCode != OperateListener.OPERATE_SUCEESS) {
+            Toast.makeText(mContext, "拷贝图片文件异常", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void doOperateDelete(int progress, int resultCode) {
         if (mProgressDialog != null) {
             mProgressDialog.updateProgressValue(progress);
         }
@@ -321,11 +350,10 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
             if (mProgressDialog != null) {
                 mProgressDialog.CloseDialog();
                 if (mActivityHandler != null) {
-                	mActivityHandler.sendEmptyMessage(Video_Activity_Main.CANCEL_EDIT);
+                    mActivityHandler.sendEmptyMessage(Video_Activity_Main.CANCEL_EDIT);
                 }
             }
-            if ((operateValue == OperateListener.OPERATE_DELETE || operateValue == OperateListener.OPERATE_UNCOLLECT)
-                    && resultCode == OperateListener.OPERATE_SUCEESS) {
+            if (resultCode == OperateListener.OPERATE_SUCEESS) {
                 for (int i = 0; i < mPhotoList.size();) {
                     if (mPhotoList.get(i).isSelected()) {
                         mPhotoList.remove(i);
@@ -337,16 +365,51 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
             unSelectAll();
             mActivityHandler.sendEmptyMessage(Image_Activity_Main.DISMISS_COPY_DIALOG);
         }
-        if (operateValue == OperateListener.OPERATE_DELETE &&
-                resultCode != OperateListener.OPERATE_SUCEESS) {
+        if (resultCode != OperateListener.OPERATE_SUCEESS) {
             Toast.makeText(mContext, "删除图片文件异常", Toast.LENGTH_SHORT).show();
         }
-        if (operateValue == OperateListener.OPERATE_COPY_TO_LOCAL &&
-                resultCode != OperateListener.OPERATE_SUCEESS) {
-            Toast.makeText(mContext, "拷贝图片文件异常", Toast.LENGTH_SHORT).show();
+    }
+
+    private void doOperateUncollect(int progress, int resultCode) {
+        if (mProgressDialog != null) {
+            mProgressDialog.updateProgressValue(progress);
         }
-        if (operateValue == OperateListener.OPERATE_UNCOLLECT) { // 取消收藏操作完成。
-            AllMediaList.instance(mContext).reLoadAllMedia(FileType.IMAGE);
+        if (progress == 100) {
+            if (mProgressDialog != null) {
+                mProgressDialog.CloseDialog();
+                if (mActivityHandler != null) {
+                    mActivityHandler.sendEmptyMessage(Video_Activity_Main.CANCEL_EDIT);
+                }
+            }
+            if (resultCode == OperateListener.OPERATE_SUCEESS) {
+                for (int i = 0; i < mPhotoList.size();) {
+                    if (mPhotoList.get(i).isSelected()) {
+                        mPhotoList.remove(i);
+                    } else {
+                        i++;
+                    }
+                }
+            }
+            unSelectAll();
+            mActivityHandler.sendEmptyMessage(Image_Activity_Main.DISMISS_COPY_DIALOG);
+        }
+        AllMediaList.instance(mContext).reLoadAllMedia(FileType.IMAGE);
+    }
+    
+    @Override
+    public void onOperateCompleted(int operateValue, int progress, int resultCode) {
+        switch (operateValue) {
+        case OperateListener.OPERATE_UNCOLLECT:
+            doOperateUncollect(progress, resultCode);
+            break;
+        case OperateListener.OPERATE_DELETE:
+            doOperateDelete(progress, resultCode);
+            break;
+        case OperateListener.OPERATE_COPY_TO_LOCAL:
+            doOperateCopy(progress, resultCode);
+            break;
+        default:
+            break;
         }
     }
     

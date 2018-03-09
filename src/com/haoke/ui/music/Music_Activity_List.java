@@ -43,6 +43,7 @@ import com.haoke.constant.MediaUtil.MediaState;
 import com.haoke.constant.MediaUtil.RepeatMode;
 import com.haoke.constant.MediaUtil.ScanState;
 import com.haoke.mediaservice.R;
+import com.haoke.ui.widget.CopyDialog;
 import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
 import com.haoke.ui.widget.CustomDialog.OnDialogListener;
@@ -83,6 +84,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     private SkinManager skinManager;
     private Drawable mLoadAnimationViewDrawable;
     private boolean isShow = false;
+    private CopyDialog mCopyDialog;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -272,6 +274,12 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
                 mProgressDialog.getDialog().isShowing()) {
             mProgressDialog.CloseDialog();
             Toast.makeText(this, R.string.file_operate_cancel, Toast.LENGTH_SHORT).show();
+        }
+        if (mCopyDialog != null) {
+            if (mCopyDialog.isCopying()) {
+                Toast.makeText(this, R.string.file_operate_cancel, Toast.LENGTH_SHORT).show();
+            }
+            mCopyDialog.closeCopyDialog();
         }
         SkinManager.unregisterSkin(mSkinListener);
         //getContentResolver().unregisterContentObserver(mContentObserver);
@@ -572,13 +580,13 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     private void updateCopyState(int data, int data2) {
         if (data == CopyState.COPYING) {
             if (data2 >= 0) {
-                if (mProgressDialog != null) {
-                    mProgressDialog.updateProgressValue(data2);
+                if (mCopyDialog != null) {
+                    mCopyDialog.updateProgressValue(data2);
                 }
             }
             if (data2 == 100) {
-                if (mProgressDialog != null) {
-                    mProgressDialog.CloseDialog();
+                if (mCopyDialog != null) {
+                    mCopyDialog.closeCopyDialog();
                 }
                 for (int pos = 0; pos < mIF.getListTotal(); pos++) {
                     if (mIF.isCurItemSelected(pos)) {
@@ -598,22 +606,23 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     private void copyItems() {
         final ArrayList<FileNode> audioList = AllMediaList.instance(getApplicationContext())
                 .getMediaList(mDeviceType, FileType.AUDIO);
-        if (mErrorDialog == null) {
-            mErrorDialog = new CustomDialog();
+        if (mCopyDialog == null) {
+            mCopyDialog = new CopyDialog();
         }
         if (AllMediaList.checkSelected(this, audioList)) {
-            mErrorDialog.SetDialogListener(new OnDialogListener() {
+            mCopyDialog.SetDialogListener(new CopyDialog.OnDialogListener() {
                 @Override
                 public void OnDialogEvent(int id) {
                     switch (id) {
-                    case R.id.pub_dialog_ok:
+                    case R.id.copy_ok:
                         if (FileNode.existSameNameFile(audioList)) {
                             Toast.makeText(Music_Activity_List.this, R.string.copy_file_error_of_same_name,
                                     Toast.LENGTH_SHORT).show();
                         }
                         doCopy(audioList);
                         break;
-                    case R.id.pub_dialog_cancel:
+                    case R.id.copy_cancel:
+                        mCopyDialog.closeCopyDialog();
                         break;
                     }
                 }
@@ -622,8 +631,11 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
                     notifyDataSetChanged();
                 }
             });
-            mErrorDialog.showCoverDialog(this, audioList);
+            mCopyDialog.showCopyDialog(this, audioList);
         } else {
+            if (mErrorDialog == null) {
+                mErrorDialog = new CustomDialog();
+            }
             mErrorDialog.ShowDialog(this, DIALOG_TYPE.ONE_BTN, R.string.music_copy_empty);
         }
     }
@@ -631,11 +643,12 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     private void doCopy(ArrayList<FileNode> audioList) {
         if (MediaUtil.checkAvailableSize(audioList)) {
             if (isItemsSeleted()) {
-                if (mProgressDialog == null) {
-                    mProgressDialog = new CustomDialog();
+                if (mCopyDialog == null) {
+                    mCopyDialog = new CopyDialog();
                 }
-                mProgressDialog.showProgressDialog(this, R.string.copy_audio_progress_title, this);
                 mIF.copyStart();
+            } else {
+                mCopyDialog.closeCopyDialog();
             }
         } else {
             new CustomDialog().ShowDialog(this, DIALOG_TYPE.ONE_BTN, R.string.failed_check_available_size);
