@@ -48,7 +48,7 @@
                     android:ellipsize="end"
                     android:textSize="22sp"
                     android:textColor="#FFFFFF"
-                    android:text="检查拷贝的文件是否存在……">
+                    android:text="@string/copy_dialog_check_prompt">
                 </TextView>
             </LinearLayout>
             
