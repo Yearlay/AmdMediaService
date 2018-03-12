@@ -34,6 +34,7 @@ public class BTMusicManager implements CarService_Listener,
 	private ComponentName mComponentName;
 	
 	private AudioFocus mAudioFocus = null;
+    public static boolean mPlay = false;
 
 	public BTMusicManager(Service parent) {
 		mParent = parent;
@@ -94,6 +95,7 @@ public class BTMusicManager implements CarService_Listener,
 	                setRecordPlayState(PlayState.STOP);
 	                mBTIF.music_play();
 	            }
+			    mPlay = true;
 			}
 			mAudioManager.registerMediaButtonEventReceiver(mComponentName);
 			break;
@@ -107,7 +109,10 @@ public class BTMusicManager implements CarService_Listener,
                 if (Media_IF.getOnlyBtCallState()) {
                     setRecordPlayState(PlayState.STOP);
                 } else {
-                    setRecordPlayState(playing ? PlayState.PLAY : PlayState.STOP);
+                    setRecordPlayState(playing || mPlay ? PlayState.PLAY : PlayState.STOP);
+                    if(mPlay){
+                        mPlay = !mPlay;
+                    }
                 }
             }
 			break;
