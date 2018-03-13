@@ -3,14 +3,18 @@ package com.amd.radio;
 import java.util.ArrayList;
 
 import com.haoke.application.MediaApplication;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 public class Radio_SimpleSave {
-	private final String TAG = this.getClass().getSimpleName();
+	private static final int SET_CITY = 0;
+    private final String TAG = this.getClass().getSimpleName();
 	//private Context mContext = null;
 	private SharedPreferences mPreferences = null;
 	private SharedPreferences.Editor mEditor = null;
@@ -73,6 +77,18 @@ public class Radio_SimpleSave {
 	}
 	
 	
+	private Handler handler=new Handler(){
+	    public void handleMessage(android.os.Message msg) {
+	        switch (msg.what) {
+            case SET_CITY:
+                getCurCityStationNameList();
+                break;
+            default:
+                break;
+            }
+	    };
+	};
+	
 	public void setCity(String province, String city){
 		if(city!=null && city.length()>0){			
 			String[] citys = city.split("市");
@@ -86,17 +102,19 @@ public class Radio_SimpleSave {
 			province="";
 		}
 		Log.d(TAG, "PROVINCE_NAME:"+province_name+" CITY_NAME:"+city_name+" province:"+province+" city:"+city);
-		
 		if(!province_name.equalsIgnoreCase(province) || !city_name.equalsIgnoreCase(city)){
-			province_name = province;
-			city_name = city;
-			//城市改变更新列表
-			if(simpleSave!=null){				
-				simpleSave.PutString("PROVINCE_NAME", province_name);
-				simpleSave.PutString("CITY_NAME", city_name);
-			}
-		}
-		getCurCityStationNameList();
+            province_name = province;
+            city_name = city;
+            //城市改变更新列表
+            if(simpleSave!=null){               
+                simpleSave.PutString("PROVINCE_NAME", province_name);
+                simpleSave.PutString("CITY_NAME", city_name);
+            }
+            Message msg = Message.obtain();
+            msg.what = SET_CITY;
+            handler.removeMessages(SET_CITY);
+            handler.sendEmptyMessageDelayed(SET_CITY, 1000);
+        }
 	}
 	
 	

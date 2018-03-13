@@ -18,6 +18,7 @@ import com.amd.bt.BT_Listener;
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.media.VRInterfaceUtil;
 import com.amd.radio.RadioManager;
+import com.amd.radio.Radio_CarListener;
 import com.amd.radio.Radio_IF;
 import com.amd.util.Source;
 import com.haoke.application.MediaApplication;
@@ -37,6 +38,7 @@ import com.haoke.define.GlobalDef;
 import com.haoke.define.McuDef;
 import com.haoke.define.McuDef.McuFunc;
 import com.haoke.define.McuDef.PowerState;
+import com.haoke.define.RadioDef.RadioFunc;
 import com.haoke.define.ModeDef;
 import com.haoke.receiver.MediaReceiver;
 import com.haoke.scanner.MediaScanner;
@@ -49,7 +51,7 @@ import com.haoke.util.Media_Listener;
 import com.jsbd.util.Meter_IF;
 
 public class MediaService extends Service implements Media_CarListener, MediaScannerListner,
-                Media_Listener, BT_Listener {
+                Media_Listener, BT_Listener, Radio_CarListener {
     public static final String ACTION_MODE_RECORD = "com.jsbd.modeswitch.action";
     public static final String KEY_COMMAND_FROM = "isfrom";
     public static final int VALUE_FROM_SCAN = 1;
@@ -113,6 +115,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         
         mMediaIF.registerLocalCallBack(this);
         mBTIF.registerModeCallBack(this);
+        mRadioIF.registerModeCallBack(this);
         
         AllMediaList.instance(getApplicationContext());
         
@@ -486,5 +489,34 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         filter.setPriority(10001);
         registerReceiver(mMediaReceiver, filter);
         DebugLog.i("Yearlay", "registerReceiverInternal isDynamicFlag!");
+    }
+
+    @Override
+    public void onRadioCarDataChange(int mode, int func, int data) {
+        if (Source.isMcuMode(mode)) {
+            switch (func) {
+            case McuFunc.SOURCE:
+                break;
+            }
+        } else if (mode == mRadioIF.getMode()) {
+            switch (func) {
+            case RadioFunc.FREQ:
+                sendMeterFreq(data);
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void setRadioCurInterface(int data) {}
+    
+    private void sendMeterFreq(int freq) {
+        if (!isRescanOrScan5S()) {
+            Radio_IF.sendRadioInfo(mRadioIF.getCurBand(), freq);
+        }
+    }
+    
+    private boolean isRescanOrScan5S() {
+        return mRadioIF.isRescanState() || mRadioIF.isScan5SState() || mRadioIF.isScanAutoNextState();
     }
 }

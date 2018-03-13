@@ -82,7 +82,7 @@ public class Radio_CarCallBack {
 			if (listener == null)
 				continue;
 
-			listener.setCurInterface(id);
+			listener.setRadioCurInterface(id);
 		}
 	}
 
@@ -116,7 +116,7 @@ public class Radio_CarCallBack {
 				if (listener == null)
 					continue;
 
-				listener.onCarDataChange(mode, func, data);
+				listener.onRadioCarDataChange(mode, func, data);
 			}
 			if (func == RadioFunc.FREQ // 表示频率发生改变。
 	                || func == RadioFunc.STATE // 表示收音播放状态发生改变

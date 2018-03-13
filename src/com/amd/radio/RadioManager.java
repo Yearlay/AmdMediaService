@@ -154,7 +154,7 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 	}
 
 	@Override
-	public void onCarDataChange(int mode, int func, int data) {
+	public void onRadioCarDataChange(int mode, int func, int data) {
 		if (Source.isMcuMode(mode)) {
 			Log.v(TAG, "onCarDataChange MCU func=" + func + ", data=" + data);
 			switch (func) {
@@ -177,7 +177,7 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 	}
 
 	@Override
-	public void setCurInterface(int data) {
+	public void setRadioCurInterface(int data) {
 
 	}
 }

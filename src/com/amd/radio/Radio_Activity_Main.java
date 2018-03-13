@@ -526,9 +526,9 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
         }
     }
     
-    @Override public void setCurInterface(int data) {}
+    @Override public void setRadioCurInterface(int data) {}
     @Override
-    public void onCarDataChange(int mode, int func, int data) {
+    public void onRadioCarDataChange(int mode, int func, int data) {
         Log.d(TAG, "onCarDataChange mode = " + mode + " , func = " + func + " , data = " + data);
         if (Source.isMcuMode(mode)) {
             switch (func) {
@@ -541,7 +541,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
             case RadioFunc.FREQ:
                 updatePlayStation();
                 updateFreq(data);
-                sendMeterFreq(data);
+//                sendMeterFreq(data);
                 break;
             case RadioFunc.BAND:
                 updateBand(data);

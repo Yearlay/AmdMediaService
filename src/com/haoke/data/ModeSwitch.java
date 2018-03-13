@@ -99,7 +99,7 @@ public class ModeSwitch {
                 }
                 break;
             case MUSIC_BT_MODE: // 需要判断BT连接是否存在。不存在，就进入Radio界面。
-                if (BT_IF.getInstance().getConnState() == BTConnState.CONNECTED) {
+                if (BT_IF.getInstance().getConnState() == BTConnState.CONNECTED && BT_IF.getInstance().getAgreementState()) {
                     getModeFlag = true;
                 } else {
                     nextMode = RADIO_MODE;
