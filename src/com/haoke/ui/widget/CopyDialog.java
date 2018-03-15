@@ -131,6 +131,11 @@ public class CopyDialog implements OnClickListener, OnDismissListener {
     };
     
     private void checkShow() {
+        //modify bug 20928 begin
+        if (mDialog == null) {
+            return;
+        }
+        //modify bug 20928 begin
         mCopyState = CHECK_SHOW;
         mCheckLayout.setVisibility(View.VISIBLE);
         mCoverLayout.setVisibility(View.INVISIBLE);
@@ -176,6 +181,11 @@ public class CopyDialog implements OnClickListener, OnDismissListener {
     }
     
     private void coverShow() {
+        //modify bug 20928 begin
+        if (mDialog == null) {
+            return;
+        }
+        //modify bug 20928 end
         mCopyState = COVER_SHOW;
         mCheckLayout.setVisibility(View.INVISIBLE);
         mCoverLayout.setVisibility(View.VISIBLE);
@@ -183,6 +193,11 @@ public class CopyDialog implements OnClickListener, OnDismissListener {
     }
 
     private void progressShow(int value) {
+        //modify bug 20928 begin
+        if (mDialog == null) {
+            return;
+        }
+        //modify bug 20928 end
         if (mCopyState != PROGRESS_SHOW) {
             mCopyState = PROGRESS_SHOW;
             mCheckLayout.setVisibility(View.INVISIBLE);

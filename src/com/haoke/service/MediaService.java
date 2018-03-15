@@ -407,6 +407,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
                 " && message: " + message);
     }
 
+    private boolean btTrackChange = false;
     @Override
     public void onBTDataChange(int mode, int func, int data) { // 目的是给仪表发送信息。
         boolean needToSend = false;
@@ -417,6 +418,9 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
                 break;
             case BTFunc.MUSIC_ID3_UPDATE://401
                 needToSend = true;
+                break;
+            case BTFunc.MUSIC_TRACK_CHANGE:
+                btTrackChange = true;
                 break;
             case BTFunc.CONN_STATE://101
                 break;
@@ -435,6 +439,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
             if (!TextUtils.isEmpty(title)) {
                 Meter_IF.sendMusicInfo(title, artist, album);
             }
+            btTrackChange = false;
         }
     }
 

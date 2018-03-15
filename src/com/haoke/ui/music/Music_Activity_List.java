@@ -651,6 +651,9 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
                 mCopyDialog.closeCopyDialog();
             }
         } else {
+            //modify bug 20966 begin
+            mCopyDialog.closeCopyDialog();
+            //modify bug 20966 end
             new CustomDialog().ShowDialog(this, DIALOG_TYPE.ONE_BTN, R.string.failed_check_available_size);
         }
     }

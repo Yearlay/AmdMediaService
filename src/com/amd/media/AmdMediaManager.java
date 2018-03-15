@@ -509,7 +509,13 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	    			mPlayingFileNode = fileNode;
 	    			setPlayingData(fileNode.getDeviceType(), fileNode.getFileType(), true);
 	    			mPlayingFileNode = null;
-	    			playOther(null, mPlayingPos);
+	    			//modify bug 20923 begin
+	    			if (mPlayingPos >= 0) {
+	                    playOther(null, mPlayingPos);
+	    			} else {
+	    			    playOther(fileNode, -1);
+	    			}
+	    			//modify bug 20923 end
 	    		}
 	    	}
     		return;
