@@ -81,6 +81,11 @@ public class Radio_SimpleSave {
 	    public void handleMessage(android.os.Message msg) {
 	        switch (msg.what) {
             case SET_CITY:
+                //城市改变更新列表
+                if(simpleSave!=null) {
+                    simpleSave.PutString("PROVINCE_NAME", province_name);
+                    simpleSave.PutString("CITY_NAME", city_name);
+                }
                 getCurCityStationNameList();
                 break;
             default:
@@ -105,11 +110,6 @@ public class Radio_SimpleSave {
 		if(!province_name.equalsIgnoreCase(province) || !city_name.equalsIgnoreCase(city)){
             province_name = province;
             city_name = city;
-            //城市改变更新列表
-            if(simpleSave!=null){               
-                simpleSave.PutString("PROVINCE_NAME", province_name);
-                simpleSave.PutString("CITY_NAME", city_name);
-            }
             Message msg = Message.obtain();
             msg.what = SET_CITY;
             handler.removeMessages(SET_CITY);
@@ -261,7 +261,7 @@ public class Radio_SimpleSave {
 	public void PutString(String name, String value) {
 		try {
 			mEditor.putString(name, value);
-			mEditor.commit();
+			mEditor.apply();
 			
 		} catch (Exception e) {
 			Log.e(TAG, "PutData e=" + e.getMessage());
@@ -272,7 +272,7 @@ public class Radio_SimpleSave {
 	public void PutInt(String name, int value) {
 		try {
 			mEditor.putInt(name, value);
-			mEditor.commit();
+			mEditor.apply();
 			
 		} catch (Exception e) {
 			Log.e(TAG, "PutData e=" + e.getMessage());
@@ -283,7 +283,7 @@ public class Radio_SimpleSave {
 	public void PutBoolean(String name, boolean value) {
 		try {
 			mEditor.putBoolean(name, value);
-			mEditor.commit();
+			mEditor.apply();
 			
 		} catch (Exception e) {
 			Log.e(TAG, "PutData e=" + e.getMessage());
