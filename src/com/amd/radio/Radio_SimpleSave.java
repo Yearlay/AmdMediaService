@@ -261,7 +261,7 @@ public class Radio_SimpleSave {
 	public void PutString(String name, String value) {
 		try {
 			mEditor.putString(name, value);
-			mEditor.commit();
+			mEditor.apply();
 			
 		} catch (Exception e) {
 			Log.e(TAG, "PutData e=" + e.getMessage());
@@ -272,7 +272,7 @@ public class Radio_SimpleSave {
 	public void PutInt(String name, int value) {
 		try {
 			mEditor.putInt(name, value);
-			mEditor.commit();
+			mEditor.apply();
 			
 		} catch (Exception e) {
 			Log.e(TAG, "PutData e=" + e.getMessage());
@@ -283,7 +283,7 @@ public class Radio_SimpleSave {
 	public void PutBoolean(String name, boolean value) {
 		try {
 			mEditor.putBoolean(name, value);
-			mEditor.commit();
+			mEditor.apply();
 			
 		} catch (Exception e) {
 			Log.e(TAG, "PutData e=" + e.getMessage());
