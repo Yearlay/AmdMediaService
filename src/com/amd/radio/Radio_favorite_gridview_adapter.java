@@ -5,7 +5,9 @@ import java.util.Arrays;
 
 import com.amd.util.SkinManager;
 import com.haoke.mediaservice.R;
+import com.haoke.util.Media_IF;
 
+import android.R.integer;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -81,8 +83,17 @@ public class Radio_favorite_gridview_adapter extends BaseAdapter {
 		    }
 			holder.select.setVisibility(View.VISIBLE);
 		} else {
-			holder.freq.setTextColor(Color.parseColor("#FFFFFF"));
-	       	convertView.setBackground(skinManager.getDrawable(R.drawable.bac_list_normal));
+		    //modify bug 20997 begin
+		    int curFreq = Radio_IF.getInstance().getCurFreq();
+		    int freq = mRadioStationList.get(position).getFreq();
+		    if (curFreq == freq) {
+		        holder.freq.setTextColor(skinManager.getColor(R.color.hk_custom_text_p));
+		        convertView.setBackground(skinManager.getDrawable(R.drawable.bac_list_on));
+		    }else{
+		        holder.freq.setTextColor(Color.parseColor("#FFFFFF"));
+	            convertView.setBackground(skinManager.getDrawable(R.drawable.bac_list_normal));
+		    }
+		    //modify bug 20997 end
 			holder.select.setVisibility(View.INVISIBLE);
 		}
 
