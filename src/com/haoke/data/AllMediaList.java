@@ -990,8 +990,8 @@ public class AllMediaList {
     }
     
     public static void launcherTocheckAllStorageScanState(Context context) {
-        Intent intents = new Intent(context, MediaService.class);
+        /*Intent intents = new Intent(context, MediaService.class);
         intents.putExtra(MediaService.KEY_COMMAND_FROM, MediaService.VALUE_FROM_CHECK_ALL_SRORAGE_SCAN_STATE);
-        context.startService(intents);
+        context.startService(intents);*/
     }
 }
