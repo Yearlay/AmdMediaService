@@ -73,7 +73,7 @@ public class AudioFocus {
 					+ ", durationHint: " + durationHint + ", forceRequest: " + forceRequest);
 		
 		if (mAudioManager == null) {
-			Log.w(TAG, "requestAudioFocus mAudioManager == null");
+			DebugLog.w(TAG, "requestAudioFocus mAudioManager == null");
 			return false;
 		}
 		
@@ -92,7 +92,7 @@ public class AudioFocus {
 					onPlayStateChange(PlayState.PLAY);
 					return true;
 				} else {
-					Log.w(TAG, "requestAudioFocus failed");
+					DebugLog.w(TAG, "requestAudioFocus failed");
 					return false;
 				}
 			} else {
@@ -117,7 +117,7 @@ public class AudioFocus {
 			int ret = mAudioManager.requestAudioFocus(mAudioFocusListener,
 					AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
 			if (ret == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-				Log.v(TAG, "requestAudioFocus AUDIOFOCUS_REQUEST_GRANTED");
+				DebugLog.v(TAG, "requestAudioFocus AUDIOFOCUS_REQUEST_GRANTED");
 				mAudioFocusState = AudioManager.AUDIOFOCUS_GAIN;
 				onPlayStateChange(PlayState.PLAY);
 				return true;
@@ -143,7 +143,7 @@ public class AudioFocus {
 			int ret = mAudioManager.requestAudioFocus(mAudioFocusListener,
 					AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
 			if (ret == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-				Log.v(TAG, "requestTransientAudioFocus AUDIOFOCUS_GAIN_TRANSIENT");
+				DebugLog.v(TAG, "requestTransientAudioFocus AUDIOFOCUS_GAIN_TRANSIENT");
 				mAudioFocusState = AudioManager.AUDIOFOCUS_GAIN_TRANSIENT;
 //				onPlayStateChange(PlayState.PLAY);
 				return true;
@@ -162,7 +162,7 @@ public class AudioFocus {
 	private AudioManager.OnAudioFocusChangeListener mAudioFocusListener = new AudioManager.OnAudioFocusChangeListener() {
 		@Override
 		public void onAudioFocusChange(int arg0) {
-			Log.v(TAG, "onAudioFocusChange arg0=" + arg0);
+			DebugLog.v(TAG, "onAudioFocusChange arg0=" + arg0);
 			switch (arg0) {
 			case AudioManager.AUDIOFOCUS_GAIN:
 				mAudioFocusState = arg0;
@@ -204,7 +204,7 @@ public class AudioFocus {
 	}
 
 	private void onPlayStateChange(int state) {
-		Log.v(TAG, "onPlayStateChange state=" + state);
+		DebugLog.v(TAG, "onPlayStateChange state=" + state);
 		for (int i = 0; i < mListenerList.size(); i++) {
 			AudioFocusListener listener = mListenerList.get(i);
 			if (listener == null)

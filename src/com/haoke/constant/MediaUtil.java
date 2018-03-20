@@ -553,7 +553,7 @@ public class MediaUtil {
         File file = new File(checkDir);
         if (file != null && !file.exists()) {
             if (!file.mkdirs()) {
-                Log.w("Yearlay", "mkdir collect path failed");
+                DebugLog.w("Yearlay", "mkdir collect path failed");
             }
         }
     }

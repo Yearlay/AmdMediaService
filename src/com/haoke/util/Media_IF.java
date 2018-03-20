@@ -123,7 +123,7 @@ public class Media_IF extends CarService_IF {
 	@Override
 	protected void onServiceDisConn() {
 		super.onServiceDisConn();
-		Log.v(TAG, "HMI------------onServiceDisConn");
+		DebugLog.v(TAG, "HMI------------onServiceDisConn");
 		mServiceConn = false;
 	}
 	

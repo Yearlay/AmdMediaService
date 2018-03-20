@@ -17,6 +17,7 @@ import com.haoke.btjar.main.BTDef.BTFunc;
 import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.serviceif.BTService_Listener;
 import com.haoke.serviceif.CarService_Listener;
+import com.haoke.util.DebugLog;
 import com.haoke.util.Media_IF;
 
 public class BTMusicManager implements CarService_Listener,
@@ -71,7 +72,7 @@ public class BTMusicManager implements CarService_Listener,
 	public void audioFocusChanged(int state) {
 		boolean playing = mBTIF.music_isPlaying();
 		int recordPlayState = getRecordPlayState();
-		Log.v(TAG, "HMI------------audioFocusChanged state=" + state+"; playing="+playing+"; recordPlayState="+recordPlayState);
+		DebugLog.v(TAG, "HMI------------audioFocusChanged state=" + state+"; playing="+playing+"; recordPlayState="+recordPlayState);
 		switch (state) {
 		case PlayState.PLAY:
 			/*if (recordPlayState == PlayState.PAUSE) {
@@ -136,7 +137,7 @@ public class BTMusicManager implements CarService_Listener,
 
 	@Override
 	public void onCarDataChange(int mode, int func, int data) {
-		Log.v(TAG, "onCarDataChange mode=" + mode + ", func=" + func + ", data=" + data);
+		DebugLog.v(TAG, "onCarDataChange mode=" + mode + ", func=" + func + ", data=" + data);
 		if (Source.isMcuMode(mode)) {
 		    if (func == McuFunc.SOURCE) {
 		        if (Source.isBTMusicSource(data)) {

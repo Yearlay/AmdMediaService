@@ -224,7 +224,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	}
 	
 	public int getLastPlayItem(int deviceType, int fileType) {
-        Log.v(TAG, "getLastPlayItem deviceType="+deviceType+"; fileType="+fileType);
+        DebugLog.v(TAG, "getLastPlayItem deviceType="+deviceType+"; fileType="+fileType);
         FileNode node = mAllMediaList.getPlayTime(deviceType, fileType);
         if (node == null || !node.isExist(mContext)) {
             return -1;
@@ -234,7 +234,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 
 	// 播放指定设备的默认歌曲（在mode切源后调用），与getPlayDefaultIndex对应
 	public boolean playDefault(int deviceType, int fileType) {
-		Log.v(TAG, "playDefault deviceType="+deviceType+"; fileType="+fileType);
+		DebugLog.v(TAG, "playDefault deviceType="+deviceType+"; fileType="+fileType);
 
 		FileNode node = mAllMediaList.getPlayTime(deviceType, fileType);
 		ArrayList<FileNode> lists = mAllMediaList.getMediaList(deviceType, fileType);
@@ -243,7 +243,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 				setPlayingData(deviceType, fileType, true);
 				return playOther(null, 0);
 			}
-			Log.v(TAG, "playDefault no song!");
+			DebugLog.v(TAG, "playDefault no song!");
 			return false;
 		}
 		return play(node);
@@ -251,13 +251,13 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	
 	// 播放指定歌曲
 	public boolean play(int pos) {
-		Log.v(TAG, "play pos=" + pos);
+		DebugLog.v(TAG, "play pos=" + pos);
 		setPlayingData(mDeviceType, mFileType, true);
 		return playOther(null, pos);
 	}
 	
 	public boolean play(String filePath) {
-		Log.v(TAG, "play filePath=" + filePath);
+		DebugLog.v(TAG, "play filePath=" + filePath);
 		int deviceType = MediaUtil.getDeviceType(filePath);
 		int fileType = MediaUtil.getMediaType(filePath);
 		if (deviceType == DeviceType.USB1 || deviceType == DeviceType.USB2 ||
@@ -275,7 +275,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	}
 	
 	public boolean play(FileNode fileNode) {
-		Log.v(TAG, "play fileNode=" + fileNode);
+		DebugLog.v(TAG, "play fileNode=" + fileNode);
 		int deviceType = fileNode.getDeviceType();
 		int fileType = fileNode.getFileType();
 		if (deviceType == DeviceType.USB1 || deviceType == DeviceType.USB2 ||
@@ -307,7 +307,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	 * 如果 fileNode为null，则pos生效
 	 */
 	private boolean playOther(FileNode fileNode, int pos) {
-		Log.v(TAG, "playOther fileNode=" + fileNode + "; pos="+pos);
+		DebugLog.v(TAG, "playOther fileNode=" + fileNode + "; pos="+pos);
 		FileNode node = null;
 		
 		if (fileNode == null) {
@@ -376,7 +376,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	
 	// 上一曲（若force为true，表示强制换曲，不受单曲循环影响）
 	public boolean pre(boolean force) {
-		Log.v(TAG, "pre force="+force);
+		DebugLog.v(TAG, "pre force="+force);
 
 		mPrevFlag = true;
 //		setPlayingData(mDeviceType, mFileType, false);
@@ -385,9 +385,9 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		if (repeatMode == RepeatMode.OFF) { // 顺序播放
 			pos = mPlayingPos;
 			pos--;
-			Log.v(TAG, "pre pos:" + pos + ", total:" + mPlayingListSize);
+			DebugLog.v(TAG, "pre pos:" + pos + ", total:" + mPlayingListSize);
 			if (pos < 0) { // 播放结束
-				Log.v(TAG, "pre playOver 1");
+				DebugLog.v(TAG, "pre playOver 1");
 				playOver();
 				return false;
 			}
@@ -423,7 +423,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 
 	// 下一曲（若force为true，表示强制换曲，不受单曲循环影响）
 	public boolean next(boolean force) {
-		Log.v(TAG, "next force="+force+"; mRepeatMode="+mRepeatMode);
+		DebugLog.v(TAG, "next force="+force+"; mRepeatMode="+mRepeatMode);
 
 		mPrevFlag = false;
 //		setPlayingData(mDeviceType, mFileType, false);
@@ -432,9 +432,9 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		if (repeatMode == RepeatMode.OFF) { // 顺序播放
 			pos = mPlayingPos;
 			pos++;
-			Log.v(TAG, "next pos:" + pos + ", total:" + mPlayingListSize);
+			DebugLog.v(TAG, "next pos:" + pos + ", total:" + mPlayingListSize);
 			if (pos > mPlayingListSize - 1) { // 播放结束
-				Log.v(TAG, "next playOver 1");
+				DebugLog.v(TAG, "next playOver 1");
 				playOver();
 				return false;
 			}
@@ -485,7 +485,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	
 	// 设置播放状态
 	public void setPlayState(int state) {
-		Log.v(TAG, "setPlayState state=" + state);
+		DebugLog.v(TAG, "setPlayState state=" + state);
 		if (state == PlayState.PLAY) {
 			if (mPlayingFileNode != null) {
                 if (mMediaPlayer.getMediaState() == MediaState.PREPARED) {
@@ -637,7 +637,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 
 	// 播放结束处理
 	private void playOver() {
-		Log.v(TAG, "playOver");
+		DebugLog.v(TAG, "playOver");
 		
 		mErrorCount = 5;
 		mPlayingPos = -1;
@@ -654,7 +654,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	// 播放开始
 	@Override
 	public void onStart() {
-		Log.v(TAG, "onStart");
+		DebugLog.v(TAG, "onStart");
 		startRecordTimer(); // 开始播放时间记录
 		mHandler.obtainMessage(MSG_SAVE_PLAYSTATE, mPlayingFileType, 1).sendToTarget();
 	}
@@ -662,14 +662,14 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	// 播放暂停
 	@Override
 	public void onPause() {
-		Log.v(TAG, "onPause");
+		DebugLog.v(TAG, "onPause");
 		stopRecordTimer(); // 停止播放时间记录
 	}
 
 	// 播放停止
 	@Override
 	public void onStop() {
-		Log.v(TAG, "onStop");
+		DebugLog.v(TAG, "onStop");
 		stopRecordTimer(); // 停止播放时间记录
 		//mHandler.obtainMessage(MSG_SAVE_PLAYSTATE, mPlayingFileType, 0).sendToTarget();
 	}
@@ -677,7 +677,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	// 换曲/歌曲已播放
 	@Override
 	public void onPreparing() {
-		Log.v(TAG, "onPreparing");
+		DebugLog.v(TAG, "onPreparing");
 		onDataChanged(mMediaMode, MediaFunc.PREPARING,
 				mMediaPlayer.getMediaState(), 0);
 	}
@@ -685,7 +685,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	// 换曲/歌曲已播放
 	@Override
 	public void onPrepared() {
-		Log.v(TAG, "onPrepared");
+		DebugLog.v(TAG, "onPrepared");
 		mErrorCount = 0;
 		mPrevFlag = false;
 		//mBakMediaScanner.readId3(); // 准备好媒体信息
@@ -700,7 +700,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 				if (fileNode != null) {
 					playTime = fileNode.getPlayTime();
 				}
-				Log.v(TAG, "onPrepared playTime=" + playTime);
+				DebugLog.v(TAG, "onPrepared playTime=" + playTime);
 				if (playTime >= 1000) {
 					setPosition(playTime);
 				}
@@ -720,7 +720,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	// 播放结束
 	@Override
 	public void onCompletion() {
-		Log.v(TAG, "onCompletion");
+		DebugLog.v(TAG, "onCompletion");
 		clearPlayRecord();
 		mIsPlayDefault = false;
 		if (!mScanMode) {
@@ -732,14 +732,14 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	// 定点播放成功
 	@Override
 	public void onSeekCompletion() {
-		Log.v(TAG, "onSeekCompletion");
+		DebugLog.v(TAG, "onSeekCompletion");
 		onDataChanged(mMediaMode, MediaFunc.SEEK_COMPLETION, 0, 0);
 	}
 
 	// 播放错误
 	@Override
 	public void onError() {
-		Log.v(TAG, "onError mErrorCount:" + mErrorCount);
+		DebugLog.v(TAG, "onError mErrorCount:" + mErrorCount);
 		clearPlayRecord();
 		mIsPlayDefault = false;
 		if (!mScanMode) {
@@ -752,7 +752,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 						next(true); // 自动播放下一曲
 					}
 				} else {
-					Log.v(TAG, "onError playOver");
+					DebugLog.v(TAG, "onError playOver");
 					playOver();
 				}
 			}
@@ -764,7 +764,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	// 文件错误
 	@Override
 	public void onIOException() {
-		Log.v(TAG, "onIOException mErrorCount:" + mErrorCount);
+		DebugLog.v(TAG, "onIOException mErrorCount:" + mErrorCount);
 		clearPlayRecord();
 		mIsPlayDefault = false;
 		if (!mScanMode) {
@@ -777,7 +777,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 						next(true); // 自动播放下一曲
 					}
 				} else {
-					Log.v(TAG, "onIOException playOver");
+					DebugLog.v(TAG, "onIOException playOver");
 					playOver();
 				}
 			}
@@ -788,16 +788,16 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 
 	@Override
 	public void onSurfaceCreated() {
-		Log.v(TAG, "onSurfaceCreated");
+		DebugLog.v(TAG, "onSurfaceCreated");
 	}
 
 	@Override
 	public void onSurfaceDestroyed() {
-		Log.v(TAG, "onSurfaceDestroyed");
+		DebugLog.v(TAG, "onSurfaceDestroyed");
 	}
 
 	private void onDataChanged(int mode, int func, int data0, int data1) {
-		Log.v(TAG, "onDataChanged mode=" + mode + ", func=" + func + ", data0="
+		DebugLog.v(TAG, "onDataChanged mode=" + mode + ", func=" + func + ", data0="
 				+ data0 + ", data1=" + data1);
 		dispatchDataToClients(mode, func, data0, data1);
 	}
@@ -1024,7 +1024,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	 * eg. {@link com.amd.util.Source#RADIO}
 	 */
 	public void sourceChanged(int source) {
-		Log.v(TAG, "sourceChanged source=" + source);
+		DebugLog.v(TAG, "sourceChanged source=" + source);
 		RecordDevicePlay.instance().sourceChanged(source);
 	}
 	
@@ -1060,7 +1060,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	public void audioFocusChanged(int state) {
 		int playState = getPlayState();
 		int recordPlayState = getRecordPlayState();
-		Log.v(TAG, "HMI------------audioFocusChanged state=" + state + "; playState="+playState+"; recordPlayState="+recordPlayState);
+		DebugLog.v(TAG, "HMI------------audioFocusChanged state=" + state + "; playState="+playState+"; recordPlayState="+recordPlayState);
 
 		switch (state) {
 		case PlayState.PLAY:
@@ -1077,7 +1077,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 			
 		case PlayState.PAUSE:
 //			if (playState == PlayState.STOP) {
-//				Log.v(TAG, "HMI------------audioFocusChanged STOP 1");
+//				DebugLog.v(TAG, "HMI------------audioFocusChanged STOP 1");
 //				return;
 //			}
 			setRecordPlayState(playState);
@@ -1091,7 +1091,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 				mAudioManager.unregisterMediaButtonEventReceiver(mComponentName);
 			}
 //			if (playState == PlayState.STOP) {
-//				Log.v(TAG, "HMI------------audioFocusChanged STOP 2");
+//				DebugLog.v(TAG, "HMI------------audioFocusChanged STOP 2");
 //				return;
 //			}
 			setRecordPlayState(PlayState.STOP);
@@ -1169,7 +1169,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	
 	// 获得指定设备默认歌曲编号（在mode切源后调用）, 与playDefault对应
 	public int getPlayDefaultIndex(int deviceType, int fileType) {
-		Log.v(TAG, "getPlayDefaultIndex deviceType="+deviceType+"; fileType="+fileType);
+		DebugLog.v(TAG, "getPlayDefaultIndex deviceType="+deviceType+"; fileType="+fileType);
 
 		FileNode node = mAllMediaList.getPlayTime(deviceType, fileType);
 		ArrayList<FileNode> lists = mAllMediaList.getMediaList(deviceType, fileType);
@@ -1177,7 +1177,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 			if (lists.size() > 0) {
 				return 0;
 			}
-			Log.v(TAG, "playDefault no song!");
+			DebugLog.v(TAG, "playDefault no song!");
 			return -1;
 		}
 		int index = -1;

@@ -268,7 +268,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
 			AllMediaList.sCarSpeed = data / 100.0f;
 		}
         if (Source.isMcuMode(mode)) {
-            Log.v(TAG, "onCarDataChange MCU func=" + func + ", data=" + data);
+            DebugLog.v(TAG, "onCarDataChange MCU func=" + func + ", data=" + data);
             switch (func) {
             case McuFunc.SOURCE:
                 removeModeHandlerMsg();

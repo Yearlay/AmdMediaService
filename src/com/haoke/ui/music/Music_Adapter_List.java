@@ -106,7 +106,7 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
             holder.mDescripeText = (TextView) convertView.findViewById(R.id.music_item_text);
             
             holder.mPlayStateImage = (ImageView) convertView.findViewById(R.id.music_item_is_play);
-            Log.v(TAG, "getView() setTag-position=" + position);
+            DebugLog.v(TAG, "getView() setTag-position=" + position);
             convertView.setTag(holder);
         }
         
@@ -119,12 +119,12 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
     }
     
     private void setData(ViewHolder holder, int position) {
-        Log.v(TAG, "setData() mTotal=" +mTotal);
+        DebugLog.v(TAG, "setData() mTotal=" +mTotal);
         int itemNo = position;
         // 控制内容显示
         Bitmap thumb = null;
         if (itemNo < mTotal) {
-            Log.v(TAG, "setData() itemNo=" +itemNo +", mTotal=" +mTotal);
+            DebugLog.v(TAG, "setData() itemNo=" +itemNo +", mTotal=" +mTotal);
             FileNode fileNode = mIF.getItem(itemNo);
             if (fileNode != null) {
                 holder.mItemBg.setBackgroundDrawable(skinManager.getDrawable(R.drawable.music_list_item_selector));

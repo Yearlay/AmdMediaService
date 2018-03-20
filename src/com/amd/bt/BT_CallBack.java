@@ -10,6 +10,7 @@ import android.util.Log;
 import com.haoke.btjar.main.BTDef.BTFunc;
 import com.haoke.data.AllMediaList;
 import com.haoke.serviceif.BTService_Listener;
+import com.haoke.util.DebugLog;
 
 public class BT_CallBack {
 
@@ -79,7 +80,7 @@ public class BT_CallBack {
 			return;
 		}
 
-		Log.v(TAG, "HMI------------onDataChange mode=" + mode + ", func="
+		DebugLog.v(TAG, "HMI------------onDataChange mode=" + mode + ", func="
 				+ func + ", data=" + data);
 		Message message = mHandler.obtainMessage();
 		message.what = mode; // 模式ID

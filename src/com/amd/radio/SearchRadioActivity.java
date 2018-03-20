@@ -450,7 +450,7 @@ public class SearchRadioActivity extends Activity implements OnClickListener,
 	
 //	@Override
 //	public void onCarDataChange(int mode, int func, int data) {
-//		Log.v(TAG, "mode="+mode+"func="+func+"data="+data);
+//		DebugLog.v(TAG, "mode="+mode+"func="+func+"data="+data);
 //		if (mode == mIF.getMode()) {
 //			switch (func) {
 //			case RadioFunc.FREQ:

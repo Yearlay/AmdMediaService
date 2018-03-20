@@ -8,6 +8,7 @@ package com.haoke.receiver;
 
 import com.amd.bt.BT_IF;
 import com.haoke.define.GlobalDef;
+import com.haoke.util.DebugLog;
 import com.haoke.util.Media_IF;
 import com.amd.radio.Radio_IF;
 
@@ -23,7 +24,7 @@ public class CarServiceReceiver extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context arg0, Intent intent) {
 		// TODO Auto-generated method stub
-		Log.v(TAG, "onReceive intent="+intent.getAction());	
+		DebugLog.v(TAG, "onReceive intent="+intent.getAction());	
 		if (intent.getAction().equals(GlobalDef.CAR_SERVICE_ACTION_REBOOT)) {
 			Media_IF.getInstance().bindCarService(); // 重新绑定
 			Radio_IF.getInstance().bindCarService(); // 重新绑定

@@ -11,6 +11,7 @@ import com.amd.util.Source;
 import com.haoke.data.AllMediaList;
 import com.haoke.define.RadioDef.RadioFunc;
 import com.haoke.serviceif.CarService_Listener;
+import com.haoke.util.DebugLog;
 
 public class Radio_CarCallBack {
 
@@ -93,7 +94,7 @@ public class Radio_CarCallBack {
 
 		int curMode = Radio_IF.getInstance().getMode();
 		if (mode == curMode || Source.isMcuMode(mode) || Source.isBTMode(mode)) {
-			Log.v(TAG, "HMI------------onDataChange mode=" + mode + ", func="
+			DebugLog.v(TAG, "HMI------------onDataChange mode=" + mode + ", func="
 					+ func + ", data=" + data);
 			Message message = mHandler.obtainMessage();
 			message.what = mode; // 模式ID

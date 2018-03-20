@@ -5,6 +5,8 @@
 
 package com.haoke.scanner;
 
+import com.haoke.util.DebugLog;
+
 import android.util.Log;
 
 public class IndexInfo {
@@ -29,14 +31,14 @@ public class IndexInfo {
 
 	public void setIndex(int index) {
 		synchronized (this) {
-			Log.v("IndexInfo", "setIndex() index=" + index);
+			DebugLog.v("IndexInfo", "setIndex() index=" + index);
 			mIndex = index;
 		}
 	}
 
 	public int getIndex() {
 		synchronized (this) {
-			Log.v("IndexInfo", "getIndex() mIndex=" + mIndex);
+			DebugLog.v("IndexInfo", "getIndex() mIndex=" + mIndex);
 			return mIndex;
 		}
 	}
@@ -55,28 +57,28 @@ public class IndexInfo {
 
 	public void select(boolean isSelect) {
 		synchronized (this) {
-			Log.v("IndexInfo", "select() isSelect=" + isSelect);
+			DebugLog.v("IndexInfo", "select() isSelect=" + isSelect);
 			mIsSelected = isSelect;
 		}
 	}
 
 	public boolean isSelected() {
 		synchronized (this) {
-			Log.v("IndexInfo", "isSelected() mIsSelected=" + mIsSelected);
+			DebugLog.v("IndexInfo", "isSelected() mIsSelected=" + mIsSelected);
 			return mIsSelected;
 		}
 	}
 
 	public boolean isSaved() {
 		synchronized (this) {
-			Log.v("IndexInfo", "isSaved() mIsSaved=" + mIsSaved);
+			DebugLog.v("IndexInfo", "isSaved() mIsSaved=" + mIsSaved);
 			return mIsSaved;
 		}
 	}
 
 	public void setSaved(boolean saved) {
 		synchronized (this) {
-			Log.v("IndexInfo", "setSaved() saved=" + saved);
+			DebugLog.v("IndexInfo", "setSaved() saved=" + saved);
 			this.mIsSaved = saved;
 		}
 	}

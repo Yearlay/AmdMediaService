@@ -1,32 +1,26 @@
 package com.haoke.util;
 
-import com.haoke.constant.DebugConstant;
-
-import android.util.Log;
+import com.jsbd.util.LogUtil;
 
 public class DebugLog {
 
     public static void d(String tags, String str) {
-        if (!DebugConstant.DEBUG) return;
-        DebugLog.d(tags, str);
+        LogUtil.d(tags, str);
     }
     
     public static void e(String tags, String str) {
-        DebugLog.e(tags, str);
+        LogUtil.e(tags, str);
     }
     
     public static void v(String tags, String str) {
-        if (!DebugConstant.DEBUG) return;
-        Log.v(tags, str);
+        LogUtil.v(tags, str);
     }
     
     public static void w(String tags, String str) {
-        if (!DebugConstant.DEBUG) return;
-        Log.w(tags, str);
+        LogUtil.w(tags, str);
     }
     
     public static void i(String tags, String str) {
-        if (!DebugConstant.DEBUG) return;
-        Log.i(tags, str);
+        LogUtil.i(tags, str);
     }
 }

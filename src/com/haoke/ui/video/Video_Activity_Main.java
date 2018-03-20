@@ -220,14 +220,14 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 /*		if(AllMediaList.sCarSpeed == 0) {
 			AllMediaList.sCarSpeed = Media_IF.getCarSpeed();
 		}*/
-		Log.v(TAG, "HMI------------onStart sCarSpeed: " + AllMediaList.sCarSpeed);
+		DebugLog.v(TAG, "HMI------------onStart sCarSpeed: " + AllMediaList.sCarSpeed);
 		Media_IF.getInstance().registerModeCallBack(this);
 		updateDevice(getCurrentDeviceType());
 	}
 
 	@Override
 	protected void onResume() {
-		Log.v(TAG, "HMI------------onResume");
+		DebugLog.v(TAG, "HMI------------onResume");
 		isShow = true;
 		AllMediaList.notifyAllLabelChange(getApplicationContext(), R.string.pub_video);
 		if (mPlaying) {
@@ -299,21 +299,21 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 	protected void onPause() {
 		super.onPause();
 		isShow = false;
-		Log.v("luke", "HMI------------onPause BeforePlaystate: " + mPlayLayout.getBeforePlaystate());
+		DebugLog.v("luke", "HMI------------onPause BeforePlaystate: " + mPlayLayout.getBeforePlaystate());
 		mRadioGroup.setVisibility(View.GONE);
 		mSearchButton.setVisibility(View.GONE);
 		if (mPlayLayout.getVisibility() == View.VISIBLE) {
-			Log.v(TAG, "HMI------------onPause mPlayLayout VISIBLE");
+			DebugLog.v(TAG, "HMI------------onPause mPlayLayout VISIBLE");
 			mPlayLayout.onPause();
 
 			if (!mPlayLayout.getVideoController().hasAudioFocus()) {
-				Log.v(TAG, "HMI------------onPause mPlayLayout not AudioFocus");
+				DebugLog.v(TAG, "HMI------------onPause mPlayLayout not AudioFocus");
 				mPlayLayout.setBeforePlaystate(mPlayLayout.getBeforePlaystate());
 			} else {
 				mPlayLayout.setBeforePlaystate(VideoPlayController.isVideoPlaying);
 			}
 		}
-		Log.v("luke", "HMI------------onPause BeforePlaystate: " + mPlayLayout.getBeforePlaystate());
+		DebugLog.v("luke", "HMI------------onPause BeforePlaystate: " + mPlayLayout.getBeforePlaystate());
 		mListLayout.dismissDialog();
 		SkinManager.unregisterSkin(mSkinListener);
 		mPlayLayout.unRegisterMediaButtonReceiver();
@@ -322,14 +322,14 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 
 	@Override
 	public void onStop() {
-		Log.v(TAG, "HMI------------onStop");
+		DebugLog.v(TAG, "HMI------------onStop");
 		super.onStop();
 		Media_IF.getInstance().unregisterModeCallBack(this);
 	}
 
 	@Override
 	public void onDestroy() {
-		Log.v(TAG, "HMI------------onDestroy");
+		DebugLog.v(TAG, "HMI------------onDestroy");
 		super.onDestroy();
 		AllMediaList.instance(getApplicationContext()).unRegisterLoadListener(this);
 		unregisterReceiver(mOperateAppReceiver);
@@ -474,7 +474,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 
 	@Override
 	public void onBackPressed() {
-		DebugLog.v(TAG, "HMI-----------onBackPressed---");
+	    DebugLog.v(TAG, "HMI-----------onBackPressed---");
 		if (mPlayLayout.getVisibility() == View.VISIBLE) {
 			onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
 		} else if (mListLayout.isEditMode()) {

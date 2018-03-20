@@ -69,7 +69,7 @@ public class Media_CallBack {
 		}
 
 		if (mode == mMediaMode) {
-			Log.v(TAG, "HMI------------onDataChange mode=" + mode + ", func="
+			DebugLog.v(TAG, "HMI------------onDataChange mode=" + mode + ", func="
 					+ func + ", data1=" + data1 + ", data2=" + data2);
 			Message message = mHandler.obtainMessage();
 			message.what = mode; // 模式ID

@@ -40,7 +40,7 @@ public class AmdMediaPlayer {
 	}
 
 	public void setFileType(int fileType) {
-		Log.v(TAG, "setFileType fileType=" + fileType);
+		DebugLog.v(TAG, "setFileType fileType=" + fileType);
 		mFileType = fileType;
 	}
 	
@@ -49,12 +49,12 @@ public class AmdMediaPlayer {
 	}
 	
 	public void focusGain() {
-		Log.v(TAG, "focusGain");
+		DebugLog.v(TAG, "focusGain");
 		mHasFocus = true;
 	}
 
 	public void focusLossed() {
-		Log.v(TAG, "focusLossed");
+		DebugLog.v(TAG, "focusLossed");
 		mHasFocus = false;
 		if (mRearView != null) {
 			mRearView.showRearSurface(false);
@@ -70,7 +70,7 @@ public class AmdMediaPlayer {
 	}
 
 	public boolean setDataSource(String path) {
-		Log.v(TAG, "setDataSource path=" + path);
+		DebugLog.v(TAG, "setDataSource path=" + path);
 		synchronized (AmdMediaPlayer.this) {
 			if (path == null) {
 				// 路径空
@@ -153,7 +153,7 @@ public class AmdMediaPlayer {
 		@Override
 		public void onPrepared(MediaPlayer mp) {
 			// TODO Auto-generated method stub
-			Log.v(TAG, "mPreparedListener onPrepared mHasFocus="+mHasFocus);
+			DebugLog.v(TAG, "mPreparedListener onPrepared mHasFocus="+mHasFocus);
 			synchronized (AmdMediaPlayer.this) {
 				setMediaState(MediaState.PREPARED);
 				if (mListener != null) {
@@ -163,7 +163,7 @@ public class AmdMediaPlayer {
 					start();
 				}
 			}
-			Log.v(TAG, "mPreparedListener onPrepared over");
+			DebugLog.v(TAG, "mPreparedListener onPrepared over");
 		}
 	};
 
@@ -171,7 +171,7 @@ public class AmdMediaPlayer {
 		@Override
 		public void onCompletion(MediaPlayer mp) {
 			// TODO Auto-generated method stub
-			Log.v(TAG, "mCompletionListener onCompletion");
+			DebugLog.v(TAG, "mCompletionListener onCompletion");
 			synchronized (AmdMediaPlayer.this) {
 				if (getMediaState() == MediaState.PREPARED) {
 					if (mListener != null)
@@ -245,12 +245,12 @@ public class AmdMediaPlayer {
 
 	public void start() {
 		boolean isPlaying = isPlaying();
-		Log.v(TAG, "start mMediaPlayer=" + mMediaPlayer + ", mMediaState="
+		DebugLog.v(TAG, "start mMediaPlayer=" + mMediaPlayer + ", mMediaState="
 				+ getMediaState() + ", isPlaying=" + isPlaying);
 		synchronized (AmdMediaPlayer.this) {
 			// modify by lyb 20170407
 			if (getMediaState() == MediaState.PREPARED && isPlaying == false) {
-				Log.v(TAG, "start mMediaPlayer.start()");
+				DebugLog.v(TAG, "start mMediaPlayer.start()");
 				mMediaPlayer.start();
 				if (mListener != null) {
 					mListener.onStart();
@@ -261,7 +261,7 @@ public class AmdMediaPlayer {
 
 	public void pause() {
 	    int mediaState = getMediaState();
-		Log.v(TAG, "pause mMediaPlayer=" + mMediaPlayer + ", mMediaState="
+		DebugLog.v(TAG, "pause mMediaPlayer=" + mMediaPlayer + ", mMediaState="
 				+ mediaState);
 		synchronized (AmdMediaPlayer.this) {
 			if (mediaState == MediaState.PREPARED) {
@@ -279,7 +279,7 @@ public class AmdMediaPlayer {
 	}
 
 	public void stop() {
-		Log.v(TAG, "stop mMediaPlayer=" + mMediaPlayer);
+		DebugLog.v(TAG, "stop mMediaPlayer=" + mMediaPlayer);
 		synchronized (AmdMediaPlayer.this) {
 			setMediaState(MediaState.IDLE);
 			mMediaPlayer.stop();
@@ -315,7 +315,7 @@ public class AmdMediaPlayer {
 
 	public int seekTo(int time) {
 		synchronized (AmdMediaPlayer.this) {
-			Log.v(TAG, "seekTo time=" + time + ", mMediaState="
+			DebugLog.v(TAG, "seekTo time=" + time + ", mMediaState="
 					+ getMediaState());
 			if (getMediaState() == MediaState.PREPARED) {
 				if (time < 1)
@@ -330,18 +330,18 @@ public class AmdMediaPlayer {
 					// end of file,
 					time = time - 1000;
 				}
-				Log.v(TAG, "seekTo duration=" + mMediaPlayer.getDuration());
+				DebugLog.v(TAG, "seekTo duration=" + mMediaPlayer.getDuration());
 				mMediaPlayer.seekTo((int) time);
 
 			} else {
-				Log.w(TAG, "seekTo, mIsInitialized is false!!");
+				DebugLog.w(TAG, "seekTo, mIsInitialized is false!!");
 			}
 			return time;
 		}
 	}
 
 	private void renew() {
-		Log.v(TAG, "renew mMediaPlayer=" + mMediaPlayer);
+		DebugLog.v(TAG, "renew mMediaPlayer=" + mMediaPlayer);
 		synchronized (AmdMediaPlayer.this) {
 			setMediaState(MediaState.IDLE);
 			if (mMediaPlayer != null) {
@@ -353,7 +353,7 @@ public class AmdMediaPlayer {
 	}
 
 	public void reset() {
-		Log.v(TAG, "reset");
+		DebugLog.v(TAG, "reset");
 		synchronized (AmdMediaPlayer.this) {
 			setMediaState(MediaState.IDLE);
 			mMediaPlayer.reset();
@@ -394,13 +394,13 @@ public class AmdMediaPlayer {
 		public void surfaceChanged(SurfaceHolder holder, int arg1, int arg2,
 				int arg3) {
 			// TODO Auto-generated method stub
-			Log.v(TAG, "mSHCallback, surfaceChanged");
+			DebugLog.v(TAG, "mSHCallback, surfaceChanged");
 		}
 
 		@Override
 		public void surfaceCreated(SurfaceHolder holder) {
 			// TODO Auto-generated method stub
-			Log.v(TAG, "mSHCallback, surfaceCreated");
+			DebugLog.v(TAG, "mSHCallback, surfaceCreated");
 			synchronized (AmdMediaPlayer.this) {
 				try {
 					mSurfaceHolder = holder;
@@ -431,13 +431,13 @@ public class AmdMediaPlayer {
 		@Override
 		public void surfaceDestroyed(SurfaceHolder arg0) {
 			// TODO Auto-generated method stub
-			Log.v(TAG, "mSHCallback, surfaceDestroyed");
+			DebugLog.v(TAG, "mSHCallback, surfaceDestroyed");
 			synchronized (AmdMediaPlayer.this) {
 				mSurfaceHolder = null;
 				// 只有切到非音频源，才可以执行reset
 				// 避免从视频切音频后，surfaceDestroyed比音频的start后执行，导致音频无法播放
 				if (mFileType == FileType.VIDEO) {
-					Log.v(TAG, "mSHCallback, surfaceDestroyed pause");
+					DebugLog.v(TAG, "mSHCallback, surfaceDestroyed pause");
 					// pause();           //del, fix bug 16891
 				}
 				resetDisplay();
@@ -449,7 +449,7 @@ public class AmdMediaPlayer {
 	
 	public void resetDisplay() {
 		synchronized (AmdMediaPlayer.this) {
-			Log.v(TAG, "resetDisplay, mSurfaceHolder:" + mSurfaceHolder);
+			DebugLog.v(TAG, "resetDisplay, mSurfaceHolder:" + mSurfaceHolder);
 			try {
 				if (mSurfaceHolder != null) {
 					mMediaPlayer.setDisplay(mSurfaceHolder);

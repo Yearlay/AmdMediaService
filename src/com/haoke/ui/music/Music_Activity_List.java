@@ -90,7 +90,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i(TAG, " ----- onCreate()");
+        DebugLog.i(TAG, " ----- onCreate()");
         setContentView(R.layout.music_activity_list);
         getWindow().getDecorView().setSystemUiVisibility(mLayoutProps);
         
@@ -108,7 +108,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        Log.i(TAG, " ----- onNewIntent() intent == null:" + (intent == null));
+        DebugLog.i(TAG, " ----- onNewIntent() intent == null:" + (intent == null));
         this.setIntent(intent);
         init();
         getMusicMode();
@@ -129,7 +129,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     private void getMusicMode() {
         Intent intent = getIntent();
         if (intent == null) {
-            Log.i(TAG, "getMusicMode musicMode=" + "intent == null");
+            DebugLog.i(TAG, "getMusicMode musicMode=" + "intent == null");
             return ;
         }
         
@@ -191,7 +191,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         mListTab.setOnTabClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i(TAG, "setOnTabClickListener() v.id = " + v.getId());
+                DebugLog.i(TAG, "setOnTabClickListener() v.id = " + v.getId());
                 switch (v.getId()) {
                 case R.id.music_edit_all:
                     selectAllItems();
@@ -413,7 +413,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     // 更新状态
     private void updateStatus() {
         int scanState = mIF.getScanState();
-        Log.v(TAG, "HMI------------updateStatus scanState=" + scanState);
+        DebugLog.v(TAG, "HMI------------updateStatus scanState=" + scanState);
         if (scanState == ScanState.SCANNING || scanState == ScanState.IDLE) { // 扫描中
             showLoadingLayout();
         } else {//离开扫描页面，需要关闭定时器
@@ -728,14 +728,14 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position,
             long id) {
-        Log.v(TAG, "onItemClick mEditMode="+mEditMode+"; position="+position);
+        DebugLog.v(TAG, "onItemClick mEditMode="+mEditMode+"; position="+position);
         if (!mEditMode) {//扫描列表
             if (MediaInterfaceUtil.mediaCannotPlay()) {
                 return;
             }
             finish();
             int index = mIF.getListItemIndex(position);
-            Log.v(TAG, "HMI-----------index= " + index + ", PlayIndex= " + mIF.getPlayIndex()
+            DebugLog.v(TAG, "HMI-----------index= " + index + ", PlayIndex= " + mIF.getPlayIndex()
             + ", repeat:" + mIF.getRepeatMode() + ", random:" + mIF.getRandomMode());
             if (mIF.getRepeatMode() == RepeatMode.OFF) {                    
                 mIF.setRepeatMode(RepeatMode.CIRCLE);

@@ -71,17 +71,17 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 
 	// 注册接收器
 	public void registerReceiver() {
-		Log.v(TAG, "registerReceiver");
+		DebugLog.v(TAG, "registerReceiver");
 	}
 
 	// 注销接收器
 	public void unregisterReceiver() {
-		Log.v(TAG, "unregisterReceiver");
+		DebugLog.v(TAG, "unregisterReceiver");
 	}
 	
 	@Override
 	public void onServiceConn() {
-		Log.v(TAG, "HMI------------onServiceConn source=" + mIF.getCurSource());
+		DebugLog.v(TAG, "HMI------------onServiceConn source=" + mIF.getCurSource());
 	}
 
 	private boolean mRecordRadioOn = false; // 用来记忆被抢焦点前的播放状态，便于恢复播放
@@ -119,7 +119,7 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 	public void audioFocusChanged(int state) {
 		boolean enable = mIF.isEnable();
 		boolean radioOn = getRecordRadioOn();
-		Log.v(TAG, "HMI------------audioFocusChanged state=" + state + "; enable=" + enable + "; radioOn="+radioOn);
+		DebugLog.v(TAG, "HMI------------audioFocusChanged state=" + state + "; enable=" + enable + "; radioOn="+radioOn);
 		switch (state) {
 		case PlayState.PLAY:
 			if (radioOn) {
@@ -132,7 +132,7 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 			break;
 		case PlayState.PAUSE:
 			if (!enable) {
-				Log.v(TAG, "HMI------------audioFocusChanged STOP 1");
+				DebugLog.v(TAG, "HMI------------audioFocusChanged STOP 1");
 				return;
 			}
 			setRecordRadioOnOff(enable);
@@ -141,7 +141,7 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 		case PlayState.STOP:
 			//MediaInterfaceUtil.resetMediaPlayStateRecord(Source.RADIO);
 //			if (!enable) {
-//				Log.v(TAG, "HMI------------audioFocusChanged STOP 2");
+//				DebugLog.v(TAG, "HMI------------audioFocusChanged STOP 2");
 //				return;
 //			}
 		    if (mComponentName != null) {
@@ -156,7 +156,7 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 	@Override
 	public void onRadioCarDataChange(int mode, int func, int data) {
 		if (Source.isMcuMode(mode)) {
-			Log.v(TAG, "onCarDataChange MCU func=" + func + ", data=" + data);
+			DebugLog.v(TAG, "onCarDataChange MCU func=" + func + ", data=" + data);
 			switch (func) {
 			case McuFunc.SOURCE:
 				break;

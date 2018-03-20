@@ -843,7 +843,7 @@ public class AllMediaList {
             File file = new File(MediaUtil.LOCAL_COPY_DIR);
             if (file != null && !file.exists()) {
                 if (!file.mkdirs()) {
-                    Log.w("Yearlay", "mkdir collect path failed");
+                    DebugLog.w("Yearlay", "mkdir collect path failed");
                 }
             }
             File srcfile = fileNode.getFile();

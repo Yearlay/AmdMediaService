@@ -120,7 +120,7 @@ public class Music_Play_Id3 extends LinearLayout implements OnClickListener, ID3
         track = mBTIF.music_getTitle();
         String artist = mBTIF.music_getArtist();
         String album = mBTIF.music_getAlbum();
-        Log.v(TAG, "updateId3Info() track=" + track 
+        DebugLog.v(TAG, "updateId3Info() track=" + track 
                 + ", artist=" + artist + ", track=" + track);
         if (album == null || album == "") {
             album = unknown;
