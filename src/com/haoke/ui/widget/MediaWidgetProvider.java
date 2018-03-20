@@ -25,7 +25,7 @@ public class MediaWidgetProvider {
             //MediaInterfaceUtil.showToast(R.string.no_media_can_play, Toast.LENGTH_SHORT);
             Toast.makeText(context, R.string.no_media_can_play, Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
-            android.util.Log.e("MediaWidgetProvider", "showToast e="+e);
+            DebugLog.e("MediaWidgetProvider", "showToast e="+e);
         }
     }
 

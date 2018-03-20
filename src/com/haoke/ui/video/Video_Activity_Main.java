@@ -77,7 +77,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		Log.e("luke", "onCreate");
+		DebugLog.e("luke", "onCreate");
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.video_activity_main);
 		AllMediaList.launcherTocheckAllStorageScanState(this);
@@ -138,7 +138,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 	}
 
 	private void initIntent(Intent intent) { // 第三方叫醒播放入口
-		Log.e("luke", "onNewIntent: " + intent);
+		DebugLog.e("luke", "onNewIntent: " + intent);
 		if (intent != null && "MediaSearchActivity".equals(intent.getStringExtra("isfrom"))) { // search、开机播放
 			String filePath = intent.getStringExtra("filepath");
 			String flag = intent.getStringExtra("flag");
@@ -159,11 +159,11 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 			updateCurPosition(position);
 			FileNode fileNode = mVideoList.get(mCurPosition);
 			mPlayLayout.setFileNode(fileNode);
-			Log.e("luke", "onNewInten  MediaSearchActivity deviceType: " + deviceType + "   , fileNode: " + fileNode);
+			DebugLog.e("luke", "onNewInten  MediaSearchActivity deviceType: " + deviceType + "   , fileNode: " + fileNode);
 			onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
 		} else if (intent != null && intent.getIntExtra("isfrom", 100) == MediaService.VALUE_FROM_VR_APP) { // VR
 			// VR play default file
-			Log.e("luke", "onNewInten VR");
+			DebugLog.e("luke", "onNewInten VR");
 			FileNode temp = mPlayLayout.playDefault();
 			if (temp == null || temp.getFilePath().length() == 0) {
 				updateDevice(DeviceType.FLASH);
@@ -172,11 +172,11 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 				onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
 			}
 		} else if (intent != null && "modeSwitch".equals(intent.getStringExtra("isfrom"))) { // 没有视频文件入口
-			Log.e("luke", "onNewInten modeSwitch");
+			DebugLog.e("luke", "onNewInten modeSwitch");
 			int deviceType = intent.getIntExtra("deviceType", DeviceType.FLASH);
 			updateDevice(deviceType);
 		}
-		Log.e("luke", "BeforePlaystate: " + mPlayLayout.getBeforePlaystate());
+		DebugLog.e("luke", "BeforePlaystate: " + mPlayLayout.getBeforePlaystate());
 	}
 
 	public void updateDevice(final int deviceType) {
@@ -382,7 +382,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
 		// TODO Auto-generated method stub
-		Log.e("luke", "onKeyUp!! keyCode: " + keyCode);
+		DebugLog.e("luke", "onKeyUp!! keyCode: " + keyCode);
 		mPlayLayout.mediaKeyHandle(getApplicationContext(), keyCode);
 		return super.onKeyUp(keyCode, event);
 	}
@@ -425,7 +425,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 	@Override
 	public void onLoadCompleted(int deviceType, int fileType) {
 		// 处理数据加载完成的事件: 主要是处理数据。
-		Log.e(TAG, "onLoadCompleted deviceType: " + deviceType + "  ,fileType: " + fileType);
+		DebugLog.e(TAG, "onLoadCompleted deviceType: " + deviceType + "  ,fileType: " + fileType);
 		if (deviceType == getCurrentDeviceType() && fileType == FileType.VIDEO /*&& mPlayLayout.getVisibility() != View.VISIBLE*/) {
 			updateDevice(deviceType);
 		}
@@ -434,7 +434,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 	@Override
 	public void onScanStateChange(StorageBean storageBean) {
 		// 处理磁盘状态 和 扫描状态发生改变的状态： 主要是更新UI的显示效果。
-		Log.e(TAG, "onScanStateChange storageBean: " + storageBean.toString());
+		DebugLog.e(TAG, "onScanStateChange storageBean: " + storageBean.toString());
 		if (storageBean.getDeviceType() == getCurrentDeviceType()) {
 			updateDevice(getCurrentDeviceType());
 			onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
@@ -493,7 +493,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 		}
 		mPlayLayout.setBeforePlaystate(true);
 		mPlayLayout.mNextPlay = true;
-		Log.e(TAG, "playVideo setBeforePlaystate " + mPlayLayout.getBeforePlaystate());
+		DebugLog.e(TAG, "playVideo setBeforePlaystate " + mPlayLayout.getBeforePlaystate());
 		updateCurPosition(position);
 		FileNode fileNode = mVideoList.get(mCurPosition);
 		mPlayLayout.setFileNode(fileNode);
@@ -503,7 +503,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 	private BroadcastReceiver mOperateAppReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			Log.e("luke", "mOperateAppReceiver onReceive");
+			DebugLog.e("luke", "mOperateAppReceiver onReceive");
 			if (intent != null && VRIntent.ACTION_OPERATE_VIDEO.equals(intent.getAction())) {
 				switch (intent.getIntExtra(VRIntent.KEY_VIDEO, 0)) {
 				case VRIntent.FINISH_VIDEO:
@@ -582,7 +582,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 				onChangeFragment(msg.what);
 				break;
 			case CLICK_LIST_ITEM:
-				Log.e("luke", "-----item click, playing!!!!");
+				DebugLog.e("luke", "-----item click, playing!!!!");
 				if (mListLayout.isEditMode()) {
 					mListLayout.selectItem(msg.arg1);
 					if (isAllSelect()) {
@@ -650,7 +650,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 				if (speedTest >= 100) {
 					speedTest = 0;
 				}
-				Log.e("luke", "FORBIDDEN_VIEW_TEST " + speedTest);
+				DebugLog.e("luke", "FORBIDDEN_VIEW_TEST " + speedTest);
 				onCarDataChange(ModeDef.CMS_STATUS, CMSStatusFuc.CAR_SPEED, speedTest);
 				speedTest += 3;
 				sendEmptyMessageDelayed(FORBIDDEN_VIEW_TEST, 1000);

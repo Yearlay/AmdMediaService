@@ -40,6 +40,7 @@ import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
 import com.haoke.ui.widget.CustomDialog.OnDialogListener;
 import com.haoke.ui.widget.HKTextView;
+import com.haoke.util.DebugLog;
 
 public class PhotoListLayout extends RelativeLayout implements OnItemClickListener, OnItemLongClickListener,
         OperateListener, OnDismissListener {
@@ -75,7 +76,7 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
     private CopyDialog mCopyDialog;
     
     public void updataList(ArrayList<FileNode> dataList, StorageBean storageBean) {
-        Log.e(Image_Activity_Main.TAG,"updataList  size: " + dataList.size());
+        DebugLog.e(Image_Activity_Main.TAG,"updataList  size: " + dataList.size());
         mCurrentStorageBean = storageBean;
         mPhotoList.clear();
         mPhotoList.addAll(dataList);
@@ -89,9 +90,9 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
         mGridView.setSelection(0);
         mPhotoAdapter.notifyDataSetChanged();
         if (storageBean.isMounted()) {
-            Log.e(Image_Activity_Main.TAG,"refreshView  isMounted");
+            DebugLog.e(Image_Activity_Main.TAG,"refreshView  isMounted");
             if (storageBean.isId3ParseCompleted()) {
-                Log.e(Image_Activity_Main.TAG,"refreshView  isId3ParseCompleted");
+                DebugLog.e(Image_Activity_Main.TAG,"refreshView  isId3ParseCompleted");
                 mEmptyView.setText(R.string.media_no_file);
                 mEmptyView.setVisibility(mPhotoList.size() <= 0 ? View.VISIBLE : View.GONE);
                 mGridView.setVisibility(mPhotoList.size() <= 0 ? View.GONE : View.VISIBLE);
@@ -110,7 +111,7 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
                 mLoadingView.setVisibility(View.VISIBLE);
             }
         } else {
-            Log.e(Image_Activity_Main.TAG,"refreshView  is not Mounted");
+            DebugLog.e(Image_Activity_Main.TAG,"refreshView  is not Mounted");
             int noDataStr = (storageBean.getDeviceType() == DeviceType.USB1 ?
                     R.string.no_device_usb_one : R.string.no_device_usb_two);
             mEmptyView.setText(noDataStr);
@@ -160,7 +161,7 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
     }
     
     public void dismissDialog() {
-        Log.e(Image_Activity_Main.TAG,"dismissDialog");
+        DebugLog.e(Image_Activity_Main.TAG,"dismissDialog");
         if (mErrorDialog != null) {
             mErrorDialog.CloseDialog();
         }
@@ -432,7 +433,7 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
                 convertView.setTag(mHolder);
             }
             mHolder.mPhotoImageView.setBackgroundDrawable(skinManager.getDrawable(R.drawable.image_item_selector));
-            Log.e(Image_Activity_Main.TAG,"getView size: " + mPhotoList.size() + "   ,position: " + position);
+            DebugLog.e(Image_Activity_Main.TAG,"getView size: " + mPhotoList.size() + "   ,position: " + position);
             FileNode fileNode = mPhotoList.get(position);
             mHolder.mPhotoName.setText(fileNode.getFileName());
             

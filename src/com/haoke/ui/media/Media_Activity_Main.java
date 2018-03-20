@@ -31,6 +31,7 @@ import com.amd.util.SkinManager;
 import com.amd.util.SkinManager.SkinListener;
 import com.amd.util.Source;
 import com.haoke.ui.widget.MyViewPaper;
+import com.haoke.util.DebugLog;
 import com.haoke.util.Media_IF;
 
 public class Media_Activity_Main extends Activity implements OnClickListener {
@@ -86,28 +87,28 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
         //getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, mContentObserver);
         AllMediaList.notifyUpdateAppWidgetByAll();// 通知MediaWidgetProvider更新UI
         refreshSkin(false);
-        Log.d(TAG, "onCreate");
+        DebugLog.d(TAG, "onCreate");
     }
     
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         this.setIntent(intent);
-        Log.d(TAG, "onNewIntent");
+        DebugLog.d(TAG, "onNewIntent");
         initCurSource();
     }
     
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d(TAG, "onStart");
+        DebugLog.d(TAG, "onStart");
         mRadioFragment.onStart();
         mHomeFragment.onStart();
     }
 
     @Override
     protected void onStop() {
-        Log.d(TAG, "onStart");
+        DebugLog.d(TAG, "onStart");
         mRadioFragment.onStop();
         mHomeFragment.onStop();
         super.onStop();
@@ -115,7 +116,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
 
     @Override
     protected void onPause() {
-        Log.d(TAG, "onPause");
+        DebugLog.d(TAG, "onPause");
         mActResume = false;
         mRadioFragment.onPause();
         mHomeFragment.onPause();
@@ -126,7 +127,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume ");
+        DebugLog.d(TAG, "onResume ");
         mActResume = true;
         if (mMustFresh) {
             refreshSkin(false);
@@ -149,7 +150,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
 
     @Override
     public void onDestroy() {
-        Log.d(TAG, "onDestroy");
+        DebugLog.d(TAG, "onDestroy");
         mRadioFragment.onDestroy();
         mHomeFragment.onDestroy();
         super.onDestroy();
@@ -212,7 +213,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
             String musicMode = intent.getStringExtra("Mode_To_Music");
             boolean hasAutoPlay = intent.hasExtra("autoPlay");
             boolean autoPlay = hasAutoPlay ? intent.getBooleanExtra("autoPlay", false) : false;
-            Log.d(TAG, "initCurSource musicMode="+musicMode+"; autoPlay="+autoPlay);
+            DebugLog.d(TAG, "initCurSource musicMode="+musicMode+"; autoPlay="+autoPlay);
             if ("radio_intent".equals(musicMode)) {
                 mode = MODE_RADIO;
                 fromIntent = true;
@@ -344,7 +345,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
             showSearchButton = false;
         }
         mCurrMode = mode;
-        Log.d(TAG, "setCurPlayViewState isHomeFragment="+isHomeFragment+"; isAudioMusicPlayFragment="+isAudioMusicPlayFragment
+        DebugLog.d(TAG, "setCurPlayViewState isHomeFragment="+isHomeFragment+"; isAudioMusicPlayFragment="+isAudioMusicPlayFragment
                 +"; isBtMusicPlayFragment="+isBtMusicPlayFragment+"; isAudioMusicPlay="+isAudioMusicPlay
                 +"; isBTMusicPlay="+isBTMusicPlay+"; showSearchButton="+showSearchButton);
 //        mActivityTab.setCurPlayViewState(showUnderline, viewState);
@@ -403,7 +404,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
     @Override
     public void onClick(View view) {
         int id = view.getId();
-        Log.d(TAG, "onClick id="+id);
+        DebugLog.d(TAG, "onClick id="+id);
         if (id == R.id.media_tab_radio) {
             goRadio();
         } else if (id == R.id.media_tab_music) {
@@ -425,7 +426,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
     
     @Override
     public void onBackPressed() {
-        Log.d(TAG, "onBackPressed pressBackToHome="+pressBackToHome);
+        DebugLog.d(TAG, "onBackPressed pressBackToHome="+pressBackToHome);
         if (pressBackToHome) {
             pressBackToHome = false;
             MediaInterfaceUtil.launchLauncherActivity(this);
@@ -445,7 +446,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
     
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        Log.d(TAG, "onKeyUp keyCode="+keyCode);
+        DebugLog.d(TAG, "onKeyUp keyCode="+keyCode);
         if (AmdMediaButtonReceiver.onKeyUp(this, keyCode)) {
             return true;
         }
@@ -460,7 +461,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
 
         @Override
         public void refreshViewBySkin() {
-            Log.d(TAG, "onChange skin");
+            DebugLog.d(TAG, "onChange skin");
             if (mActResume) {
                 refreshSkin(false);
             } else {

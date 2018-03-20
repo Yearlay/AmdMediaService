@@ -14,6 +14,7 @@ import com.haoke.mediaservice.R;
 import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
 import com.haoke.ui.widget.CustomDialog.OnDialogListener;
+import com.haoke.util.DebugLog;
 
 import android.app.Activity;
 import android.content.Context;
@@ -68,7 +69,7 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
         initView();
         initFavoriteData();
         skinManager = SkinManager.instance(getApplicationContext());
-        Log.d(TAG, "onCreate");
+        DebugLog.d(TAG, "onCreate");
         //modify bug 21027 begin
         Radio_IF.getInstance().registerModeCallBack(this);
         //modify bug 21027 end
@@ -351,7 +352,7 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
 
         @Override
         public void refreshViewBySkin() {
-            Log.d(TAG, "onChange skin");
+            DebugLog.d(TAG, "onChange skin");
             refreshSkin(false);
         };
     };

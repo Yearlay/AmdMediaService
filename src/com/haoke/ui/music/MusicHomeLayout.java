@@ -30,6 +30,7 @@ import com.haoke.ui.media.Media_Activity_Main;
 import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
 import com.haoke.ui.widget.CustomDialog.OnDialogListener;
+import com.haoke.util.DebugLog;
 import com.haoke.util.Media_IF;
 
 public class MusicHomeLayout extends LinearLayout implements OnClickListener,
@@ -79,7 +80,7 @@ public class MusicHomeLayout extends LinearLayout implements OnClickListener,
 	@Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        Log.d(TAG, "onFinishInflate");
+        DebugLog.d(TAG, "onFinishInflate");
         mCollectTextView = (TextView) findViewById(R.id.music_save_count);
         mLocalTextView = (TextView) findViewById(R.id.music_local_count);
         mHistoryTextView = (TextView) findViewById(R.id.music_bt_device_connect);
@@ -114,7 +115,7 @@ public class MusicHomeLayout extends LinearLayout implements OnClickListener,
 	}
     
     public void onPause() {
-    	Log.d(TAG, "onPause");
+    	DebugLog.d(TAG, "onPause");
     	closeRetyDialog();
     	//modify bug 21034 begin
     	closeBTPermissionDialog();
@@ -122,7 +123,7 @@ public class MusicHomeLayout extends LinearLayout implements OnClickListener,
     }
     
 	public void onResume() {
-		Log.d(TAG, "onResume");
+		DebugLog.d(TAG, "onResume");
 		AllMediaList.notifyAllLabelChange(getContext(), R.string.pub_music);
 		refreshInterface();
 		//refreshSkin();
@@ -149,7 +150,7 @@ public class MusicHomeLayout extends LinearLayout implements OnClickListener,
     @Override
     public void setVisibility(int visibility) {
     	int getVisibility = getVisibility();
-    	Log.d(TAG, "setVisibility getVisibility="+getVisibility+"; visibility="+visibility);
+    	DebugLog.d(TAG, "setVisibility getVisibility="+getVisibility+"; visibility="+visibility);
 		super.setVisibility(visibility);
 		if (getVisibility != visibility) {
 			if (visibility != View.VISIBLE) {
@@ -214,7 +215,7 @@ public class MusicHomeLayout extends LinearLayout implements OnClickListener,
     @Override
     public void onClick(View v) {
     	int id = v.getId();
-    	Log.d(TAG, "onClick id="+id);
+    	DebugLog.d(TAG, "onClick id="+id);
         switch (id) {
         case R.id.music_layout_enshrine:
             startListActivity(DeviceType.COLLECT);
@@ -342,7 +343,7 @@ public class MusicHomeLayout extends LinearLayout implements OnClickListener,
     private Handler mHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
-			Log.d(TAG, "mHandler handleMessage what="+msg.what);
+			DebugLog.d(TAG, "mHandler handleMessage what="+msg.what);
 			switch (msg.what) {
 			case GET_COLLECT_SIZE:
 				new Thread(new Runnable() {

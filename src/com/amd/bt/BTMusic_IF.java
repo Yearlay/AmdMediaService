@@ -15,6 +15,7 @@ import com.haoke.define.McuDef.McuFunc;
 import com.haoke.service.MediaService;
 import com.haoke.serviceif.CarService_IF;
 import com.haoke.serviceif.CarService_Listener;
+import com.haoke.util.DebugLog;
 import com.haoke.util.Media_IF;
 
 public class BTMusic_IF extends CarService_IF {
@@ -123,7 +124,7 @@ public class BTMusic_IF extends CarService_IF {
 				return getAudioFocus().requestAudioFocus(request);
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------interface e=" + e.getMessage());
 		}
 		return true;
 	}
@@ -143,20 +144,20 @@ public class BTMusic_IF extends CarService_IF {
 		try {
 			return mServiceIF.bt_getConnState();
         } catch (Exception e) {
-    		Log.e(TAG, "HMI------------interface e="+e.getMessage());
+    		DebugLog.e(TAG, "HMI------------interface e="+e.getMessage());
         }	
 		return BTConnState.DISCONNECTED;
 	}
 	
 	public void onBackPress() {
 		try {
-			Log.e(TAG, "HMI------------onBackPress mServiceIF=" + mServiceIF);
+			DebugLog.e(TAG, "HMI------------onBackPress mServiceIF=" + mServiceIF);
 			byte[] data = new byte[2];
 			data[0] = KeyState.PRESS_RELEASED;
 			data[1] = (byte) KeyCode.HOME;
 			mServiceIF.mcu_sendDataToMcu((byte) 0x0C, 0x01, data);
         } catch (Exception e) {
-    		Log.e(TAG, "HMI------------interface e="+e.getMessage());
+    		DebugLog.e(TAG, "HMI------------interface e="+e.getMessage());
         }	
 	}
 }

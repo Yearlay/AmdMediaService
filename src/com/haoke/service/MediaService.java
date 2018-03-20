@@ -213,7 +213,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
                 case MSG_UPDATE_APPWIDGET_RADIO:
                     removeMessages(what);
                     int refreshMode = what - MSG_UPDATE_APPWIDGET_BASE;
-                    Log.d(TAG, "refreshWidget refreshMode="+refreshMode);
+                    DebugLog.d(TAG, "refreshWidget refreshMode="+refreshMode);
                     //sendBroadcast(new Intent("main_activity_update_ui"));
                     // MediaWidgetProvider.refreshWidget(MediaService.this, refreshMode);
                     mBinder.refreshWidget(refreshMode);
@@ -228,12 +228,12 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     private Handler mModeHandler = new Handler();
     /* 此方法只供按mode键和开机进入源时调用  */
     public void postModeHandlerRunnable(Runnable r, long delayMillis) {
-        Log.d(TAG, "postModeHandlerRunnable delayMillis="+delayMillis);
+        DebugLog.d(TAG, "postModeHandlerRunnable delayMillis="+delayMillis);
         mModeHandler.postDelayed(r, delayMillis);
     }
     /* 此方法只供按mode键和开机进入源时调用  */
     public void removeModeHandlerMsg() {
-        Log.d(TAG, "removeModeHandlerMsg");
+        DebugLog.d(TAG, "removeModeHandlerMsg");
         mModeHandler.removeCallbacksAndMessages(null);
     }
     
@@ -320,7 +320,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
             int nextMode = ModeSwitch.instance().getNextMode(getApplicationContext());
             launchSourceActivity(nextMode, true);
             long end = System.currentTimeMillis();
-            Log.d(TAG, "handleModeKey consume time="+(end-start)+"ms; nextMode="+nextMode);
+            DebugLog.d(TAG, "handleModeKey consume time="+(end-start)+"ms; nextMode="+nextMode);
         } else {
             DebugLog.e(TAG, "handleModeKey lost  isGoingFlag : true");
         }
@@ -336,7 +336,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         final int ms = MediaInterfaceUtil.checkSourceFromBoot(this);
         if (ms >= 0) {
             if (mBootWaitTimeOut > 80000) {
-                Log.e(TAG, "checkLaunchFromBoot mBootWaitTimeOut="+mBootWaitTimeOut);
+                DebugLog.e(TAG, "checkLaunchFromBoot mBootWaitTimeOut="+mBootWaitTimeOut);
             } else {
                 mBootWaitTimeOut += ms;
                 postModeHandlerRunnable(new Runnable() {

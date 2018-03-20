@@ -1,6 +1,7 @@
 package com.amd.radio;
 
 import com.amd.media.AmdMediaButtonReceiver;
+import com.haoke.util.DebugLog;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,7 +13,7 @@ public class RadioMediaButtonReceiver extends BroadcastReceiver {
     
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d("ajax", "onReceive RadioMediaButtonReceiver");
+        DebugLog.d("ajax", "onReceive RadioMediaButtonReceiver");
         AmdMediaButtonReceiver.onMediaButtonReceive(context, intent);
     }
 }

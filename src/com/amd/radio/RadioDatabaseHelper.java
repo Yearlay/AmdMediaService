@@ -1,5 +1,7 @@
 package com.amd.radio;
 
+import com.haoke.util.DebugLog;
+
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
@@ -34,7 +36,7 @@ public class RadioDatabaseHelper extends SQLiteOpenHelper {
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-	    Log.d(TAG, "onUpgrade oldVersion="+oldVersion+"; newVersion="+newVersion);
+	    DebugLog.d(TAG, "onUpgrade oldVersion="+oldVersion+"; newVersion="+newVersion);
 	    int curVersion = oldVersion;
 		if (curVersion == 1) {
 		    db.execSQL("DROP TABLE IF EXISTS Radio_FM");

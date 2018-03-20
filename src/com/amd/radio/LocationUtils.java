@@ -3,6 +3,7 @@ package com.amd.radio;
 import java.util.List;
 
 import com.haoke.application.MediaApplication;
+import com.haoke.util.DebugLog;
 
 import android.content.Context;
 import android.content.Intent;
@@ -46,14 +47,14 @@ public class LocationUtils {
         List<String> providers = locationManager.getProviders(true);
         if (providers.contains(LocationManager.NETWORK_PROVIDER)) {
             // 如果是网络定位
-            Log.d(TAG, "LocationManager.NETWORK_PROVIDER");
+            DebugLog.d(TAG, "LocationManager.NETWORK_PROVIDER");
             locationProvider = LocationManager.NETWORK_PROVIDER;
         } else if (providers.contains(LocationManager.GPS_PROVIDER)) {
             // 如果是GPS定位
-            Log.d(TAG, "LocationManager.GPS_PROVIDER");
+            DebugLog.d(TAG, "LocationManager.GPS_PROVIDER");
             locationProvider = LocationManager.GPS_PROVIDER;
         } else {
-            Log.d(TAG, "No LocationManager.PROVIDER!");
+            DebugLog.d(TAG, "No LocationManager.PROVIDER!");
             return;
         }
         // 3.获取上次的位置，一般第一次运行，此值为null
@@ -72,7 +73,7 @@ public class LocationUtils {
         this.location = location;
         String address = "纬度：" + location.getLatitude() + "经度："
                 + location.getLongitude();
-        Log.d(TAG, address);
+        DebugLog.d(TAG, address);
     }
 
     // 获取经纬度
@@ -159,7 +160,7 @@ public class LocationUtils {
         } else {
             ret = true;
         }
-        Log.d(TAG, "sendGpsLonLatToAutoNavi sReceiveFlag="+sReceiveFlag+"; location="+location);
+        DebugLog.d(TAG, "sendGpsLonLatToAutoNavi sReceiveFlag="+sReceiveFlag+"; location="+location);
         return ret;
     }
 

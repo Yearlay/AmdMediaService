@@ -63,6 +63,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import com.haoke.util.DebugLog;
+
 /**
  * Layout manager that allows the user to flip left and right
  * through pages of data.  You supply an implementation of a
@@ -670,13 +672,13 @@ public class MyViewPaper extends ViewGroup {
                     mSetChildrenDrawingOrderEnabled = ViewGroup.class.getDeclaredMethod(
                             "setChildrenDrawingOrderEnabled", new Class[] { Boolean.TYPE });
                 } catch (NoSuchMethodException e) {
-                    Log.e(TAG, "Can't find setChildrenDrawingOrderEnabled", e);
+                    DebugLog.e(TAG, "Can't find setChildrenDrawingOrderEnabled" + e);
                 }
             }
             try {
                 mSetChildrenDrawingOrderEnabled.invoke(this, enable);
             } catch (Exception e) {
-                Log.e(TAG, "Error changing children drawing order", e);
+                DebugLog.e(TAG, "Error changing children drawing order" + e);
             }
         }
     }
@@ -2637,7 +2639,7 @@ public class MyViewPaper extends ViewGroup {
                         parent = parent.getParent()) {
                     sb.append(" => ").append(parent.getClass().getSimpleName());
                 }
-                Log.e(TAG, "arrowScroll tried to find focus based on non-child " +
+                DebugLog.e(TAG, "arrowScroll tried to find focus based on non-child " +
                         "current focused view " + sb.toString());
                 currentFocused = null;
             }

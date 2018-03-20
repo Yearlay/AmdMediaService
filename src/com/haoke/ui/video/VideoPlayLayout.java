@@ -97,7 +97,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 
 	public void setFileNode(FileNode fileNode) {
 		if (fileNode == null) {
-			Log.e("luke", "VideoPlayLayout setFileNode is null!!");
+			DebugLog.e("luke", "VideoPlayLayout setFileNode is null!!");
 			return;
 		}
 		setCurFileNode(fileNode);
@@ -106,7 +106,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 		updateVideoLayout(true);
 		slaverShow(true);
 		setBeforePlaystate(true);
-		Log.e("luke", "setFileNode setBeforePlaystate" + getBeforePlaystate());
+		DebugLog.e("luke", "setFileNode setBeforePlaystate" + getBeforePlaystate());
 
 		mVideoController.play(fileNode);
 
@@ -153,7 +153,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 
 	public void updatePlayState(boolean playing) { // true: playicon, false:
 													// pauseicon
-		Log.e("luke", "updatePlayState playIcon " + playing);
+		DebugLog.e("luke", "updatePlayState playIcon " + playing);
 		mPlayImageView.setImageDrawable(skinManager.getDrawable(!playing ? R.drawable.image_pause_icon_selector : R.drawable.image_play_icon_selector));
 		mTimeSeekBar.updateCurTime();
 	}
@@ -206,7 +206,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 			public void onPrepared(MediaPlayer mp) {
 				Video_Activity_Main.mErrorCount = 0;
 				FileNode temp = mVideoController.getPlayFileNode();
-				Log.e("luke", "------onPrepared filePlayTime: " + temp.getPlayTime() + "  ,width: " + mp.getVideoWidth() + "  ,height: " + mp.getVideoHeight());
+				DebugLog.e("luke", "------onPrepared filePlayTime: " + temp.getPlayTime() + "  ,width: " + mp.getVideoWidth() + "  ,height: " + mp.getVideoHeight());
 				
 				if(mp.getVideoWidth() == 0 || mp.getVideoHeight() == 0){ //没有图像，只有声音的文件处理
 					mVideoView.setBackgroundColor(Color.BLACK);
@@ -221,7 +221,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 						}
 					}
 				} catch (Exception e) {
-					Log.e("luke", "--" + e.toString());
+					DebugLog.e("luke", "--" + e.toString());
 				}
 				updateTimeBar();
 				mLoading.setVisibility(View.GONE);
@@ -236,9 +236,9 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 			@Override
 			public boolean onError(MediaPlayer arg0, int arg1, int arg2) {
 				// TODO Auto-generated method stub
-				Log.e("luke", "-----------setOnErrorListener");
+				DebugLog.e("luke", "-----------setOnErrorListener");
 				//if (getVisibility() == View.VISIBLE) {
-					Log.e("luke", "send error message!!!");
+					DebugLog.e("luke", "send error message!!!");
 					setUnsupportViewShow(true);
 					mActivityHandler.removeMessages(Video_Activity_Main.HIDE_UNSUPPORT_VIEW);
 					mActivityHandler.sendEmptyMessageDelayed(Video_Activity_Main.HIDE_UNSUPPORT_VIEW, 1000);
@@ -254,7 +254,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 				// VideoPlayController.isVideoPlaying = false;
 				mNextPlay = true;
 				setBeforePlaystate(VideoPlayController.isVideoPlaying);
-				Log.e("luke", "OnCompletionListener setBeforePlaystate " + getBeforePlaystate());
+				DebugLog.e("luke", "OnCompletionListener setBeforePlaystate " + getBeforePlaystate());
 				updateTimeBar();
 				mVideoController.getPlayFileNode().setPlayTime(0);
 				mVideoController.playNext();
@@ -308,7 +308,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
-			Log.d("luke", "Steering wheel control onReceive action=" + action);
+			DebugLog.d("luke", "Steering wheel control onReceive action=" + action);
 			if (MediaInterfaceUtil.mediaCannotPlay()) {
 				return;
 			}
@@ -318,7 +318,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 					return;
 				}
 				int keycode = event.getKeyCode();
-				Log.d("luke", "onReceive keycode=" + keycode);
+				DebugLog.d("luke", "onReceive keycode=" + keycode);
 				mediaKeyHandle(context, keycode);
 			}
 		}
@@ -405,7 +405,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 	}
 
 	public void onResume() {
-		Log.e("luke", "------VideoPlayLayout onResume " + getBeforePlaystate() + "  ,version: " + AmdConfig.APP_VERSION_DATE + " : " + AmdConfig.APP_VERSION_TIME);
+		DebugLog.e("luke", "------VideoPlayLayout onResume " + getBeforePlaystate() + "  ,version: " + AmdConfig.APP_VERSION_DATE + " : " + AmdConfig.APP_VERSION_TIME);
 		if (mFileNode != null) {
 			mTitleTextView.setText(mFileNode.getFileName());
 		}
@@ -424,7 +424,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 	}
 
 	public void onPause() {
-		Log.e("luke", "------VideoPlayLayout onPause: " + mVideoController.isVideoPlaying);
+		DebugLog.e("luke", "------VideoPlayLayout onPause: " + mVideoController.isVideoPlaying);
 		if (mContext == null) {
 			return;
 		}
@@ -437,7 +437,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 	}
 
 	public void updateVideoLayout(boolean checkSpeed) {
-		Log.e("luke", "------VideoPlayLayout updateVideoLayout " + checkSpeed);
+		DebugLog.e("luke", "------VideoPlayLayout updateVideoLayout " + checkSpeed);
 		DebugClock debugClock = new DebugClock();
 		mVideoController.getVideoView().setVisibility(View.VISIBLE);
 		debugClock.calculateTime("luke", "updateVideoLayout setVisibility");
@@ -483,7 +483,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 				break;
 			}
 			boolean playing = mVideoController.isPlayState();
-			Log.e("luke", "-----onClick playing: " + playing);
+			DebugLog.e("luke", "-----onClick playing: " + playing);
 			mVideoController.playOrPause(!playing);
 			break;
 		case R.id.video_ctrlbar_fastnext: // 快进
@@ -506,7 +506,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 			break;
 		}
 		startHideTimer();
-		Log.e("luke", "onClick setBeforePlaystate " + getBeforePlaystate());
+		DebugLog.e("luke", "onClick setBeforePlaystate " + getBeforePlaystate());
 	}
 
 	private void showToast(boolean isFastPre) {
@@ -577,7 +577,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 	// 启动托盘隐藏计时器
 	public void startHideTimer() {
 		if (mVideoController.isPlayState()) {
-			Log.e("luke", "startHideTimer");
+			DebugLog.e("luke", "startHideTimer");
 			mHandler.removeMessages(HIDE_CTRL);
 			mHandler.sendEmptyMessageDelayed(HIDE_CTRL, DELAY_TIME);
 		}
@@ -585,7 +585,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 
 	// 停止托盘隐藏计时器
 	public void stopHideTimer() {
-		Log.e("luke", "stopHideTimer");
+		DebugLog.e("luke", "stopHideTimer");
 		mHandler.removeMessages(HIDE_CTRL);
 	}
 
@@ -668,7 +668,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
-		// Log.e("luke","onTouch " + event.toString());
+		// DebugLog.e("luke","onTouch " + event.toString());
 		int eventaction = event.getAction();
 		final boolean pointerUp = (eventaction & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_POINTER_UP;
 		final int skipIndex = pointerUp ? event.getActionIndex() : -1;
@@ -734,20 +734,20 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 	}
 
 	private void doOnScroll(float distanceX) {
-		Log.e("luke", "onScroll");
+		DebugLog.e("luke", "onScroll");
 		if (mCtrlBar.getVisibility() != View.VISIBLE) {
 			slaverShow(true);
 		}
 		mTimeSeekBar.onStartTrackingTouch(mTimeSeekBar.getSeekBar());
 		SeekBar seekBar = mTimeSeekBar.getSeekBar();
 		int position = seekBar.getProgress();
-		Log.e("luke", "onTouch position: " + position + "  ," + modifyDistanceX(distanceX) + "  ," + distanceX);
+		DebugLog.e("luke", "onTouch position: " + position + "  ," + modifyDistanceX(distanceX) + "  ," + distanceX);
 		seekBar.setProgress(position - modifyDistanceX(distanceX));
 		mTimeSeekBar.checkScroll();
 	}
 
 	private void doOnSingleTap() {
-		Log.e("luke", "onSingleTapUp");
+		DebugLog.e("luke", "onSingleTapUp");
 		slaverShow(mCtrlBar.getVisibility() != View.VISIBLE);
 	}
 
@@ -829,10 +829,10 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 		if (mFileNode == null) {
 			PlayStateSharedPreferences sPreferences = PlayStateSharedPreferences.instance();
 			int deviceType = sPreferences.getLastDeviceTypeVideo();
-			Log.e("luke","playDefault record deviceType： " + deviceType);
+			DebugLog.e("luke","playDefault record deviceType： " + deviceType);
 			
 			if(deviceType == 0){//没有记忆文件，播放(本地>USB1>USB2)
-				Log.e("luke", "playDefault record video file is not exsit!!!!!");
+				DebugLog.e("luke", "playDefault record video file is not exsit!!!!!");
 				videoList = AllMediaList.instance(mContext).getMediaList(DeviceType.FLASH, FileType.VIDEO);
 				if (videoList.size() == 0) {
 					videoList = AllMediaList.instance(mContext).getMediaList(DeviceType.USB1, FileType.VIDEO);
@@ -842,16 +842,16 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 				}
 				if (videoList.size() > 0 ) {//播放(本地>USB1>USB2)中第一个文件
 					mFileNode = videoList.get(0);
-					Log.e("luke","playDefault deviceType: " + mFileNode.getDeviceType());
+					DebugLog.e("luke","playDefault deviceType: " + mFileNode.getDeviceType());
 				} else {
-					Log.e("luke","playDefault Device have no any video!!!!!");
+					DebugLog.e("luke","playDefault Device have no any video!!!!!");
 					mFileNode = null;
 				}
 			} else { //存在记忆文件
 				videoList = AllMediaList.instance(mContext).getMediaList(deviceType, FileType.VIDEO);
 				if(videoList.size() > 0){
 					String videoInfo = sPreferences.getPlayTime(deviceType, FileType.VIDEO);
-					Log.e("luke","playDefault record video： " + videoInfo);
+					DebugLog.e("luke","playDefault record video： " + videoInfo);
 					String splitStr = PlayStateSharedPreferences.SPLIT_STR;
 					String filePath = videoInfo.substring(0, videoInfo.indexOf(splitStr));
 					String playTimeStr = videoInfo.substring(videoInfo.indexOf(splitStr) + 2, videoInfo.length());
@@ -868,11 +868,11 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 					}
 					
 					if(mFileNode == null){ //记录视频不存在，当前DeviceType第一个视频作为播放视频
-						Log.e("luke", "playDefault record video no exsit!!!!");
+						DebugLog.e("luke", "playDefault record video no exsit!!!!");
 						mFileNode = videoList.get(0);
 					}
 				} else {//记录deviceType中没有任何文件
-					Log.e("luke", "playDefault record deviceType have no any video");
+					DebugLog.e("luke", "playDefault record deviceType have no any video");
 					videoList = AllMediaList.instance(mContext).getMediaList(DeviceType.FLASH, FileType.VIDEO);
 					if (videoList.size() == 0) {
 						videoList = AllMediaList.instance(mContext).getMediaList(DeviceType.USB1, FileType.VIDEO);
@@ -882,9 +882,9 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 					}
 					if (videoList.size() > 0 ) { //播放(本地>USB1>USB2)中第一个文件
 						mFileNode = videoList.get(0);
-						Log.e("luke","playDefault deviceType: " + mFileNode.getDeviceType());
+						DebugLog.e("luke","playDefault deviceType: " + mFileNode.getDeviceType());
 					} else {
-						Log.e("luke","playDefault Device have no any video!!!!!");
+						DebugLog.e("luke","playDefault Device have no any video!!!!!");
 						mFileNode = null;
 					}
 				}
@@ -900,13 +900,13 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 					}
 				}
 				if(fileNodeExsitFlag){ //
-					Log.e("luke", "playDefault mFileNode is exsit!!!");
+					DebugLog.e("luke", "playDefault mFileNode is exsit!!!");
 				} else {//之前视频文件不存在，播放第一个文件
-					Log.e("luke", "playDefault mFileNode delete!!!");
+					DebugLog.e("luke", "playDefault mFileNode delete!!!");
 					mFileNode = videoList.get(0);
 				}
 			} else {//当前filenode的devicetype没有文件
-				Log.e("luke", "playDefault mFileNode deviceType have no any video");
+				DebugLog.e("luke", "playDefault mFileNode deviceType have no any video");
 				videoList = AllMediaList.instance(mContext).getMediaList(DeviceType.FLASH, FileType.VIDEO);
 				if (videoList.size() == 0) {
 					videoList = AllMediaList.instance(mContext).getMediaList(DeviceType.USB1, FileType.VIDEO);
@@ -916,15 +916,15 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 				}
 				if (videoList.size() > 0 ) { //播放(本地>USB1>USB2)中第一个文件
 					mFileNode = videoList.get(0);
-					Log.e("luke","playDefault deviceType: " + mFileNode.getDeviceType());
+					DebugLog.e("luke","playDefault deviceType: " + mFileNode.getDeviceType());
 				} else {
-					Log.e("luke","playDefault Device have no any video!!!!!");
+					DebugLog.e("luke","playDefault Device have no any video!!!!!");
 					mFileNode = null;
 				}
 			}
 		}
 		setBeforePlaystate(true);
-		Log.e("luke", "playDefault setBeforePlaystate: " + getBeforePlaystate());
+		DebugLog.e("luke", "playDefault setBeforePlaystate: " + getBeforePlaystate());
 		setFileNode(mFileNode);
 		mVideoController.playDefaultVideo(true);
 		return mFileNode;

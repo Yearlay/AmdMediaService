@@ -501,7 +501,7 @@ public class VRInterfaceUtil {
     
     private void commandPlayFMStationRadio(String sfreq) {
         // 切换到调频，如果指定某个电台，会有station参数，需要打开界面
-        Log.d(TAG, "commandPlayFMStationRadio sfreq = "+sfreq);
+        DebugLog.d(TAG, "commandPlayFMStationRadio sfreq = "+sfreq);
         if (TextUtils.isEmpty(sfreq)) {
             return;
         }

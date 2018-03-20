@@ -16,6 +16,7 @@ import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.service.MediaService;
 import com.haoke.serviceif.BTService_IF;
 import com.haoke.serviceif.BTService_Listener;
+import com.haoke.util.DebugLog;
 
 public class BT_IF extends BTService_IF {
 
@@ -99,7 +100,7 @@ public class BT_IF extends BTService_IF {
 			Log.v(TAG, "music_open()");
 			mServiceIF.music_open();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------music_open e=" + e.getMessage());
 		}
 	}
 
@@ -109,7 +110,7 @@ public class BT_IF extends BTService_IF {
 			Log.v(TAG, "music_close()");
 			mServiceIF.music_close();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------music_close e=" + e.getMessage());
 		}
 	}
 	
@@ -127,7 +128,7 @@ public class BT_IF extends BTService_IF {
 				mServiceIF.music_play();
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------music_play e=" + e.getMessage());
 		}
 	}
 
@@ -138,7 +139,7 @@ public class BT_IF extends BTService_IF {
 			mServiceIF.music_pause();
 //			music_close();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------music_pause e=" + e.getMessage());
 		}
 	}
 	
@@ -154,7 +155,7 @@ public class BT_IF extends BTService_IF {
 			music_close();
 			mServiceIF.music_pause();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------music_close_pause e=" + e.getMessage());
 		}
 	}
 	
@@ -166,7 +167,7 @@ public class BT_IF extends BTService_IF {
 			//mServiceIF.music_stop(); // bug 17089
 			mServiceIF.music_pause();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------music_stop e=" + e.getMessage());
 		}
 	}
 
@@ -184,7 +185,7 @@ public class BT_IF extends BTService_IF {
 				mServiceIF.music_pre();
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------music_pre e=" + e.getMessage());
 		}
 	}
 
@@ -202,7 +203,7 @@ public class BT_IF extends BTService_IF {
 				mServiceIF.music_next();
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------music_next e=" + e.getMessage());
 		}
 	}
 
@@ -214,9 +215,9 @@ public class BT_IF extends BTService_IF {
 			    isPlaying = mServiceIF.music_isPlaying();
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------music_isPlaying e=" + e.getMessage());
 		}
-		Log.d(TAG, "music_isPlaying isPlaying="+isPlaying);
+		DebugLog.d(TAG, "music_isPlaying isPlaying="+isPlaying);
 		return isPlaying;
 	}
 
@@ -225,7 +226,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			return mServiceIF.music_getTitle();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------music_getTitle e=" + e.getMessage());
 		}
 		return null;
 	}
@@ -235,7 +236,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			return mServiceIF.music_getArtist();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------music_getArtist e=" + e.getMessage());
 		}
 		return null;
 	}
@@ -245,7 +246,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			return mServiceIF.music_getAlbum();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------music_getAlbum e=" + e.getMessage());
 		}
 		return null;
 	}
@@ -255,7 +256,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			return mServiceIF.openBT();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------openBT e=" + e.getMessage());
 		}
 		return false;
 	}
@@ -265,7 +266,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			return mServiceIF.closeBT();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------closeBT e=" + e.getMessage());
 		}
 		return false;
 	}
@@ -275,7 +276,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			return mServiceIF.isBTEnable();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------isBTEnable e=" + e.getMessage());
 		}
 		return false;
 	}
@@ -285,7 +286,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			return mServiceIF.getOnOffState();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------getOnOffState e=" + e.getMessage());
 		}
 		return BTOnOffState.OFF;
 	}
@@ -295,7 +296,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			return mServiceIF.getSearchState();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------getSearchState e=" + e.getMessage());
 		}
 		return BTSearchState.IDLE;
 	}
@@ -305,7 +306,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			return mServiceIF.getPairState();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------getPairState e=" + e.getMessage());
 		}
 		return BTPairState.UNPAIR;
 	}
@@ -315,7 +316,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			return mServiceIF.getConnState();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------getConnState e=" + e.getMessage());
 		}
 		return BTConnState.DISCONNECTED;
 	}
@@ -325,10 +326,10 @@ public class BT_IF extends BTService_IF {
 	    try {
 	        int avrcp = mServiceIF.getAvrcpState();
 	        int a2dp = mServiceIF.getA2dpState();
-	        Log.d(TAG, "getAgreementState avrcp="+avrcp+"; a2dp="+a2dp);
+	        DebugLog.d(TAG, "getAgreementState avrcp="+avrcp+"; a2dp="+a2dp);
             return (avrcp == BTConnState.CONNECTED) && (a2dp == BTConnState.CONNECTED);
         } catch (Exception e) {
-            Log.e(TAG, "getAgreementState e=" + e.getMessage());
+            DebugLog.e(TAG, "getAgreementState e=" + e.getMessage());
         }
 	    return false;
 	}
@@ -338,7 +339,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			mServiceIF.searchDevices();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e111=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------searchDevices e111=" + e.getMessage());
 		}
 	}
 
@@ -347,7 +348,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			mServiceIF.cancelSearchDevices();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------cancelSearchDevices e=" + e.getMessage());
 		}
 	}
 
@@ -356,7 +357,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			mServiceIF.connectDevice(index);
 		} catch (Exception e) {
-    		Log.e(TAG, "HMI------------interface e="+e.getMessage());
+    		DebugLog.e(TAG, "HMI------------connectDevice e="+e.getMessage());
         }
 	}
 	
@@ -365,7 +366,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			mServiceIF.pairDevice(index);
 		} catch (Exception e) {
-    		Log.e(TAG, "HMI------------interface e="+e.getMessage());
+    		DebugLog.e(TAG, "HMI------------pairDevice e="+e.getMessage());
         }
 	}
 	
@@ -375,7 +376,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			mServiceIF.connectLastDevice();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------connectLastDevice e=" + e.getMessage());
 		}
 	}
 
@@ -384,7 +385,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			mServiceIF.disconnectDevice();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------disconnectDevice e=" + e.getMessage());
 		}
 	}
 
@@ -393,7 +394,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			mServiceIF.deletePairedDevice(index);
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------dispairDevice e=" + e.getMessage());
 		}
 	}
 	
@@ -404,7 +405,7 @@ public class BT_IF extends BTService_IF {
 				mServiceIF.deletePairedDevice(i);
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e="+e.getMessage());
+			DebugLog.e(TAG, "HMI------------dispairAllDevice e="+e.getMessage());
 		}
 	}
 
@@ -413,11 +414,11 @@ public class BT_IF extends BTService_IF {
 		try {
 			int pairedTotal = mServiceIF.getPairedListTotal();
 			int searchedTotal = mServiceIF.getSearchedListTotal();
-			Log.e(TAG, "HMI------------getDeviceTotal pairedTotal=" + pairedTotal);
-			Log.e(TAG, "HMI------------getDeviceTotal searchedTotal=" + searchedTotal);
+			DebugLog.e(TAG, "HMI------------getDeviceTotal pairedTotal=" + pairedTotal);
+			DebugLog.e(TAG, "HMI------------getDeviceTotal searchedTotal=" + searchedTotal);
 			return pairedTotal + searchedTotal;
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------getDeviceTotal e=" + e.getMessage());
 		}
 		return 0;
 	}
@@ -426,10 +427,10 @@ public class BT_IF extends BTService_IF {
 	public int getPairedListTotal() {
 		try {
 			int pairedTotal = mServiceIF.getPairedListTotal();
-			Log.e(TAG, "HMI------------getDeviceTotal pairedTotal=" + pairedTotal);
+			DebugLog.e(TAG, "HMI------------getDeviceTotal pairedTotal=" + pairedTotal);
 			return pairedTotal;
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------getPairedListTotal e=" + e.getMessage());
 		}
 		return 0;
 	}
@@ -438,10 +439,10 @@ public class BT_IF extends BTService_IF {
 	public int getSearchedListTotal() {
 		try {
 			int searchedTotal = mServiceIF.getSearchedListTotal();
-			Log.e(TAG, "HMI------------getDeviceTotal searchedTotal=" + searchedTotal);
+			DebugLog.e(TAG, "HMI------------getDeviceTotal searchedTotal=" + searchedTotal);
 			return  searchedTotal;
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------getSearchedListTotal e=" + e.getMessage());
 		}
 		return 0;
 	}
@@ -451,7 +452,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			return mServiceIF.getPairedDeviceName(index);
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------getPairedDeviceName e=" + e.getMessage());
 		}
 		return null;
 	}
@@ -461,7 +462,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			return mServiceIF.getSearchedDeviceName(index);
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------getSearchedDeviceName e=" + e.getMessage());
 		}
 		return null;
 	}
@@ -471,7 +472,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			return mServiceIF.getPairedDeviceAddr(index);
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------getPairedDeviceAddr e=" + e.getMessage());
 		}
 		return null;
 	}
@@ -481,7 +482,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			return mServiceIF.getSearchedDeviceAddr(index);
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------getSearchedDeviceAddr e=" + e.getMessage());
 		}
 		return null;
 	}
@@ -491,7 +492,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			return mServiceIF.getPairedDeviceState(index);
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------getPairedDeviceState e=" + e.getMessage());
 		}
 		return BTDeviceState.UNPAIR;
 	}
@@ -501,7 +502,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			return mServiceIF.getSearchedDeviceState(index);
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------getSearchedDeviceState e=" + e.getMessage());
 		}
 		return BTDeviceState.UNPAIR;
 	}
@@ -511,7 +512,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			mServiceIF.setBTName(name);
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------setBTName e=" + e.getMessage());
 		}
 	}
 
@@ -520,7 +521,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			return mServiceIF.getBTName();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------getBTName e=" + e.getMessage());
 		}
 		return null;
 	}
@@ -530,7 +531,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			mServiceIF.setPin(pin);
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------setPin e=" + e.getMessage());
 		}
 	}
 
@@ -539,7 +540,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			return mServiceIF.getPin();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------getPin e=" + e.getMessage());
 		}
 		return null;
 	}
@@ -549,7 +550,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			mServiceIF.setDiscoverable(isVisible);
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------setDiscoverable e=" + e.getMessage());
 		}
 	}
 
@@ -558,7 +559,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			return mServiceIF.getDiscoverable();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------getDiscoverable e=" + e.getMessage());
 		}
 		return false;
 	}
@@ -568,7 +569,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			mServiceIF.setAutoConnect(value);
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------setAutoConnect e=" + e.getMessage());
 		}
 	}
 
@@ -577,7 +578,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			return mServiceIF.getAutoConnect();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------getAutoConnect e=" + e.getMessage());
 		}
 		return false;
 	}
@@ -592,7 +593,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			MediaService.getInstance().getBtMusicManager().setRecordPlayState(state);
         } catch (Exception e) {
-    		Log.e(TAG, "HMI------------setRecordPlayState e="+e.getMessage());
+    		DebugLog.e(TAG, "HMI------------setRecordPlayState e="+e.getMessage());
         }	
 	}
 
@@ -601,7 +602,7 @@ public class BT_IF extends BTService_IF {
 		try {
 			return MediaService.getInstance().getBtMusicManager().getRecordPlayState();
         } catch (Exception e) {
-    		Log.e(TAG, "HMI------------getRecordPlayState e="+e.getMessage());
+    		DebugLog.e(TAG, "HMI------------getRecordPlayState e="+e.getMessage());
         }	
 		return PlayState.STOP;
 	}

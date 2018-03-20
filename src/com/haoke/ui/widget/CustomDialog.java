@@ -9,6 +9,7 @@ import com.amd.util.SkinManager.SkinListener;
 import com.haoke.bean.FileNode;
 import com.haoke.constant.MediaUtil;
 import com.haoke.mediaservice.R;
+import com.haoke.util.DebugLog;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -152,7 +153,7 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 				    try {
 	                    CloseDialog();
                     } catch (Exception e) {
-                        Log.e(TAG, "NONE_BTN DISMISS" + e.toString());
+                        DebugLog.e(TAG, "NONE_BTN DISMISS" + e.toString());
                     }
 					super.handleMessage(msg);
 				}
@@ -273,7 +274,7 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 	
 	public void CloseDialog() {
 		if (mDialog != null) {
-			mDialog.dismiss();
+		    mDialog.dismiss();
 		}
 	}
 	

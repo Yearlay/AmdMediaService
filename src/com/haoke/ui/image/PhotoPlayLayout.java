@@ -391,7 +391,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     
     // 重置自动播放计时器
     private void checkPlayStatus() {
-    	//Log.d("luke",Log.getStackTraceString(new Throwable()));
+    	//DebugLog.d("luke",Log.getStackTraceString(new Throwable()));
         if (mPlayState == PlayState.PLAY) {
             mHandler.removeMessages(NEXT_PLAY);
             mHandler.sendEmptyMessageDelayed(NEXT_PLAY, DELAY_TIME);

@@ -8,11 +8,11 @@ public class DebugLog {
 
     public static void d(String tags, String str) {
         if (!DebugConstant.DEBUG) return;
-        Log.d(tags, str);
+        DebugLog.d(tags, str);
     }
     
     public static void e(String tags, String str) {
-        Log.e(tags, str);
+        DebugLog.e(tags, str);
     }
     
     public static void v(String tags, String str) {

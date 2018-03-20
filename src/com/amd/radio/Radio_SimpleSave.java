@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.haoke.application.MediaApplication;
 import com.haoke.service.MediaService;
+import com.haoke.util.DebugLog;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -38,7 +39,7 @@ public class Radio_SimpleSave {
 			mEditor = mPreferences.edit();
 			
 		} catch (Exception e) {
-			Log.e(TAG, "Create e=" + e.getMessage());
+			DebugLog.e(TAG, "Create e=" + e.getMessage());
 		}
 	}
 	
@@ -58,7 +59,7 @@ public class Radio_SimpleSave {
 //			mEditor = mPreferences.edit();
 //			
 //		} catch (Exception e) {
-//			Log.e(TAG, "Create e=" + e.getMessage());
+//			DebugLog.e(TAG, "Create e=" + e.getMessage());
 //		}
 //	}
 	
@@ -89,7 +90,7 @@ public class Radio_SimpleSave {
 		if(province==null){
 			province="";
 		}
-		Log.d(TAG, "PROVINCE_NAME:"+province_name+" CITY_NAME:"+city_name+" province:"+province+" city:"+city);
+		DebugLog.d(TAG, "PROVINCE_NAME:"+province_name+" CITY_NAME:"+city_name+" province:"+province+" city:"+city);
 		if(!province_name.equalsIgnoreCase(province) || !city_name.equalsIgnoreCase(city)){
             province_name = province;
             city_name = city;
@@ -103,7 +104,7 @@ public class Radio_SimpleSave {
 	
 	public void getCurCityStationNameList(){
 		try {
-			Log.d(TAG, "getCurCityStationList PROVINCE_NAME:"+province_name+" CITY_NAME:"+city_name);
+			DebugLog.d(TAG, "getCurCityStationList PROVINCE_NAME:"+province_name+" CITY_NAME:"+city_name);
 				String sqlstr=null;
 				if(province_name!=null && province_name.length()>0 && city_name!=null && city_name.length()>0){				
 					sqlstr = "select FREQ,NAME,CITY from radio_fm where PROVINCE like '%"+province_name+"%'";
@@ -119,7 +120,7 @@ public class Radio_SimpleSave {
 							int stationfreq = (int) cursor.getLong(0);
 							String name = cursor.getString(1);
 							String city = cursor.getString(2);
-							//Log.d(TAG, "GetAllSaveStation SQLiteDatabase stationfreq:"+stationfreq+" name:"+name);
+							//DebugLog.d(TAG, "GetAllSaveStation SQLiteDatabase stationfreq:"+stationfreq+" name:"+name);
 							
 							RadioStation station = new RadioStation(stationfreq, "",name);
 							if(city.contains(city_name)){								
@@ -143,7 +144,7 @@ public class Radio_SimpleSave {
 							int stationfreq = (int) cursor.getLong(0);
 							String name = cursor.getString(1);
 							String city = cursor.getString(2);
-							Log.d(TAG, "GetAllSaveStation SQLiteDatabase stationfreq:"+stationfreq+" name:"+name);
+							DebugLog.d(TAG, "GetAllSaveStation SQLiteDatabase stationfreq:"+stationfreq+" name:"+name);
 							RadioStation station = new RadioStation(stationfreq, "",name);
 							if(city.contains(city_name)){								
 								AMlistStationName.add(station);
@@ -158,7 +159,7 @@ public class Radio_SimpleSave {
 				}
 		} catch (Exception e) {
 			// TODO: handle exception
-			Log.e(TAG, "Exception: "+Log.getStackTraceString(e));
+			DebugLog.e(TAG, "Exception: "+Log.getStackTraceString(e));
 		}finally {
 		}
 	}
@@ -198,9 +199,9 @@ public class Radio_SimpleSave {
 			
 		} catch (Exception e) {
 			// TODO: handle exception
-			Log.e(TAG, Log.getStackTraceString(e));
+			DebugLog.e(TAG, Log.getStackTraceString(e));
 		}
-		Log.d(TAG, "getRadio_Station_Name freq:"+freq+" CITY_NAME:"+city_name+" name:"+name);
+		DebugLog.d(TAG, "getRadio_Station_Name freq:"+freq+" CITY_NAME:"+city_name+" name:"+name);
 		return name;
 	}
 	
@@ -221,7 +222,7 @@ public class Radio_SimpleSave {
 //				return BAND_AM;
 //			}
 		}
-		Log.d(TAG, "GetBandByFreq freq:"+freq+" mBand:"+band);
+		DebugLog.d(TAG, "GetBandByFreq freq:"+freq+" mBand:"+band);
 		return band;
 	}
 	
@@ -247,7 +248,7 @@ public class Radio_SimpleSave {
 			mEditor.apply();
 			
 		} catch (Exception e) {
-			Log.e(TAG, "PutData e=" + e.getMessage());
+			DebugLog.e(TAG, "PutData e=" + e.getMessage());
 		}
 	}
 	
@@ -258,7 +259,7 @@ public class Radio_SimpleSave {
 			mEditor.apply();
 			
 		} catch (Exception e) {
-			Log.e(TAG, "PutData e=" + e.getMessage());
+			DebugLog.e(TAG, "PutData e=" + e.getMessage());
 		}
 	}
 	
@@ -269,7 +270,7 @@ public class Radio_SimpleSave {
 			mEditor.apply();
 			
 		} catch (Exception e) {
-			Log.e(TAG, "PutData e=" + e.getMessage());
+			DebugLog.e(TAG, "PutData e=" + e.getMessage());
 		}
 	}
 	
@@ -279,7 +280,7 @@ public class Radio_SimpleSave {
         MediaService service = MediaService.getInstance();
         if (service != null) {
             Handler handler = service.getmBDReceiverHandler();
-            Log.d(TAG, "setCityFromReceiver PROVINCE_NAME:" + receiver_province_name
+            DebugLog.d(TAG, "setCityFromReceiver PROVINCE_NAME:" + receiver_province_name
                     + " CITY_NAME:" + receiver_city_name + " province:" + province
                     + " city:" + city);
             if (province == null) {

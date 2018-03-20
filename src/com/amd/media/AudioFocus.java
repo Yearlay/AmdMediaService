@@ -3,6 +3,7 @@ package com.amd.media;
 import java.util.ArrayList;
 
 import com.haoke.constant.MediaUtil.PlayState;
+import com.haoke.util.DebugLog;
 
 import android.content.Context;
 import android.media.AudioManager;
@@ -54,7 +55,7 @@ public class AudioFocus {
 	 * @param durationHint 申请焦点时长,比如AudioManager.AUDIOFOCUS_GAIN
 	 */
 	public boolean requestAudioFocus(boolean request, int StreamType, int durationHint) {
-		Log.d(TAG, "requestAudioFocus, request: " + request + ", StreamType" + StreamType
+		DebugLog.d(TAG, "requestAudioFocus, request: " + request + ", StreamType" + StreamType
 				+ ", durationHint: " + durationHint);
 		return requestAudioFocus(request, StreamType, durationHint, false);
 	}
@@ -68,7 +69,7 @@ public class AudioFocus {
 	 */
 	public boolean requestAudioFocus(boolean request, int StreamType, 
 								int durationHint, boolean forceRequest) {
-		Log.d(TAG, "requestAudioFocus, request: " + request + ", StreamType" + StreamType
+		DebugLog.d(TAG, "requestAudioFocus, request: " + request + ", StreamType" + StreamType
 					+ ", durationHint: " + durationHint + ", forceRequest: " + forceRequest);
 		
 		if (mAudioManager == null) {
@@ -108,7 +109,7 @@ public class AudioFocus {
 	
 	public boolean requestAudioFocus(boolean request) {
 		if (mAudioManager == null) {
-			Log.e(TAG, "requestAudioFocus mAudioManager == null");
+			DebugLog.e(TAG, "requestAudioFocus mAudioManager == null");
 			return false;
 		}
 		
@@ -121,7 +122,7 @@ public class AudioFocus {
 				onPlayStateChange(PlayState.PLAY);
 				return true;
 			} else {
-				Log.e(TAG, "requestAudioFocus failed");
+				DebugLog.e(TAG, "requestAudioFocus failed");
 				return false;
 			}
 		} else {
@@ -134,7 +135,7 @@ public class AudioFocus {
 	
 	public boolean requestTransientAudioFocus(boolean request) {
 		if (mAudioManager == null) {
-			Log.e(TAG, "requestTransientAudioFocus mAudioManager == null");
+			DebugLog.e(TAG, "requestTransientAudioFocus mAudioManager == null");
 			return false;
 		}
 		
@@ -147,7 +148,7 @@ public class AudioFocus {
 //				onPlayStateChange(PlayState.PLAY);
 				return true;
 			} else {
-				Log.e(TAG, "requestTransientAudioFocus GAIN_TRANSIENT failed");
+				DebugLog.e(TAG, "requestTransientAudioFocus GAIN_TRANSIENT failed");
 				return false;
 			}
 		} else {

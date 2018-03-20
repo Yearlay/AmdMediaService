@@ -11,6 +11,7 @@ import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.data.AllMediaList;
 import com.haoke.mediaservice.R;
+import com.haoke.util.DebugLog;
 import com.haoke.util.Media_IF;
 
 import android.content.Context;
@@ -52,30 +53,30 @@ public class UsbAutoPlay {
             return -1;
         }
         if (!Media_IF.isBootSourceChanged()) {
-            Log.d(TAG, "playDefaultMusic return! BootSource not changed!");
+            DebugLog.d(TAG, "playDefaultMusic return! BootSource not changed!");
             return -1;
         }
         if (!Media_IF.isPowerOn() && !Media_IF.getScreenOn()) {
-            Log.d(TAG, "playDefaultMusic return! PowerOff and ScreenOff!");
+            DebugLog.d(TAG, "playDefaultMusic return! PowerOff and ScreenOff!");
             return -1;
         }
         if (!MediaInterfaceUtil.isUsbOn(deviceType)) {
-            Log.d(TAG, "playDefaultMusic return! deviceType="+deviceType+" unmounted!");
+            DebugLog.d(TAG, "playDefaultMusic return! deviceType="+deviceType+" unmounted!");
             return -1;
         }
         if (!sDonotDelay) {
             setServiceStartTime();
             long time = SystemClock.elapsedRealtime();
             long interval = Math.abs(time - sServiceStartTime) / 1000;
-            Log.d(TAG, "playDefaultMusic time="+time+"; interval="+interval+"; sServiceStartTime="+sServiceStartTime);
+            DebugLog.d(TAG, "playDefaultMusic time="+time+"; interval="+interval+"; sServiceStartTime="+sServiceStartTime);
             if (interval > DELAY_AUTO_PLAY) {
                 sDonotDelay = true;
             } else {
-                Log.d(TAG, "playDefaultMusic interval="+interval);
+                DebugLog.d(TAG, "playDefaultMusic interval="+interval);
                 return -1;
             }
         }
-        Log.d(TAG, "playDefaultMusic deviceType="+deviceType+"; isBootInsertUsb1="+isBootInsertUsb1+"; isBootInsertUsb2="+isBootInsertUsb2);
+        DebugLog.d(TAG, "playDefaultMusic deviceType="+deviceType+"; isBootInsertUsb1="+isBootInsertUsb1+"; isBootInsertUsb2="+isBootInsertUsb2);
         if (isBootInsertUsb1 && deviceType == DeviceType.USB1) {
             isBootInsertUsb1 = false;
             return -1;
@@ -85,7 +86,7 @@ public class UsbAutoPlay {
         }
         Media_IF mIF = Media_IF.getInstance();
         if (mIF.isPlayState() && mIF.getPlayingDevice() == deviceType) {
-            Log.d(TAG, "playDefaultMusic Media_IF is playing!");
+            DebugLog.d(TAG, "playDefaultMusic Media_IF is playing!");
             return -1;
         }
         Context context = MediaApplication.getInstance();
@@ -93,11 +94,11 @@ public class UsbAutoPlay {
         StorageBean storage = allMediaList.getStoragBean(deviceType);
         if (storage.isMounted()) {
             if (!storage.isLoadCompleted()) {
-                Log.d(TAG, "playDefaultMusic must wait device load completed!");
+                DebugLog.d(TAG, "playDefaultMusic must wait device load completed!");
                 return 1000;
             }
         } else if (storage.isUnmounted()) {
-            Log.d(TAG, "playDefaultMusic return! deviceType="+deviceType+" isUnmounted!");
+            DebugLog.d(TAG, "playDefaultMusic return! deviceType="+deviceType+" isUnmounted!");
             return -1;
         }
         String filePath = allMediaList.getLastPlayPath(deviceType, FileType.AUDIO);

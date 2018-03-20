@@ -33,6 +33,7 @@ import com.haoke.constant.MediaUtil.OperateState;
 import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.constant.MediaUtil.RepeatMode;
 import com.haoke.mediaservice.R;
+import com.haoke.util.DebugLog;
 import com.haoke.util.Media_IF;
 
 public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
@@ -87,7 +88,7 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 	}
 	
 	public void setBTPlayMode(boolean btModeFlag) {
-		Log.d(TAG, "setBTPlayMode btModeFlag="+btModeFlag);
+		DebugLog.d(TAG, "setBTPlayMode btModeFlag="+btModeFlag);
 		if (btModeFlag != isBTPlay) {
 	        isBTPlay = btModeFlag;
 		    AllMediaList.notifyAllLabelChange(getContext(), 
@@ -133,7 +134,7 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 	@Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        Log.d(TAG, "onFinishInflate");
+        DebugLog.d(TAG, "onFinishInflate");
 		
 		mId3 = (Music_Play_Id3) findViewById(R.id.music_play_id3);
 		mTimeSeekBar = (SeekBar) findViewById(R.id.music_play_time_seekbar);
@@ -216,19 +217,19 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 	
 	@Override
 	protected void onDetachedFromWindow() {
-		Log.d(TAG, "onDetachedFromWindow");
+		DebugLog.d(TAG, "onDetachedFromWindow");
 		mTimeHandler.removeCallbacksAndMessages(null);
 		super.onDetachedFromWindow();
 	}
 	
     public void onPause() {
-    	Log.d(TAG, "onPause isBTPlay="+isBTPlay);
+    	DebugLog.d(TAG, "onPause isBTPlay="+isBTPlay);
     	exitScanMode();
     	mTimeHandler.removeCallbacksAndMessages(null);
     }
     
 	public void onResume() {
-		Log.d(TAG, "onResume isBTPlay="+isBTPlay);
+		DebugLog.d(TAG, "onResume isBTPlay="+isBTPlay);
 		AllMediaList.notifyAllLabelChange(getContext(), 
 				isBTPlay ? R.string.pub_btmusic :R.string.pub_music);
 		updateCtrlBar();
@@ -255,7 +256,7 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 	@Override
 	public void setVisibility(int visibility) {
     	int getVisibility = getVisibility();
-    	Log.d(TAG, "setVisibility getVisibility="+getVisibility+"; visibility="+visibility);
+    	DebugLog.d(TAG, "setVisibility getVisibility="+getVisibility+"; visibility="+visibility);
 		super.setVisibility(visibility);
 		if (getVisibility != visibility) {
 			if (visibility != View.VISIBLE) {
@@ -269,7 +270,7 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		int id = v.getId();
-		Log.d(TAG, "onClick id="+id);
+		DebugLog.d(TAG, "onClick id="+id);
         if (MediaInterfaceUtil.isButtonClickTooFast()) {
             return;
         }
@@ -444,13 +445,13 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 	private Handler mTimeHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			int what = msg.what;
-			Log.d(TAG, "mTimeHandler what="+what);
+			DebugLog.d(TAG, "mTimeHandler what="+what);
 			removeMessages(what);
 			switch (msg.what) {
 			case MSG_UPDATE_TIME:
 				mFileNode = mIF.getPlayItem();
 				int curr = mIF.getPosition();
-				Log.d(TAG, "mTimeHandler MSG_UPDATE_TIME curr="+curr);
+				DebugLog.d(TAG, "mTimeHandler MSG_UPDATE_TIME curr="+curr);
 				mTimeSeekBar.setProgress(curr);
 				setCurrTime(curr);
 				sendEmptyMessageDelayed(MSG_UPDATE_TIME, 200);
@@ -625,7 +626,7 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 				BT_IF btIF = BT_IF.getInstance();
 				int source = Media_IF.getCurSource();
 				boolean btPlaying = btIF.music_isPlaying();
-				Log.d(TAG, "refreshFromViewPagerMaybePlayBT source="+source+"; btPlaying="+btPlaying);
+				DebugLog.d(TAG, "refreshFromViewPagerMaybePlayBT source="+source+"; btPlaying="+btPlaying);
 				if (!Source.isBTMusicSource(source)) {
 					if (btPlaying) {
 						btIF.music_play();
@@ -636,7 +637,7 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 				        boolean hasFocus = BTMusic_IF.getInstance().hasAudioFocus();
 				        boolean calling = Media_IF.getCallState();
 				        if (!hasFocus && !calling) {
-	                        Log.d(TAG, "refreshFromViewPagerMaybePlayBT hasFocus="+hasFocus+"; calling="+calling);
+	                        DebugLog.d(TAG, "refreshFromViewPagerMaybePlayBT hasFocus="+hasFocus+"; calling="+calling);
 	                        BTMusic_IF.getInstance().requestAudioFocus(true);
 				        }
 				    }

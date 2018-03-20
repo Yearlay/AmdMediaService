@@ -23,6 +23,7 @@ import com.haoke.define.RadioDef.RadioFunc;
 import com.haoke.define.RadioDef.RadioState;
 import com.haoke.serviceif.CarService_Listener;
 import com.haoke.serviceif.CarService_IF;
+import com.haoke.util.DebugLog;
 import com.haoke.util.Media_IF;
 import com.jsbd.util.Meter_IF;
 
@@ -132,7 +133,7 @@ public class Radio_IF extends CarService_IF {
 	    try {
 	        radioManager = com.haoke.service.MediaService.getInstance().getRadioManager();
         } catch (Exception e) {
-            Log.e(TAG, "getRadioManager e="+e);
+            DebugLog.e(TAG, "getRadioManager e="+e);
         }
 	    return radioManager;
 	}
@@ -142,7 +143,7 @@ public class Radio_IF extends CarService_IF {
         try {
             return getRadioManager().hasAudioFocus();
         } catch (Exception e) {
-            Log.e(TAG, "HMI------------hasAudioFocus e=" + e.getMessage());
+            DebugLog.e(TAG, "HMI------------hasAudioFocus e=" + e.getMessage());
         }
         return false;
     }
@@ -153,7 +154,7 @@ public class Radio_IF extends CarService_IF {
 			return getRadioManager()
 					.requestAudioFocus(request);
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------requestAudioFocus e=" + e.getMessage());
 		}
 		return false;
 	}
@@ -164,9 +165,9 @@ public class Radio_IF extends CarService_IF {
 		try {
 			state = mServiceIF.radio_getState();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------getState e=" + e.getMessage());
 		}
-		Log.d(TAG, "getState state="+state);
+		DebugLog.d(TAG, "getState state="+state);
 		return state;
 	}
 
@@ -176,19 +177,19 @@ public class Radio_IF extends CarService_IF {
 		try {
 			freq = mServiceIF.radio_getCurFreq();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------getCurFreq e=" + e.getMessage());
 		}
-		Log.d(TAG, "getCurFreq freq="+freq);
+		DebugLog.d(TAG, "getCurFreq freq="+freq);
 		return freq;
 	}
 
 	// 设置频率值
 	public void setCurFreq(int freq) {
 		try {
-			Log.d(TAG, "setCurFreq freq="+freq);
+			DebugLog.d(TAG, "setCurFreq freq="+freq);
 			mServiceIF.radio_setCurFreq(freq);
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------setCurFreq e=" + e.getMessage());
 		}
 	}
 	
@@ -201,9 +202,9 @@ public class Radio_IF extends CarService_IF {
 				enable = mServiceIF.radio_isEnable();
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------isEnable e=" + e.getMessage());
 		}
-		Log.d(TAG, "isEnable enable="+enable);
+		DebugLog.d(TAG, "isEnable enable="+enable);
 		return enable;
 	}
 	
@@ -211,13 +212,13 @@ public class Radio_IF extends CarService_IF {
 	public void setEnable(boolean enable){
 		try {
 			boolean focus = true;
-			Log.d(TAG, "setEnable enable="+enable);
+			DebugLog.d(TAG, "setEnable enable="+enable);
 			if (enable) {
 	            if (MediaInterfaceUtil.mediaCannotPlay()) {
 	                return;
 	            }
 				focus = getRadioManager().requestAudioFocus(true);
-				Log.d(TAG, "setEnable enable="+enable+"; focus="+focus);
+				DebugLog.d(TAG, "setEnable enable="+enable+"; focus="+focus);
 				if (focus) {
 					setRadioSource();
 		        	//exitRescanAndScan5S(true);//ENABLE_RADIO_MUTEX_LOGIC
@@ -227,7 +228,7 @@ public class Radio_IF extends CarService_IF {
 				mServiceIF.radio_setEnable(enable);
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------setEnable e=" + e.getMessage());
 		}
 	}
 
@@ -247,9 +248,9 @@ public class Radio_IF extends CarService_IF {
 				break;
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------getCurBand e=" + e.getMessage());
 		}
-		Log.d(TAG, "getCurBand band="+band);
+		DebugLog.d(TAG, "getCurBand band="+band);
 		return band;
 	}
 
@@ -257,13 +258,13 @@ public class Radio_IF extends CarService_IF {
 	public void setCurBand() {
 		try {
 			int band = getCurBand();
-			Log.d(TAG, "setCurBand band="+band+"; mServiceIF="+mServiceIF);
+			DebugLog.d(TAG, "setCurBand band="+band+"; mServiceIF="+mServiceIF);
 			if (mServiceIF != null) {
 				mServiceIF.radio_setCurBand(band);
 			}
 
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------setCurBand e=" + e.getMessage());
 		}
 	}
 
@@ -273,19 +274,19 @@ public class Radio_IF extends CarService_IF {
 		try {
 			area = mServiceIF.radio_getCurArea();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------getCurArea e=" + e.getMessage());
 		}
-		Log.d(TAG, "getCurArea area="+area);
+		DebugLog.d(TAG, "getCurArea area="+area);
 		return area;
 	}
 
 	// 设置收音区域
 	public void setCurArea(byte area) {
 		try {
-			Log.d(TAG, "setCurArea area="+area);
+			DebugLog.d(TAG, "setCurArea area="+area);
 			mServiceIF.radio_setCurArea(area);
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------setCurArea e=" + e.getMessage());
 		}
 	}
 
@@ -296,7 +297,7 @@ public class Radio_IF extends CarService_IF {
 			// 索引从1开始，传0获取的是列表的波段类型
 			freq = mServiceIF.radio_getChannel(index + 1);
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------getChannel e=" + e.getMessage());
 		}
 		return freq;
 	}
@@ -307,7 +308,7 @@ public class Radio_IF extends CarService_IF {
 		try {
 			index = mServiceIF.radio_getPlayChannel();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------getPlayChannel e=" + e.getMessage());
 		}
 		return index;
 	}
@@ -323,7 +324,7 @@ public class Radio_IF extends CarService_IF {
 			}
 			mServiceIF.radio_playChannel(index);
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------playChannel e=" + e.getMessage());
 		}
 	}
 
@@ -332,7 +333,7 @@ public class Radio_IF extends CarService_IF {
 		try {
 			mServiceIF.radio_saveChannel(index);
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------saveChannel e=" + e.getMessage());
 		}
 	}
 
@@ -341,7 +342,7 @@ public class Radio_IF extends CarService_IF {
 		try {
 			mServiceIF.radio_scanPreset();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------setPreview e=" + e.getMessage());
 		}
 	}
 
@@ -352,7 +353,7 @@ public class Radio_IF extends CarService_IF {
 	        	//setEnable(true);
 	        //}
 			boolean focus = getRadioManager().requestAudioFocus(true);
-            Log.d(TAG, "setScan focus="+focus);
+            DebugLog.d(TAG, "setScan focus="+focus);
             if (focus) {
                 isRescan = false;
                 isScan5S = true;
@@ -360,7 +361,7 @@ public class Radio_IF extends CarService_IF {
                 mServiceIF.radio_scan();
             }
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------setScan e=" + e.getMessage());
 		}
 	}
 
@@ -368,10 +369,10 @@ public class Radio_IF extends CarService_IF {
 	// 停止扫描
 	public void stopScan() {
 		try {
-			Log.d(TAG, "stopScan");
+			DebugLog.d(TAG, "stopScan");
 			mServiceIF.radio_stopScanStore();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------stopScan e=" + e.getMessage());
 		}
 	}
 	
@@ -380,14 +381,14 @@ public class Radio_IF extends CarService_IF {
 	public void setPreStep() {
 		try {
 			boolean focus = getRadioManager().requestAudioFocus(true);
-			Log.d(TAG, "setPreStep focus="+focus);
+			DebugLog.d(TAG, "setPreStep focus="+focus);
 			if (focus) {
 				setRadioSource();
 	        	//exitRescanAndScan5S(false);//ENABLE_RADIO_MUTEX_LOGIC
 				mServiceIF.radio_scanManualPre();
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------setPreStep e=" + e.getMessage());
 		}
 	}
 
@@ -395,14 +396,14 @@ public class Radio_IF extends CarService_IF {
 	public void setNextStep() {
 		try {
 			boolean focus = getRadioManager().requestAudioFocus(true);
-			Log.d(TAG, "setNextStep focus="+focus);
+			DebugLog.d(TAG, "setNextStep focus="+focus);
 			if (focus) {
 				setRadioSource();
 	        	//exitRescanAndScan5S(false);//ENABLE_RADIO_MUTEX_LOGIC
 				mServiceIF.radio_scanManualNext();
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------setNextStep e=" + e.getMessage());
 		}
 	}
 
@@ -410,13 +411,13 @@ public class Radio_IF extends CarService_IF {
 	public void setPreSearch() {
 		try {
 			boolean focus = getRadioManager().requestAudioFocus(true);
-			Log.d(TAG, "setPreSearch focus="+focus);
+			DebugLog.d(TAG, "setPreSearch focus="+focus);
 			if (focus) {
 				setRadioSource();
 				mServiceIF.radio_scanAutoPre();
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------setPreSearch e=" + e.getMessage());
 		}
 	}
 
@@ -424,23 +425,23 @@ public class Radio_IF extends CarService_IF {
 	public void setNextSearch() {
 		try {
 			boolean focus = getRadioManager().requestAudioFocus(true);
-			Log.d(TAG, "setNextSearch focus="+focus);
+			DebugLog.d(TAG, "setNextSearch focus="+focus);
 			if (focus) {
 				setRadioSource();
 				mServiceIF.radio_scanAutoNext();
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------setNextSearch e=" + e.getMessage());
 		}
 	}
 
 	// 设置ST
 	public void setST() {
 		try {
-			Log.d(TAG, "setST");
+			DebugLog.d(TAG, "setST");
 			mServiceIF.radio_setST();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------setST e=" + e.getMessage());
 		}
 	}
 
@@ -449,7 +450,7 @@ public class Radio_IF extends CarService_IF {
 		try {
 			mServiceIF.radio_setLoc();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------setLoc e=" + e.getMessage());
 		}
 	}
 
@@ -458,7 +459,7 @@ public class Radio_IF extends CarService_IF {
 		try {
 			mServiceIF.radio_setRdsAF();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------setAF e=" + e.getMessage());
 		}
 	}
 
@@ -467,7 +468,7 @@ public class Radio_IF extends CarService_IF {
 		try {
 			mServiceIF.radio_setRdsTA();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------setTA e=" + e.getMessage());
 		}
 	}
 
@@ -483,9 +484,9 @@ public class Radio_IF extends CarService_IF {
 		try {
 			value = mServiceIF.radio_getST() == 1 ? true : false;
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------getST e=" + e.getMessage());
 		}
-		Log.d(TAG, "getST value="+value);
+		DebugLog.d(TAG, "getST value="+value);
 		return value;
 	}
 
@@ -495,7 +496,7 @@ public class Radio_IF extends CarService_IF {
 		try {
 			value = mServiceIF.radio_getListen() == 1 ? true : false;
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------getListen e=" + e.getMessage());
 		}
 		return value;
 	}
@@ -506,7 +507,7 @@ public class Radio_IF extends CarService_IF {
 		try {
 			value = mServiceIF.radio_getLoc() == 1 ? true : false;
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------getLoc e=" + e.getMessage());
 		}
 		return value;
 	}
@@ -517,7 +518,7 @@ public class Radio_IF extends CarService_IF {
 		try {
 			value = mServiceIF.radio_getRdsAF() == 1 ? true : false;
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------getAF e=" + e.getMessage());
 		}
 		return value;
 	}
@@ -528,7 +529,7 @@ public class Radio_IF extends CarService_IF {
 		try {
 			value = mServiceIF.radio_getRdsTA() == 1 ? true : false;
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------getTA e=" + e.getMessage());
 		}
 		return value;
 	}
@@ -538,7 +539,7 @@ public class Radio_IF extends CarService_IF {
 		try {
 			mServiceIF.radio_setPty(index);
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------setPty e=" + e.getMessage());
 		}
 	}
 
@@ -548,17 +549,17 @@ public class Radio_IF extends CarService_IF {
 		try {
 			value = mServiceIF.radio_getRdsMessage();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------getRdsMessage e=" + e.getMessage());
 		}
 		return value;
 	}
 	
 	public void scanListChannel(){
 		try {
-			Log.d(TAG, "scanListChannel");
+			DebugLog.d(TAG, "scanListChannel");
 			mServiceIF.radio_scanListChannel();
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------scanListChannel e=" + e.getMessage());
 		}
 	}
 	
@@ -566,7 +567,7 @@ public class Radio_IF extends CarService_IF {
 	public void scanStore() {
 		try {
 			boolean focus = getRadioManager().requestAudioFocus(true);
-			Log.d(TAG, "scanStore focus="+focus);
+			DebugLog.d(TAG, "scanStore focus="+focus);
 			if (focus) {
 				isRescan = true;
 				isScan5S = false;
@@ -575,7 +576,7 @@ public class Radio_IF extends CarService_IF {
 				mServiceIF.radio_scanStore();
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------interface e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------scanStore e=" + e.getMessage());
 		}
 	}
 	
@@ -583,13 +584,13 @@ public class Radio_IF extends CarService_IF {
 	public void setPreChannel() {
 		try {
 			boolean focus = getRadioManager().requestAudioFocus(true);
-			Log.d(TAG, "setPreChannel focus="+focus);
+			DebugLog.d(TAG, "setPreChannel focus="+focus);
 			if (focus) {
 				setRadioSource();
 				mServiceIF.radio_setPreChannel();
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------setPreChannel e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------setPreChannel e=" + e.getMessage());
 		}
 	}
 	
@@ -597,13 +598,13 @@ public class Radio_IF extends CarService_IF {
 	public void setNextChannel() {
 		try {
 			boolean focus = getRadioManager().requestAudioFocus(true);
-			Log.d(TAG, "setNextChannel focus="+focus);
+			DebugLog.d(TAG, "setNextChannel focus="+focus);
 			if (focus) {
 				setRadioSource();
 				mServiceIF.radio_setNextChannel();
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------setNextChannel e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------setNextChannel e=" + e.getMessage());
 		}
 	}
 	
@@ -640,13 +641,13 @@ public class Radio_IF extends CarService_IF {
 	public void setPreStation() {
 		try {
 			int freq = getStation(true);
-			Log.d(TAG, "setPreStation freq="+freq);
+			DebugLog.d(TAG, "setPreStation freq="+freq);
 			if (freq != -1) {
 				setCurFreq(freq);
 				setEnable(true);
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------setPreStation e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------setPreStation e=" + e.getMessage());
 		}
 	}
 	
@@ -654,13 +655,13 @@ public class Radio_IF extends CarService_IF {
 	public void setNextStation() {
 		try {
 			int freq = getStation(false);
-			Log.d(TAG, "setNextStation freq="+freq);
+			DebugLog.d(TAG, "setNextStation freq="+freq);
 			if (freq != -1) {
 				setCurFreq(freq);
 				setEnable(true);
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------setNextStation e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------setNextStation e=" + e.getMessage());
 		}
 	}
 	
@@ -678,14 +679,14 @@ public class Radio_IF extends CarService_IF {
 	private static final String USERNAME_HEAD = "radio_love_";
 	
 	public static int sfreqToInt(final String sfreq) {
-		Log.d(TAG, "sfreqToInt sfreq="+sfreq);
+		DebugLog.d(TAG, "sfreqToInt sfreq="+sfreq);
 		int freq = -1;
 		float f = Float.valueOf(sfreq);
 		
 		f = f * 100;
 		freq = (int) f;
 		
-		Log.d(TAG, "sfreqToInt return freq="+freq);
+		DebugLog.d(TAG, "sfreqToInt return freq="+freq);
 		return freq;
 	}
 	
@@ -726,7 +727,7 @@ public class Radio_IF extends CarService_IF {
 				} while (cursor.moveToNext());
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "initFavoriteData", e);
+			DebugLog.e(TAG, "initFavoriteData" + e);
 		} finally {
 			if (cursor!=null) {
 				cursor.close();
@@ -775,7 +776,7 @@ public class Radio_IF extends CarService_IF {
 			Data_Common.collectAllFreqs.add(new RadioStation(freq, sfreq, sname));
 			mCarCallBack.onDataChange(mMode, RADIOFUNCCOLLECT, getCurFreq());
 		} catch (Exception e1) {
-			Log.e(TAG, "collectFreq freq="+freq+"; e1="+e1);
+			DebugLog.e(TAG, "collectFreq freq="+freq+"; e1="+e1);
 			return false;
 		}
 		return true;
@@ -830,7 +831,7 @@ public class Radio_IF extends CarService_IF {
                 showToast(context, "已取消收藏");
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "uncollectFreq", e);
+			DebugLog.e(TAG, "uncollectFreq" + e);
 		}
 		return true;
 	}
@@ -853,7 +854,7 @@ public class Radio_IF extends CarService_IF {
             }
         }
 	    String sql = "delete from Radio_FM where username NOT IN ("+ buffer.toString() +");";
-	    Log.d(TAG, "clearColloctFreq sql="+sql);
+	    DebugLog.d(TAG, "clearColloctFreq sql="+sql);
 	    db.execSQL(sql);
 	}
 	
@@ -874,14 +875,14 @@ public class Radio_IF extends CarService_IF {
 	
 	// 设置播放状态（被抢焦点前）
 	public void setRecordRadioOnOff(boolean on) {
-		Log.d(TAG, "setRecordRadioOnOff on="+on);
+		DebugLog.d(TAG, "setRecordRadioOnOff on="+on);
 		getRadioManager().setRecordRadioOnOff(on);
 	}
 
 	// 获取播放状态（被抢焦点前）
 	public boolean getRecordRadioOn() {
 		boolean on = getRadioManager().getRecordRadioOn();
-		Log.d(TAG, "setRecordRadioOnOff on="+on);
+		DebugLog.d(TAG, "setRecordRadioOnOff on="+on);
 		return on;
 	}
 	

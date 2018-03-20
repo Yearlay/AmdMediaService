@@ -6,6 +6,7 @@ import com.haoke.define.McuDef.McuFunc;
 import com.haoke.define.RadioDef.RadioFunc;
 import com.haoke.mediaservice.R;
 import com.haoke.serviceif.CarService_Listener;
+import com.haoke.util.DebugLog;
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.radio.Radio_IF;
 import com.amd.radio.Radio_CarListener;
@@ -75,13 +76,13 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     
     public Radio_Activity_Main(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-        Log.d(TAG, "Radio_Activity_Main init");
+        DebugLog.d(TAG, "Radio_Activity_Main init");
     }
     
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        Log.d(TAG, "onFinishInflate");
+        DebugLog.d(TAG, "onFinishInflate");
         mContext = getContext();
         mIF = Radio_IF.getInstance();
         mIF.registerCarCallBack(this);
@@ -162,7 +163,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     }
     
     public void onResume() {
-        Log.d(TAG, "onResume mAutoPlay="+mAutoPlay);
+        DebugLog.d(TAG, "onResume mAutoPlay="+mAutoPlay);
         if (mAutoPlay) {
             mIF.setEnable(true);
             mAutoPlay = false;
@@ -196,7 +197,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     }
     
     public void onPause() {
-        Log.d(TAG, "onPause");
+        DebugLog.d(TAG, "onPause");
         ModeSwitch.instance().setCurrentMode(mContext, false, 0);
     }
 
@@ -204,14 +205,14 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     }
     
     public void onDestroy() {
-        Log.d(TAG, "onDestroy");
+        DebugLog.d(TAG, "onDestroy");
         mIF.unregisterCarCallBack(this);
         mIF.unregisterModeCallBack(this);
     }
     
     private void getViewPagerFragmentNum(){
         int num = Data_Common.stationList.size();
-        Log.d(TAG, "getViewPagerFragmentNum num="+num);
+        DebugLog.d(TAG, "getViewPagerFragmentNum num="+num);
         Data_Common.pager = num/5;
         Data_Common.reminder = num%5;
         if (Data_Common.reminder != 0) {
@@ -317,7 +318,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
         public void onClick(View v) {
             int id = v.getId();
             String sfreq = ((Button)v).getText().toString();
-            Log.d(TAG, "MyOnClickListener onClick sfreq="+sfreq);
+            DebugLog.d(TAG, "MyOnClickListener onClick sfreq="+sfreq);
             if (MediaInterfaceUtil.mediaCannotPlay()) {
                 return;
             }
@@ -337,7 +338,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
                 }
             }
             if (freq == -1) {
-                Log.e("Radio_Activity_Main", "ERROR: onClick viewid="+id+"; sfreq="+sfreq);
+                DebugLog.e("Radio_Activity_Main", "ERROR: onClick viewid="+id+"; sfreq="+sfreq);
             }
         }
         
@@ -396,7 +397,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
         for (int i = 0; i < FREQ_COUNT_MAX; i++) {
             int freq = mIF.getChannel(i);
             if (freq != 0) {
-                Log.d(TAG, "updateAllStations i="+i+"; freq="+freq);
+                DebugLog.d(TAG, "updateAllStations i="+i+"; freq="+freq);
                 String freq_string = String.valueOf(freq);
                 if (freq >= 8750) {
                     freq_string = freq_string.substring(0, freq_string.length()-2)+"."+freq_string.substring(freq_string.length()-2);
@@ -444,7 +445,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        Log.d(TAG, "onClick id="+id);
+        DebugLog.d(TAG, "onClick id="+id);
         if (MediaInterfaceUtil.isButtonClickTooFast()) {
             return;
         }
@@ -515,7 +516,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     @Override
     public boolean onLongClick(View v) {
         int id = v.getId();
-        Log.d(TAG, "onLongClick id="+id);
+        DebugLog.d(TAG, "onLongClick id="+id);
         if (MediaInterfaceUtil.isButtonClickTooFast()) {
             return true;
         }
@@ -539,7 +540,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
     @Override public void setRadioCurInterface(int data) {}
     @Override
     public void onRadioCarDataChange(int mode, int func, int data) {
-        Log.d(TAG, "onCarDataChange mode = " + mode + " , func = " + func + " , data = " + data);
+        DebugLog.d(TAG, "onCarDataChange mode = " + mode + " , func = " + func + " , data = " + data);
         if (Source.isMcuMode(mode)) {
             switch (func) {
             case McuFunc.SOURCE:
@@ -598,7 +599,7 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
 
     @Override
     public void onServiceConn() {
-        Log.d(TAG, "onServiceConn");
+        DebugLog.d(TAG, "onServiceConn");
         mIF.setCurBand();    
         if (mFreqNumTextView!=null) {
             updateFreq(mIF.getCurFreq());

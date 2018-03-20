@@ -7,6 +7,8 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.haoke.util.DebugLog;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
@@ -54,7 +56,7 @@ public class AssetsDatabaseManager {
 	 * @param context, context of application context not null
 	 */
 	public static AssetsDatabaseManager getInstance(Context context){
-		Log.d(tag, "getInstance:"+context);
+		DebugLog.d(tag, "getInstance:"+context);
 		if(mInstance == null){
 			mInstance = new AssetsDatabaseManager(context);
 		}
@@ -139,7 +141,7 @@ public class AssetsDatabaseManager {
 	    	ostream.close();
 		}
 		catch(Exception e){
-			Log.e(tag, Log.getStackTraceString(e));
+			DebugLog.e(tag, Log.getStackTraceString(e));
 			try{
 				if(istream!=null)
 			    	istream.close();
@@ -147,7 +149,7 @@ public class AssetsDatabaseManager {
 			    	ostream.close();
 			}
 			catch(Exception ee){
-				Log.e(tag, Log.getStackTraceString(ee));
+				DebugLog.e(tag, Log.getStackTraceString(ee));
 			}
 			return false;
 		}

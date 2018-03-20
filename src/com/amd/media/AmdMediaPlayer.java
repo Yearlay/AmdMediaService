@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.constant.MediaUtil.MediaState;
+import com.haoke.util.DebugLog;
 import com.haoke.video.RearView;
 import com.haoke.video.VideoSurfaceView;
 
@@ -106,7 +107,7 @@ public class AmdMediaPlayer {
 				}
 				
 			} catch (IOException e) {
-				Log.e(TAG, "setDataSource IOException e=" + e);
+				DebugLog.e(TAG, "setDataSource IOException e=" + e);
 
 				if (is != null) {
 					try {
@@ -123,7 +124,7 @@ public class AmdMediaPlayer {
 				return false;
 
 			} catch (IllegalArgumentException e) {
-				Log.e(TAG, "setDataSource IllegalArgumentException e=" + e);
+				DebugLog.e(TAG, "setDataSource IllegalArgumentException e=" + e);
 
 				setMediaState(MediaState.ERROR);
 
@@ -132,7 +133,7 @@ public class AmdMediaPlayer {
 				return false;
 
 			} catch (IllegalStateException e) {
-				Log.e(TAG, "setDataSource IllegalStateException e=" + e);
+				DebugLog.e(TAG, "setDataSource IllegalStateException e=" + e);
 
 				setMediaState(MediaState.ERROR);
 
@@ -184,7 +185,7 @@ public class AmdMediaPlayer {
 		@Override
 		public boolean onError(MediaPlayer mp, int what, int extra) {
 			// TODO Auto-generated method stub
-			Log.e(TAG, "mErrorListener onError what:" + what + " extra:"
+			DebugLog.e(TAG, "mErrorListener onError what:" + what + " extra:"
 					+ extra);
 			synchronized (AmdMediaPlayer.this) {
 				setMediaState(MediaState.ERROR);
@@ -216,7 +217,7 @@ public class AmdMediaPlayer {
 		@Override
 		public void onSeekComplete(MediaPlayer arg0) {
 			// TODO Auto-generated method stub
-			Log.d(TAG, "mSeekCompleteListener onSeekComplete");
+			DebugLog.d(TAG, "mSeekCompleteListener onSeekComplete");
 			if (getMediaState() == MediaState.PREPARED) {
 				if (mListener != null)
 					mListener.onSeekCompletion();
@@ -417,11 +418,11 @@ public class AmdMediaPlayer {
 					}
 				} catch (IllegalStateException e) {
 					// TODO Auto-generated catch block
-					Log.e(TAG, "mHandler IllegalStateException");
+					DebugLog.e(TAG, "mHandler IllegalStateException");
 					e.printStackTrace();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
-					Log.e(TAG, "mHandler IOException");
+					DebugLog.e(TAG, "mHandler IOException");
 					e.printStackTrace();
 				}
 			}
@@ -456,10 +457,10 @@ public class AmdMediaPlayer {
 					mMediaPlayer.setDisplay(null);
 				}
 			} catch (IllegalStateException e) {
-				Log.e(TAG, "resetDisplay, IllegalStateException: " + e);
+				DebugLog.e(TAG, "resetDisplay, IllegalStateException: " + e);
 				e.printStackTrace();
 			} catch (Exception e) {
-				Log.e(TAG, "resetDisplay, Exception: " + e);
+				DebugLog.e(TAG, "resetDisplay, Exception: " + e);
 				e.printStackTrace();
 			}
 		}

@@ -47,6 +47,7 @@ import com.haoke.ui.widget.CopyDialog;
 import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
 import com.haoke.ui.widget.CustomDialog.OnDialogListener;
+import com.haoke.util.DebugLog;
 import com.haoke.util.Media_IF;
 import com.haoke.util.Media_Listener;
 
@@ -117,7 +118,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     @Override
     protected void onStop() {
         super.onStop();
-        Log.d(TAG, "onStop");
+        DebugLog.d(TAG, "onStop");
         backToList();
     }
     
@@ -221,7 +222,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(TAG, "onResume");
+        DebugLog.d(TAG, "onResume");
         isShow = true;
         if (getIntent() != null && "com.haoke.data.ModeSwitch".equals(getIntent().getAction())) {
             ModeSwitch.instance().setGoingFlag(false);
@@ -266,7 +267,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d(TAG, "onPause");
+        DebugLog.d(TAG, "onPause");
         isShow = false;
         mPlayDefault = false;
         mIF.unregisterLocalCallBack(this); // 注销服务监听
@@ -287,14 +288,14 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     
     @Override
     protected void onDestroy() {
-        Log.d(TAG, "onDestroy");
+        DebugLog.d(TAG, "onDestroy");
         mHandler.removeCallbacksAndMessages(null);
         super.onDestroy();
     }
     
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        Log.d(TAG, "onKeyUp keyCode="+keyCode);
+        DebugLog.d(TAG, "onKeyUp keyCode="+keyCode);
         if (AmdMediaButtonReceiver.onKeyUp(this, keyCode)) {
             return true;
         }
@@ -303,7 +304,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     
     @Override
     public void onBackPressed() {
-        Log.d(TAG, "onBackPressed");
+        DebugLog.d(TAG, "onBackPressed");
         if (getIntent() != null && "com.haoke.data.ModeSwitch".equals(getIntent().getAction())) {
             MediaInterfaceUtil.launchLauncherActivity(this);
             setIntent(null);
@@ -326,7 +327,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
                     } else {
                         int state = mIF.getScanState(mDeviceType);
                         if (state == ScanState.SCANNING || state == ScanState.IDLE) {
-                            Log.d(TAG, "playDefault mDeviceType:" + mDeviceType + " is scanning!");
+                            DebugLog.d(TAG, "playDefault mDeviceType:" + mDeviceType + " is scanning!");
                         } else {
                             if(!mIF.playDefault(mDeviceType, FileType.AUDIO)) {
                                 mIF.setAudioSourceAndRequestFocus(mDeviceType);
@@ -397,7 +398,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
                 break;
             case MediaUtil.MediaFunc.MEDIA_LIST_UPDATE: //列表有更新
                 if (data1 == mDeviceType && data2 == FileType.AUDIO && mIF.getScanState()==ScanState.COMPLETED_ALL) {
-                    Log.d(TAG, "onDataChange MEDIA_LIST_UPDATE data1="+data1+"; data2="+data2);
+                    DebugLog.d(TAG, "onDataChange MEDIA_LIST_UPDATE data1="+data1+"; data2="+data2);
                     refreshList();
                     playDefault();
                 }

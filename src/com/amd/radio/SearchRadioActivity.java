@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.amd.media.MediaInterfaceUtil;
 import com.haoke.data.AllMediaList;
 import com.haoke.mediaservice.R;
+import com.haoke.util.DebugLog;
 
 import android.app.Activity;
 import android.content.Context;
@@ -380,7 +381,7 @@ public class SearchRadioActivity extends Activity implements OnClickListener,
 			float valueF = newF.floatValue();
 			ret = valueF >= FM_MIN_FREQ && valueF <= FM_MAX_FREQ;
 		} catch (Exception e) {
-			Log.e(TAG, "judgeEnable (mInputStr + value): " + mInputStr + value);
+			DebugLog.e(TAG, "judgeEnable (mInputStr + value): " + mInputStr + value);
 		}
 		return ret;
 	}
@@ -412,7 +413,7 @@ public class SearchRadioActivity extends Activity implements OnClickListener,
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		Log.e(TAG, "onItemClick position:" + position);
+		DebugLog.e(TAG, "onItemClick position:" + position);
 		RadioStation radioStation = mSearchAdapter.mResultStationList.get(position);
 //		mIF.setCurFreq(radioStation.getFreq());
 //		Data_Common.tempFreq.clear();
@@ -542,7 +543,7 @@ public class SearchRadioActivity extends Activity implements OnClickListener,
 	@Override
 	public void afterTextChanged(Editable s) {
 		mSearchAdapter.mResultStationList.clear();
-		Log.d("Yearlay", "afterTextChanged mInputStr: " + mInputStr);
+		DebugLog.d("Yearlay", "afterTextChanged mInputStr: " + mInputStr);
 		for (int i = 0; i < Data_Common.stationList.size(); i++) {
 			if (!mInputStr.isEmpty() && Data_Common.stationList.get(i).getSfreq().contains(mInputStr)) {
 				mSearchAdapter.mResultStationList.add(Data_Common.stationList.get(i));

@@ -1,7 +1,10 @@
 package com.amd.media;
 
 import com.amd.radio.Radio_IF;
+
 import static com.haoke.constant.MediaUtil.RepeatMode.CIRCLE;
+
+import com.haoke.util.DebugLog;
 import com.haoke.util.Media_IF;
 
 import android.content.BroadcastReceiver;
@@ -14,7 +17,7 @@ public class FirstPowerReceiver extends BroadcastReceiver{
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		String action = intent.getAction();
-		Log.d(TAG, "onReceive action="+action);
+		DebugLog.d(TAG, "onReceive action="+action);
 		if ("com.haoke.action.firstpower".equals(action)) {
 			clearAppDataFromBoot(context);
 		}

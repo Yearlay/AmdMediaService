@@ -54,6 +54,7 @@ import com.haoke.data.SearchListener;
 import com.haoke.mediaservice.R;
 import com.haoke.ui.image.Image_Activity_Main;
 import com.haoke.ui.video.Video_Activity_Main;
+import com.haoke.util.DebugLog;
 import com.haoke.util.Media_IF;
 
 public class MediaSearchActivity extends Activity implements OnClickListener, LoadListener,
@@ -246,7 +247,7 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
     
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Log.e(TAG, "onItemClick position:" + position);
+        DebugLog.e(TAG, "onItemClick position:" + position);
         if (MediaInterfaceUtil.mediaCannotPlay()) {
             return;
         }
@@ -313,7 +314,7 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
         
         @Override
         public View getView(int position, View convertView, ViewGroup parentGroup) {
-            Log.d(TAG, "getView position="+position+"; convertView="+convertView);
+            DebugLog.d(TAG, "getView position="+position+"; convertView="+convertView);
             ViewHolder holder = null;
             if (convertView == null) {
                 holder = new ViewHolder();
@@ -454,7 +455,7 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
     @SuppressWarnings("deprecation")
     @Override
     public void onSearchCompleted(ArrayList<FileNode> searchList) {
-        Log.d(TAG, "onSearchCompleted searchList.size="+searchList.size());
+        DebugLog.d(TAG, "onSearchCompleted searchList.size="+searchList.size());
         mSearchAdapter.mResultStationList.clear();
         mSearchAdapter.mResultStationList.addAll(searchList);
         mSearchAdapter.notifyDataSetChanged();

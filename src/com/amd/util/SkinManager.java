@@ -9,6 +9,7 @@ import java.util.HashMap;
 import com.amd.media.MediaInterfaceUtil;
 import com.haoke.application.MediaApplication;
 import com.haoke.service.MediaService;
+import com.haoke.util.DebugLog;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -129,7 +130,7 @@ public class SkinManager {
             try {
                 mServiceHandler = MediaService.getInstance().getSkinHandler();
             } catch (Exception e) {
-                Log.e(TAG, "mServiceHandler is null ! why?");
+                DebugLog.e(TAG, "mServiceHandler is null ! why?");
                 mServiceHandler = null;
             }
             
@@ -137,14 +138,14 @@ public class SkinManager {
             contentResolver.registerContentObserver(URI_SKIN_PRELOADING, false, 
                 new ContentObserver(mServiceHandler) {
                     public void onChange(boolean selfChange) {
-                        Log.d(TAG, "onChange skin preloading");
+                        DebugLog.d(TAG, "onChange skin preloading");
                         loadingSkinData();
                     };
                 });
             contentResolver.registerContentObserver(URI_SKIN, false, 
                 new ContentObserver(mServiceHandler) {
                     public void onChange(boolean selfChange) {
-                        Log.d(TAG, "onChange skin");
+                        DebugLog.d(TAG, "onChange skin");
                         mCurrSkin = -1;
                         refreshViewBySkin();
                     };
@@ -156,14 +157,14 @@ public class SkinManager {
             mRemoteContext = context.createPackageContext(SKIN_MANAGER_PACKAGE_NAME, Context.CONTEXT_IGNORE_SECURITY);
             mRemoteResources = mRemoteContext.getResources();
         } catch (NameNotFoundException e) {
-            Log.e(TAG, "init", e);
+            DebugLog.e(TAG, "init" + e);
         }
     }
     
     private void loadingSkinData() {
         //加载资源文件
         synchronized (mLock) {
-            Log.d(TAG, "loadingSkinData start mServiceHandler="+mServiceHandler);
+            DebugLog.d(TAG, "loadingSkinData start mServiceHandler="+mServiceHandler);
             mPreLoading = Settings.System.getInt(mContext.getContentResolver(), SKIN_KEY_NAME_PRELOADING, SKIN_DEFAULT);;
             for (int i=0; i<mSkinListeners.size(); i++) {
                 SkinListener skinListener = mSkinListeners.get(i).get();
@@ -176,13 +177,13 @@ public class SkinManager {
                 }
             }
             mPreLoading = -1;
-            Log.d(TAG, "loadingSkinData end");
+            DebugLog.d(TAG, "loadingSkinData end");
         }
     }
     
     private void refreshViewBySkin() {
         //刷新UI即可
-        Log.d(TAG, "refreshViewBySkin start mServiceHandler="+mServiceHandler);
+        DebugLog.d(TAG, "refreshViewBySkin start mServiceHandler="+mServiceHandler);
         for (int i=0; i<mSkinListeners.size(); i++) {
             SkinListener skinListener = mSkinListeners.get(i).get();
             if (skinListener != null) {
@@ -193,7 +194,7 @@ public class SkinManager {
                 }
             }
         }
-        Log.d(TAG, "refreshViewBySkin end");
+        DebugLog.d(TAG, "refreshViewBySkin end");
     }
     
     //注册监听
@@ -264,7 +265,7 @@ public class SkinManager {
                 return mRemoteResources.getIdentifier(skinHeadStr + name,
                         type, SKIN_MANAGER_PACKAGE_NAME);
             } catch (Exception e) {
-                Log.e(TAG, "getRemoteResId e="+e);
+                DebugLog.e(TAG, "getRemoteResId e="+e);
             }
         }
         return 0;
@@ -394,7 +395,7 @@ public class SkinManager {
             method1.invoke(scrollBar, thumbDrawable);
 
         } catch (Exception e) {
-            Log.d(TAG, "setScrollViewDrawable: "+e.toString());
+            DebugLog.d(TAG, "setScrollViewDrawable: "+e.toString());
         }
     }
 }

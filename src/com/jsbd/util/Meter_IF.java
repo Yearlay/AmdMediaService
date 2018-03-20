@@ -1,9 +1,10 @@
 package com.jsbd.util;
 
-import com.amd.util.Source;
-import com.haoke.util.Media_IF;
-
 import android.util.Log;
+
+import com.amd.util.Source;
+import com.haoke.util.DebugLog;
+import com.haoke.util.Media_IF;
 
 public class Meter_IF {
 
@@ -32,7 +33,7 @@ public class Meter_IF {
 	public static void notifyMeterMediaSrc(int source){
 		
 		try {
-			Log.d(TAG, "notifyMeterMediaSrc source:"+source);
+			DebugLog.d(TAG, "notifyMeterMediaSrc source:"+source);
 			if(source >= SOURCE_AM && source <= SOURCE_OTHER){
 				byte[] data = new byte[4];
 				data[0] = 0x02;
@@ -44,7 +45,7 @@ public class Meter_IF {
 				throw new Exception("source id error!!!");
 			}
 		} catch (Exception e) {
-			Log.e(TAG, Log.getStackTraceString(e));
+			DebugLog.e(TAG, Log.getStackTraceString(e));
 		}
 		
 	}
@@ -56,7 +57,7 @@ public class Meter_IF {
 	 */
 	public static void sendRadioInfo(int band, int freq){
 	    boolean isRadioSource = Source.isRadioSource();
-		Log.d(TAG, "sendRadioInfo: band="+band+"; freq="+freq+"; isRadioSource="+isRadioSource);
+		DebugLog.d(TAG, "sendRadioInfo: band="+band+"; freq="+freq+"; isRadioSource="+isRadioSource);
 		if (!isRadioSource) {
 		    return;
 		}
@@ -80,7 +81,7 @@ public class Meter_IF {
 			
 			Media_IF.getInstance().sendToDashbroad(data);
 		} catch (Exception e) {
-			Log.e(TAG, Log.getStackTraceString(e));
+			DebugLog.e(TAG, Log.getStackTraceString(e));
 		}
 	}
 	
@@ -93,7 +94,7 @@ public class Meter_IF {
 	public static void sendMusicInfo(String musicNmae, String musicSinger, String musicAlbum){
 		try {
 		    int source = Media_IF.getCurSource();
-			Log.d(TAG, "sendMusicInfo: musicNmae="+musicNmae+"; musicSinger="+musicSinger+"; musicAlbum="+musicAlbum+"; source="+source);
+			DebugLog.d(TAG, "sendMusicInfo: musicNmae="+musicNmae+"; musicSinger="+musicSinger+"; musicAlbum="+musicAlbum+"; source="+source);
 			if(musicNmae==null){
 				musicNmae="";
 			}
@@ -162,7 +163,7 @@ public class Meter_IF {
 			Media_IF.getInstance().sendToDashbroad(sendData);
 			
 		} catch (Exception e) {
-			Log.e(TAG, Log.getStackTraceString(e));
+			DebugLog.e(TAG, Log.getStackTraceString(e));
 		}
 	}
 	

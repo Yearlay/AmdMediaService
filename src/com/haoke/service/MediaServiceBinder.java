@@ -57,7 +57,7 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
 	@Override
 	public boolean registerCallBack(String mode, IAmdMediaCallBack callBack)
 			throws RemoteException {
-		Log.d(TAG, "registerCallBack mode = " + mode);
+		DebugLog.d(TAG, "registerCallBack mode = " + mode);
 		synchronized (mClientList) {
 			int size = mClientList.size();
 			for (int i = size - 1; i >= 0; i--) {
@@ -72,7 +72,7 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
 
 	@Override
 	public boolean unregisterCallBack(String mode) throws RemoteException {
-		Log.d(TAG, "unregisterCallBack mode = " + mode);
+		DebugLog.d(TAG, "unregisterCallBack mode = " + mode);
 		synchronized (mClientList) {
 			int size = mClientList.size();
 			for (int i = size - 1; i >= 0; i--) {
@@ -86,35 +86,35 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
 
 	@Override
 	public boolean clickMusicPlay() throws RemoteException {
-		Log.d(TAG, "clickMusicPlay");
+		DebugLog.d(TAG, "clickMusicPlay");
 		MediaWidgetProvider.onClickMusicPlayButton(mContext);
 		return true;
 	}
 
 	@Override
 	public boolean clickMusicPre() throws RemoteException {
-		Log.d(TAG, "clickMusicPre");
+		DebugLog.d(TAG, "clickMusicPre");
 		MediaWidgetProvider.onClickMusicPreButton(mContext);
 		return true;
 	}
 
 	@Override
 	public boolean clickMusicNext() throws RemoteException {
-		Log.d(TAG, "clickMusicNext");
+		DebugLog.d(TAG, "clickMusicNext");
 		MediaWidgetProvider.onClickMusicNextButton(mContext);
 		return true;
 	}
 
 	@Override
 	public boolean clickRadioEnable() throws RemoteException {
-		Log.d(TAG, "clickRadioEnable");
+		DebugLog.d(TAG, "clickRadioEnable");
 		MediaWidgetProvider.onClickRadioPlayButton();
 		return true;
 	}
 
 	@Override
 	public boolean clickOther(String tag) throws RemoteException {
-		Log.d(TAG, "clickOther tag="+tag);
+		DebugLog.d(TAG, "clickOther tag="+tag);
 		if ("music".equals(tag)) {
 			Intent musicIntent = new Intent();
             musicIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -145,7 +145,7 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
             strId = R.string.launcher_card_media;
         }
         String title = mContext.getResources().getString(strId);
-		Log.d(TAG, "getMediaLabel title="+title);
+		DebugLog.d(TAG, "getMediaLabel title="+title);
         return title;
 	}
 
@@ -160,7 +160,7 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
 		} else {
 			isPlaying = false;
 		}
-		Log.d(TAG, "isPlayingMusic isPlaying="+isPlaying);
+		DebugLog.d(TAG, "isPlayingMusic isPlaying="+isPlaying);
 		return isPlaying;
 	}
 
@@ -262,7 +262,7 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
         } else {
         	info = mOldId3Info;
         }
-		Log.d(TAG, "getMusicId3Info info="+info);
+		DebugLog.d(TAG, "getMusicId3Info info="+info);
 		return info;
 	}
 
@@ -282,7 +282,7 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
 	public String getRadioFreq() throws RemoteException {
 		int freq = Radio_IF.getInstance().getCurFreq();
 		String sfreq = Radio_IF.freqToString(freq);
-		Log.d(TAG, "getRadioFreq return " + sfreq);
+		DebugLog.d(TAG, "getRadioFreq return " + sfreq);
 		return sfreq;
 	}
 
@@ -298,7 +298,7 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
 	
 	@Override
 	public String getOtherInfo(String tag) throws RemoteException {
-		Log.d(TAG, "getOtherInfo tag=" + tag);
+		DebugLog.d(TAG, "getOtherInfo tag=" + tag);
 		return null;
 	}
 	
@@ -337,12 +337,12 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
 			for (int i = 0; i < mClientList.size(); i++) {
 				MediaClientEx client = mClientList.get(i);
 				IAmdMediaCallBack callBack = client.mCallBack;
-				Log.d(TAG, "dispatchDataToClients mode="+client.mMode+"; id="+id);
+				DebugLog.d(TAG, "dispatchDataToClients mode="+client.mMode+"; id="+id);
 				try {
 					callBack.onDataChange(id, data0, data1);
 				} catch (RemoteException e) {
-					Log.e(TAG, "dispatchDataToClients e=" + e.getMessage());
-					Log.e(TAG, "dispatchDataToClients clientList.remove mode="
+					DebugLog.e(TAG, "dispatchDataToClients e=" + e.getMessage());
+					DebugLog.e(TAG, "dispatchDataToClients clientList.remove mode="
 							+ mClientList.get(i).mMode);
 					mClientList.remove(i);
 				}

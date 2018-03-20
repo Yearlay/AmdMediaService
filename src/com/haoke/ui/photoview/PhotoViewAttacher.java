@@ -34,6 +34,9 @@ import android.widget.ImageView.ScaleType;
 
 import java.lang.ref.WeakReference;
 
+import com.haoke.constant.DebugConstant;
+import com.haoke.util.DebugLog;
+
 public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
 		VersionedGestureDetector.OnGestureListener,
 		GestureDetector.OnDoubleTapListener,
@@ -43,7 +46,7 @@ public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
 
 	// let debug flag be dynamic, but still Proguard can be used to remove from
 	// release builds
-	static final boolean DEBUG = Log.isLoggable(LOG_TAG, Log.DEBUG);
+	static final boolean DEBUG = DebugConstant.DEBUG;
 
 	static final int EDGE_NONE = -1;
 	static final int EDGE_LEFT = 0;
@@ -322,7 +325,7 @@ public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
 
 	public final void onDrag(float dx, float dy) {
 		if (DEBUG) {
-			Log.d(LOG_TAG, String.format("onDrag: dx: %.2f. dy: %.2f", dx, dy));
+			DebugLog.d(LOG_TAG, String.format("onDrag: dx: %.2f. dy: %.2f", dx, dy));
 		}
 
 		ImageView imageView = getImageView();
@@ -355,7 +358,7 @@ public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
 	public final void onFling(float startX, float startY, float velocityX,
 			float velocityY) {
 		if (DEBUG) {
-			Log.d(LOG_TAG, "onFling. sX: " + startX + " sY: " + startY
+			DebugLog.d(LOG_TAG, "onFling. sX: " + startX + " sY: " + startY
 					+ " Vx: " + velocityX + " Vy: " + velocityY);
 		}
 
@@ -401,7 +404,7 @@ public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
 
 	public final void onScale(float scaleFactor, float focusX, float focusY) {
 		if (DEBUG) {
-			Log.d(LOG_TAG, String.format(
+			DebugLog.d(LOG_TAG, String.format(
 					"onScale: scale: %.2f. fX: %.2f. fY: %.2f", scaleFactor,
 					focusX, focusY));
 		}
@@ -936,7 +939,7 @@ public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
 
 		public void cancelFling() {
 			if (DEBUG) {
-				Log.d(LOG_TAG, "Cancel Fling");
+				DebugLog.d(LOG_TAG, "Cancel Fling");
 			}
 			mScroller.forceFinished(true);
 		}
@@ -970,7 +973,7 @@ public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
 			mCurrentY = startY;
 
 			if (DEBUG) {
-				Log.d(LOG_TAG, "fling. StartX:" + startX + " StartY:" + startY
+				DebugLog.d(LOG_TAG, "fling. StartX:" + startX + " StartY:" + startY
 						+ " MaxX:" + maxX + " MaxY:" + maxY);
 			}
 
@@ -990,7 +993,7 @@ public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
 				final int newY = mScroller.getCurrY();
 
 				if (DEBUG) {
-					Log.d(LOG_TAG, "fling run(). CurrentX:" + mCurrentX
+					DebugLog.d(LOG_TAG, "fling run(). CurrentX:" + mCurrentX
 							+ " CurrentY:" + mCurrentY + " NewX:" + newX
 							+ " NewY:" + newY);
 				}

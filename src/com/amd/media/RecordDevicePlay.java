@@ -14,6 +14,7 @@ import com.haoke.bean.FileNode;
 import com.haoke.data.AllMediaList;
 import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.FileType;
+import com.haoke.util.DebugLog;
 import com.haoke.util.Media_IF;
 
 public class RecordDevicePlay {
@@ -87,16 +88,16 @@ public class RecordDevicePlay {
             return false;
         }
 		if (mLastPlayDevice==null) {
-			Log.d(TAG, "checkUsbPlay mLastPlayDevice is null!");
+			DebugLog.d(TAG, "checkUsbPlay mLastPlayDevice is null!");
 			return false;
 		}
 		boolean currPlaying = Media_IF.getInstance().isPlayState();
 		if (currPlaying) {
-			Log.e(TAG, "checkUsbPlay meida is playing!");
+			DebugLog.e(TAG, "checkUsbPlay meida is playing!");
 			return false;
 		}
 		boolean lastPlaying = AllMediaList.instance(mContext).getPlayState(FileType.AUDIO);
-		Log.d(TAG, "checkUsbPlay deviceType="+deviceType+"; lastPlaying="
+		DebugLog.d(TAG, "checkUsbPlay deviceType="+deviceType+"; lastPlaying="
 		        +lastPlaying+"; deviceType="+deviceType+"; mLastPlayDevice="+mLastPlayDevice);
 		if (!lastPlaying) {
 			return false;

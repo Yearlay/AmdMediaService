@@ -31,6 +31,7 @@ import com.haoke.data.AllMediaList;
 import com.haoke.data.LoadListener;
 import com.haoke.service.MediaClient;
 import com.haoke.util.DebugClock;
+import com.haoke.util.DebugLog;
 import com.haoke.util.Media_IF;
 
 public class VideoPlayController implements AudioFocusListener {
@@ -69,7 +70,7 @@ public class VideoPlayController implements AudioFocusListener {
 
 	public VideoPlayController(MyVideoView v) {
 		if (v == null) {
-			Log.e(TAG, "VideoView is null!!!");
+			DebugLog.e(TAG, "VideoView is null!!!");
 			return;
 		}
 		mVideView = v;
@@ -106,10 +107,10 @@ public class VideoPlayController implements AudioFocusListener {
 
 		@Override
 		public void onLoadCompleted(int deviceType, int fileType) {
-			Log.d(TAG, "mLoadListener onLoadCompleted deviceType=" + deviceType + "; fileType=" + fileType);
+			DebugLog.d(TAG, "mLoadListener onLoadCompleted deviceType=" + deviceType + "; fileType=" + fileType);
 			// 处理数据加载完成的事件: 主要是处理数据。
 			if (deviceType == mDeviceType && fileType == mFileType) {
-				Log.d(TAG, "mLoadListener onLoadCompleted MEDIA_LIST_UPDATE");
+				DebugLog.d(TAG, "mLoadListener onLoadCompleted MEDIA_LIST_UPDATE");
 				loadData();
 				onDataChanged(mMediaMode, MediaUtil.MediaFunc.MEDIA_LIST_UPDATE, deviceType, fileType);
 			}
@@ -121,7 +122,7 @@ public class VideoPlayController implements AudioFocusListener {
 		@Override
 		public void onScanStateChange(StorageBean storageBean) {
 			// 处理磁盘状态 和 扫描状态发生改变的状态： 主要是更新UI的显示效果。
-			Log.d(TAG, "mLoadListener onScanStateChange storageBean=" + storageBean + "; mDeviceType=" + mDeviceType + "; mPlayingDeviceType="
+			DebugLog.d(TAG, "mLoadListener onScanStateChange storageBean=" + storageBean + "; mDeviceType=" + mDeviceType + "; mPlayingDeviceType="
 					+ mPlayingDeviceType);
 			needToChange(storageBean.getDeviceType(), storageBean.getState());
 			if (storageBean.getDeviceType() == mPlayingDeviceType) {
@@ -167,7 +168,7 @@ public class VideoPlayController implements AudioFocusListener {
 			mVideView.suspend();
 			
 		} catch (Exception e) {
-			Log.e(TAG, "resetMediaPlayer e=" + e);
+			DebugLog.e(TAG, "resetMediaPlayer e=" + e);
 		}
 		debugClock.calculateTime(TAG, "resetMediaPlayer");
 	}
@@ -190,8 +191,8 @@ public class VideoPlayController implements AudioFocusListener {
 				try {
 					callBack.onDataChange(mode, func, data0, data1);
 				} catch (RemoteException e) {
-					Log.e(TAG, "dispatchDataToClients e=" + e.getMessage());
-					Log.e(TAG, "dispatchDataToClients clientList.remove mode=" + clientList.get(i).mMode);
+					DebugLog.e(TAG, "dispatchDataToClients e=" + e.getMessage());
+					DebugLog.e(TAG, "dispatchDataToClients clientList.remove mode=" + clientList.get(i).mMode);
 					clientList.remove(i);
 				}
 			}
@@ -199,8 +200,8 @@ public class VideoPlayController implements AudioFocusListener {
 	}
 
 	private void setPlayingData(int deviceType, int fileType, boolean force) {
-		Log.d(TAG, "setPlayingData deviceType=" + deviceType + "; fileType=" + fileType + "; force=" + force);
-		Log.d(TAG, "setPlayingData mPlayingDeviceType=" + mPlayingDeviceType + "; mPlayingFileType=" + mPlayingFileType + "; mPlayingPos=" + mCurPlayVideoIndex);
+		DebugLog.d(TAG, "setPlayingData deviceType=" + deviceType + "; fileType=" + fileType + "; force=" + force);
+		DebugLog.d(TAG, "setPlayingData mPlayingDeviceType=" + mPlayingDeviceType + "; mPlayingFileType=" + mPlayingFileType + "; mPlayingPos=" + mCurPlayVideoIndex);
 		ArrayList<FileNode> lists = mAllMediaList.getMediaList(deviceType, fileType);
 		int size = lists.size();
 		if (mPlayingDeviceType == deviceType && mPlayingFileType == fileType) {
@@ -224,7 +225,7 @@ public class VideoPlayController implements AudioFocusListener {
 
 	// 设置设备类型和文件类型
 	public void setDeviceAndFileType(int deviceType, int fileType) {
-		Log.d(TAG, "setDeviceAndFileType: deviceType=" + deviceType + "; fileType=" + fileType + "; mDeviceType=" + mDeviceType + "; mFileType=" + mFileType);
+		DebugLog.d(TAG, "setDeviceAndFileType: deviceType=" + deviceType + "; fileType=" + fileType + "; mDeviceType=" + mDeviceType + "; mFileType=" + mFileType);
 		if (mDeviceType != deviceType || mFileType != fileType) {
 			mDeviceType = deviceType;
 			mFileType = fileType;
@@ -369,12 +370,12 @@ public class VideoPlayController implements AudioFocusListener {
 
 	public void playOrPause(boolean playOrPause) {
 		// requestAudioFocus(true);
-		// Log.d("luke",Log.getStackTraceString(new Throwable()));
-		Log.e("luke", "playOrPause: " + playOrPause);
+		// DebugLog.d("luke",Log.getStackTraceString(new Throwable()));
+		DebugLog.e("luke", "playOrPause: " + playOrPause);
 
 		if (playOrPause) {
 			if (!requestAudioFocus(true)) {
-				Log.e(TAG, "playOrPause requestAudioFocus fail!");
+				DebugLog.e(TAG, "playOrPause requestAudioFocus fail!");
 			}
 			mPlayState = PlayState.PLAY;
 			setCurSource(mCurFileNode.getDeviceType());
@@ -420,7 +421,7 @@ public class VideoPlayController implements AudioFocusListener {
 		mCurFileNode = node;
 		mCurPlayVideoIndex = changeFileNodeToIndex(node);
 		videoLayout.setCurFileNode(mCurFileNode);
-		Log.e("luke", "----playOther  node filetype " + node.getFileType() + " ,devicetype: " + node.getDeviceType() + " ,playingtime: " + node.getPlayTime());
+		DebugLog.d("luke", "----playOther  node filetype " + node.getFileType() + " ,devicetype: " + node.getDeviceType() + " ,playingtime: " + node.getPlayTime());
 		
 		videoLayout.getLoadingAnimation().setVisibility(View.VISIBLE);
 		
@@ -428,7 +429,7 @@ public class VideoPlayController implements AudioFocusListener {
 		mHandler.sendMessageDelayed(msg, 300);
 
 		if (!requestAudioFocus(true)) {
-			Log.e(TAG, "playOther requestAudioFocus fail!");
+			DebugLog.e(TAG, "playOther requestAudioFocus fail!");
 			isVideoPlaying = false;
 			return false;
 		}
@@ -470,7 +471,7 @@ public class VideoPlayController implements AudioFocusListener {
 				}
 			}
 		}
-		Log.e(TAG, "play ERROR! deviceType=" + deviceType + "; fileType=" + fileType);
+		DebugLog.e(TAG, "play ERROR! deviceType=" + deviceType + "; fileType=" + fileType);
 		return false;
 	}
 
@@ -484,7 +485,7 @@ public class VideoPlayController implements AudioFocusListener {
 				return playOther(fileNode, -1);
 			}
 		}
-		Log.e(TAG, "play ERROR! deviceType=" + deviceType + "; fileType=" + fileType);
+		DebugLog.e(TAG, "play ERROR! deviceType=" + deviceType + "; fileType=" + fileType);
 		return false;
 	}
 
@@ -634,27 +635,27 @@ public class VideoPlayController implements AudioFocusListener {
 				mPlayStateBeforeLoseFocus = PlayState.PAUSE;
 				break;
 			case MSG_PLAY:
-				Log.d(TAG, "mHandler MSG_PLAY");
+				DebugLog.d(TAG, "mHandler MSG_PLAY");
 				if (mVideView != null) {
 					playOrPause(true);
 				}
 				break;
 
 			case MSG_PAUSE:
-				Log.d(TAG, "mHandler MSG_PAUSE");
+				DebugLog.d(TAG, "mHandler MSG_PAUSE");
 				if (mVideView != null) {
 					playOrPause(false);
 				}
 				break;
 
 			case MSG_PREPLAY:
-				Log.d(TAG, "mHandler MSG_PREPLAY");
+				DebugLog.d(TAG, "mHandler MSG_PREPLAY");
 				if (mVideView != null) {
 					playPre();
 				}
 				break;
 			case MSG_NEXTPLAY:
-				Log.d(TAG, "mHandler MSG_NEXTPLAY");
+				DebugLog.d(TAG, "mHandler MSG_NEXTPLAY");
 				if (mVideView != null) {
 					playNext();
 				}
@@ -662,7 +663,7 @@ public class VideoPlayController implements AudioFocusListener {
 			case MSG_SAVE_PLAYTIME:
 				int time = getPosition();
 				savePlayTime(getPlayFileNode(), time);
-				//Log.e("luke","----MSG_SAVE_PLAYTIME: " + time);
+				//DebugLog.e("luke","----MSG_SAVE_PLAYTIME: " + time);
 				removeMessages(MSG_SAVE_PLAYTIME);
 				sendEmptyMessageDelayed(MSG_SAVE_PLAYTIME, MSG_DELAY_PLAYTIME);
 				break;
@@ -670,7 +671,7 @@ public class VideoPlayController implements AudioFocusListener {
 				if (!hasMessages(msg.what)) {
 					int fileType = msg.arg1;
 					boolean playing = (msg.arg2 == 0 ? false : true);
-					Log.d(TAG, "mHandler  MSG_SAVE_PLAYSTATE fileType=" + fileType + "; playing=" + playing);
+					DebugLog.d(TAG, "mHandler  MSG_SAVE_PLAYSTATE fileType=" + fileType + "; playing=" + playing);
 					mAllMediaList.savePlayState(fileType, playing);
 				}
 				break;
@@ -681,14 +682,14 @@ public class VideoPlayController implements AudioFocusListener {
 					ArrayList<FileNode> lists = mAllMediaList.getMediaList(mPlayingDeviceType, mPlayingFileType);
 					if (lists.size() > 1) {
 						getPreAndNextIndex(lists.size(), pos, index);
-						Log.d(TAG, "mHandler MSG_PARSE_ID3_INFO index=" + index[0] + ";" + index[1] + ";" + index[2] + ";" + index[3]);
+						DebugLog.d(TAG, "mHandler MSG_PARSE_ID3_INFO index=" + index[0] + ";" + index[1] + ";" + index[2] + ";" + index[3]);
 						for (int i = 0; i < index.length; i++) {
 							FileNode fileNode = null;
 							try {
 								fileNode = lists.get(index[i]);
 								ID3Parse.instance().parseID3(mContext, fileNode, null);
 							} catch (Exception e) {
-								Log.e(TAG, "mHandler MSG_PARSE_ID3_INFO lists.get error! " + e);
+								DebugLog.e(TAG, "mHandler MSG_PARSE_ID3_INFO lists.get error! " + e);
 							}
 						}
 					}
@@ -700,14 +701,14 @@ public class VideoPlayController implements AudioFocusListener {
 
 	// 开始播放时间记录
 	public void startRecordTimer() {
-		Log.e(TAG, "start timer");
+		DebugLog.d(TAG, "start timer");
 		mHandler.removeMessages(MSG_SAVE_PLAYTIME);
 		mHandler.sendEmptyMessageDelayed(MSG_SAVE_PLAYTIME, MSG_DELAY_PLAYTIME);
 	}
 
 	// 停止播放时间记录
 	public void stopRecordTimer() {
-		Log.e(TAG, "Stop timer");
+		DebugLog.d(TAG, "Stop timer");
 		mHandler.removeMessages(MSG_SAVE_PLAYTIME);
 	}
 

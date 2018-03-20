@@ -38,6 +38,7 @@ import com.haoke.service.MediaService;
 import com.haoke.ui.media.Media_Activity_Main;
 import com.haoke.ui.music.Music_Activity_List;
 import com.haoke.ui.video.Video_Activity_Main;
+import com.haoke.util.DebugLog;
 import com.haoke.util.Media_IF;
 
 public class MediaInterfaceUtil {
@@ -55,19 +56,19 @@ public class MediaInterfaceUtil {
     private static boolean sPowerKey_MuteState = false;
     
     /*public static void resetMediaPlayStateRecord(int source) {
-        Log.d(TAG, "resetMediaPlayStateRecord old is "+sMediaPlayStateRecord + "; caller is "+source);
+        DebugLog.d(TAG, "resetMediaPlayStateRecord old is "+sMediaPlayStateRecord + "; caller is "+source);
         if (source == sMediaPlayStateRecord) {
             sMediaPlayStateRecord = Source.NULL;
         }
     }
     
     public static void resetMediaPlayStateRecord() {
-        Log.d(TAG, "resetMediaPlayStateRecord old is "+sMediaPlayStateRecord );
+        DebugLog.d(TAG, "resetMediaPlayStateRecord old is "+sMediaPlayStateRecord );
         sMediaPlayStateRecord = Source.NULL;
     }
     
     private static void setMediaPlayStateRecord(int source) {
-        Log.d(TAG, "sMediaPlayStateRecord source="+source+"; old is "+sMediaPlayStateRecord);
+        DebugLog.d(TAG, "sMediaPlayStateRecord source="+source+"; old is "+sMediaPlayStateRecord);
         sMediaPlayStateRecord = source;
     }
     
@@ -133,14 +134,14 @@ public class MediaInterfaceUtil {
                 }
             }
         }
-        Log.d(TAG, "setMute mute="+mute+"; sMediaPlayStateRecord="+sMediaPlayStateRecord);*/
+        DebugLog.d(TAG, "setMute mute="+mute+"; sMediaPlayStateRecord="+sMediaPlayStateRecord);*/
     }
     
     public static void cancelMuteRecordPlayState(int key) {
         if (MUTE_PAUSE_MUSIC) {
-            Log.d(TAG, "cancelMuteRecordPlayState sMuteKey_MuteState="+sMuteKey_MuteState+"; sPowerKey_MuteState="+sPowerKey_MuteState);
+            DebugLog.d(TAG, "cancelMuteRecordPlayState sMuteKey_MuteState="+sMuteKey_MuteState+"; sPowerKey_MuteState="+sPowerKey_MuteState);
             if (hasAudioFocus() || sMuteKey_MuteState || sPowerKey_MuteState) {
-                Log.d(TAG, "cancelMuteRecordPlayState hasAudioFocus");
+                DebugLog.d(TAG, "cancelMuteRecordPlayState hasAudioFocus");
                 if (key == KeyEvent.KEYCODE_MUTE) {
                     if (sMuteKey_MuteState) {
                         sMuteKey_MuteState = false;
@@ -175,7 +176,7 @@ public class MediaInterfaceUtil {
     private static AudioFocusListener mAudioFocusListener = new AudioFocusListener() {
         @Override
         public void audioFocusChanged(int state) {
-            Log.d(TAG,  "audioFocusChanged state="+state+"; sMuteKey_MuteState="+sMuteKey_MuteState+"; sPowerKey_MuteState="+sPowerKey_MuteState);
+            DebugLog.d(TAG,  "audioFocusChanged state="+state+"; sMuteKey_MuteState="+sMuteKey_MuteState+"; sPowerKey_MuteState="+sPowerKey_MuteState);
             switch (state) {
             case PlayState.PLAY:
 //                if (sMuteKey_MuteState) {
@@ -236,7 +237,7 @@ public class MediaInterfaceUtil {
     private static boolean checkAndPlayDeviceType(final int deviceType, final int fileType) {
         if (fileType == FileType.AUDIO) {
             if (Media_IF.getInstance().isPlayState() && Media_IF.getInstance().getPlayingDevice() == deviceType) {
-                Log.d(TAG, "checkAndPlayDeviceType return! deviceType="+deviceType);
+                DebugLog.d(TAG, "checkAndPlayDeviceType return! deviceType="+deviceType);
                 return true;
             }
             return Media_IF.getInstance().playDefault(deviceType, FileType.AUDIO);
@@ -294,7 +295,7 @@ public class MediaInterfaceUtil {
      * @param mode为相关模式，autoPlay为自动播放
      */
     public static void launchSourceActivity(int mode, boolean autoPlay) {
-        Log.d(TAG, "launchSourceActivity mode="+mode+"; autoPlay="+autoPlay);
+        DebugLog.d(TAG, "launchSourceActivity mode="+mode+"; autoPlay="+autoPlay);
         if (autoPlay) {
             MediaService.getInstance().removeModeHandlerMsg();
         }
@@ -402,7 +403,7 @@ public class MediaInterfaceUtil {
                 return false;
             }
         } catch (Exception e) {
-            Log.e(TAG, "isRunningTopActivity error! e="+e);
+            DebugLog.e(TAG, "isRunningTopActivity error! e="+e);
         }
         return false;
     }
@@ -416,7 +417,7 @@ public class MediaInterfaceUtil {
             //com.autonavi.amapauto/.MainMapActivity
             isTop = isRunningTopActivity(context, "com.autonavi.amapauto", null);
         }
-        Log.d(TAG, "isNaviApp naviOpenKey="+naviOpenKey+"; isTop="+isTop);
+        DebugLog.d(TAG, "isNaviApp naviOpenKey="+naviOpenKey+"; isTop="+isTop);
         return naviOpenKey == 0 ? isTop : true;
     }
     
@@ -447,12 +448,12 @@ public class MediaInterfaceUtil {
      */
     public static int checkSourceFromBoot(final MediaService service) {
         //if (BTMusicService.getInstance() == null || RadioService.getInstance() == null) {
-        //    Log.d(TAG, "checkSourceFromBoot BTMusicService or RadioService not startup!");
+        //    DebugLog.d(TAG, "checkSourceFromBoot BTMusicService or RadioService not startup!");
         //    return 200;
         //}
         if (!BT_IF.getInstance().isServiceConnected() || !BTMusic_IF.getInstance().isServiceConnected()
                 || !Media_IF.getInstance().isServiceConnected() || !Radio_IF.getInstance().isServiceConnected()) {
-            Log.d(TAG, "checkSourceFromBoot BT_IF or BTMusic_IF or Media_IF or Radio_IF cannot bind service!");
+            DebugLog.d(TAG, "checkSourceFromBoot BT_IF or BTMusic_IF or Media_IF or Radio_IF cannot bind service!");
             return 200;
         }
         
@@ -461,15 +462,15 @@ public class MediaInterfaceUtil {
         //null为carmanager没有收到mcu给的信号，true为断B+起来，false为断acc休眠起来
         final Boolean power = Media_IF.getInstance().isFirstPower();
         if (power == null) {
-            Log.d(TAG, "checkSourceFromBoot power is null!");
+            DebugLog.d(TAG, "checkSourceFromBoot power is null!");
             return 100;
         } else if (power.booleanValue()) {
-            Log.d(TAG, "checkSourceFromBoot power is true! clear app data!");
+            DebugLog.d(TAG, "checkSourceFromBoot power is true! clear app data!");
             FirstPowerReceiver.clearAppDataFromBoot(service);
             return -1;
         }
         
-        Log.d(TAG, "checkSourceFromBoot return -1");
+        DebugLog.d(TAG, "checkSourceFromBoot return -1");
         return -1;
     }
     
@@ -481,7 +482,7 @@ public class MediaInterfaceUtil {
         if (sWaitUsb1Mounted == -1) {
         } else if (storage1.isMounted()) {
             if (!storage1.isLoadCompleted()) {
-                Log.d(TAG, "checkSourceFromBoot collect must wait usb1 load completed!");
+                DebugLog.d(TAG, "checkSourceFromBoot collect must wait usb1 load completed!");
                 return 1000;
             }
         } else {
@@ -490,7 +491,7 @@ public class MediaInterfaceUtil {
                 sWaitUsb1Mounted = end;
                 return 500;
             } else if (end - sWaitUsb1Mounted > 400) {
-                Log.d(TAG, "checkSourceFromBoot wait usb1 mounted timeout!");
+                DebugLog.d(TAG, "checkSourceFromBoot wait usb1 mounted timeout!");
                 sWaitUsb1Mounted = -1;
             } else {
                 return 500;
@@ -500,7 +501,7 @@ public class MediaInterfaceUtil {
         if (sWaitUsb2Mounted == -1) {
         } else if (storage2.isMounted()) {
             if (!storage2.isLoadCompleted()) {
-                Log.d(TAG, "checkSourceFromBoot collect must wait usb2 load completed!");
+                DebugLog.d(TAG, "checkSourceFromBoot collect must wait usb2 load completed!");
                 return 1000;
             }
         } else {
@@ -509,7 +510,7 @@ public class MediaInterfaceUtil {
                 sWaitUsb2Mounted = end;
                 return 500;
             } else if (end - sWaitUsb2Mounted > 400) {
-                Log.d(TAG, "checkSourceFromBoot wait usb2 mounted timeout!");
+                DebugLog.d(TAG, "checkSourceFromBoot wait usb2 mounted timeout!");
                 sWaitUsb2Mounted = -1;
             } else {
                 return 500;
@@ -524,7 +525,7 @@ public class MediaInterfaceUtil {
         long clickTime = System.currentTimeMillis();
         long time = Math.abs(clickTime - sLastClickTime);
         if (time < BUTTON_CLICK_DELAY) {
-            Log.d(TAG, "isButtonClickTooFast: you click too fast!");
+            DebugLog.d(TAG, "isButtonClickTooFast: you click too fast!");
             return true;
         }
         sLastClickTime = clickTime;
@@ -545,7 +546,7 @@ public class MediaInterfaceUtil {
         int type = intent.getIntExtra(KEY_MODE_RECORD_TYPE, MediaType.AUDIO);
         int display = intent.getIntExtra(KEY_MODE_RECORD_DISPLAY, DISPLAY_OFF);
         int ourSource = Source.changeToOurSource(source, type);
-        Log.d(TAG, "checkModeRecord source="+source+"; type="+type+"; display="+display+"; ourSource="+ourSource);
+        DebugLog.d(TAG, "checkModeRecord source="+source+"; type="+type+"; display="+display+"; ourSource="+ourSource);
         UsbAutoPlay.setServiceStartTime();
         checkModeRecordInternal(service, username, ourSource, display);
     }
@@ -556,7 +557,7 @@ public class MediaInterfaceUtil {
         final int ms = checkModeRecordInternalEx(service, username, ourSource, display);
         if (ms >= 0) {
             if (sModeRecordWaitTimeOut > 80000) {
-                Log.e(TAG, "checkModeRecordInternal sModeRecordWaitTimeOut="+sModeRecordWaitTimeOut);
+                DebugLog.e(TAG, "checkModeRecordInternal sModeRecordWaitTimeOut="+sModeRecordWaitTimeOut);
                 sWaitUsb1Mounted = 0;
                 sWaitUsb2Mounted = 0;
                 sModeRecordWaitTimeOut = 0;
@@ -582,12 +583,12 @@ public class MediaInterfaceUtil {
             final MediaService service, final String username, 
             final int ourSource, final int display) {
         //if (BTMusicService.getInstance() == null || RadioService.getInstance() == null) {
-        //    Log.d(TAG, "checkModeRecordInternalEx BTMusicService or RadioService not startup!");
+        //    DebugLog.d(TAG, "checkModeRecordInternalEx BTMusicService or RadioService not startup!");
         //    return 200;
         //}
         if (!BT_IF.getInstance().isServiceConnected() || !BTMusic_IF.getInstance().isServiceConnected()
                 || !Media_IF.getInstance().isServiceConnected() || !Radio_IF.getInstance().isServiceConnected()) {
-            Log.d(TAG, "checkModeRecordInternalEx BT_IF or BTMusic_IF or Media_IF or Radio_IF cannot bind service!");
+            DebugLog.d(TAG, "checkModeRecordInternalEx BT_IF or BTMusic_IF or Media_IF or Radio_IF cannot bind service!");
             return 200;
         }
         
@@ -596,10 +597,10 @@ public class MediaInterfaceUtil {
         //null为carmanager没有收到mcu给的信号，true为断B+起来，false为断acc休眠起来
         //final Boolean power = Media_IF.getInstance().isFirstPower();
         //if (power == null) {
-        //    Log.d(TAG, "checkSourceFromBoot power is null!");
+        //    DebugLog.d(TAG, "checkSourceFromBoot power is null!");
         //    return 100;
         //} else if (power.booleanValue()) {
-        //    Log.d(TAG, "checkSourceFromBoot power is true! clear app data!");
+        //    DebugLog.d(TAG, "checkSourceFromBoot power is true! clear app data!");
         //    FirstPowerReceiver.clearAppDataFromBoot(service);
         //    return -1;
         //}
@@ -621,7 +622,7 @@ public class MediaInterfaceUtil {
                     sRunStart = end;
                     ms = 500;
                 } else if (end - sRunStart > 20000) {
-                    Log.d(TAG, "checkModeRecordInternalEx loading BTConnState timeout! open Radio!");
+                    DebugLog.d(TAG, "checkModeRecordInternalEx loading BTConnState timeout! open Radio!");
                     if (!Radio_IF.getInstance().isEnable()) {
                         Radio_IF.getInstance().setEnable(true);
                     }
@@ -643,7 +644,7 @@ public class MediaInterfaceUtil {
             int fileType = (Source.isAudioSource(ourSource) ? FileType.AUDIO : FileType.VIDEO);
             boolean currPlaying = false; //Media_IF.getInstance().isPlayState() || VideoPlayController.isVideoPlaying;
             boolean lastPlaying = true;//allMediaList.getPlayState(fileType);
-            Log.d(TAG, "checkModeRecordInternalEx runDeviceType="+runDeviceType+"; lastPlaying="+lastPlaying+"; currPlaying="+currPlaying);
+            DebugLog.d(TAG, "checkModeRecordInternalEx runDeviceType="+runDeviceType+"; lastPlaying="+lastPlaying+"; currPlaying="+currPlaying);
             if (!currPlaying && lastPlaying && runDeviceType != DeviceType.NULL) {
                 if (runDeviceType == DeviceType.COLLECT) {
                     int waitMs = waitUsbMounted(service);
@@ -652,7 +653,7 @@ public class MediaInterfaceUtil {
                     }
                 }
                 StorageBean storage = allMediaList.getStoragBean(runDeviceType);
-                Log.d(TAG, "checkModeRecordInternalEx storage="+storage);
+                DebugLog.d(TAG, "checkModeRecordInternalEx storage="+storage);
                 if (runDeviceType == DeviceType.COLLECT || storage.isLoadCompleted()) {
                     ArrayList<FileNode> lists = allMediaList.getMediaList(runDeviceType, fileType);
                     int size = lists.size();
@@ -665,7 +666,7 @@ public class MediaInterfaceUtil {
                                     launchMusicPlayActivity(service);
                                 }
                             } else {
-                                Log.d(TAG, "checkModeRecordInternalEx song not exist!");
+                                DebugLog.d(TAG, "checkModeRecordInternalEx song not exist!");
                                 if (display == DISPLAY_ON) {
                                     launchSourceActivityFromDeiveType(runDeviceType, fileType, false);
                                 }
@@ -690,25 +691,25 @@ public class MediaInterfaceUtil {
                             if(success) {
                                 launchVideoPlayActivity(service, lastFileNode);
                             } else {
-                                Log.d(TAG, "checkModeRecordInternalEx video not exist!");
+                                DebugLog.d(TAG, "checkModeRecordInternalEx video not exist!");
                             }
                         }
                     } else {
-                        Log.d(TAG, "checkModeRecordInternalEx device has no song");
+                        DebugLog.d(TAG, "checkModeRecordInternalEx device has no song");
                         if (display == DISPLAY_ON) {
                             launchSourceActivityFromDeiveType(runDeviceType, fileType, false);
                         }
                     }
                 } else {
                     boolean mounted = storage.isMounted();
-                    Log.d(TAG, "checkModeRecordInternalEx loading mounted="+mounted);
+                    DebugLog.d(TAG, "checkModeRecordInternalEx loading mounted="+mounted);
                     if (mounted) {
                         long end = System.currentTimeMillis();
                         if (sRunStart == -1) {
                             sRunStart = end;
                             ms = 500;
                         } else if (end - sRunStart > 20000) {
-                            Log.d(TAG, "checkModeRecordInternalEx loading timeout!");
+                            DebugLog.d(TAG, "checkModeRecordInternalEx loading timeout!");
                             checkAllDeviceAndJump(service, username, ourSource, display);
                         } else {
                             ms = 500;
@@ -719,7 +720,7 @@ public class MediaInterfaceUtil {
                             sRunStart = end;
                             ms = 500;
                         } else if (end - sRunStart > 20000) {
-                            Log.d(TAG, "checkModeRecordInternalEx mounting timeout!");
+                            DebugLog.d(TAG, "checkModeRecordInternalEx mounting timeout!");
                             checkAllDeviceAndJump(service, username, ourSource, display);
                         } else {
                             ms = 500;
@@ -728,7 +729,7 @@ public class MediaInterfaceUtil {
                 }
             }
         }
-        Log.d(TAG, "checkModeRecordInternalEx ourSource="+ourSource+"; ms="+ms);
+        DebugLog.d(TAG, "checkModeRecordInternalEx ourSource="+ourSource+"; ms="+ms);
         return ms;
     }
     
@@ -767,7 +768,7 @@ public class MediaInterfaceUtil {
                         }
                     }
                     if (exist) {
-                        Log.d(TAG, "checkAllDeviceAndJump playFileNode="+playFileNode);
+                        DebugLog.d(TAG, "checkAllDeviceAndJump playFileNode="+playFileNode);
                         if (fileType == FileType.AUDIO) {
                             checkAndPlayDeviceType(deviceType, fileType);
                             if (display == DISPLAY_ON) {
@@ -783,7 +784,7 @@ public class MediaInterfaceUtil {
         }
         
         if (!exist) {
-            Log.d(TAG, "checkAllDeviceAndJump exist is false! runDeviceType="+runDeviceType+"; fileType="+fileType);
+            DebugLog.d(TAG, "checkAllDeviceAndJump exist is false! runDeviceType="+runDeviceType+"; fileType="+fileType);
             launchSourceActivityFromDeiveType(runDeviceType, fileType, false);
         }
     }
@@ -791,7 +792,7 @@ public class MediaInterfaceUtil {
     public static void insertUsbAndScanComplete(final int deviceType) {
         if (AmdConfig.INSERT_USB_AUTO_PLAY_MUSIC) {
             int ms = UsbAutoPlay.playDefaultMusic(deviceType);
-            Log.d(TAG, "insertUsbAndScanComplete ms="+ms);
+            DebugLog.d(TAG, "insertUsbAndScanComplete ms="+ms);
             if (ms > 0) {
                 MediaService.getInstance().getHandler().postDelayed(new Runnable() {
                     @Override

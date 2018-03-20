@@ -69,7 +69,7 @@ public class Image_Activity_Main extends Activity implements
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-    	Log.e(TAG,"--------image onCreate");
+    	DebugLog.e(TAG,"--------image onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.image_activity_main);
         AllMediaList.launcherTocheckAllStorageScanState(this);
@@ -134,12 +134,12 @@ public class Image_Activity_Main extends Activity implements
     }
     
     private void initIntent(Intent intent){
-    	Log.e(TAG, "-------- initIntent: " + intent.toString());
+    	DebugLog.e(TAG, "-------- initIntent: " + intent.toString());
         if("MediaSearchActivity".equals(intent.getStringExtra("isfrom"))){ //search入口
-        	Log.e(TAG, "onNewIntent MediaSearchActivity");
+        	DebugLog.e(TAG, "onNewIntent MediaSearchActivity");
         	mFilePathFromSearch = intent.getStringExtra("filepath");
         } else if(intent != null && intent.getIntExtra(MediaService.KEY_COMMAND_FROM, 100) == MediaService.VALUE_FROM_VR_APP) { // VR打开图片
-        	Log.e(TAG, "initIntent VALUE_FROM_VR_APP");
+        	DebugLog.e(TAG, "initIntent VALUE_FROM_VR_APP");
         	ArrayList<FileNode> imageList = null;
         	int deviceType;
         	imageList = AllMediaList.instance(getApplicationContext()).getMediaList(DeviceType.FLASH, FileType.IMAGE);
@@ -154,13 +154,13 @@ public class Image_Activity_Main extends Activity implements
 				}
 			}
 			if(imageList.size() > 0){
-				Log.e(TAG,"initIntent deviceType: " + deviceType);
+				DebugLog.e(TAG,"initIntent deviceType: " + deviceType);
 				updateDevice(deviceType, mListLayout.getPhotoListSize() == 0);
                 mPlayLayout.setPlayState(PlayState.PLAY);
                 mPlayLayout.setCurrentPosition(0);;
                 onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
 			} else {
-				Log.e(TAG, "initIntent device have no images!!!!");
+				DebugLog.e(TAG, "initIntent device have no images!!!!");
 				updateDevice(DeviceType.FLASH, false);
 				onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
 			}
@@ -171,7 +171,7 @@ public class Image_Activity_Main extends Activity implements
     @Override
     public void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        Log.e(TAG, "--------image onNewIntent");
+        DebugLog.e(TAG, "--------image onNewIntent");
         initIntent(intent);
     }
 
@@ -207,7 +207,7 @@ public class Image_Activity_Main extends Activity implements
 
     @Override
     protected void onResume() {
-    	Log.e(TAG,"--------image onResume");
+    	DebugLog.e(TAG,"--------image onResume");
         isShow = true;
         AllMediaList.notifyAllLabelChange(getApplicationContext(), R.string.pub_image);
         if (mFilePathFromSearch != null) {
@@ -290,7 +290,7 @@ public class Image_Activity_Main extends Activity implements
 
     @Override
     protected void onPause() {
-    	Log.e(TAG,"--------image onPause");
+    	DebugLog.e(TAG,"--------image onPause");
     	mPlayLayout.mRecordPlayState = mPlayLayout.mPlayState;
         isShow = false;
         mListLayout.dismissDialog();
@@ -302,7 +302,7 @@ public class Image_Activity_Main extends Activity implements
 
     @Override
     public void onDestroy() {
-    	Log.e(TAG,"--------image onDestroy");
+    	DebugLog.e(TAG,"--------image onDestroy");
         super.onDestroy();
         AllMediaList.instance(getApplicationContext()).unRegisterLoadListener(this);
         unregisterReceiver(mOperateAppReceiver);
@@ -341,7 +341,7 @@ public class Image_Activity_Main extends Activity implements
     @Override
     public void onLoadCompleted(int deviceType, int fileType) {
         // 处理数据加载完成的事件: 主要是处理数据。
-    	Log.e(TAG,"-----onLoadCompleted deviceType: " + deviceType + " fileType: " + fileType);
+    	DebugLog.e(TAG,"-----onLoadCompleted deviceType: " + deviceType + " fileType: " + fileType);
         if (deviceType == getCurrentDeviceType() && fileType == FileType.IMAGE) {
             updateDevice(deviceType, true);
         }
@@ -350,7 +350,7 @@ public class Image_Activity_Main extends Activity implements
     @Override
     public void onScanStateChange(StorageBean storageBean) {
         // 处理磁盘状态 和 扫描状态发生改变的状态： 主要是更新UI的显示效果。
-    	Log.e(TAG, "onScanStateChange storageBean: " + storageBean.toString());
+    	DebugLog.e(TAG, "onScanStateChange storageBean: " + storageBean.toString());
         if (storageBean.getDeviceType() == getCurrentDeviceType()) {
             updateDevice(getCurrentDeviceType(), true);
             onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
@@ -422,7 +422,7 @@ public class Image_Activity_Main extends Activity implements
     
     @Override
     public void onBackPressed() {
-    	Log.e(TAG,"--------image onBackPressed");
+    	DebugLog.e(TAG,"--------image onBackPressed");
         if (mPlayLayout.getVisibility() == View.VISIBLE) {
             onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
         } else if (mListLayout.isEditMode()) {
@@ -547,7 +547,7 @@ public class Image_Activity_Main extends Activity implements
     private void onChangeFragment(int index) {
         mPlayPreferences.saveImageShowFragment(index);
         //Thread.dumpStack();
-        Log.e(TAG,"onChangeFragment: " + index);
+        DebugLog.e(TAG,"onChangeFragment: " + index);
         if (index == SWITCH_TO_PLAY_FRAGMENT) {
             mListLayout.setVisibility(View.INVISIBLE);
             mPlayLayout.setVisibility(View.VISIBLE);
@@ -633,7 +633,7 @@ public class Image_Activity_Main extends Activity implements
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
-    	Log.e(TAG,"onCheckedChanged");
+    	DebugLog.e(TAG,"onCheckedChanged");
         View view = group.findViewById(checkedId);
         switch (view.getId()) {
         case R.id.image_device_flash:

@@ -204,7 +204,7 @@ public class Media_IF extends CarService_IF {
 	}
 	
 	public static void resetSource(Context context) {
-		Log.d(TAG, "resetSource");
+		DebugLog.d(TAG, "resetSource");
 		if (!setCurSource(Source.NULL)) {
 			setSourceToSettings(Source.NULL);
 			sLastSource = Source.NULL;
@@ -272,10 +272,10 @@ public class Media_IF extends CarService_IF {
 			if (sCurSource == -1) {
 				sCurSource = getSourceFromSettings();
 			}
-			Log.d(TAG, "getCurSource sCurSource=" + sCurSource);
+			DebugLog.d(TAG, "getCurSource sCurSource=" + sCurSource);
 			return sCurSource;
 		} catch (Exception e) {
-			Log.e(TAG, "getCurSource error e="+e);
+			DebugLog.e(TAG, "getCurSource error e="+e);
 		}
 		return Source.NULL;
 	}
@@ -283,10 +283,10 @@ public class Media_IF extends CarService_IF {
 	public static boolean getMute() {
 		try {
 			int mute = getInstance().mServiceIF.eq_getMute();
-			Log.e(TAG, "getMute mute="+mute);
+			DebugLog.e(TAG, "getMute mute="+mute);
 			return mute == 1 ? true : false;
 		} catch (Exception e) {
-			Log.e(TAG, "getMute error e="+e);
+			DebugLog.e(TAG, "getMute error e="+e);
 		}
 		return false;
 	}
@@ -297,7 +297,7 @@ public class Media_IF extends CarService_IF {
 			int status = getInstance().mServiceIF.getCMSStatus(CMSStatusFuc.TRAFFIC_RESTRICTION);
 			limitFlag = (status == TrafficRestriction.ON);
 		} catch (Exception e) {
-			Log.e(TAG, "limitToPlayVideoWhenDrive error e="+e);
+			DebugLog.e(TAG, "limitToPlayVideoWhenDrive error e="+e);
 		}
 		return limitFlag;
 	}
@@ -307,7 +307,7 @@ public class Media_IF extends CarService_IF {
 		try {
 			speed = getInstance().mServiceIF.getCMSStatus(CMSStatusFuc.CAR_SPEED);
 		} catch (Exception e) {
-			Log.e(TAG, "getCarSpeed error e="+e);
+			DebugLog.e(TAG, "getCarSpeed error e="+e);
 		}
 		return speed;
 	}
@@ -315,11 +315,11 @@ public class Media_IF extends CarService_IF {
 	public static void cancelMute() {
 		try {
 			if (getMute()) {
-				Log.e(TAG, "getMute cancelMute");
+				DebugLog.e(TAG, "getMute cancelMute");
 				getInstance().mServiceIF.eq_setMute();
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "cancelMute error e="+e);
+			DebugLog.e(TAG, "cancelMute error e="+e);
 		}
 	}
 	
@@ -327,14 +327,14 @@ public class Media_IF extends CarService_IF {
         try {
             /*int state = BT_IF.getCallState();
             if (state != BTCallState.IDLE) {
-                Log.d(TAG, "BT_IF.getCallState state="+state);
+                DebugLog.d(TAG, "BT_IF.getCallState state="+state);
                 return true;
             }*/
             boolean state = BT_IF.isTalking();
-            Log.d(TAG, "BT_IF.isTalking state="+state);
+            DebugLog.d(TAG, "BT_IF.isTalking state="+state);
             return state;
         } catch (Exception e) {
-            Log.e(TAG, "getCallState error1 e="+e);
+            DebugLog.e(TAG, "getCallState error1 e="+e);
         }
         return false;
 	}
@@ -345,21 +345,21 @@ public class Media_IF extends CarService_IF {
 		}
 		try {
             int carplayState = getInstance().mServiceIF.getCMSStatus(CMSStatusFuc.CARPLAY_CALL_STS);
-            Log.d(TAG, "getCallState carplayState="+carplayState);
+            DebugLog.d(TAG, "getCallState carplayState="+carplayState);
             if (carplayState != CarplayCallState.CARPLAY_NOT_CALLING) {
                 return true;
             }
         } catch (Exception e) {
-            Log.e(TAG, "getCallState error2 e="+e);
+            DebugLog.e(TAG, "getCallState error2 e="+e);
         }
 		try {
             int tboxState = getInstance().mServiceIF.getCMSStatus(CMSStatusFuc.TBOX_STATUS);
-            Log.d(TAG, "getCallState tboxState="+tboxState);
+            DebugLog.d(TAG, "getCallState tboxState="+tboxState);
             if (tboxState != TBOXStatus.HANGUP) {
                 return true;
             }
         } catch (Exception e) {
-            Log.e(TAG, "getCallState error2 e="+e);
+            DebugLog.e(TAG, "getCallState error2 e="+e);
         }
 		return false;
 	}
@@ -367,10 +367,10 @@ public class Media_IF extends CarService_IF {
 	public static boolean getScreenOn() {
 	    try {
 	        int state = getInstance().mServiceIF.getScreenState();
-	        Log.d(TAG, "getScreenOn state="+state);
+	        DebugLog.d(TAG, "getScreenOn state="+state);
 	        return state == ScreenState.SCREEN_ON;
         } catch (Exception e) {
-            Log.e(TAG, "getScreenOn error e="+e);
+            DebugLog.e(TAG, "getScreenOn error e="+e);
         }
 	    return true;
 	}
@@ -378,21 +378,21 @@ public class Media_IF extends CarService_IF {
 	public static void setScreenOn() {
 	    try {
             if (!getScreenOn()) {
-                Log.d(TAG, "setScreenOn SCREEN_ON");
+                DebugLog.d(TAG, "setScreenOn SCREEN_ON");
                 getInstance().mServiceIF.setScreenState(ScreenState.SCREEN_ON);
             }
         } catch (Exception e) {
-            Log.e(TAG, "setScreenOn error e="+e);
+            DebugLog.e(TAG, "setScreenOn error e="+e);
         }
 	}
 	
 	private static int getCMSStatus(int func) {
 	    try {
 	        int status = getInstance().mServiceIF.getCMSStatus(func);
-	        Log.d(TAG, "getCMSStatus func="+func+"; status="+status);
+	        DebugLog.d(TAG, "getCMSStatus func="+func+"; status="+status);
             return status;
         } catch (Exception e) {
-            Log.e(TAG, "getCMSStatus error e="+e);
+            DebugLog.e(TAG, "getCMSStatus error e="+e);
         }
 	    return -1;
 	}
@@ -412,10 +412,10 @@ public class Media_IF extends CarService_IF {
 	public static boolean isPowerOn() {
 	    try {
 	        int status = getInstance().mServiceIF.mcu_getPowerState();
-	        Log.d(TAG, "isPowerOn status="+status);
+	        DebugLog.d(TAG, "isPowerOn status="+status);
 	        return status == PowerState.POWER_ON;
         } catch (Exception e) {
-            Log.e(TAG, "isPowerOn error e="+e);
+            DebugLog.e(TAG, "isPowerOn error e="+e);
         }
 	    return true;
 	}
@@ -436,10 +436,10 @@ public class Media_IF extends CarService_IF {
 					val = false;
 				}
 			} catch (Exception e) {
-				Log.e(TAG, "isFirstPower error e="+e);
+				DebugLog.e(TAG, "isFirstPower error e="+e);
 			}
 		}
-		Log.e(TAG, "isFirstPower mServiceConn="+mServiceConn+"; val="+val);
+		DebugLog.e(TAG, "isFirstPower mServiceConn="+mServiceConn+"; val="+val);
 		return val;
 	}
 	
@@ -458,7 +458,7 @@ public class Media_IF extends CarService_IF {
                 focus = 3;
             }
 	    }
-	    Log.d(TAG, "hasAudioOrBtFocus focus="+focus);
+	    DebugLog.d(TAG, "hasAudioOrBtFocus focus="+focus);
 		return focus > 0;
 	}
 	
@@ -723,13 +723,13 @@ public class Media_IF extends CarService_IF {
 	// 播放指定设备的默认歌曲（在mode切源后调用），与getPlayDefaultIndex对应
 	public boolean playDefault(int deviceType, int fileType) {
 		try {
-			Log.d(TAG, "playDefault deviceType="+deviceType+"; fileType="+fileType);
+			DebugLog.d(TAG, "playDefault deviceType="+deviceType+"; fileType="+fileType);
 			if (MediaInterfaceUtil.mediaCannotPlay()) {
 				return false;
 			}
 			return mMediaManager.playDefault(deviceType, fileType);
 		} catch (Exception e) {
-			Log.e(TAG, "playDefault", e);
+			DebugLog.e(TAG, "playDefault" + e);
 		}
 		return false;
 	}
@@ -737,13 +737,13 @@ public class Media_IF extends CarService_IF {
 	// 播放(list中的postion)
 	public boolean play(int pos) {
 		try {
-			Log.d(TAG, "play pos="+pos);
+			DebugLog.d(TAG, "play pos="+pos);
 			if (MediaInterfaceUtil.mediaCannotPlay()) {
 				return false;
 			}
 			return mMediaManager.play(pos);
 		} catch (Exception e) {
-			Log.e(TAG, "play pos="+pos, e);
+			DebugLog.e(TAG, "play pos="+pos + e);
 		}
 		return false;
 	}
@@ -751,13 +751,13 @@ public class Media_IF extends CarService_IF {
 	// 播放(文件路径)
 	public boolean play(String filePath) {
 		try {
-			Log.d(TAG, "play filePath="+filePath);
+			DebugLog.d(TAG, "play filePath="+filePath);
 			if (MediaInterfaceUtil.mediaCannotPlay()) {
 				return false;
 			}
 			return mMediaManager.play(filePath);
 		} catch (Exception e) {
-			Log.e(TAG, "play filePath="+filePath, e);
+			DebugLog.e(TAG, "play filePath="+filePath + e);
 		}
 		return false;
 	}
@@ -765,13 +765,13 @@ public class Media_IF extends CarService_IF {
 	// 播放(FileNode)
 	public boolean play(FileNode fileNode) {
 		try {
-			Log.d(TAG, "play fileNode="+fileNode);
+			DebugLog.d(TAG, "play fileNode="+fileNode);
 			if (MediaInterfaceUtil.mediaCannotPlay()) {
 				return false;
 			}
 			return mMediaManager.play(fileNode);
 		} catch (Exception e) {
-			Log.e(TAG, "play fileNode="+fileNode, e);
+			DebugLog.e(TAG, "play fileNode="+fileNode + e);
 		}
 		return false;
 	}
@@ -779,7 +779,7 @@ public class Media_IF extends CarService_IF {
 	// 上一曲
 	public boolean playPre() {
 		try {
-			Log.d(TAG, "playPre");
+			DebugLog.d(TAG, "playPre");
 			if (MediaInterfaceUtil.mediaCannotPlay()) {
 				return false;
 			}
@@ -800,7 +800,7 @@ public class Media_IF extends CarService_IF {
 	// 下一曲
 	public boolean playNext() {
 		try {
-			Log.d(TAG, "playNext");
+			DebugLog.d(TAG, "playNext");
 			if (MediaInterfaceUtil.mediaCannotPlay()) {
 				return false;
 			}
@@ -830,7 +830,7 @@ public class Media_IF extends CarService_IF {
 	// 设置播放状态
 	public void setPlayState(int state) {
 		try {
-			Log.d(TAG, "setPlayState state="+state);
+			DebugLog.d(TAG, "setPlayState state="+state);
 			if (state == PlayState.PLAY && MediaInterfaceUtil.mediaCannotPlay()) {
 				return;
 			}
@@ -1018,7 +1018,7 @@ public class Media_IF extends CarService_IF {
 		try {
 			return mMediaManager.collectMusic(fileNode);
 		} catch (Exception e) {
-			Log.e(TAG, "collectMusic fileNode="+fileNode, e);
+			DebugLog.e(TAG, "collectMusic fileNode="+fileNode + e);
 		}
 		return false;
 	}
@@ -1031,7 +1031,7 @@ public class Media_IF extends CarService_IF {
 		try {
 			return mMediaManager.deleteCollectedMusic(fileNode);
 		} catch (Exception e) {
-			Log.e(TAG, "deleteCollectedMusic fileNode="+fileNode, e);
+			DebugLog.e(TAG, "deleteCollectedMusic fileNode="+fileNode + e);
 		}
 		return false;
 	}
@@ -1053,7 +1053,7 @@ public class Media_IF extends CarService_IF {
 		try {
 			return mMediaManager.getPlayDefaultIndex(deviceType, fileType);
 		} catch (Exception e) {
-			Log.e(TAG, "getPlayDefaultIndex e=" + e);
+			DebugLog.e(TAG, "getPlayDefaultIndex e=" + e);
 		}
 		return -1;
 	}
@@ -1073,7 +1073,7 @@ public class Media_IF extends CarService_IF {
 				setVideoActivity(null);
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "HMI------------Finish Activity e=" + e.getMessage());
+			DebugLog.e(TAG, "HMI------------Finish Activity e=" + e.getMessage());
 		}
 	}
 	
@@ -1111,7 +1111,7 @@ public class Media_IF extends CarService_IF {
 				mServiceIF.sendToDashbroad(data);
 			}
 		} catch (Exception e) {
-			Log.e(TAG, "sendToDashbroad", e);
+			DebugLog.e(TAG, "sendToDashbroad" + e);
 		}
 	}
 	//-------------------------------仪表接口结束-----------------------------

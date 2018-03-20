@@ -399,7 +399,7 @@ public class AllMediaList {
         
         @Override
         public void onChange(boolean selfChange) {
-            Log.d(TAG, "onChange personal_user_info");
+            DebugLog.d(TAG, "onChange personal_user_info");
             if (!MediaUtil.isLogin()) {
                 MediaUtil.updateUserName();
                 mMediaDbHelper.updateCollectDataFromChangeUseList();
@@ -948,7 +948,7 @@ public class AllMediaList {
                 handler.sendEmptyMessageDelayed(what, 500);
             }
         } catch (Exception e) {
-            Log.d(TAG, "notifyUpdateAppWidget sendBroadcast main_activity_update_ui");
+            DebugLog.d(TAG, "notifyUpdateAppWidget sendBroadcast main_activity_update_ui");
             MediaApplication.getInstance().sendBroadcast(new Intent("main_activity_update_ui"));
         }
     }

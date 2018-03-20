@@ -10,6 +10,7 @@ import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.mediaservice.R;
+import com.haoke.util.DebugLog;
 import com.haoke.util.Media_IF;
 
 import android.content.Context;
@@ -67,7 +68,7 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
                 val = true;
             }
         }
-        Log.d(TAG, "updateDeviceType oldSize="+oldSize+"; oldDevice="+oldDevice+"; mDeviceType="+mDeviceType+"; mTotal="+mTotal);
+        DebugLog.d(TAG, "updateDeviceType oldSize="+oldSize+"; oldDevice="+oldDevice+"; mDeviceType="+mDeviceType+"; mTotal="+mTotal);
         return val;
     }
     
@@ -112,7 +113,7 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
         setData(holder, position);
         
         long end = System.currentTimeMillis();
-        Log.d(TAG, "getView consume time="+(end-start)+"ms");
+        DebugLog.d(TAG, "getView consume time="+(end-start)+"ms");
         
         return convertView;
     }
@@ -172,7 +173,7 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
                     holder.mTitleText.setTextColor(skinManager.getColor(R.color.hk_custom_text));
                 }
             } else {
-                Log.e(TAG, "setData why fileNode is null ?");
+                DebugLog.e(TAG, "setData why fileNode is null ?");
             }
         }
         
@@ -253,7 +254,7 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
                 }
             }
         } catch (Exception e) {
-            Log.e(TAG, "onID3ParseComplete position="+position+"; firstChildPosition="+firstChildPosition, e);
+            DebugLog.e(TAG, "onID3ParseComplete position="+position+"; firstChildPosition="+firstChildPosition + e);
         }
     }
     
@@ -267,7 +268,7 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
                     val = true;
                 }
             } else {
-                Log.e(TAG, "isPlayItem why fileNode is null ?");
+                DebugLog.e(TAG, "isPlayItem why fileNode is null ?");
             }
         }
         return val;

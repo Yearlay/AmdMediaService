@@ -10,6 +10,7 @@ import com.haoke.bean.ID3Parse.ID3ParseListener;
 import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.mediaservice.R;
 import com.haoke.ui.widget.RoundImageViewByXfermode;
+import com.haoke.util.DebugLog;
 import com.haoke.util.Media_IF;
 
 import android.content.Context;
@@ -48,7 +49,7 @@ public class Music_Play_Id3 extends LinearLayout implements OnClickListener, ID3
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        Log.d(TAG, "onDetachedFromWindow");
+        DebugLog.d(TAG, "onDetachedFromWindow");
         /*mAlbumView.setImageBitmap(null);
         if (mDefaultBitmap != null && !mDefaultBitmap.isRecycled()) {
             mDefaultBitmap.recycle();
@@ -160,7 +161,7 @@ public class Music_Play_Id3 extends LinearLayout implements OnClickListener, ID3
             try {
                 bitmap = BitmapFactory.decodeFile(fileNode.getThumbnailPath());
             } catch (Exception e) {
-                Log.e(TAG, "updateAudioInfo Exception e="+e);
+                DebugLog.e(TAG, "updateAudioInfo Exception e="+e);
             }
             if (bitmap != null) {
                 mBitmap = scaleBitmap(bitmap);
@@ -295,7 +296,7 @@ public class Music_Play_Id3 extends LinearLayout implements OnClickListener, ID3
                 mTrack.setText(track);
             }
         } catch (Exception e) {
-            Log.e(TAG, "onLoadBitmapCompleted fileNode="+fileNode);
+            DebugLog.e(TAG, "onLoadBitmapCompleted fileNode="+fileNode);
         }
     }
 }

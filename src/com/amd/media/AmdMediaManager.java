@@ -34,6 +34,7 @@ import com.haoke.constant.MediaUtil.RepeatMode;
 import com.haoke.constant.MediaUtil.ScanState;
 import com.haoke.service.MediaClient;
 import com.haoke.spectrum.Spectrum;
+import com.haoke.util.DebugLog;
 import com.haoke.util.Media_IF;
 import com.haoke.video.VideoSurfaceView;
 
@@ -125,7 +126,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	
     // 设置设备类型和文件类型
     public void setDeviceAndFileType(int deviceType, int fileType) {
-    	Log.d(TAG, "setDeviceAndFileType: deviceType="+deviceType+"; fileType="+fileType
+    	DebugLog.d(TAG, "setDeviceAndFileType: deviceType="+deviceType+"; fileType="+fileType
     			+ "; mDeviceType="+mDeviceType+"; mFileType="+mFileType);
     	if (mDeviceType != deviceType || mFileType != fileType) {
     		mDeviceType = deviceType;
@@ -169,7 +170,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 			case MSG_SAVE_PLAYTIME:
 				int time = getPosition();
 				savePlayTime(getPlayItem(), time);
-				Log.d(TAG, "mHandler MSG_SAVE_PLAYTIME time="+time+"; mPlayingPos="+mPlayingPos+"; mPlayingListSize="+mPlayingListSize);
+				DebugLog.d(TAG, "mHandler MSG_SAVE_PLAYTIME time="+time+"; mPlayingPos="+mPlayingPos+"; mPlayingListSize="+mPlayingListSize);
 				removeMessages(MSG_SAVE_PLAYTIME);
 //				mHandler.sendEmptyMessageDelayed(MSG_SAVE_PLAYTIME, MSG_DELAY_PLAYTIME);
 				//modify bug 20798 begin
@@ -180,7 +181,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 				if (!hasMessages(msg.what)) {
 					int fileType = msg.arg1;
 					boolean playing = (msg.arg2 == 0 ? false : true);
-					Log.d(TAG, "mHandler  MSG_SAVE_PLAYSTATE fileType="+fileType+"; playing="+playing);
+					DebugLog.d(TAG, "mHandler  MSG_SAVE_PLAYSTATE fileType="+fileType+"; playing="+playing);
 					mAllMediaList.savePlayState(fileType, playing);
 				}
 				break;
@@ -191,14 +192,14 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 					ArrayList<FileNode> lists = mAllMediaList.getMediaList(mPlayingDeviceType, mPlayingFileType);
 					if (lists.size() > 1) {
 						getPreAndNextIndex(lists.size(), pos, index);
-						Log.d(TAG, "mHandler MSG_PARSE_ID3_INFO index="+index[0]+";"+index[1]+";"+index[2]+";"+index[3]);
+						DebugLog.d(TAG, "mHandler MSG_PARSE_ID3_INFO index="+index[0]+";"+index[1]+";"+index[2]+";"+index[3]);
 						for (int i=0; i < index.length; i++) {
 							FileNode fileNode = null;
 							try {
 								fileNode = lists.get(index[i]);
 								ID3Parse.instance().parseID3(mContext, fileNode, null);
 							} catch (Exception e) {
-								Log.e(TAG, "mHandler MSG_PARSE_ID3_INFO lists.get error! "+e);
+								DebugLog.e(TAG, "mHandler MSG_PARSE_ID3_INFO lists.get error! "+e);
 							}
 						}
 					}
@@ -269,7 +270,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 				}
 			}
 		}
-		Log.e(TAG, "play ERROR! deviceType="+deviceType+"; fileType="+fileType);
+		DebugLog.e(TAG, "play ERROR! deviceType="+deviceType+"; fileType="+fileType);
 		return false;
 	}
 	
@@ -284,7 +285,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 				return playOther(fileNode, -1);
 			}
 		}
-		Log.e(TAG, "play ERROR! deviceType="+deviceType+"; fileType="+fileType);
+		DebugLog.e(TAG, "play ERROR! deviceType="+deviceType+"; fileType="+fileType);
 		return false;
 	}
 	
@@ -332,7 +333,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		}
 		
 		if (!requestAudioFocus(true)) {
-			Log.e(TAG, "playOther requestAudioFocus fail!");
+			DebugLog.e(TAG, "playOther requestAudioFocus fail!");
 			return false;
 		}
 		
@@ -478,7 +479,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 			mMediaPlayer.reset();
 
 		} catch (Exception e) {
-			Log.e(TAG, "resetMediaPlayer e=" + e);
+			DebugLog.e(TAG, "resetMediaPlayer e=" + e);
 		}
 	}
 	
@@ -494,7 +495,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
                         mPlayState = PlayState.PLAY;
                         onDataChanged(mMediaMode, MediaFunc.PLAY_STATE, getPlayState(), 0);
                     } else {
-                        Log.e(TAG, "setPlayState requestAudioFocus fail!");
+                        DebugLog.e(TAG, "setPlayState requestAudioFocus fail!");
                     }
                 } else {
                     setPlayingData(mPlayingFileNode.getDeviceType(), mPlayingFileNode.getFileType(), true);
@@ -503,7 +504,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	    	} else {
 	    		FileNode fileNode = getDefaultItem();
 	    		if (fileNode == null) {
-	    			Log.e(TAG, "setPlayState: no song!");
+	    			DebugLog.e(TAG, "setPlayState: no song!");
 //	    			android.widget.Toast.makeText(mContext, "没有歌曲文件！", android.widget.Toast.LENGTH_SHORT).show();
 	    		} else {
 	    			mPlayingFileNode = fileNode;
@@ -803,7 +804,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	
 	// 清除播放记录
 	private void clearPlayRecord() {
-		Log.d(TAG, "clearPlayRecord mPlayingDeviceType="+mPlayingDeviceType+"; mPlayingFileType="+mPlayingFileType);
+		DebugLog.d(TAG, "clearPlayRecord mPlayingDeviceType="+mPlayingDeviceType+"; mPlayingFileType="+mPlayingFileType);
 		stopRecordTimer();
 		mAllMediaList.clearPlayTime(mPlayingDeviceType, mPlayingFileType);
 	}
@@ -862,10 +863,10 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		
 		@Override
 		public void onLoadCompleted(int deviceType, int fileType) {
-			Log.d(TAG, "mLoadListener onLoadCompleted deviceType="+deviceType+"; fileType="+fileType);
+			DebugLog.d(TAG, "mLoadListener onLoadCompleted deviceType="+deviceType+"; fileType="+fileType);
 			// 处理数据加载完成的事件: 主要是处理数据。
 			if (deviceType == mDeviceType && fileType == mFileType) {
-				Log.d(TAG, "mLoadListener onLoadCompleted MEDIA_LIST_UPDATE");
+				DebugLog.d(TAG, "mLoadListener onLoadCompleted MEDIA_LIST_UPDATE");
 				loadData();
 				onDataChanged(mMediaMode, MediaUtil.MediaFunc.MEDIA_LIST_UPDATE, deviceType, fileType);
 			}
@@ -882,7 +883,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		@Override
 		public void onScanStateChange(StorageBean storageBean) {
 			// 处理磁盘状态 和 扫描状态发生改变的状态： 主要是更新UI的显示效果。
-			Log.d(TAG, "mLoadListener onScanStateChange storageBean="+storageBean+"; mDeviceType="+mDeviceType+"; mPlayingDeviceType="+mPlayingDeviceType);
+			DebugLog.d(TAG, "mLoadListener onScanStateChange storageBean="+storageBean+"; mDeviceType="+mDeviceType+"; mPlayingDeviceType="+mPlayingDeviceType);
 //			if (storageBean.getDeviceType() == mDeviceType) {
 //				needToChange(storageBean.getDeviceType(), storageBean.getState());
 //			}
@@ -921,8 +922,8 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	private void setPlayingData(int deviceType, int fileType, boolean force) {
 		ArrayList<FileNode> lists = mAllMediaList.getMediaList(deviceType, fileType);
 		int size = lists.size();
-        Log.d(TAG, "setPlayingData deviceType="+deviceType+"; fileType="+fileType+"; force="+force+"; size="+size);
-        Log.d(TAG, "setPlayingData mPlayingDeviceType="+mPlayingDeviceType+"; mPlayingFileType="+mPlayingFileType+"; mPlayingPos="+mPlayingPos);
+        DebugLog.d(TAG, "setPlayingData deviceType="+deviceType+"; fileType="+fileType+"; force="+force+"; size="+size);
+        DebugLog.d(TAG, "setPlayingData mPlayingDeviceType="+mPlayingDeviceType+"; mPlayingFileType="+mPlayingFileType+"; mPlayingPos="+mPlayingPos);
 		if (mPlayingDeviceType == deviceType && mPlayingFileType == fileType) {
 			if (size != mPlayingListSize) {
 				force = true;
@@ -1043,7 +1044,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 			return true;
 		} else {
 		    if (getRecordPlayState() == PlayState.PLAY) {
-		        Log.d(TAG, "requestAudioFocus reset RecordPlayState!");
+		        DebugLog.d(TAG, "requestAudioFocus reset RecordPlayState!");
 		        setRecordPlayState(PlayState.STOP);
 		    }
 			return mAudioFocus.requestAudioFocus(request);
@@ -1284,7 +1285,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		if (fileNode != null) {
 			return fileNode.isSelected();
 		}
-		Log.e(TAG, "isCurItemSelected ERROR!! pos="+pos);
+		DebugLog.e(TAG, "isCurItemSelected ERROR!! pos="+pos);
 		return false;
 	}
 
@@ -1293,7 +1294,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		if (fileNode != null) {
 			fileNode.setSelected(isSelect);
 		} else {
-			Log.e(TAG, "selectFile ERROR!! pos="+pos);
+			DebugLog.e(TAG, "selectFile ERROR!! pos="+pos);
 		}
 	}
 
@@ -1422,8 +1423,8 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 				try {
 					callBack.onDataChange(mode, func, data0, data1);
 				} catch (RemoteException e) {
-					Log.e(TAG, "dispatchDataToClients e=" + e.getMessage());
-					Log.e(TAG, "dispatchDataToClients clientList.remove mode="
+					DebugLog.e(TAG, "dispatchDataToClients e=" + e.getMessage());
+					DebugLog.e(TAG, "dispatchDataToClients clientList.remove mode="
 							+ clientList.get(i).mMode);
 					clientList.remove(i);
 				}

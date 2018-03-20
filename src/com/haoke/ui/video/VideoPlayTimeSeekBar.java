@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.amd.util.SkinManager;
 import com.haoke.constant.MediaUtil;
 import com.haoke.mediaservice.R;
+import com.haoke.util.DebugLog;
 
 public class VideoPlayTimeSeekBar extends RelativeLayout implements OnSeekBarChangeListener {
 
@@ -91,7 +92,7 @@ public class VideoPlayTimeSeekBar extends RelativeLayout implements OnSeekBarCha
 		} else {
 			positionStr = MediaUtil.TimeFormat(position);
 		}
-		Log.e("luke", "----position: " + position + " , " + positionStr);
+		DebugLog.d("luke", "----position: " + position + " , " + positionStr);
 		showText.setText(positionStr);
 		int duration = videoLayout.getVideoController().getDuration();
 		String durationStr = null;
@@ -101,7 +102,7 @@ public class VideoPlayTimeSeekBar extends RelativeLayout implements OnSeekBarCha
 			durationStr = MediaUtil.TimeFormat(duration);
 		}
 
-		Log.e("luke", "----duration: " + duration + " , " + durationStr);
+		DebugLog.d("luke", "----duration: " + duration + " , " + durationStr);
 		durationText.setText(" / " + durationStr);
 		showIcon.setImageResource(isFastPre ? R.drawable.video_ctrl_fastpre : R.drawable.video_ctrl_fastnext);
 		mSeekBar.setProgress(position);
@@ -164,7 +165,7 @@ public class VideoPlayTimeSeekBar extends RelativeLayout implements OnSeekBarCha
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
-		Log.e("luke", "VideoPlayTimeSeekBar onTouchEvent MotionEvent: " + event.toString());
+		DebugLog.e("luke", "VideoPlayTimeSeekBar onTouchEvent MotionEvent: " + event.toString());
 		int action = event.getAction();
 		if (action == MotionEvent.ACTION_DOWN) {
 			videoLayout.stopHideTimer();
@@ -181,7 +182,7 @@ public class VideoPlayTimeSeekBar extends RelativeLayout implements OnSeekBarCha
 
 	@Override
 	protected void onDetachedFromWindow() {
-		Log.d(TAG, "onDetachedFromWindow");
+		DebugLog.d(TAG, "onDetachedFromWindow");
 		mTimeHandler.removeCallbacksAndMessages(null);
 		super.onDetachedFromWindow();
 	}
@@ -260,7 +261,7 @@ public class VideoPlayTimeSeekBar extends RelativeLayout implements OnSeekBarCha
 		} else if (mTextFormat == 2) {
 			string = MediaUtil.TimeFormat_HMS(total);
 		}
-		Log.e("luke", "setTotalTime: " + total + " , " + string);
+		DebugLog.e("luke", "setTotalTime: " + total + " , " + string);
 		mDurationTextView.setText(string);
 	}
 
@@ -271,7 +272,7 @@ public class VideoPlayTimeSeekBar extends RelativeLayout implements OnSeekBarCha
 		} else if (mTextFormat == 2) {
 			string = MediaUtil.TimeFormat_HMS(time);
 		}
-		// Log.e("luke","setCurrTime: " + time + " , " + string);
+		// DebugLog.e("luke","setCurrTime: " + time + " , " + string);
 		mCurTimeTextView.setText(string);
 		if (isTracking) {
 			showTrackView(lastProgress > time, time);

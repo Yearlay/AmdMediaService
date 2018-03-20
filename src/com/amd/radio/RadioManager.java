@@ -107,7 +107,7 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 	
 	public boolean requestAudioFocus(boolean request) {
 		boolean focus = hasAudioFocus();
-		Log.d(TAG, "requestAudioFocus request="+request+"; focus="+focus);
+		DebugLog.d(TAG, "requestAudioFocus request="+request+"; focus="+focus);
 		if (!focus) {
 			return mAudioFocus.requestAudioFocus(request);
 		}
