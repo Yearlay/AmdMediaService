@@ -5,8 +5,11 @@ import java.util.ArrayList;
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.radio.Radio_IF;
 import com.amd.util.SkinManager;
+import com.amd.util.Source;
 import com.amd.util.SkinManager.SkinListener;
 import com.haoke.data.AllMediaList;
+import com.haoke.define.McuDef.McuFunc;
+import com.haoke.define.RadioDef.RadioFunc;
 import com.haoke.mediaservice.R;
 import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
@@ -33,7 +36,7 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
 
-public class Radio_To_Favorite extends Activity implements OnClickListener, OnItemClickListener ,OnItemSelectedListener {
+public class Radio_To_Favorite extends Activity implements OnClickListener, OnItemClickListener ,OnItemSelectedListener, Radio_CarListener {
 	private Button mReturnButton;
     private GridView gridView;
     private TextView loadingView;
@@ -66,6 +69,9 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
         initFavoriteData();
         skinManager = SkinManager.instance(getApplicationContext());
         Log.d(TAG, "onCreate");
+        //modify bug 21027 begin
+        Radio_IF.getInstance().registerModeCallBack(this);
+        //modify bug 21027 end
     }
     
     private void init(){
@@ -193,6 +199,9 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        //modify bug 21027 begin
+        Radio_IF.getInstance().unregisterModeCallBack(this);
+        //modify bug 21027 end
     }
     
     @Override
@@ -346,4 +355,27 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
             refreshSkin(false);
         };
     };
+
+    //modify bug 21027 begin
+    @Override
+    public void onRadioCarDataChange(int mode, int func, int data) {
+        if (Source.isMcuMode(mode)) {
+            switch (func) {
+            case McuFunc.SOURCE:
+                break;
+            }
+        } else if (mode == Radio_IF.getInstance().getMode()) {
+            switch (func) {
+            case Radio_IF.RADIOFUNCCOLLECT:
+                adapter.notifyDataSetChanged();
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void setRadioCurInterface(int data) {
+        
+    }
+    //modify bug 21027 end
 }

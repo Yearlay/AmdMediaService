@@ -268,8 +268,12 @@ public class SearchRadioActivity extends Activity implements OnClickListener,
 		} else if (viewId == R.id.search_num_ok) {
 			if (isEnableAnyOne()) {
 				mNumGroup.setVisibility(View.GONE);
-				if (mSearchAdapter.mResultStationList.size() == 1) {
-					setCurFreq(mSearchAdapter.mResultStationList.get(0).getSfreq(), null);
+				//modify bug 21030 begin
+				if (mInputStr.length() > 1) {
+				//modify bug 21030 end
+	                if (mSearchAdapter.mResultStationList.size() == 1) {
+	                    setCurFreq(mSearchAdapter.mResultStationList.get(0).getSfreq(), null);
+	                }
 				}
 			} else {
 				setCurFreq(mInputStr, null);
@@ -582,6 +586,9 @@ public class SearchRadioActivity extends Activity implements OnClickListener,
         @Override
         public void refreshViewBySkin() {
             refreshSkin(false);
+            //modify bug 21029 begin
+            mSearchAdapter.notifyDataSetChanged();
+            //modify bug 21029 end
         };
     };
 }

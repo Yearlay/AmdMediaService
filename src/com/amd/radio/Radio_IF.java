@@ -35,6 +35,9 @@ public class Radio_IF extends CarService_IF {
     private boolean isScan5S = false;
     private boolean isRescan = false;
     private boolean isScanAutoNext = false;
+    
+    /* @see RadioFunc */
+    public static final int RADIOFUNCCOLLECT = 0x1001;
 	
 	public Radio_IF() {
 		mMode = com.haoke.define.ModeDef.RADIO;
@@ -770,7 +773,7 @@ public class Radio_IF extends CarService_IF {
 			    showToast(context, "已加入收藏列表");
 			}
 			Data_Common.collectAllFreqs.add(new RadioStation(freq, sfreq, sname));
-			mCarCallBack.onDataChange(mMode, RadioFunc.FREQ, getCurFreq());
+			mCarCallBack.onDataChange(mMode, RADIOFUNCCOLLECT, getCurFreq());
 		} catch (Exception e1) {
 			Log.e(TAG, "collectFreq freq="+freq+"; e1="+e1);
 			return false;
@@ -822,7 +825,7 @@ public class Radio_IF extends CarService_IF {
 				db.delete("Radio_FM", "username=? AND freq=?", new String[]{username, station.getSfreq()});
 				Data_Common.removeCollectFreq(station.getFreq(), null);
 			}
-			mCarCallBack.onDataChange(mMode, RadioFunc.FREQ, getCurFreq());
+			mCarCallBack.onDataChange(mMode, RADIOFUNCCOLLECT, getCurFreq());
 			if (showToast) {
                 showToast(context, "已取消收藏");
 			}

@@ -8,7 +8,7 @@
         android:id="@+id/search_item_bg"
         android:layout_width="match_parent"
         android:layout_height="116px"
-        android:background="@drawable/pub_list_short_selector" />
+        android:background="@drawable/music_list_item_selector" />
 
     <TextView
         android:id="@+id/music_item_device_type"

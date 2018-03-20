@@ -79,13 +79,13 @@ public class Media_IF extends CarService_IF {
 			}
 		};
 		
-		mIUartCallBack = new ICarUartCallBack.Stub() {
+		/*mIUartCallBack = new ICarUartCallBack.Stub() {
 			@Override
 			public void onUartDataChange(int arg0, int arg1, byte[] arg2)
 					throws RemoteException {
 				mCarCallBack.onUartDataChange(arg0, arg1, arg2);
 			}
-		};
+		};*/
 		mIMediaCallBack = new IMediaCallBack.Stub() {
 			@Override
 			public void onDataChange(int mode, int func, int data1, int data2)

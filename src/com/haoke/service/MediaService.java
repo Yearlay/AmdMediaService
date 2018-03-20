@@ -174,6 +174,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         mMediaIF.unregisterModeCallBack(this);
         mMediaIF.unregisterLocalCallBack(this);
         mBTIF.unregisterModeCallBack(this);
+        mRadioIF.unregisterModeCallBack(this);
         mRadioManager.unregisterReceiver();
         super.onDestroy();
     }
@@ -238,6 +239,12 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     
     public Handler getSkinHandler() {
         return mSkinHandler;
+    }
+    
+    private Handler mBDReceiverHandler = new Handler();
+    
+    public Handler getmBDReceiverHandler() {
+        return mBDReceiverHandler;
     }
     
     @Override

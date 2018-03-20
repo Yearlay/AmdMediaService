@@ -14,7 +14,7 @@ public class BDBroadcastReceiver extends BroadcastReceiver {
 		// TODO Auto-generated method stub
 		
 		String action = intent.getAction();
-		Log.d(TAG, "onReceive action:" + action);
+		Log.d(TAG, "onReceive action0319:" + action);
 		if (action == null) {
 			return;
 		}
@@ -31,7 +31,8 @@ public class BDBroadcastReceiver extends BroadcastReceiver {
 					CITY_NAME="";
 				}
 				LocationUtils.setReceiveFlag();
-		        Radio_SimpleSave.getInstance().setCity(PROVINCE_NAME, CITY_NAME);
+				Radio_SimpleSave.setCityFromReceiver(PROVINCE_NAME, CITY_NAME);
+		        //Radio_SimpleSave.getInstance().setCity(PROVINCE_NAME, CITY_NAME);
 				Log.d(TAG,
 						"AUTONAVI_STANDARD_BROADCAST_SEND  PROVINCE_NAME:" + PROVINCE_NAME + " CITY_NAME:" + CITY_NAME);
 			} else if (KEY_TYPE == 10077) {
@@ -44,7 +45,8 @@ public class BDBroadcastReceiver extends BroadcastReceiver {
                     CITY_NAME="";
                 }
                 LocationUtils.setReceiveFlag();
-                Radio_SimpleSave.getInstance().setCity(PROVINCE_NAME, CITY_NAME);
+                Radio_SimpleSave.setCityFromReceiver(PROVINCE_NAME, CITY_NAME);
+                //Radio_SimpleSave.getInstance().setCity(PROVINCE_NAME, CITY_NAME);
                 Log.d(TAG,
                         "AUTONAVI_STANDARD_BROADCAST_SEND  PROVINCE_NAME:" + PROVINCE_NAME + " CITY_NAME:" + CITY_NAME);
 			}

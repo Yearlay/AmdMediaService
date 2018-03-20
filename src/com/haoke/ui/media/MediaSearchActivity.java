@@ -330,7 +330,9 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
             }
             
             holder.mDeviceTypeView.setBackgroundColor(skinManager.getColor(R.color.hk_custom_text_p));
-            holder.mItemBgView.setBackgroundDrawable(skinManager.getDrawable(R.drawable.pub_list_short_selector));
+            //modify bug 21038 begin
+            holder.mItemBgView.setBackgroundDrawable(skinManager.getDrawable(R.drawable.music_list_item_selector));
+            //modify bug 21038 end
             
             FileNode fileNode = mResultStationList.get(position);
             // 显示数据来自哪个存储。

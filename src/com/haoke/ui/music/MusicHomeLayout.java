@@ -116,6 +116,9 @@ public class MusicHomeLayout extends LinearLayout implements OnClickListener,
     public void onPause() {
     	Log.d(TAG, "onPause");
     	closeRetyDialog();
+    	//modify bug 21034 begin
+    	closeBTPermissionDialog();
+    	//modify bug 21034 end
     }
     
 	public void onResume() {

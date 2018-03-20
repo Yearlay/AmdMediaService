@@ -3,6 +3,7 @@ package com.amd.radio;
 import java.util.ArrayList;
 
 import com.haoke.application.MediaApplication;
+import com.haoke.service.MediaService;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -14,7 +15,7 @@ import android.util.Log;
 
 public class Radio_SimpleSave {
 	private static final int SET_CITY = 0;
-    private final String TAG = this.getClass().getSimpleName();
+    private static final String TAG = "Radio_SimpleSave";
 	//private Context mContext = null;
 	private SharedPreferences mPreferences = null;
 	private SharedPreferences.Editor mEditor = null;
@@ -76,24 +77,6 @@ public class Radio_SimpleSave {
 
 	}
 	
-	
-	private Handler handler=new Handler(){
-	    public void handleMessage(android.os.Message msg) {
-	        switch (msg.what) {
-            case SET_CITY:
-                //城市改变更新列表
-                if(simpleSave!=null) {
-                    simpleSave.PutString("PROVINCE_NAME", province_name);
-                    simpleSave.PutString("CITY_NAME", city_name);
-                }
-                getCurCityStationNameList();
-                break;
-            default:
-                break;
-            }
-	    };
-	};
-	
 	public void setCity(String province, String city){
 		if(city!=null && city.length()>0){			
 			String[] citys = city.split("市");
@@ -110,10 +93,10 @@ public class Radio_SimpleSave {
 		if(!province_name.equalsIgnoreCase(province) || !city_name.equalsIgnoreCase(city)){
             province_name = province;
             city_name = city;
-            Message msg = Message.obtain();
-            msg.what = SET_CITY;
-            handler.removeMessages(SET_CITY);
-            handler.sendEmptyMessageDelayed(SET_CITY, 1000);
+            //Message msg = Message.obtain();
+            //msg.what = SET_CITY;
+            //handler.removeMessages(SET_CITY);
+            //handler.sendEmptyMessageDelayed(SET_CITY, 1000);
         }
 	}
 	
@@ -289,4 +272,52 @@ public class Radio_SimpleSave {
 			Log.e(TAG, "PutData e=" + e.getMessage());
 		}
 	}
+	
+   private static String receiver_province_name = "";
+    private static String receiver_city_name = "";
+    public static void setCityFromReceiver(String province, String city) {
+        MediaService service = MediaService.getInstance();
+        if (service != null) {
+            Handler handler = service.getmBDReceiverHandler();
+            Log.d(TAG, "setCityFromReceiver PROVINCE_NAME:" + receiver_province_name
+                    + " CITY_NAME:" + receiver_city_name + " province:" + province
+                    + " city:" + city);
+            if (province == null) {
+                province = "";
+            }
+            if (city == null) {
+                city = "";
+            }
+            if (province.equals(receiver_province_name)) {
+                if (city.equals(receiver_city_name)) {
+                    return;
+                }
+            }
+            receiver_province_name = province;
+            receiver_city_name = city;
+            if (city != null && city.length() > 0) {
+                String[] citys = city.split("市");
+                if (citys != null && citys.length > 0) {
+                    city = citys[0];
+                }
+            } else {
+                city = "";
+            }
+            province_name = province;
+            city_name = city;
+            handler.removeCallbacksAndMessages(null);
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Radio_SimpleSave instance = Radio_SimpleSave.getInstance();
+                    // 城市改变更新列表
+                    if (instance != null) {
+                        instance.PutString("PROVINCE_NAME", province_name);
+                        instance.PutString("CITY_NAME", city_name);
+                    }
+                    instance.getCurCityStationNameList();
+                }
+            }, 1000);
+        }
+    }
 }

@@ -351,16 +351,26 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
         tempFreq = data;
         mFreqNameTextView.setText(Radio_SimpleSave.getInstance().getStationName(data));
         
-        boolean isCollected = mIF.isCollected(mContext, data);
+        updateCollect();
+//        boolean isCollected = mIF.isCollected(mContext, data);
+//        if (isCollected) {
+//            mCollectButton.setImageDrawable(skinManager.getDrawable(R.drawable.media_collect));
+//        } else {
+//            mCollectButton.setImageDrawable(skinManager.getDrawable(R.drawable.media_uncollect));
+//        }
+        
+//        if (!isRescanOrScan5S()) {
+//            Radio_IF.sendRadioInfo(mIF.getCurBand(), tempFreq);
+//        }
+    }
+    
+    private void updateCollect() {
+        boolean isCollected = mIF.isCollected(mContext, tempFreq);
         if (isCollected) {
             mCollectButton.setImageDrawable(skinManager.getDrawable(R.drawable.media_collect));
         } else {
             mCollectButton.setImageDrawable(skinManager.getDrawable(R.drawable.media_uncollect));
         }
-        
-//        if (!isRescanOrScan5S()) {
-//            Radio_IF.sendRadioInfo(mIF.getCurBand(), tempFreq);
-//        }
     }
     
     private void sendMeterFreq(int freq) {
@@ -578,6 +588,9 @@ public class Radio_Activity_Main extends RelativeLayout implements Radio_CarList
                 break;
             case RadioFunc.ENABLE:
                 updateRadioEnable(mIF.isEnable());
+                break;
+            case Radio_IF.RADIOFUNCCOLLECT:
+                updateCollect();
                 break;
             }
         }
