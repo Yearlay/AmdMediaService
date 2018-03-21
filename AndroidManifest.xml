@@ -149,11 +149,11 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name="com.amd.radio.BDBroadcastReceiver">
-            <intent-filter >
+        <!-- <receiver android:name="com.amd.radio.BDBroadcastReceiver">
+            <intent-filter android:priority="2147483647">
                 <action android:name="AUTONAVI_STANDARD_BROADCAST_SEND"/>
             </intent-filter>
-        </receiver>
+        </receiver> -->
  
         <provider android:name="com.haoke.scanner.MediaContentProvider"
             android:exported="true"
