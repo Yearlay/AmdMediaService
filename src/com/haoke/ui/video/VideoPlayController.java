@@ -326,6 +326,7 @@ public class VideoPlayController implements AudioFocusListener {
 		} else if (deviceType == DeviceType.COLLECT) {
 			source = Source.VIDEO_COLLECT;
 		}
+		com.amd.bt.BT_IF.forceCloseBT();
 		return Media_IF.setCurSource(source);
 	}
 
@@ -433,7 +434,7 @@ public class VideoPlayController implements AudioFocusListener {
 			isVideoPlaying = false;
 			return false;
 		}
-
+		
 		if (mPlayingDeviceType == DeviceType.NULL || mPlayingFileType == FileType.NULL) {
 			setPlayingData(node.getDeviceType(), node.getFileType(), true);
 		}
@@ -750,6 +751,7 @@ public class VideoPlayController implements AudioFocusListener {
 		} else {
 			return;
 		}
+        com.amd.bt.BT_IF.forceCloseBT();
 		Media_IF.setCurSource(source);
 	}
 
