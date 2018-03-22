@@ -259,9 +259,10 @@ public class VideoListLayout extends RelativeLayout implements
     }
     
     public void copySelected() {
-        if (mCopyDialog == null) {
-            mCopyDialog = new CopyDialog();
+        if (mCopyDialog != null) {
+            mCopyDialog.closeCopyDialog();
         }
+        mCopyDialog = new CopyDialog();
         if (AllMediaList.checkSelected(mContext, mVideoList)) {
             mCopyDialog.SetDialogListener(new CopyDialog.OnDialogListener() {
                 @Override

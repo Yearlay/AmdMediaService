@@ -607,9 +607,10 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     private void copyItems() {
         final ArrayList<FileNode> audioList = AllMediaList.instance(getApplicationContext())
                 .getMediaList(mDeviceType, FileType.AUDIO);
-        if (mCopyDialog == null) {
-            mCopyDialog = new CopyDialog();
+        if (mCopyDialog != null) {
+            mCopyDialog.closeCopyDialog();
         }
+        mCopyDialog = new CopyDialog();
         if (AllMediaList.checkSelected(this, audioList)) {
             mCopyDialog.SetDialogListener(new CopyDialog.OnDialogListener() {
                 @Override

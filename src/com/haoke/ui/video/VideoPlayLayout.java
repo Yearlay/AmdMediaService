@@ -434,6 +434,9 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 		if (mVideoController.isPlayState() == true) {
 			mVideoController.playOrPause(false);
 		}
+		//modify bug 20493 begin
+		mActivityHandler.removeCallbacksAndMessages(null);
+		//modify bug 20493 end
 	}
 
 	public void updateVideoLayout(boolean checkSpeed) {

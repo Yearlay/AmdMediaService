@@ -271,9 +271,10 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
     }
     
     public void copySelected() {
-        if (mCopyDialog == null) {
-            mCopyDialog = new CopyDialog();
+        if (mCopyDialog != null) {
+            mCopyDialog.closeCopyDialog();
         }
+        mCopyDialog = new CopyDialog();
         if (AllMediaList.checkSelected(mContext, mPhotoList)) {
             mCopyDialog.SetDialogListener(new CopyDialog.OnDialogListener() {
                 @Override
