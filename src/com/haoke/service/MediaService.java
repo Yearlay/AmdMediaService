@@ -17,9 +17,12 @@ import com.amd.bt.BT_IF;
 import com.amd.bt.BT_Listener;
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.media.VRInterfaceUtil;
+import com.amd.radio.RadioCityListener;
 import com.amd.radio.RadioManager;
 import com.amd.radio.Radio_CarListener;
 import com.amd.radio.Radio_IF;
+import com.amd.util.SkinManager;
+import com.amd.util.SkinManager.SkinListener;
 import com.amd.util.Source;
 import com.haoke.application.MediaApplication;
 import com.haoke.bean.StorageBean;
@@ -122,6 +125,9 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         
         checkLaunchFromBoot();
 //        checkLaunchRadio(); // 开机的时候检查关机的时候，是否是Radio界面。
+        SkinManager.instance();
+        
+        RadioCityListener.registerRadioCityListener(this);
         
         mScanner = new MediaScanner(this, this);
         int pidID = android.os.Process.myPid();

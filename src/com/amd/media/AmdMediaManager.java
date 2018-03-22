@@ -1016,6 +1016,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		} else {
 			return;
 		}
+        com.amd.bt.BT_IF.forceCloseBT();
 		Media_IF.setCurSource(source);
 	}
 	

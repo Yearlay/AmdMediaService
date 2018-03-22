@@ -146,10 +146,13 @@ public class SkinManager {
                 new ContentObserver(mServiceHandler) {
                     public void onChange(boolean selfChange) {
                         DebugLog.d(TAG, "onChange skin");
-                        mCurrSkin = -1;
+                        //mCurrSkin = -1;
                         refreshViewBySkin();
                     };
                 });
+            
+            mPreLoading = Settings.System.getInt(contentResolver, SKIN_KEY_NAME_PRELOADING, SKIN_DEFAULT);
+            mCurrSkin = Settings.System.getInt(contentResolver, SKIN_KEY_NAME, SKIN_DEFAULT);
             
             mSkinListeners = new ArrayList<WeakReference<SkinListener>>();
             mResources = mContext.getResources();
@@ -164,8 +167,8 @@ public class SkinManager {
     private void loadingSkinData() {
         //加载资源文件
         synchronized (mLock) {
-            DebugLog.d(TAG, "loadingSkinData start mServiceHandler="+mServiceHandler);
-            mPreLoading = Settings.System.getInt(mContext.getContentResolver(), SKIN_KEY_NAME_PRELOADING, SKIN_DEFAULT);;
+            mPreLoading = Settings.System.getInt(mContext.getContentResolver(), SKIN_KEY_NAME_PRELOADING, SKIN_DEFAULT);
+            DebugLog.d(TAG, "loadingSkinData start mServiceHandler="+mServiceHandler+"; mPreLoading="+mPreLoading);
             for (int i=0; i<mSkinListeners.size(); i++) {
                 SkinListener skinListener = mSkinListeners.get(i).get();
                 if (skinListener != null) {
@@ -176,14 +179,17 @@ public class SkinManager {
                     }
                 }
             }
+            mCurrSkin = mPreLoading;
             mPreLoading = -1;
+            //mCurrSkin = -1;
             DebugLog.d(TAG, "loadingSkinData end");
         }
     }
     
     private void refreshViewBySkin() {
         //刷新UI即可
-        DebugLog.d(TAG, "refreshViewBySkin start mServiceHandler="+mServiceHandler);
+        mCurrSkin = Settings.System.getInt(mContext.getContentResolver(), SKIN_KEY_NAME, SKIN_DEFAULT);
+        DebugLog.d(TAG, "refreshViewBySkin start mServiceHandler="+mServiceHandler+"; mCurrSkin="+mCurrSkin);
         for (int i=0; i<mSkinListeners.size(); i++) {
             SkinListener skinListener = mSkinListeners.get(i).get();
             if (skinListener != null) {
@@ -240,9 +246,7 @@ public class SkinManager {
 
     private String getSkinTheme(ContentResolver contentResolver) {
         synchronized (mLock) {
-            if (mCurrSkin == -1) {
-                mCurrSkin = Settings.System.getInt(contentResolver, SKIN_KEY_NAME, SKIN_DEFAULT);
-            }
+//            Log.d(TAG, "getSkinTheme mPreLoading="+mPreLoading+"; mCurrSkin="+mCurrSkin);
             int skinValue = mPreLoading != -1 ? mPreLoading : mCurrSkin;
             String skinStr = null;
             if (skinValue != SKIN_DEFAULT) {

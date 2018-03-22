@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.haoke.mediaservice"
+    android:sharedUserId="android.uid.system"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -149,11 +150,11 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name="com.amd.radio.BDBroadcastReceiver">
-            <intent-filter >
+        <!-- <receiver android:name="com.amd.radio.BDBroadcastReceiver">
+            <intent-filter android:priority="2147483647">
                 <action android:name="AUTONAVI_STANDARD_BROADCAST_SEND"/>
             </intent-filter>
-        </receiver>
+        </receiver> -->
  
         <provider android:name="com.haoke.scanner.MediaContentProvider"
             android:exported="true"

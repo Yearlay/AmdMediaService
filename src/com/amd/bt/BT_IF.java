@@ -614,4 +614,11 @@ public class BT_IF extends BTService_IF {
 	public static boolean isTalking() throws RemoteException{
 	    return getInstance().mServiceIF.isTalking();
 	}
+	
+	// 供本地音乐，视频播放时关闭蓝牙通道，fix bug 20669
+	public static void forceCloseBT() {
+	    if (Source.isBTMusicSource()) {
+	        getInstance().music_close();
+	    }
+	}
 }
