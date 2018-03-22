@@ -22,6 +22,7 @@ import com.amd.radio.Radio_CarListener;
 import com.amd.radio.Radio_IF;
 import com.amd.util.Source;
 import com.haoke.application.MediaApplication;
+import com.haoke.bean.StorageBean;
 import com.haoke.btjar.main.BTDef.BTFunc;
 import com.haoke.constant.MediaUtil;
 import com.haoke.constant.MediaUtil.MediaFunc;
@@ -125,10 +126,8 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         mScanner = new MediaScanner(this, this);
         int pidID = android.os.Process.myPid();
         DebugLog.i("Yearlay", "MediaService pid: " + pidID);
-        if (pidID > 2000) {
-            if (!MediaUtil.checkAllStorageScanOver(getApplicationContext())) {
-                mScanner.beginScanningAllStorage();
-            }
+        if (!MediaUtil.checkAllStorageScanOver(getApplicationContext())) {
+            mScanner.beginScanningAllStorage();
         }
     }
 
@@ -160,7 +159,11 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     private void scanOperate(Intent intent) {
         switch (intent.getIntExtra(ScanType.SCAN_TYPE_KEY, 0)) {
             case ScanType.SCAN_STORAGE: // 指定磁盘进行扫描。
-                mScanner.beginScanningStorage(intent.getStringExtra(ScanType.SCAN_FILE_PATH));
+                String rootPath = intent.getStringExtra(ScanType.SCAN_FILE_PATH);
+                StorageBean storageBean = AllMediaList.instance(getApplicationContext()).getStoragBean(rootPath);
+                if (storageBean.isScanIdle()) {
+                    mScanner.beginScanningStorage(rootPath);
+                }
                 break;
             case ScanType.REMOVE_STORAGE:{ // 磁盘拔出的处理过程。
                 mScanner.removeStorage(intent.getStringExtra(ScanType.SCAN_FILE_PATH));
