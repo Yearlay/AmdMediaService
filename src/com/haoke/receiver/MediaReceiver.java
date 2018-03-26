@@ -19,6 +19,14 @@ public class MediaReceiver extends BroadcastReceiver {
         if (datapath != null) {
             datapath = datapath.replace("file://", "");
         }
+        if (datapath != null) {
+            if (MediaUtil.DEVICE_PATH_USB_1_old.equals(datapath)) {
+                datapath = MediaUtil.DEVICE_PATH_USB_1;
+            }
+            if (MediaUtil.DEVICE_PATH_USB_2_old.equals(datapath)) {
+                datapath = MediaUtil.DEVICE_PATH_USB_2;
+            }
+        }
         return datapath;
     }
     

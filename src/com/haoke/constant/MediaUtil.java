@@ -53,8 +53,10 @@ public class MediaUtil {
     public static String DEVICE_PATH_FLASH = "/mnt/media_rw/internal_sd/0";
     public static String DEVICE_PATH_SD_1 = "/mnt/ext_sdcard1";
     public static String DEVICE_PATH_SD_2 = "/mnt/ext_sdcard0";
-    public static String DEVICE_PATH_USB_1 = "/storage/usb_storage";
-    public static String DEVICE_PATH_USB_2 = "/storage/usb_storage1";
+    public static String DEVICE_PATH_USB_1_old = "/storage/usb_storage";
+    public static String DEVICE_PATH_USB_2_old = "/storage/usb_storage1";
+    public static String DEVICE_PATH_USB_1 = "/mnt/media_rw/usb_storage";
+    public static String DEVICE_PATH_USB_2 = "/mnt/media_rw/usb_storage1";
     public static String DEVICE_PATH_USB_3 = "/mnt/udisk3";
     public static String DEVICE_PATH_USB_4 = "/mnt/udisk4";
     
@@ -475,13 +477,10 @@ public class MediaUtil {
         if (storagePath.contains(DEVICE_PATH_FLASH)) {
             return true;
         }
-        StorageManager storageManager = (StorageManager) context.getSystemService(Context.STORAGE_SERVICE);
-        try {
-            Method getVolumeState = storageManager.getClass().getMethod("getVolumeState", String.class);
-            String state = (String) getVolumeState.invoke(storageManager, storagePath);
-            return Environment.MEDIA_MOUNTED.equals(state);
-        } catch (Exception e) {
-            e.printStackTrace();
+        File file = new File(storagePath);
+        if (file.exists() && file.isDirectory() && file.canRead()
+                && file.canExecute()) {
+            return true;
         }
         return false;
     }

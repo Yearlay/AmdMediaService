@@ -17,7 +17,7 @@ public class DBConfig {
     /**
      * 数据库的版本号：当前是2。
      */
-    public final static int DATABASE_VERSION = 4;
+    public final static int DATABASE_VERSION = 5;
     
     public final static String TABLE_AUDIO = "table_audio";
     public final static String TABLE_VIDEO = "table_video";
