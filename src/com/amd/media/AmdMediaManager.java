@@ -743,7 +743,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		clearPlayRecord();
 		mIsPlayDefault = false;
 		if (!mScanMode) {
-			if (getPlayingFileType() != FileType.VIDEO) {
+			if (getPlayingFileType() != FileType.VIDEO && mPlayState == PlayState.PLAY) {
 				if (mErrorCount < 5) {
 					mErrorCount++;
 					if (mPrevFlag) {
@@ -768,7 +768,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		clearPlayRecord();
 		mIsPlayDefault = false;
 		if (!mScanMode) {
-			if (getPlayingFileType() != FileType.VIDEO) {
+			if (getPlayingFileType() != FileType.VIDEO && mPlayState == PlayState.PLAY) {
 				if (mErrorCount < 5) {
 					mErrorCount++;
 					if (mPrevFlag) {
