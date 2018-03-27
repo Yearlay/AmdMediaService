@@ -433,7 +433,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
                 needToSend = mBTIF.music_isPlaying();
                 break;
             case BTFunc.MUSIC_ID3_UPDATE://401
-                needToSend = true;
+                needToSend = mBTIF.music_isPlaying();
                 break;
             case BTFunc.MUSIC_TRACK_CHANGE:
                 btTrackChange = true;
