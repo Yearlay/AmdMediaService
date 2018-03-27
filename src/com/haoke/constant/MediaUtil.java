@@ -50,7 +50,10 @@ public class MediaUtil {
     }
     
     // 设备路径（可配置，非常量）
+    public static String DEVICE_PATH_FLASH_old ="/storage/internal_sd";
     public static String DEVICE_PATH_FLASH = "/mnt/media_rw/internal_sd/0";
+    public static String LOCAL_COPY_DIR = DEVICE_PATH_FLASH + "/media";
+    
     public static String DEVICE_PATH_SD_1 = "/mnt/ext_sdcard1";
     public static String DEVICE_PATH_SD_2 = "/mnt/ext_sdcard0";
     public static String DEVICE_PATH_USB_1_old = "/storage/usb_storage";
@@ -61,7 +64,6 @@ public class MediaUtil {
     public static String DEVICE_PATH_USB_4 = "/mnt/udisk4";
     
     public static String DEVICE_PATH_COLLECT = DEVICE_PATH_FLASH + "/collect";
-    public static String LOCAL_COPY_DIR = DEVICE_PATH_FLASH + "/media";
     
     /**
      * 媒体功能ID

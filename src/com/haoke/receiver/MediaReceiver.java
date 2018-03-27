@@ -20,11 +20,14 @@ public class MediaReceiver extends BroadcastReceiver {
             datapath = datapath.replace("file://", "");
         }
         if (datapath != null) {
+            if (MediaUtil.DEVICE_PATH_FLASH_old.equals(datapath)) {
+                datapath = MediaUtil.LOCAL_COPY_DIR; // 转换成 绝对路径下的 media目录。
+            }
             if (MediaUtil.DEVICE_PATH_USB_1_old.equals(datapath)) {
-                datapath = MediaUtil.DEVICE_PATH_USB_1;
+                datapath = MediaUtil.DEVICE_PATH_USB_1; // 转换成USB1绝对路径。
             }
             if (MediaUtil.DEVICE_PATH_USB_2_old.equals(datapath)) {
-                datapath = MediaUtil.DEVICE_PATH_USB_2;
+                datapath = MediaUtil.DEVICE_PATH_USB_2; // 转换成USB2绝对路径。
             }
         }
         return datapath;

@@ -132,9 +132,8 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         mScanner = new MediaScanner(this, this);
         int pidID = android.os.Process.myPid();
         DebugLog.i("Yearlay", "MediaService pid: " + pidID);
-        if (!MediaUtil.checkAllStorageScanOver(getApplicationContext())) {
-            mScanner.beginScanningAllStorage();
-        }
+        
+        mScanner.beginScanningAllStorage();
     }
 
     @Override
