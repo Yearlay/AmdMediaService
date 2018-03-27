@@ -630,6 +630,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
                 }
                 @Override
                 public void OnDialogDismiss() {
+                    AllMediaList.instance(Music_Activity_List.this).stopOperateThread();
                     notifyDataSetChanged();
                 }
             });

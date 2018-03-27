@@ -279,6 +279,7 @@ public class VideoListLayout extends RelativeLayout implements
                 
                 @Override
                 public void OnDialogDismiss() {
+                    AllMediaList.instance(mContext).stopOperateThread();
                     mVideoAdapter.notifyDataSetChanged();
                 }
             });

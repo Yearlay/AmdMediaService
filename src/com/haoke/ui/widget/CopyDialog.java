@@ -24,7 +24,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
-public class CopyDialog implements OnClickListener, OnDismissListener {
+public class CopyDialog implements OnClickListener {
     private static final String TAG = "CopyDialog";
     private Context mContext;
     private View mRootView;
@@ -50,7 +50,6 @@ public class CopyDialog implements OnClickListener, OnDismissListener {
         abstract void OnDialogDismiss();
     }
     private OnDialogListener mDialogListener;
-    private OnDismissListener mOtherOnDismissListener;
     public void SetDialogListener(OnDialogListener listener) {
         mDialogListener = listener;
     }
@@ -65,7 +64,6 @@ public class CopyDialog implements OnClickListener, OnDismissListener {
         mContext = context;
         mDialog = new MyDialog(context, R.style.pub_dialog);
         mDialog.setSkinListener(mSkinListener);
-        mDialog.setOnDismissListener(this);
         mDialog.setCanceledOnTouchOutside(true);
         mDialog.setContentView(R.layout.custom_dialog_copy);
         mRootView = mDialog.findViewById(R.id.copy_main_layout);
@@ -224,19 +222,12 @@ public class CopyDialog implements OnClickListener, OnDismissListener {
         }
     }
 
-    @Override
-    public void onDismiss(DialogInterface dialog) {
-        if (mDialogListener != null) {
-            mDialogListener.OnDialogDismiss();
-        }
-        if (mOtherOnDismissListener != null) {
-            mOtherOnDismissListener.onDismiss(dialog);
-        }
-    }
-    
     public void closeCopyDialog() {
         if (mDialog != null) {
             mDialog.dismiss();
+        }
+        if (mDialogListener != null) {
+            mDialogListener.OnDialogDismiss();
         }
     }
     
