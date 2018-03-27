@@ -621,7 +621,7 @@ public class MediaInterfaceUtil {
                 if (sRunStart == -1) {
                     sRunStart = end;
                     ms = 500;
-                } else if (end - sRunStart > 30000) {
+                } else if (end - sRunStart > 40000) {
                     DebugLog.d(TAG, "checkModeRecordInternalEx loading BTConnState timeout! open Radio!");
                     if (!Radio_IF.getInstance().isEnable()) {
                         Radio_IF.getInstance().setEnable(true);
