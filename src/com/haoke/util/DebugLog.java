@@ -45,4 +45,12 @@ public class DebugLog {
             LogUtil.i(tags, str);
         }
     }
+    
+    public static void a(String className, String methodName, String discription) {
+        if (DEBUG) {
+            android.util.Log.i(className, methodName + ": " + discription);
+        } else {
+            LogUtil.i(className, methodName + ": " + discription);
+        }
+    }
 }
