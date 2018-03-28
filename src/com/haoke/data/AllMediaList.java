@@ -715,12 +715,15 @@ public class AllMediaList {
                         resultCode = OperateListener.OPERATE_SUCEESS;
                     } else {
                         resultCode = OperateListener.OPERATE_DELETE_ERROR;
+                        DebugLog.e(TAG, "deleteMediaFiles exception OPERATE_DELETE_ERROR： " + resultCode);
                     }
                 } else {
                     resultCode = OperateListener.OPERATE_DELETE_READ_ONLY;
+                    DebugLog.e(TAG, "deleteMediaFiles exception OPERATE_DELETE_READ_ONLY： " + resultCode);
                 }
             } else {
                 resultCode = OperateListener.OPERATE_DELETE_NOT_EXIST;
+                DebugLog.e(TAG, "deleteMediaFiles exception OPERATE_DELETE_NOT_EXIST： " + resultCode);
             }
             if (resultCode == OperateListener.OPERATE_SUCEESS ||
                     resultCode == OperateListener.OPERATE_DELETE_NOT_EXIST) {
@@ -811,6 +814,7 @@ public class AllMediaList {
                         TransactionTask.INSERT_TASK)); // 后更新 到对应的收藏表中
             } else { // 文件拷贝失败。
                 resultCode = OperateListener.OPERATE_COLLECT_COPY_FILE_FAILED;
+                DebugLog.e(TAG, "copyToLocal exception OPERATE_COLLECT_COPY_FILE_FAILED");
                 if (thread.isInterrupted()) {
                     resultCode = OperateListener.OPERATE_SUCEESS;
                 }
@@ -902,6 +906,7 @@ public class AllMediaList {
                         TransactionTask.INSERT_TASK)); // 后更新 到对应的收藏表中
             } else { // 文件拷贝失败。
                 resultCode = OperateListener.OPERATE_COLLECT_COPY_FILE_FAILED;
+                DebugLog.e(TAG, "copyToLocalForFileSize exception OPERATE_COLLECT_COPY_FILE_FAILED");
                 if (thread.isInterrupted()) {
                     resultCode = OperateListener.OPERATE_SUCEESS;
                 }
