@@ -114,6 +114,7 @@ public class AllMediaList {
     }
     
     private void clearMediaList(int deviceType, int fileType) {
+        DebugLog.a(TAG, "clearMediaList", "clear media(" + deviceType + ", " + fileType + ")");
         String tableName = DBConfig.getTableName(deviceType, fileType);
         ArrayList<FileNode> mediaList = mAllMediaHash.get(tableName);
         if (mediaList != null) {
@@ -173,6 +174,7 @@ public class AllMediaList {
     }
     
     private void notifyLoadComplete(int deviceType, int fileType) {
+        DebugLog.a(TAG, "notifyLoadComplete", "load completed(" + deviceType + "," + fileType + ")");
         for (LoadListener listener : mLoadListenerList) {
             listener.onLoadCompleted(deviceType, fileType);
         }
@@ -521,15 +523,6 @@ public class AllMediaList {
     }
     
     /**
-     * 拷贝操作，针对FileNode对象。
-     */
-    public void copyToLocal(FileNode fileNode, OperateListener listener) {
-        ArrayList<FileNode> dataList = new ArrayList<FileNode>();
-        dataList.add(fileNode);
-        copyToLocal(dataList, listener);
-    }
-    
-    /**
      * 拷贝操作，针对集合对象。
      */
     public void copyToLocal(ArrayList<FileNode> dataList, OperateListener listener) {
@@ -544,15 +537,6 @@ public class AllMediaList {
         if (mOperateThread != null) {
             mOperateThread.interrupt();
         }
-    }
-    
-    /**
-     * 删除操作，针对FileNode对象。
-     */
-    public void deleteMediaFile(FileNode fileNode, OperateListener listener) {
-        ArrayList<FileNode> dataList = new ArrayList<FileNode>();
-        dataList.add(fileNode);
-        deleteMediaFiles(dataList, listener);
     }
     
     /**
@@ -701,13 +685,14 @@ public class AllMediaList {
     }
     
     private void deleteMediaFiles(ArrayList<FileNode> list, OperateData operateData, Thread thread) {
+        DebugLog.a(TAG, "deleteMediaFiles", "Begin --> delte files && size:" + list.size());
+        int resultCode = OperateListener.OPERATE_SUCEESS;
         int currentprogress = 0;
         mMediaDbHelper.setStartFlag(true);
         for (FileNode fileNode : list) {
             if (thread.isInterrupted()) {
                 break;
             }
-            int resultCode = OperateListener.OPERATE_SUCEESS;
             File file = fileNode.getFile();
             if (file.exists()) {
                 if (file.canWrite()) {
@@ -743,9 +728,12 @@ public class AllMediaList {
             currentprogress++;
         }
         mMediaDbHelper.setStartFlag(false);
+        DebugLog.a(TAG, "deleteMediaFiles", "End --> delte files resultCode:" + resultCode);
     }
     
     private void collectMediaFiles(ArrayList<FileNode> list, OperateData operateData) {
+        DebugLog.a(TAG, "collectMediaFiles", "Begin --> collect media files && size:" + list.size());
+        int resultCode = OperateListener.OPERATE_SUCEESS;
         int currentprogress = 0;
         mMediaDbHelper.setStartFlag(true);
         for (FileNode fileNode : list) {
@@ -754,7 +742,6 @@ public class AllMediaList {
                 break;
             }
           //modify bug 20315 end
-            int resultCode = OperateListener.OPERATE_SUCEESS;
             fileNode.setCollect(1);
             fileNode.setCollectPath(fileNode.getFilePath());
             mMediaDbHelper.addToNeedToInsertList(new TransactionTask(fileNode, TransactionTask.UPDATE_TASK)); // 先更新 对应的媒体表中的数据。
@@ -767,13 +754,15 @@ public class AllMediaList {
                     (currentprogress * 100) / list.size(), resultCode, operateData));
         }
         mMediaDbHelper.setStartFlag(false);
+        DebugLog.a(TAG, "collectMediaFiles", "End --> collect media files resultCode:" + resultCode);
     }
     
     private void unCollectMediaFiles(ArrayList<FileNode> list, OperateData operateData) {
+        DebugLog.a(TAG, "unCollectMediaFiles", "Begin --> uncollect media files && size:" + list.size());
+        int resultCode = OperateListener.OPERATE_SUCEESS;
         int currentprogress = 0;
         mMediaDbHelper.setStartFlag(true);
         for (FileNode fileNode : list) {
-            int resultCode = OperateListener.OPERATE_SUCEESS;
             if (!fileNode.isFromCollectTable()) { // 来自媒体表。
                 fileNode.setUnCollect();
                 mMediaDbHelper.addToNeedToInsertList(new TransactionTask(fileNode, TransactionTask.UPDATE_TASK));
@@ -794,16 +783,18 @@ public class AllMediaList {
                     (currentprogress * 100) / list.size(), resultCode, operateData));
         }
         mMediaDbHelper.setStartFlag(false);
+        DebugLog.a(TAG, "unCollectMediaFiles", "End --> uncollect media files resultCode:" + resultCode);
     }
     
     private void copyToLocal(ArrayList<FileNode> list, OperateData operateData, Thread thread) {
+        DebugLog.a(TAG, "copyToLocal", "Begin --> copy media files && size:" + list.size());
+        int resultCode = OperateListener.OPERATE_SUCEESS;
         int currentprogress = 0;
         mMediaDbHelper.setStartFlag(true);
         for (FileNode fileNode : list) {
             if (thread.isInterrupted()) {
                 break;
             }
-            int resultCode = OperateListener.OPERATE_SUCEESS;
             String destFilePath = MediaUtil.LOCAL_COPY_DIR + "/" +
                     fileNode.getFilePath().substring(fileNode.getFilePath().lastIndexOf('/') + 1);
             if (MediaUtil.pasteFileByte(thread, fileNode.getFile(), new File(destFilePath),
@@ -827,9 +818,11 @@ public class AllMediaList {
             }
         }
         mMediaDbHelper.setStartFlag(false);
+        DebugLog.a(TAG, "copyToLocal", "End --> copy media files resultCode:" + resultCode);
     }
     
     private void copyToLocalForFileSize(ArrayList<FileNode> list, OperateData operateData, Thread thread) {
+        DebugLog.a(TAG, "copyToLocalForFileSize", "Begin --> copy media files && size:" + list.size());
         int resultCode = OperateListener.OPERATE_SUCEESS;
         int currentprogress = 0;
         mMediaDbHelper.setStartFlag(true);
@@ -919,6 +912,7 @@ public class AllMediaList {
         mLocalHandler.sendMessage(mLocalHandler.obtainMessage(NOTIFY_LIST_ITEM_PROGRESS,
                 currentprogress, resultCode, operateData));
         mMediaDbHelper.setStartFlag(false);
+        DebugLog.a(TAG, "copyToLocalForFileSize", "End --> copy media files resultCode:" + resultCode);
     }
     
     public static void notifyAllLabelChange(Context context, int res) {
