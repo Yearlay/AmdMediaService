@@ -152,7 +152,9 @@ public class BTMusicManager implements CarService_Listener,
 	public void onBTDataChange(int mode, int func, int data) {
 		if (Source.isBTMode(mode)) {
 			switch (func) {
-			case BTFunc.CONN_STATE:
+			//case BTFunc.CONN_STATE:
+			//case BTFunc.MUSIC_A2DP_STATE:  //404，声音传输
+			case BTFunc.MUSIC_AVRCP_STATE:  //405,蓝牙控制
 				if (data == BTConnState.DISCONNECTED) {
 					mBTIF.music_stop();
 					if (Source.isBTMusicSource()) {

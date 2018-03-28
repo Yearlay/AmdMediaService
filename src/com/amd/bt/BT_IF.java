@@ -211,7 +211,7 @@ public class BT_IF extends BTService_IF {
 	public boolean music_isPlaying() {
 	    boolean isPlaying = false;
 		try {
-			if (getConnState() == BTConnState.CONNECTED) {
+			if (isBtMusicConnected()) {
 			    isPlaying = mServiceIF.music_isPlaying();
 			}
 		} catch (Exception e) {
@@ -311,14 +311,42 @@ public class BT_IF extends BTService_IF {
 		return BTPairState.UNPAIR;
 	}
 
-	// 获取连接状态
-	public int getConnState() {
+	// 废弃,获取连接状态
+	private int getConnState() {
 		try {
 			return mServiceIF.getConnState();
 		} catch (Exception e) {
 			DebugLog.e(TAG, "HMI------------getConnState e=" + e.getMessage());
 		}
 		return BTConnState.DISCONNECTED;
+	}
+	
+	// 慎用,获取连接状态hfp协议
+    public boolean isBtHfpConnected() {
+        try {
+            return mServiceIF.getConnState() == BTConnState.CONNECTED;
+        } catch (Exception e) {
+            DebugLog.e(TAG, "HMI------------getHfpConnState e=" + e.getMessage());
+        }
+        return false;
+    }
+	
+	// 获取连接状态
+	public boolean isBtMusicConnected() {
+	    boolean enable = false;
+	    boolean connected = false;
+	    try {
+            enable = mServiceIF.isBTEnable();
+            if (enable) {
+                int avrcp = mServiceIF.getAvrcpState();
+                int a2dp = mServiceIF.getA2dpState();
+                connected = (avrcp == BTConnState.CONNECTED) && (a2dp == BTConnState.CONNECTED);
+            }
+        } catch (Exception e) {
+            DebugLog.e(TAG, "isBtMusicConnected e="+e);
+        }
+	    DebugLog.d(TAG, "isBtMusicConnected enable="+enable+";connected="+connected);
+	    return connected;
 	}
 	
 	// 获取连接协议状态（跟getConnState的返回值一个定义）

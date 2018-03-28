@@ -9,14 +9,11 @@ import static com.haoke.service.MediaService.VALUE_FROM_VR_RADIO;
 import static com.haoke.service.MediaService.VALUE_FROM_VR_VIDEO;
 import android.content.Intent;
 import android.text.TextUtils;
-import android.util.Log;
-
 import com.amd.bt.BT_IF;
 import com.amd.radio.Radio_IF;
 import com.amd.util.Source;
 import com.haoke.application.MediaApplication;
 import com.haoke.bean.FileNode;
-import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.constant.MediaUtil.PlayState;
@@ -187,7 +184,7 @@ public class VRInterfaceUtil {
     }
     
     private void operateBT(boolean yesOperate) {
-        if (BT_IF.getInstance().getConnState() != BTConnState.CONNECTED) {
+        if (BT_IF.getInstance().isBtMusicConnected()) {
             return;
         }
         // 蓝牙音乐，播放蓝牙音乐，进入蓝牙音乐界面。

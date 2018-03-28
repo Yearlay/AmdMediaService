@@ -7,7 +7,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -170,8 +169,7 @@ public class MusicHomeLayout extends LinearLayout implements OnClickListener,
 	}
 	
     public void setBTConnectedState(int data) {
-        mHistoryTextView.setText(data == BTConnState.CONNECTED ?
-                R.string.bt_connect_success : R.string.music_scan_bt_free);
+        refreshBtConnectState();
         if (data == BTConnState.CONNECTED) {
             closeRetyDialog();
         }
@@ -261,22 +259,40 @@ public class MusicHomeLayout extends LinearLayout implements OnClickListener,
     	return false;
     }
     
+    private void refreshBtConnectState() {
+        BT_IF btif = BT_IF.getInstance();
+        int resId = R.string.music_scan_bt_free;
+        if (btif.isBtMusicConnected()) {
+            resId = R.string.bt_connect_success;
+        } else if (btif.isBtHfpConnected()) {
+            resId = R.string.bt_connect_success;
+        }
+        mHistoryTextView.setText(resId);
+    }
+    
     private void refreshInterface() {
-        mHistoryTextView.setText(BT_IF.getInstance().getConnState() == BTConnState.DISCONNECTED ?
-                R.string.music_scan_bt_free : R.string.bt_connect_success);
+        refreshBtConnectState();
+        
         deviceChanged(DeviceType.USB1, Media_IF.getInstance().getScanState(DeviceType.USB1) == ScanState.NO_MEDIA_STORAGE);
         deviceChanged(DeviceType.USB2, Media_IF.getInstance().getScanState(DeviceType.USB2) == ScanState.NO_MEDIA_STORAGE);
 	}
     
     private void startBTFragment() {
-        if (BT_IF.getInstance().getConnState() == BTConnState.DISCONNECTED) {
+        BT_IF btif = BT_IF.getInstance();
+        if (!btif.isBTEnable()) {
             showRetryDialog();
-        } else if (!BT_IF.getInstance().getAgreementState()) {
-            showBTPermissionDialog();
         } else {
-            Activity activity = (Activity) getContext();
-            if (activity instanceof Media_Activity_Main) {
-                ((Media_Activity_Main)activity).replaceBtMusicFragment();
+            boolean hfpConnected = btif.isBtHfpConnected();
+            boolean a2dpConnected = btif.getAgreementState();
+            if (hfpConnected && !a2dpConnected) {
+                showBTPermissionDialog();
+            } else if (!hfpConnected && !a2dpConnected) {
+                showRetryDialog();
+            } else if (a2dpConnected) {
+                Activity activity = (Activity) getContext();
+                if (activity instanceof Media_Activity_Main) {
+                    ((Media_Activity_Main)activity).replaceBtMusicFragment();
+                }
             }
         }
     }

@@ -8,7 +8,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
@@ -23,7 +22,6 @@ import com.amd.media.MediaInterfaceUtil;
 import com.amd.util.Source;
 import com.amd.util.SkinManager;
 import com.haoke.bean.FileNode;
-import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.constant.MediaUtil;
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.data.AllMediaList;
@@ -70,7 +68,7 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 	
 	public boolean isWillShowState() {
 		if (isBTPlay) {
-			if(BT_IF.getInstance().getConnState() != BTConnState.CONNECTED) {
+			if(!BT_IF.getInstance().isBtMusicConnected()) {
 				return false;
 			}
 		} else {

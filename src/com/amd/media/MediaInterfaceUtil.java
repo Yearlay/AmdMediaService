@@ -25,7 +25,6 @@ import com.amd.util.Source;
 import com.haoke.application.MediaApplication;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.StorageBean;
-import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.constant.MediaUtil.PlayState;
@@ -54,27 +53,6 @@ public class MediaInterfaceUtil {
     private static AudioFocus mAudioFocus;
     private static boolean sMuteKey_MuteState = false;
     private static boolean sPowerKey_MuteState = false;
-    
-    /*public static void resetMediaPlayStateRecord(int source) {
-        DebugLog.d(TAG, "resetMediaPlayStateRecord old is "+sMediaPlayStateRecord + "; caller is "+source);
-        if (source == sMediaPlayStateRecord) {
-            sMediaPlayStateRecord = Source.NULL;
-        }
-    }
-    
-    public static void resetMediaPlayStateRecord() {
-        DebugLog.d(TAG, "resetMediaPlayStateRecord old is "+sMediaPlayStateRecord );
-        sMediaPlayStateRecord = Source.NULL;
-    }
-    
-    private static void setMediaPlayStateRecord(int source) {
-        DebugLog.d(TAG, "sMediaPlayStateRecord source="+source+"; old is "+sMediaPlayStateRecord);
-        sMediaPlayStateRecord = source;
-    }
-    
-    public static int getMediaPlayStateRecord() {
-        return sMediaPlayStateRecord;
-    }*/
     
     private static boolean hasAudioFocus() {
         boolean ret = false;
@@ -108,33 +86,6 @@ public class MediaInterfaceUtil {
             }
             return;
         }
-        /*resetMediaPlayStateRecord(); 
-        boolean mute = Media_IF.getMute();
-        if (mute) {
-            int source = Media_IF.getCurSource();
-            if (Source.isRadioSource(source)) {
-                if (Radio_IF.getInstance().isEnable()) {
-                    setMediaPlayStateRecord(source);
-                    Radio_IF.getInstance().setEnable(false);
-                }
-            } else if (Source.isAudioSource(source)) {
-                if (Media_IF.getInstance().isPlayState()) {
-                    setMediaPlayStateRecord(source);
-                    Media_IF.getInstance().setPlayState(PlayState.PAUSE);
-                }
-            } else if (Source.isVideoSource(source)) {
-                if (Media_IF.getInstance().isPlayState()) {
-                    setMediaPlayStateRecord(source);
-                    Media_IF.getInstance().setPlayState(PlayState.PAUSE);
-                }
-            } else if (Source.isBTMusicSource(source)) {
-                if (BT_IF.getInstance().music_isPlaying()) {
-                    setMediaPlayStateRecord(source);
-                    BT_IF.getInstance().music_pause();
-                }
-            }
-        }
-        DebugLog.d(TAG, "setMute mute="+mute+"; sMediaPlayStateRecord="+sMediaPlayStateRecord);*/
     }
     
     public static void cancelMuteRecordPlayState(int key) {
@@ -156,21 +107,6 @@ public class MediaInterfaceUtil {
             }
             return;
         }
-        /*int source = getMediaPlayStateRecord();
-        if (source != Source.NULL) {
-            if (Source.isRadioSource(source)) {
-                Radio_IF.getInstance().setEnable(true);
-            } else if (Source.isAudioSource(source)) {
-                Media_IF.getInstance().setPlayState(PlayState.PLAY);
-            } else if (Source.isVideoSource(source)) {
-                Media_IF.getInstance().setPlayState(PlayState.PLAY);
-            } else if (Source.isBTMusicSource(source)) {
-                if (BT_IF.getInstance().getConnState() == BTConnState.CONNECTED) {
-                    BT_IF.getInstance().music_play();
-                }
-            }
-            resetMediaPlayStateRecord();
-        }*/
     }
     
     private static AudioFocusListener mAudioFocusListener = new AudioFocusListener() {
@@ -179,11 +115,6 @@ public class MediaInterfaceUtil {
             DebugLog.d(TAG,  "audioFocusChanged state="+state+"; sMuteKey_MuteState="+sMuteKey_MuteState+"; sPowerKey_MuteState="+sPowerKey_MuteState);
             switch (state) {
             case PlayState.PLAY:
-//                if (sMuteKey_MuteState) {
-//                    if (!Media_IF.getMute()) {
-//                        mAudioFocus.requestTransientAudioFocus(false);
-//                    }
-//                }
                 break;
             case PlayState.PAUSE:
                 break;
@@ -615,14 +546,14 @@ public class MediaInterfaceUtil {
             }
         } else if (Source.isBTMusicSource(ourSource)) {
             BT_IF btIF = BT_IF.getInstance();
-            int state = btIF.getConnState();
-            if (state == BTConnState.DISCONNECTED || !btIF.getAgreementState()) {
+            boolean connected = btIF.isBtMusicConnected();
+            if (!connected) {
                 long end = System.currentTimeMillis();
                 if (sRunStart == -1) {
                     sRunStart = end;
                     ms = 500;
                 } else if (end - sRunStart > 40000) {
-                    DebugLog.d(TAG, "checkModeRecordInternalEx loading BTConnState timeout! open Radio!");
+                    DebugLog.d(TAG, "checkModeRecordInternalEx loading BtConnected timeout! open Radio!");
                     if (!Radio_IF.getInstance().isEnable()) {
                         Radio_IF.getInstance().setEnable(true);
                     }
@@ -632,7 +563,7 @@ public class MediaInterfaceUtil {
                 } else {
                     ms = 500;
                 }
-            } else if (state == BTConnState.CONNECTED) {
+            } else {
                 BT_IF.getInstance().music_play();
                 if (display == DISPLAY_ON) {
                     launchSourceActivity(ModeSwitch.MUSIC_BT_MODE, false);

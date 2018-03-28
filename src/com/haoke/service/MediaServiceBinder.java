@@ -9,8 +9,6 @@ import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.RemoteException;
 import android.text.TextUtils;
-import android.util.Log;
-
 import com.amd.aidl.IAmdMediaCallBack;
 import com.amd.aidl.IAmdMediaService;
 import com.amd.bt.BT_IF;
@@ -19,7 +17,6 @@ import com.amd.util.Source;
 import com.haoke.bean.FileNode;
 import com.haoke.bean.ID3Parse;
 import com.haoke.bean.ID3Parse.ID3ParseListener;
-import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.constant.MediaUtil;
 import com.haoke.mediaservice.R;
 import com.haoke.ui.widget.MediaWidgetProvider;
@@ -174,7 +171,7 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
             		source = Media_IF.sLastSource;
             	}
             }
-            if (!(BT_IF.getInstance().getConnState() == BTConnState.CONNECTED)) {
+            if (!BT_IF.getInstance().isBtMusicConnected()) {
                 source = Source.NULL;
             }
             //modify bug 20469 begin
@@ -231,7 +228,7 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
                     source = Media_IF.sLastSource;
                 }
             }
-            if (!(BT_IF.getInstance().getConnState() == BTConnState.CONNECTED)) {
+            if (!BT_IF.getInstance().isBtMusicConnected()) {
                 source = Source.NULL;
             }
             //modify bug 20469 begin

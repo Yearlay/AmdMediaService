@@ -1,14 +1,9 @@
 package com.haoke.data;
 
 import android.content.Context;
-import android.util.Log;
-
 import com.amd.bt.BT_IF;
 import com.amd.util.Source;
-import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.constant.MediaUtil;
-import com.haoke.util.Media_IF;
-import android.util.Log;
 
 public class ModeSwitch {
     private static final String TAG = "ModeSwitch";
@@ -100,7 +95,7 @@ public class ModeSwitch {
                 break;
             case MUSIC_BT_MODE: // 需要判断BT连接是否存在。不存在，就进入Radio界面。
                 //modify bug 20916 begin
-                if (BT_IF.getInstance().getConnState() == BTConnState.CONNECTED && BT_IF.getInstance().getAgreementState()) {
+                if (BT_IF.getInstance().isBtMusicConnected()) {
                 //modify bug 20916 end
                     getModeFlag = true;
                 } else {

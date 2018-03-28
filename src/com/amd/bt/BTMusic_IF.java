@@ -3,14 +3,9 @@ package com.amd.bt;
 import android.content.Context;
 import android.media.AudioManager;
 import android.os.RemoteException;
-import android.util.Log;
-
 import com.amd.media.AudioFocus;
 import com.amd.util.Source;
 import com.haoke.aidl.ICarCallBack;
-import com.haoke.btjar.main.BTDef.BTConnState;
-import com.haoke.define.McuDef.KeyCode;
-import com.haoke.define.McuDef.KeyState;
 import com.haoke.define.McuDef.McuFunc;
 import com.haoke.service.MediaService;
 import com.haoke.serviceif.CarService_IF;
@@ -134,30 +129,4 @@ public class BTMusic_IF extends CarService_IF {
 	    return Media_IF.setCurSource(source);
 	}
 
-	// 获取当前源
-	public int getCurSource() {
-	    return Media_IF.getCurSource();
-	}
-	
-	// 获取蓝牙连接状态
-	public int getConnState() {
-		try {
-			return mServiceIF.bt_getConnState();
-        } catch (Exception e) {
-    		DebugLog.e(TAG, "HMI------------interface e="+e.getMessage());
-        }	
-		return BTConnState.DISCONNECTED;
-	}
-	
-	public void onBackPress() {
-		try {
-			DebugLog.e(TAG, "HMI------------onBackPress mServiceIF=" + mServiceIF);
-			byte[] data = new byte[2];
-			data[0] = KeyState.PRESS_RELEASED;
-			data[1] = (byte) KeyCode.HOME;
-			mServiceIF.mcu_sendDataToMcu((byte) 0x0C, 0x01, data);
-        } catch (Exception e) {
-    		DebugLog.e(TAG, "HMI------------interface e="+e.getMessage());
-        }	
-	}
 }

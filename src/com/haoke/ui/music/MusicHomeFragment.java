@@ -62,7 +62,7 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 		mBTIF = BT_IF.getInstance();
 		mBTIF.bindBTService();
 		mBTMusicIF = BTMusic_IF.getInstance();
-		mBtConnected = mBTIF.getConnState() == BTConnState.CONNECTED;
+		mBtConnected = mBTIF.isBtMusicConnected();
     	mDialog = new CustomDialog();
 		mHomeLayout = (MusicHomeLayout) findViewById(R.id.music_home_layout);
 		mPlayLayoutStub = (ViewStub) findViewById(R.id.music_play_layout_stub);
@@ -389,9 +389,15 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 		if (Source.isBTMode(mode)) {
 			switch (func) {
 			case BTFunc.CONN_STATE://101
-				onBTStateChange(data);
+				//onBTStateChange(data);
+			    mHomeLayout.setBTConnectedState(data);
 				break;
 				
+			//case BTFunc.MUSIC_A2DP_STATE:  //404
+			case BTFunc.MUSIC_AVRCP_STATE:  //405
+			    onBTStateChange(data);
+			    break;
+			    
 			case BTFunc.TALK_AUDIO://202
 				break;
 				
