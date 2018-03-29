@@ -369,6 +369,13 @@ public class Radio_To_Favorite extends Activity implements OnClickListener, OnIt
             switch (func) {
             case Radio_IF.RADIOFUNCCOLLECT:
                 adapter.notifyDataSetChanged();
+                //modify bug 21200 begin
+                //添加判断，如果收藏列表里没有数据则加载空界面，不显示编辑按钮
+                if (mFavoriteList != null && mFavoriteList.size() == 0) {
+                    exitEditMode();
+                    showEmpty();
+                }
+                //modify bug 21200 end
                 break;
             }
         }

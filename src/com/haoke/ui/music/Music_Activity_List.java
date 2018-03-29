@@ -119,7 +119,9 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     protected void onStop() {
         super.onStop();
         DebugLog.d(TAG, "onStop");
-        backToList();
+      //modify but 21127 begin
+//        backToList();
+      //modify but 21127 end
     }
     
     private void init() {
@@ -284,6 +286,9 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         }
         SkinManager.unregisterSkin(mSkinListener);
         //getContentResolver().unregisterContentObserver(mContentObserver);
+        //modify but 21127 begin
+        backToList();
+        //modify but 21127 end
     }
     
     @Override
@@ -431,6 +436,11 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         if (mDeviceType == deviceType) {
             if (state == 0) { // 无设备 - 拔出设备
                 showNodeviceLayout();
+                // modify bug 21207 begin
+                if (mCopyDialog != null) {
+                    mCopyDialog.closeCopyDialog();
+                }
+                // modify bug 21207 end
                 if (isShow) {
                     new CustomDialog().ShowDialog(this, DIALOG_TYPE.NONE_BTN,
                             R.string.music_device_pullout_usb);
