@@ -8,7 +8,9 @@ import static com.haoke.service.MediaService.VALUE_FROM_VR_MUSIC;
 import static com.haoke.service.MediaService.VALUE_FROM_VR_RADIO;
 import static com.haoke.service.MediaService.VALUE_FROM_VR_VIDEO;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.text.TextUtils;
+
 import com.amd.bt.BT_IF;
 import com.amd.radio.Radio_IF;
 import com.amd.util.Source;
@@ -25,6 +27,7 @@ import com.haoke.constant.VRConstant.VRMusic;
 import com.haoke.constant.VRConstant.VRRadio;
 import com.haoke.constant.VRConstant.VRVideo;
 import com.haoke.data.ModeSwitch;
+import com.haoke.receiver.VROperatorReceiver;
 import com.haoke.service.MediaService;
 import com.haoke.ui.image.Image_Activity_Main;
 import com.haoke.ui.video.Video_Activity_Main;
@@ -49,6 +52,16 @@ public class VRInterfaceUtil {
             sVRInterfaceUtil = new VRInterfaceUtil();
         }
         return sVRInterfaceUtil;
+    }
+    
+    public static void registerVROperatorReceiver(MediaService service) {
+        IntentFilter vroOperatorFilter = new IntentFilter();
+        vroOperatorFilter.addAction("com.jsbd.vr.app.action");
+        vroOperatorFilter.addAction("com.jsbd.vr.music.operation.action");
+        vroOperatorFilter.addAction("com.jsbd.vr.radio.operation.action");
+        vroOperatorFilter.addAction("com.jsbd.vr.picture.operation.action");
+        vroOperatorFilter.addAction("com.jsbd.vr.video.operation.action");
+        service.registerReceiver(new VROperatorReceiver(), vroOperatorFilter);
     }
     
     public static void VRCommand(Intent intent) {

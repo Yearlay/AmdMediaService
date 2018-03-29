@@ -134,6 +134,8 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         DebugLog.i("Yearlay", "MediaService pid: " + pidID);
         
         mScanner.beginScanningAllStorage();
+        
+        VRInterfaceUtil.registerVROperatorReceiver(this);
     }
 
     @Override

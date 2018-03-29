@@ -140,7 +140,8 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name="com.haoke.receiver.VROperatorReceiver" >
+        <receiver android:name="com.haoke.receiver.VROperatorReceiver" />
+        <!-- <receiver android:name="com.haoke.receiver.VROperatorReceiver" >
             <intent-filter >
                 <action android:name="com.jsbd.vr.app.action" />
                 <action android:name="com.jsbd.vr.music.operation.action" />
@@ -148,7 +149,7 @@
                 <action android:name="com.jsbd.vr.picture.operation.action" />
                 <action android:name="com.jsbd.vr.video.operation.action" />
             </intent-filter>
-        </receiver>
+        </receiver> -->
 
         <!-- <receiver android:name="com.amd.radio.BDBroadcastReceiver">
             <intent-filter android:priority="2147483647">
