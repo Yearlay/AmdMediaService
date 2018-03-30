@@ -7,13 +7,11 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
-import android.database.ContentObserver;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -870,5 +868,6 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     @Override
     public void onCancel(DialogInterface dialog) {
         AllMediaList.instance(this).stopOperateThread();
+        exitEditMode();
     }
 }
