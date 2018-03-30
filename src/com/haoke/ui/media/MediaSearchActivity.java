@@ -486,7 +486,9 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
 
     @Override
     public void onLoadCompleted(int deviceType, int fileType) {
-        doSearch();
+        if (mFileType == fileType) { // 需要判断当前搜索的媒体类型是否匹配，防止ID3解析的过程中，图片界面重新搜索。
+            doSearch();
+        }
     }
 
     @Override
