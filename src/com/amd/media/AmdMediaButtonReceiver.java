@@ -192,7 +192,9 @@ public class AmdMediaButtonReceiver extends BroadcastReceiver {
         	return true;
         }else if(Source.isRadioSource(source)){
             DebugLog.d(TAG, "prev setPreChannel");
-            Radio_IF.getInstance().setRecordRadioOnOff(false);
+            //modify bug 21198 begin
+            //Radio_IF.getInstance().setRecordRadioOnOff(false);
+            //modify bug 21198 end
             Radio_IF.getInstance().setPreStep();
             return true;
         }
@@ -222,7 +224,9 @@ public class AmdMediaButtonReceiver extends BroadcastReceiver {
         	BT_IF.getInstance().music_next();
         	return true;
         }else if(Source.isRadioSource(source)){
-            Radio_IF.getInstance().setRecordRadioOnOff(false);
+            //modify bug 21198 begin
+            //Radio_IF.getInstance().setRecordRadioOnOff(false);
+            //modify bug 21198 end
             Radio_IF.getInstance().setNextStep();
             return true;
         }

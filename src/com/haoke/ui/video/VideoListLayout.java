@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -41,7 +42,7 @@ import com.haoke.ui.widget.CustomDialog.OnDialogListener;
 import com.haoke.ui.widget.HKTextView;
 
 public class VideoListLayout extends RelativeLayout implements
-        OnItemClickListener, OnItemLongClickListener, OperateListener, OnDismissListener{
+        OnItemClickListener, OnItemLongClickListener, OperateListener, OnDismissListener, OnCancelListener{
     private Context mContext;
     private GridView mGridView;
     private TextView mEmptyView;
@@ -283,7 +284,7 @@ public class VideoListLayout extends RelativeLayout implements
                     mVideoAdapter.notifyDataSetChanged();
                 }
             });
-            mCopyDialog.showCopyDialog(mContext, mVideoList);
+            mCopyDialog.showCopyDialog(mContext, mVideoList, this);
         } else {
             if (mErrorDialog == null) {
                 mErrorDialog = new CustomDialog();
@@ -513,6 +514,11 @@ public class VideoListLayout extends RelativeLayout implements
 
     @Override
     public void onDismiss(DialogInterface dialog) {
+        AllMediaList.instance(mContext).stopOperateThread();
+    }
+
+    @Override
+    public void onCancel(DialogInterface dialog) {
         AllMediaList.instance(mContext).stopOperateThread();
     }
 }

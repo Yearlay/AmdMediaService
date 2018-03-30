@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.database.ContentObserver;
@@ -51,7 +52,8 @@ import com.haoke.util.DebugLog;
 import com.haoke.util.Media_IF;
 import com.haoke.util.Media_Listener;
 
-public class Music_Activity_List extends Activity implements Media_Listener, OnItemClickListener, OnDismissListener {
+public class Music_Activity_List extends Activity implements Media_Listener, OnItemClickListener,
+        OnDismissListener, OnCancelListener {
 
     private final String TAG = this.getClass().getSimpleName();
     private int mLayoutProps = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
@@ -644,7 +646,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
                     notifyDataSetChanged();
                 }
             });
-            mCopyDialog.showCopyDialog(this, audioList);
+            mCopyDialog.showCopyDialog(this, audioList, this);
         } else {
             if (mErrorDialog == null) {
                 mErrorDialog = new CustomDialog();
@@ -864,4 +866,9 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             refreshSkin(false);
         };
     };
+
+    @Override
+    public void onCancel(DialogInterface dialog) {
+        AllMediaList.instance(this).stopOperateThread();
+    }
 }
