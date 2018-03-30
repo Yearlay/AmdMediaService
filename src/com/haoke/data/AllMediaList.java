@@ -92,6 +92,7 @@ public class AllMediaList {
             }
             mediaList = new ArrayList<FileNode>();
         }
+        DebugLog.i(TAG, "getMediaList --> the size if list: " + mediaList.size());
         return mediaList;
     }
     
