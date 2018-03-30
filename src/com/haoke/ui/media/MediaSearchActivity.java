@@ -375,6 +375,10 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
                 if (fileNode.getParseId3() == 1) {
                     ImageLoad.instance(MediaSearchActivity.this).loadBitmap(holder.mIconView,
                             skinManager.getDrawable(R.drawable.media_list_item_music), fileNode);
+                    //modify bug 20221 begin
+                } else {
+                    ID3Parse.instance().parseID3(position, fileNode, this);
+                    //modify bug 20221 end
                 }
             } else if (fileNode.getFileType() == FileType.VIDEO) {
                 holder.mIconView.setImageDrawable(skinManager.getDrawable(R.drawable.image_icon_default));
