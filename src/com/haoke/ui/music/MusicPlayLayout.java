@@ -590,6 +590,12 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
     	}
     }
     
+    //modify bug 21124 begin
+    public int getTotalSize() {
+        return mIF.getMediaListSize(mIF.getPlayingDevice(), mIF.getPlayingFileType());
+    }
+    //modify bug 21124 end
+    
     public void onError() {
     	checkScanModeAndGoOn();
     }

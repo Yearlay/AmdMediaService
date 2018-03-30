@@ -38,6 +38,7 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 	private CustomDialog mDialog;
 	protected static boolean isShow = false;
 	private boolean mBtConnected =false;
+	private int mErrorCount = 0;
 	
 	public MusicHomeFragment(Context context) {
     	super(context);
@@ -187,6 +188,9 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 		if (mode == mIF.getMode()) {
 			switch (func) {
 			case MediaFunc.DEVICE_CHANGED://8 data1=deviceType, data2=isExist ? 1 : 0
+			    //modify bug 21124 begin
+			    mErrorCount = 0;
+			    //modify bug 21124 begin
 				deviceChanged(data1, data2);
 				break;
 			case MediaFunc.SCAN_STATE://1
@@ -196,6 +200,9 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 				onPreparing();
 				break;
 			case MediaFunc.PREPARED:
+			    //modify bug 21124 begin
+			    mErrorCount = 0;
+			    //modify bug 21124 begin
 				onPrepared(); // play-101
 				break;
 			case MediaFunc.ERROR://104
@@ -294,10 +301,22 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 	}
 	
 	private void onError() {
+	    //modify bug 21124 begin
+	    mErrorCount++;
+	    //modify bug 21124 end
 		mDialog.ShowDialog(mContext, DIALOG_TYPE.NONE_BTN, R.string.media_play_nosupport);
 		if (mPlayLayout != null) {
 			mPlayLayout.onError();
+			//modify bug 21124 begin
+			int totalSize = mPlayLayout.getTotalSize();
+			DebugLog.v(TAG, "totalSize ="+ totalSize+",mErrorCount ="+ mErrorCount);
+			if (totalSize == mErrorCount || mErrorCount >= 5) {
+			    mErrorCount = 0;
+	            goHome();
+	        }
+			//modify bug 21124 end
 		}
+		
 	}
 	
 	private void onCompletion() {
