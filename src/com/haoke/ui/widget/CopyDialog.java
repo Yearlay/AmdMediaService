@@ -12,6 +12,7 @@ import com.haoke.mediaservice.R;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
@@ -59,12 +60,13 @@ public class CopyDialog implements OnClickListener {
         return mDialog;
     }
     
-    public void showCopyDialog(Context context, ArrayList<FileNode> dataList) {
+    public void showCopyDialog(Context context, ArrayList<FileNode> dataList, OnCancelListener cancelListener) {
         closeCopyDialog();
         mContext = context;
         mDialog = new MyDialog(context, R.style.pub_dialog);
         mDialog.setSkinListener(mSkinListener);
         mDialog.setCanceledOnTouchOutside(true);
+        mDialog.setOnCancelListener(cancelListener);
         mDialog.setContentView(R.layout.custom_dialog_copy);
         mRootView = mDialog.findViewById(R.id.copy_main_layout);
         mRootView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);

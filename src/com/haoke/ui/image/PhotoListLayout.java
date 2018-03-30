@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -43,7 +44,7 @@ import com.haoke.ui.widget.HKTextView;
 import com.haoke.util.DebugLog;
 
 public class PhotoListLayout extends RelativeLayout implements OnItemClickListener, OnItemLongClickListener,
-        OperateListener, OnDismissListener {
+        OperateListener, OnDismissListener, OnCancelListener {
     public PhotoListLayout(Context context) {
         super(context);
     }
@@ -294,7 +295,7 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
                     mPhotoAdapter.notifyDataSetChanged();
                 }
             });
-            mCopyDialog.showCopyDialog(mContext, mPhotoList);
+            mCopyDialog.showCopyDialog(mContext, mPhotoList, this);
         } else {
             if (mErrorDialog == null) {
                 mErrorDialog = new CustomDialog();
@@ -508,6 +509,11 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
 
     @Override
     public void onDismiss(DialogInterface dialog) {
+        AllMediaList.instance(mContext).stopOperateThread();
+    }
+
+    @Override
+    public void onCancel(DialogInterface dialog) {
         AllMediaList.instance(mContext).stopOperateThread();
     }
 }
