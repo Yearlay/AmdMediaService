@@ -8,6 +8,7 @@ import com.amd.util.SkinManager.SkinListener;
 import com.haoke.bean.FileNode;
 import com.haoke.constant.MediaUtil;
 import com.haoke.mediaservice.R;
+import com.haoke.util.DebugLog;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -19,9 +20,12 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
@@ -33,7 +37,7 @@ public class CopyDialog implements OnClickListener {
     private LinearLayout mCheckLayout; // 拷贝检查layout
     
     private LinearLayout mCoverLayout; // 拷贝覆盖layout
-    private LinearLayout mCoverList;
+    private ListView mCoverList;
     private Button mOkButton;
     private Button mCancelButton;
     
@@ -75,7 +79,7 @@ public class CopyDialog implements OnClickListener {
         mCheckLayout = (LinearLayout) mDialog.findViewById(R.id.check_layout);
         // 2) 文件覆盖提示layout;
         mCoverLayout = (LinearLayout) mDialog.findViewById(R.id.cover_layout);
-        mCoverList = (LinearLayout) mDialog.findViewById(R.id.cover_list);
+        mCoverList = (ListView) mDialog.findViewById(R.id.cover_list);
         
         mDataList = dataList;
         
@@ -130,6 +134,8 @@ public class CopyDialog implements OnClickListener {
         }
     };
     
+    private Thread mCheckThread;
+    
     private void checkShow() {
         //modify bug 20928 begin
         if (mDialog == null) {
@@ -141,10 +147,13 @@ public class CopyDialog implements OnClickListener {
         mCoverLayout.setVisibility(View.INVISIBLE);
         mProgressLayout.setVisibility(View.INVISIBLE);
         
-        new Thread(new Runnable() {
+        mCheckThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 for (FileNode fileNode : mDataList) {
+                    if (mCheckThread.isInterrupted()) {
+                        break;
+                    }
                     String destFilePath = MediaUtil.LOCAL_COPY_DIR + "/" +
                             fileNode.getFilePath().substring(fileNode.getFilePath().lastIndexOf('/') + 1);
                     File destFile = new File(destFilePath);
@@ -152,26 +161,22 @@ public class CopyDialog implements OnClickListener {
                 }
                 mHandler.sendEmptyMessage(CHECK_RESULT);
             }
-        }).start();
+        });
+        mCheckThread.setName("checkThread");
+        mCheckThread.start();
+    }
+    
+    public void interruptCheckOperator() {
+        if (mCheckThread != null && mCopyState == CHECK_SHOW) {
+            mCheckThread.interrupt();
+        }
     }
     
     private void checkResult() {
         mCopyState = CHECK_RESULT;
-        for (final FileNode fileNode : mDataList) {
-            if (fileNode.isCopyDestExist() && fileNode.isSelected()) {
-                AmdCheckBox checkBox = new AmdCheckBox(mContext);
-                checkBox.setText(fileNode.getFileName());
-                checkBox.setChecked(true);
-                checkBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        fileNode.setSelected(isChecked);
-                    }
-                });
-                mCoverList.addView(checkBox);
-            }
-        }
-        if (mCoverList.getChildCount() > 0) {
+        CheckAdapter checkAdapter = new CheckAdapter();
+        mCoverList.setAdapter(checkAdapter);
+        if (checkAdapter.getCount() > 0) {
             mHandler.sendEmptyMessage(COVER_SHOW);
         } else {
             if (mDialogListener != null) {
@@ -301,5 +306,44 @@ public class CopyDialog implements OnClickListener {
             SkinManager.unregisterSkin(skinListener);
             super.dismiss();
         }
+    }
+    
+    class CheckAdapter extends BaseAdapter {
+
+        @Override
+        public int getCount() {
+            return mDataList == null ? 0 : mDataList.size();
+        }
+
+        @Override
+        public FileNode getItem(int position) {
+            return mDataList == null ? null : mDataList.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            AmdCheckBox amdCheckBox = null;
+            if (convertView != null && convertView instanceof AmdCheckBox) {
+                amdCheckBox = (AmdCheckBox) convertView;
+            } else {
+                amdCheckBox = new AmdCheckBox(mContext);
+            }
+            final FileNode fileNode = getItem(position);
+            amdCheckBox.setText(fileNode.getFileName());
+            amdCheckBox.setChecked(true);
+            amdCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    fileNode.setSelected(isChecked);
+                }
+            });
+            return amdCheckBox;
+        }
+        
     }
 }

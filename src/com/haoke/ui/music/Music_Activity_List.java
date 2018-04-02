@@ -868,6 +868,9 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
 
     @Override
     public void onCancel(DialogInterface dialog) {
+        if (mCopyDialog != null) {
+            mCopyDialog.interruptCheckOperator();
+        }
         AllMediaList.instance(this).stopOperateThread();
         exitEditMode();
     }

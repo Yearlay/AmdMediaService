@@ -520,6 +520,9 @@ public class VideoListLayout extends RelativeLayout implements
 
     @Override
     public void onCancel(DialogInterface dialog) {
+        if (mCopyDialog != null) {
+            mCopyDialog.interruptCheckOperator();
+        }
         AllMediaList.instance(mContext).stopOperateThread();
         if (mActivityHandler != null) {
             mActivityHandler.sendEmptyMessage(Video_Activity_Main.CANCEL_EDIT);

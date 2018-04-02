@@ -515,6 +515,9 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
 
     @Override
     public void onCancel(DialogInterface dialog) {
+        if (mCopyDialog != null) {
+            mCopyDialog.interruptCheckOperator();
+        }
         AllMediaList.instance(mContext).stopOperateThread();
         if (mActivityHandler != null) {
             mActivityHandler.sendEmptyMessage(Image_Activity_Main.CANCEL_EDIT);
