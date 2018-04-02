@@ -19,13 +19,14 @@ import com.amd.radio.Radio_IF;
 import com.amd.util.Source;
 
 public class MediaWidgetProvider {
+    private static final String TAG = "MediaWidgetProvider";
     
     private static void showToastNoMedia(Context context) {
         try {
             //MediaInterfaceUtil.showToast(R.string.no_media_can_play, Toast.LENGTH_SHORT);
             Toast.makeText(context, R.string.no_media_can_play, Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
-            DebugLog.e("MediaWidgetProvider", "showToast e="+e);
+            DebugLog.e(TAG, "showToast e="+e);
         }
     }
 
@@ -139,7 +140,11 @@ public class MediaWidgetProvider {
     private static FileNode getFileNode(Context context) {
         FileNode fileNode = Media_IF.getInstance().getDefaultItem();
         if (fileNode != null && fileNode.getParseId3() == 0) {
-            ID3Parse.instance().parseID3(context, fileNode, null);
+            try {
+                ID3Parse.instance().parseID3(context, fileNode, null);
+            } catch (Exception e) {
+                DebugLog.e(TAG, "getFileNode ID3Parse error e="+e);
+            }
         }
         if (fileNode != null) {
             DebugLog.e("Yearlay", "AppWidget getDefaultItem : " + fileNode.getFilePath());

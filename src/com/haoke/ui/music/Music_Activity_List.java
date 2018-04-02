@@ -841,6 +841,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             index = 0;
         }
         mListView.setSelection(index);
+        mListView.smoothScrollToPosition(index);
         notifyDataSetChanged();
     }
     
