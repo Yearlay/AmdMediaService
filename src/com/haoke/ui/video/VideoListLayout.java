@@ -270,6 +270,7 @@ public class VideoListLayout extends RelativeLayout implements
                 public void OnDialogEvent(int id) {
                     switch (id) {
                     case R.id.copy_ok:
+                        mCopyDialog.updateProgressValue(0);
                         doCopy();
                         break;
                     case R.id.copy_cancel:

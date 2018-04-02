@@ -282,6 +282,7 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
                 public void OnDialogEvent(int id) {
                     switch (id) {
                     case R.id.copy_ok:
+                        mCopyDialog.updateProgressValue(0);
                         doCopy();
                         break;
                     case R.id.copy_cancel:

@@ -527,6 +527,10 @@ public class AllMediaList {
      * 拷贝操作，针对集合对象。
      */
     public void copyToLocal(ArrayList<FileNode> dataList, OperateListener listener) {
+        if (mLocalHandler.hasMessages(BEGIN_OPERATE_THREAD)) {
+            DebugLog.e(TAG, "copyToLocal error has message BEGIN_OPERATE_THREAD");
+            return;
+        }
         mLocalHandler.sendMessage(mLocalHandler.obtainMessage(BEGIN_OPERATE_THREAD,
                 new OperateData(OperateListener.OPERATE_COPY_TO_LOCAL, dataList, listener)));
     }
@@ -544,6 +548,10 @@ public class AllMediaList {
      * 删除操作，针对集合对象。
      */
     public void deleteMediaFiles(ArrayList<FileNode> dataList, OperateListener listener) {
+        if (mLocalHandler.hasMessages(BEGIN_OPERATE_THREAD)) {
+            DebugLog.e(TAG, "deleteMediaFiles error has message BEGIN_OPERATE_THREAD");
+            return;
+        }
         mLocalHandler.sendMessage(mLocalHandler.obtainMessage(BEGIN_OPERATE_THREAD,
                 new OperateData(OperateListener.OPERATE_DELETE, dataList, listener)));
     }
@@ -567,6 +575,10 @@ public class AllMediaList {
                 fileNode.setUsername(username);
             }
         }
+        if (mLocalHandler.hasMessages(BEGIN_OPERATE_THREAD)) {
+            DebugLog.e(TAG, "collectMediaFiles error has message BEGIN_OPERATE_THREAD");
+            return;
+        }
         mLocalHandler.sendMessage(mLocalHandler.obtainMessage(BEGIN_OPERATE_THREAD,
                 new OperateData(OperateListener.OPERATE_COLLECT, dataList, listener)));
     }
@@ -584,6 +596,10 @@ public class AllMediaList {
      * 取消收藏操作，针对集合对象。
      */
     public void uncollectMediaFiles(ArrayList<FileNode> dataList, OperateListener listener) {
+        if (mLocalHandler.hasMessages(BEGIN_OPERATE_THREAD)) {
+            DebugLog.e(TAG, "uncollectMediaFiles error has message BEGIN_OPERATE_THREAD");
+            return;
+        }
         mLocalHandler.sendMessage(mLocalHandler.obtainMessage(BEGIN_OPERATE_THREAD,
                 new OperateData(OperateListener.OPERATE_UNCOLLECT, dataList, listener)));
     }

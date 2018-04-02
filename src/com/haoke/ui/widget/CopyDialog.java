@@ -214,7 +214,7 @@ public class CopyDialog implements OnClickListener {
     }
 
     public void updateProgressValue(int value) {
-        mHandler.obtainMessage(PROGRESS_SHOW, value, 0).sendToTarget();
+        progressShow(value);
     }
     
     @Override
