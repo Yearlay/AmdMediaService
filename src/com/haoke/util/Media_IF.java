@@ -860,6 +860,13 @@ public class Media_IF extends CarService_IF {
 		mMediaManager.setScanMode(enable);
 	}
 	
+	//modify bug 21133 begin
+	// 设置长按关屏，关闭预览模式
+    public void setPowerOff() {
+        mMediaManager.setPowerOff();
+    }
+    //modify bug 21133 end
+	
 	// 获取scan模式
 	public boolean getScanMode() {
 		return mMediaManager.getScanMode();

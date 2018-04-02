@@ -9,7 +9,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 
 import com.amd.bt.BTMusicManager;
@@ -22,7 +21,6 @@ import com.amd.radio.RadioManager;
 import com.amd.radio.Radio_CarListener;
 import com.amd.radio.Radio_IF;
 import com.amd.util.SkinManager;
-import com.amd.util.SkinManager.SkinListener;
 import com.amd.util.Source;
 import com.haoke.application.MediaApplication;
 import com.haoke.bean.StorageBean;
@@ -42,8 +40,8 @@ import com.haoke.define.GlobalDef;
 import com.haoke.define.McuDef;
 import com.haoke.define.McuDef.McuFunc;
 import com.haoke.define.McuDef.PowerState;
-import com.haoke.define.RadioDef.RadioFunc;
 import com.haoke.define.ModeDef;
+import com.haoke.define.RadioDef.RadioFunc;
 import com.haoke.receiver.MediaReceiver;
 import com.haoke.scanner.MediaScanner;
 import com.haoke.scanner.MediaScannerListner;
@@ -298,6 +296,10 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
                         sendBroadcast(intent);
                     }
                   //modify bug 20762 end
+                  //modify bug 21133 begin
+                  //长按media_if关屏
+                    mMediaIF.setPowerOff();
+                  //modify bug 21133 end
                 } else if (data == PowerState.POWER_ON) {
                     MediaInterfaceUtil.cancelMuteRecordPlayState(KeyEvent.KEYCODE_POWER);
                     //modify bug 20762 begin 
