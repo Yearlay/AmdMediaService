@@ -23,6 +23,7 @@ import com.amd.radio.Radio_IF;
 import com.amd.util.SkinManager;
 import com.amd.util.Source;
 import com.haoke.application.MediaApplication;
+import com.haoke.bean.ID3Parse;
 import com.haoke.bean.StorageBean;
 import com.haoke.btjar.main.BTDef.BTFunc;
 import com.haoke.constant.MediaUtil;
@@ -87,6 +88,8 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     public void onCreate() {
         super.onCreate();
         mSelf = this;
+        
+        ID3Parse.instance();
         
         mSkinHandler = new Handler();
         
