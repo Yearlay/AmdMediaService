@@ -394,7 +394,7 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 		} else {
 		    DebugLog.e(TAG, "goPlay no song playing!");
 			if (toast) {
-				Toast.makeText(mContext, "没有歌曲在播放！", Toast.LENGTH_SHORT).show();
+				Toast.makeText(mContext, R.string.no_song_is_playing, Toast.LENGTH_SHORT).show();
 			}
 			if (noPlayGoHome) {
 				goHome();

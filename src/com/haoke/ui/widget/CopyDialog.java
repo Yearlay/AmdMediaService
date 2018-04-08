@@ -2,13 +2,16 @@ package com.haoke.ui.widget;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.amd.util.SkinManager;
 import com.amd.util.SkinManager.SkinListener;
+import com.amd.util.Source;
 import com.haoke.bean.FileNode;
 import com.haoke.constant.MediaUtil;
 import com.haoke.mediaservice.R;
 import com.haoke.util.DebugLog;
+import com.haoke.util.Media_IF;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -108,6 +111,7 @@ public class CopyDialog implements OnClickListener {
     private static final int CHECK_RESULT = 2;
     private static final int COVER_SHOW = 3;
     private static final int PROGRESS_SHOW = 4;
+    private static final int PROGRESS_SHOW_WITHOUT_COVER = 5;
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -126,6 +130,13 @@ public class CopyDialog implements OnClickListener {
                 case PROGRESS_SHOW:
                     progressShow(msg.arg1);
                     break;
+                //modify bug 21351 begin
+                case PROGRESS_SHOW_WITHOUT_COVER:
+                    if (mDialogListener != null) {
+                        mDialogListener.OnDialogEvent(R.id.copy_ok);
+                    }
+                    break;
+                //modify bug 21351 end
 
                 default:
                     break;
@@ -150,6 +161,9 @@ public class CopyDialog implements OnClickListener {
         mCheckThread = new Thread(new Runnable() {
             @Override
             public void run() {
+                //modify bug 21351 begin
+                List<FileNode> list = new ArrayList<>();
+                //modify bug 21351 end
                 for (FileNode fileNode : mDataList) {
                     if (mCheckThread.isInterrupted()) {
                         break;
@@ -157,9 +171,20 @@ public class CopyDialog implements OnClickListener {
                     String destFilePath = MediaUtil.LOCAL_COPY_DIR + "/" +
                             fileNode.getFilePath().substring(fileNode.getFilePath().lastIndexOf('/') + 1);
                     File destFile = new File(destFilePath);
+                    //modify bug 21351 begin
+                    if (destFile.exists() && fileNode.isSelected()) {
+                        list.add(fileNode);
+                    }
+                    //modify bug 21351 end
                     fileNode.setCopyDestExist(destFile.exists());
                 }
-                mHandler.sendEmptyMessage(CHECK_RESULT);
+                //modify bug 21351 begin
+                if (list.size() > 0) {
+                    mHandler.sendEmptyMessage(CHECK_RESULT);
+                } else {
+                    mHandler.sendEmptyMessage(PROGRESS_SHOW_WITHOUT_COVER);
+                }
+                //modify bug 21351 end
             }
         });
         mCheckThread.setName("checkThread");
@@ -335,7 +360,14 @@ public class CopyDialog implements OnClickListener {
             }
             final FileNode fileNode = getItem(position);
             amdCheckBox.setText(fileNode.getFileName());
-            amdCheckBox.setChecked(true);
+            //modify bug 21358/21356 begin
+//            amdCheckBox.setChecked(true);
+            if (fileNode.isSelected()) {
+                amdCheckBox.setChecked(true);
+            } else {
+                amdCheckBox.setChecked(false);
+            }
+            //modify bug 21358/21356 end
             amdCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

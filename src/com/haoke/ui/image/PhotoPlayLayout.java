@@ -351,7 +351,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
                     mProgressDialog.dismiss();
                 }
             } else {
-                Toast.makeText(mContext, "收藏图片异常", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, R.string.collection_of_picture_anomalies, Toast.LENGTH_SHORT).show();
                 mProgressDialog.dismiss();
             }
         } else if (operateValue == OperateListener.OPERATE_UNCOLLECT) {
@@ -362,7 +362,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
                     mProgressDialog.dismiss();
                 }
             } else {
-                Toast.makeText(mContext, "取消收藏图片异常", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, R.string.cancel_the_collection_of_pictures, Toast.LENGTH_SHORT).show();
                 mProgressDialog.dismiss();
             }
         }

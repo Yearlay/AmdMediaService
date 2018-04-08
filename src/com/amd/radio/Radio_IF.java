@@ -21,6 +21,7 @@ import com.haoke.define.RadioDef.Area;
 import com.haoke.define.RadioDef.Band_5;
 import com.haoke.define.RadioDef.RadioFunc;
 import com.haoke.define.RadioDef.RadioState;
+import com.haoke.mediaservice.R;
 import com.haoke.serviceif.CarService_Listener;
 import com.haoke.serviceif.CarService_IF;
 import com.haoke.util.DebugLog;
@@ -749,7 +750,7 @@ public class Radio_IF extends CarService_IF {
 	public boolean collectFreq(Context context, int freq, boolean showToast) {
 		if (Data_Common.collectAllFreqs.size()>=30) {
 			if (showToast) {
-                showToast(context, "最多收藏30条电台！");
+                showToast(context, context.getString(R.string.a_maximum_collection_of_30_radio_stations));
 			}
 			return false;
 		}
@@ -771,7 +772,7 @@ public class Radio_IF extends CarService_IF {
 		try {
 			db.insert("Radio_FM", null, values); 
 			if (showToast) {
-			    showToast(context, "已加入收藏列表");
+			    showToast(context, context.getString(R.string.added_to_the_collection_list));
 			}
 			Data_Common.collectAllFreqs.add(new RadioStation(freq, sfreq, sname));
 			mCarCallBack.onDataChange(mMode, RADIOFUNCCOLLECT, getCurFreq());
@@ -828,7 +829,7 @@ public class Radio_IF extends CarService_IF {
 			}
 			mCarCallBack.onDataChange(mMode, RADIOFUNCCOLLECT, getCurFreq());
 			if (showToast) {
-                showToast(context, "已取消收藏");
+                showToast(context, context.getString(R.string.cancel_the_collection));
 			}
 		} catch (Exception e) {
 			DebugLog.e(TAG, "uncollectFreq" + e);
@@ -862,7 +863,7 @@ public class Radio_IF extends CarService_IF {
 		ArrayList<RadioStation> stations = initFavoriteData(context);
 		if (stations == null || stations.size() == 0) {
 			if (showToast) {
-                showToast(context, "没有收藏的电台！");
+                showToast(context, context.getString(R.string.no_collection_of_radio_stations));
 			}
 			return;
 		}

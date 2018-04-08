@@ -110,4 +110,19 @@
     
     <string name="copy_dialog_title">Copy tips</string>
     <string name="copy_dialog_check_prompt">Check the existence of a copy of the target file...</string>
+    <string name="more_than_a_limit_on_the_number_of_words">The number of words you have entered has exceeded the limit!</string>
+    <string name="copy_picture_file_exception">Copy picture file exception</string>
+    <string name="delete_picture_file_exception">Delete image file exceptions</string>
+    <string name="collection_of_picture_anomalies">Collection of picture anomalies</string>
+    <string name="cancel_the_collection_of_pictures">Cancel the collection of pictures</string>
+    <string name="copy_music_file_exception">Copy music file exception</string>
+    <string name="no_song_is_playing">No song is playing!</string>
+    <string name="delete_video_file_exception">Delete video file exception</string>
+    <string name="copy_video_file_exception">Copy video file exception</string>
+    <string name="collection_of_video_anomalies">Collection of video anomalies</string>
+    <string name="cancel_the_collection_of_abnormal_video">Cancel the collection of abnormal video</string>
+    <string name="a_maximum_collection_of_30_radio_stations">A maximum collection of 30 radio stations!</string>
+    <string name="added_to_the_collection_list">Added to the collection list</string>
+    <string name="cancel_the_collection">Cancel the collection</string>
+    <string name="no_collection_of_radio_stations">No collection of radio stations!</string>
 </resources>
