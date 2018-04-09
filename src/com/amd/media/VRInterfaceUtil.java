@@ -197,7 +197,9 @@ public class VRInterfaceUtil {
     }
     
     private void operateBT(boolean yesOperate) {
-        if (BT_IF.getInstance().isBtMusicConnected()) {
+        //modify bug 21396 begin
+        if (!BT_IF.getInstance().isBtMusicConnected()) {
+        //modify bug 21396 end
             return;
         }
         // 蓝牙音乐，播放蓝牙音乐，进入蓝牙音乐界面。

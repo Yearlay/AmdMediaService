@@ -312,7 +312,9 @@ public class AllMediaList {
             if (!list.remove(fileNode)) {
                 for (int i = 0; i < list.size(); i++) {
                     FileNode node = list.get(i);
-                    if (node.isSame(fileNode)) {
+                    //modify bug 21361 begin
+                    if (node != null && node.isSame(fileNode)) {
+                    //modify bug 21361 end
                         list.remove(i);
                         break;
                     }
