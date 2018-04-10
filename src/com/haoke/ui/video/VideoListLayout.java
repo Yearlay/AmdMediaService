@@ -40,6 +40,7 @@ import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
 import com.haoke.ui.widget.CustomDialog.OnDialogListener;
 import com.haoke.ui.widget.HKTextView;
+import com.haoke.util.DebugLog;
 
 public class VideoListLayout extends RelativeLayout implements
         OnItemClickListener, OnItemLongClickListener, OperateListener, OnDismissListener, OnCancelListener{
@@ -59,6 +60,7 @@ public class VideoListLayout extends RelativeLayout implements
     private SkinManager skinManager;
     private Drawable mLoadingImageDrawable;
     private Drawable mGridViewScrollbarThumb;
+    private final String TAG = this.getClass().getSimpleName();
     
     private ArrayList<FileNode> mVideoList = new ArrayList<FileNode>();
     
@@ -295,6 +297,7 @@ public class VideoListLayout extends RelativeLayout implements
     }
     
     private void doCopy() {
+        DebugLog.v(TAG, "doCopy --> mVideoList.size() = "+ mVideoList.size());
         if (MediaUtil.checkAvailableSize(mVideoList)) {
             ArrayList<FileNode> selectList = new ArrayList<FileNode>();
             for (FileNode fileNode : mVideoList) {
@@ -302,6 +305,7 @@ public class VideoListLayout extends RelativeLayout implements
                     selectList.add(fileNode);
                 }
             }
+            DebugLog.v(TAG, "doCopy --> selectList.size() = "+ selectList.size());
             if (FileNode.existSameNameFile(selectList)) {
                 Toast.makeText(mContext, R.string.copy_file_error_of_same_name,
                         Toast.LENGTH_SHORT).show();
@@ -380,6 +384,7 @@ public class VideoListLayout extends RelativeLayout implements
     }
     
     private void doOperateCopy(int progress, int resultCode) {
+        DebugLog.v(TAG, "doOperateCopy --> progress = "+ progress +"; resultCode ="+ resultCode);
         if (mCopyDialog == null) {
             return;
         }

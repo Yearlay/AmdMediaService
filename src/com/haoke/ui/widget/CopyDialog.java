@@ -92,6 +92,7 @@ public class CopyDialog implements OnClickListener {
                 }
             }
         }
+        DebugLog.v(TAG, "showCopyDialog --> mDataList.size() = "+ mDataList.size());
 //        mDataList = dataList;
         
         mOkButton = (Button) mDialog.findViewById(R.id.copy_ok);
@@ -187,6 +188,7 @@ public class CopyDialog implements OnClickListener {
                     fileNode.setCopyDestExist(destFile.exists());
                 }
                 //modify bug 21351 begin
+                DebugLog.v(TAG, "checkShow --> list.size() = "+ list.size());
                 if (list.size() > 0) {
                     mHandler.sendEmptyMessage(CHECK_RESULT);
                 } else {
@@ -209,6 +211,7 @@ public class CopyDialog implements OnClickListener {
         mCopyState = CHECK_RESULT;
         CheckAdapter checkAdapter = new CheckAdapter();
         mCoverList.setAdapter(checkAdapter);
+        DebugLog.v(TAG, "checkResult --> checkAdapter.getCount() = "+ checkAdapter.getCount());
         if (checkAdapter.getCount() > 0) {
             mHandler.sendEmptyMessage(COVER_SHOW);
         } else {
@@ -236,6 +239,7 @@ public class CopyDialog implements OnClickListener {
             return;
         }
         //modify bug 20928 end
+        DebugLog.v(TAG, "progressShow --> mCopyState =" + mCopyState);
         if (mCopyState != PROGRESS_SHOW) {
             mCopyState = PROGRESS_SHOW;
             mCheckLayout.setVisibility(View.INVISIBLE);

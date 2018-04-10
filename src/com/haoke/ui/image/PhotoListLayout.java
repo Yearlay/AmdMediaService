@@ -11,7 +11,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -75,6 +74,7 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
     private Drawable mLoadingImageDrawable;
     private Drawable mGridViewScrollbarThumb;
     private CopyDialog mCopyDialog;
+    private final String TAG = this.getClass().getSimpleName();
     
     public void updataList(ArrayList<FileNode> dataList, StorageBean storageBean) {
         DebugLog.e(Image_Activity_Main.TAG,"updataList  size: " + dataList.size());
@@ -276,6 +276,7 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
             mCopyDialog.closeCopyDialog();
         }
         mCopyDialog = new CopyDialog();
+        DebugLog.v(TAG, "copySelected --> mPhotoList.size() = "+ mPhotoList.size());
         if (AllMediaList.checkSelected(mContext, mPhotoList)) {
             mCopyDialog.SetDialogListener(new CopyDialog.OnDialogListener() {
                 @Override
@@ -306,6 +307,7 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
     }
     
     private void doCopy() {
+        DebugLog.v(TAG, "doCopy --> mPhotoList.size() = "+ mPhotoList.size());
         if (MediaUtil.checkAvailableSize(mPhotoList)) {
             ArrayList<FileNode> selectList = new ArrayList<FileNode>();
             for (FileNode fileNode : mPhotoList) {
@@ -313,6 +315,7 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
                     selectList.add(fileNode);
                 }
             }
+            DebugLog.v(TAG, "doCopy --> selectList.size() = "+ selectList.size());
             if (FileNode.existSameNameFile(selectList)) {
                 Toast.makeText(mContext, R.string.copy_file_error_of_same_name,
                         Toast.LENGTH_SHORT).show();
@@ -331,6 +334,7 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
     }
     
     private void doOperateCopy(int progress, int resultCode) {
+        DebugLog.v(TAG, "doOperateCopy --> progress = "+ progress + "; resultCode = "+ resultCode);
         if (mCopyDialog == null) {
             return;
         }

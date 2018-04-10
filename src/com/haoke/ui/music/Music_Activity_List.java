@@ -589,6 +589,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     }
     
     private void updateCopyState(int data, int data2) {
+        DebugLog.v(TAG, "updateCopyState  --> data = "+ data + ";data2 =" + data2);
         if (data == CopyState.COPYING) {
             if (data2 >= 0) {
                 if (mCopyDialog != null) {
@@ -617,6 +618,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     private void copyItems() {
         final ArrayList<FileNode> audioList = AllMediaList.instance(getApplicationContext())
                 .getMediaList(mDeviceType, FileType.AUDIO);
+        DebugLog.v(TAG, "copyItems --> mDeviceType ="+ mDeviceType + "; audioList.size() =" + audioList.size());
         if (mCopyDialog != null) {
             mCopyDialog.closeCopyDialog();
         }
