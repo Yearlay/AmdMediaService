@@ -51,7 +51,7 @@ public class CopyDialog implements OnClickListener {
     private Drawable mOkButtonDrawable;
     private Drawable mCancelButtonDrawable;
     
-    private ArrayList<FileNode> mDataList;
+    private ArrayList<FileNode> mDataList = new ArrayList<>();
     
     public interface OnDialogListener {
         abstract void OnDialogEvent(int id);
@@ -84,7 +84,15 @@ public class CopyDialog implements OnClickListener {
         mCoverLayout = (LinearLayout) mDialog.findViewById(R.id.cover_layout);
         mCoverList = (ListView) mDialog.findViewById(R.id.cover_list);
         
-        mDataList = dataList;
+        mDataList.clear();
+        if (dataList != null) {
+            for (FileNode fileNode : dataList) {
+                if (fileNode.isSelected()) {
+                    mDataList.add(fileNode);
+                }
+            }
+        }
+//        mDataList = dataList;
         
         mOkButton = (Button) mDialog.findViewById(R.id.copy_ok);
         mOkButton.setOnClickListener(this);
