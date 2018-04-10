@@ -302,7 +302,11 @@ public class MediaServiceBinder extends IAmdMediaService.Stub {
 	private FileNode getFileNode(Context context) {
         FileNode fileNode = Media_IF.getInstance().getDefaultItem();
         if (fileNode != null && fileNode.getParseId3() == 0) {
-            ID3Parse.instance().parseID3(context, fileNode, mID3ParseListener);
+            try {
+                ID3Parse.instance().parseID3(context, fileNode, mID3ParseListener);
+            } catch (Exception e) {
+                DebugLog.e(TAG, "getFileNode ID3Parse error e="+e);
+            }
         }
         if (fileNode != null) {
             DebugLog.d(TAG, "getFileNode fileNode=" + fileNode);

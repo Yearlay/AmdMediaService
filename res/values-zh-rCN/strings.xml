@@ -108,4 +108,19 @@
     
     <string name="copy_dialog_title">拷贝提示</string>
     <string name="copy_dialog_check_prompt">检查拷贝的目标文件是否存在……</string>
+    <string name="more_than_a_limit_on_the_number_of_words">你输入的字数已经超过了限制！</string>
+    <string name="copy_picture_file_exception">拷贝图片文件异常</string>
+    <string name="delete_picture_file_exception">删除图片文件异常</string>
+    <string name="collection_of_picture_anomalies">收藏图片异常</string>
+    <string name="cancel_the_collection_of_pictures">取消收藏图片异常</string>
+    <string name="copy_music_file_exception">拷贝音乐文件异常</string>
+    <string name="no_song_is_playing">没有歌曲在播放！</string>
+    <string name="delete_video_file_exception">删除视频文件异常</string>
+    <string name="copy_video_file_exception">拷贝视频文件异常</string>
+    <string name="collection_of_video_anomalies">收藏视频异常</string>
+    <string name="cancel_the_collection_of_abnormal_video">取消收藏视频异常</string>
+    <string name="a_maximum_collection_of_30_radio_stations">最多收藏30条电台！</string>
+    <string name="added_to_the_collection_list">已加入收藏列表</string>
+    <string name="cancel_the_collection">已取消收藏</string>
+    <string name="no_collection_of_radio_stations">没有收藏的电台！</string>
 </resources>

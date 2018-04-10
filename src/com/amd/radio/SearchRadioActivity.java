@@ -289,7 +289,7 @@ public class SearchRadioActivity extends Activity implements OnClickListener,
 			return;
 		}
 		if (mInputStr.length() > 7) {
-			Toast.makeText(this, "你输入的字数已经超过了限制！", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, R.string.more_than_a_limit_on_the_number_of_words, Toast.LENGTH_SHORT).show();
 			mInputStr = mInputStr.substring(0, mInputStr.length() - 1);
 		}
 		mInputEditText.setText(mInputStr);

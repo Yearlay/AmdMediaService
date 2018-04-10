@@ -346,7 +346,7 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
             mActivityHandler.sendEmptyMessage(Image_Activity_Main.DISMISS_COPY_DIALOG);
         }
         if (resultCode != OperateListener.OPERATE_SUCEESS) {
-            Toast.makeText(mContext, "拷贝图片文件异常", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, R.string.copy_picture_file_exception, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -374,7 +374,7 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
             mActivityHandler.sendEmptyMessage(Image_Activity_Main.DISMISS_COPY_DIALOG);
         }
         if (resultCode != OperateListener.OPERATE_SUCEESS) {
-            Toast.makeText(mContext, "删除图片文件异常", Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext, R.string.delete_picture_file_exception, Toast.LENGTH_SHORT).show();
         }
     }
 

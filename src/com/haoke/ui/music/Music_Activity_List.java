@@ -610,7 +610,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             mListTab.updateBtndate(false);
             backToList();
         } else if (data == CopyState.FAIL) {
-            Toast.makeText(this, "拷贝音乐文件异常", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.copy_music_file_exception, Toast.LENGTH_SHORT).show();
         }
     }
     
@@ -841,6 +841,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             index = 0;
         }
         mListView.setSelection(index);
+        mListView.smoothScrollToPosition(index);
         notifyDataSetChanged();
     }
     

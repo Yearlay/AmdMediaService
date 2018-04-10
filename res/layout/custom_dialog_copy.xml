@@ -64,7 +64,8 @@
                     android:layout_marginLeft="10px"
                     android:layout_marginRight="15px"
                     android:paddingLeft="15dip"
-                    android:paddingRight="15dip" >
+                    android:paddingRight="15dip" 
+                    android:listSelector="@android:color/transparent">
                 </ListView>
         
                 <View

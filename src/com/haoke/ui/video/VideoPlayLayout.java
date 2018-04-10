@@ -564,7 +564,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 					mCollectView.setImageDrawable(skinManager.getDrawable(R.drawable.media_collect));
 				}
 			} else {
-				Toast.makeText(mContext, "收藏视频异常", Toast.LENGTH_SHORT).show();
+				Toast.makeText(mContext, R.string.collection_of_video_anomalies, Toast.LENGTH_SHORT).show();
 			}
 		} else if (operateValue == OperateListener.OPERATE_UNCOLLECT) {
 			if (resultCode == OperateListener.OPERATE_SUCEESS) {
@@ -572,7 +572,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 					mCollectView.setImageDrawable(skinManager.getDrawable(R.drawable.media_uncollect));
 				}
 			} else {
-				Toast.makeText(mContext, "取消收藏视频异常", Toast.LENGTH_SHORT).show();
+				Toast.makeText(mContext, R.string.cancel_the_collection_of_abnormal_video, Toast.LENGTH_SHORT).show();
 			}
 		}
 	}

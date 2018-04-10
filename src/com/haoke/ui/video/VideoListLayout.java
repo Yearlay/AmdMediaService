@@ -347,7 +347,7 @@ public class VideoListLayout extends RelativeLayout implements
         }
         if (resultCode != OperateListener.OPERATE_SUCEESS) {
             if (mDeleteErrorToast == null) {
-                mDeleteErrorToast = Toast.makeText(mContext, "删除视频文件异常", Toast.LENGTH_SHORT);
+                mDeleteErrorToast = Toast.makeText(mContext, R.string.delete_video_file_exception, Toast.LENGTH_SHORT);
             }
             mDeleteErrorToast.show();
         }
@@ -394,7 +394,7 @@ public class VideoListLayout extends RelativeLayout implements
         }
         if (resultCode != OperateListener.OPERATE_SUCEESS) {
             if (mCopyErrorEndToast == null) {
-                mCopyErrorEndToast = Toast.makeText(mContext, "拷贝视频文件异常", Toast.LENGTH_SHORT);
+                mCopyErrorEndToast = Toast.makeText(mContext, R.string.copy_video_file_exception, Toast.LENGTH_SHORT);
             }
             mCopyErrorEndToast.show();
         }

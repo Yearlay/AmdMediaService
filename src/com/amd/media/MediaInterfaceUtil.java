@@ -639,7 +639,7 @@ public class MediaInterfaceUtil {
                         if (sRunStart == -1) {
                             sRunStart = end;
                             ms = 500;
-                        } else if (end - sRunStart > 20000) {
+                        } else if (end - sRunStart > 40000) {
                             DebugLog.d(TAG, "checkModeRecordInternalEx loading timeout!");
                             checkAllDeviceAndJump(service, username, ourSource, display);
                         } else {
@@ -650,7 +650,7 @@ public class MediaInterfaceUtil {
                         if (sRunStart == -1) {
                             sRunStart = end;
                             ms = 500;
-                        } else if (end - sRunStart > 20000) {
+                        } else if (end - sRunStart > 40000) {
                             DebugLog.d(TAG, "checkModeRecordInternalEx mounting timeout!");
                             checkAllDeviceAndJump(service, username, ourSource, display);
                         } else {
