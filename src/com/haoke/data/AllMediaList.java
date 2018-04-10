@@ -92,7 +92,8 @@ public class AllMediaList {
             }
             mediaList = new ArrayList<FileNode>();
         }
-        DebugLog.i(TAG, "getMediaList --> the size if list: " + mediaList.size());
+        DebugLog.i(TAG, "getMediaList --> deviceType: " +deviceType + " && fileType: " + fileType
+                + " the size if list: " + mediaList.size());
         return mediaList;
     }
     
