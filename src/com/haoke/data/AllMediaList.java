@@ -361,13 +361,9 @@ public class AllMediaList {
                         mediaList = new ArrayList<FileNode>();
                         mAllMediaHash.put(tableName, mediaList);
                     }
-                    mediaList.clear();
-                    if (deviceType == DeviceType.COLLECT) {
-                        mediaList.addAll(mMediaDbHelper.queryCollected(fileType, false));
-                    } else {
-                        mediaList.addAll(mMediaDbHelper.queryMedia(deviceType, fileType, null, null));
+                    if (checkQueryList(mediaList, deviceType, fileType)) {
+                        mLocalHandler.obtainMessage(ITEM_LOAD_COMPLETED, deviceType, fileType).sendToTarget();
                     }
-                    mLocalHandler.obtainMessage(ITEM_LOAD_COMPLETED, deviceType, fileType).sendToTarget();
                     // 如果notifyFlag为true, 就发起notify操作。
                     if (data.storageBean != null) {
                         mLocalHandler.obtainMessage(NOTIFY_SCAN_LISTENER, deviceType, fileType, data.storageBean).sendToTarget();
@@ -375,6 +371,24 @@ public class AllMediaList {
                 }
                 mLoadThread = null;
             }
+        }
+        
+        // 用来检测查询数据库的数据与当前的数据是否匹配。
+        private boolean checkQueryList(ArrayList<FileNode> mediaList, int deviceType, int fileType) {
+            boolean checkRet = true;
+            int oldMediaSize = mediaList.size();
+            mediaList.clear();
+            if (deviceType == DeviceType.COLLECT) {
+                mediaList.addAll(mMediaDbHelper.queryCollected(fileType, false));
+            } else {
+                mediaList.addAll(mMediaDbHelper.queryMedia(deviceType, fileType, null, null));
+            }
+            int newMediaSize = mediaList.size();
+            if (oldMediaSize == newMediaSize && deviceType == DeviceType.COLLECT) {
+                DebugLog.i(TAG, "checkQueryList return false : newsize == oldsize && deviceType == DeviceType.COLLECT");
+                checkRet = false;
+            }
+            return checkRet;
         }
     }
     
