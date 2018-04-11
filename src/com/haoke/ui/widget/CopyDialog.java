@@ -9,7 +9,6 @@ import android.content.DialogInterface.OnCancelListener;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -363,7 +362,6 @@ public class CopyDialog implements OnClickListener {
             }
             final FileNode fileNode = mCoverDataList.get(position);
             amdCheckBox.setFileNode(fileNode);
-            Log.e(TAG, "getView fileNode : " + fileNode.isSelected());
             return amdCheckBox;
         }
         

@@ -22,6 +22,7 @@ public class RadioCityListener {
                         getCityProvince(service);
                     };
                 });
+        getCityProvince(service);
     }
     
     private static void getCityProvince(final MediaService service) {

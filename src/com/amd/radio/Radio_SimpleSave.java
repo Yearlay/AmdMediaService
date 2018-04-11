@@ -35,7 +35,7 @@ public class Radio_SimpleSave {
 
 	public Radio_SimpleSave() {
 		try {
-			mPreferences = 	MediaApplication.getInstance().getSharedPreferences(DBNAME, Context.MODE_MULTI_PROCESS);
+			mPreferences = 	MediaApplication.getInstance().getSharedPreferences(DBNAME, Context.MODE_PRIVATE);
 			mEditor = mPreferences.edit();
 			
 		} catch (Exception e) {
@@ -46,7 +46,6 @@ public class Radio_SimpleSave {
 	public static Radio_SimpleSave getInstance(){
 		if (simpleSave == null) {
 			simpleSave = new Radio_SimpleSave();
-			simpleSave.getCity();
 		}
 		return simpleSave;
 	}
@@ -63,20 +62,6 @@ public class Radio_SimpleSave {
 //		}
 //	}
 	
-	
-	
-	public void getCity(){
-		if (simpleSave != null) {
-			province_name = simpleSave.GetString("PROVINCE_NAME", "");
-			city_name = simpleSave.GetString("CITY_NAME", "");
-			
-			if(province_name==null || province_name.length()==0){
-				province_name = city_name;
-				city_name = "市辖";
-			}
-		}
-
-	}
 	
 	public void setCity(String province, String city){
 		if(city!=null && city.length()>0){			
@@ -246,7 +231,6 @@ public class Radio_SimpleSave {
 		try {
 			mEditor.putString(name, value);
 			mEditor.apply();
-			
 		} catch (Exception e) {
 			DebugLog.e(TAG, "PutData e=" + e.getMessage());
 		}
@@ -257,7 +241,6 @@ public class Radio_SimpleSave {
 		try {
 			mEditor.putInt(name, value);
 			mEditor.apply();
-			
 		} catch (Exception e) {
 			DebugLog.e(TAG, "PutData e=" + e.getMessage());
 		}
@@ -268,7 +251,6 @@ public class Radio_SimpleSave {
 		try {
 			mEditor.putBoolean(name, value);
 			mEditor.apply();
-			
 		} catch (Exception e) {
 			DebugLog.e(TAG, "PutData e=" + e.getMessage());
 		}
@@ -323,6 +305,7 @@ public class Radio_SimpleSave {
     }
     
     public static void setCityFromSettingsProvider(Handler handler, String province, String city) {
+        DebugLog.d(TAG, "setCityFromSettingsProvider province = "+ province + "; city = "+ city);
         if (province == null) {
             province = "";
         }
@@ -337,18 +320,18 @@ public class Radio_SimpleSave {
         } else {
             city = "";
         }
+        if (province.equals(province_name) && city.equals(city_name)) {
+            DebugLog.e(TAG, "setCityFromSettingsProvider all is equal!");
+            return;
+        }
         province_name = province;
         city_name = city;
+        DebugLog.d(TAG, "setCityFromSettingsProvider province_name = "+ province_name + "; city_name = "+ city_name);
         handler.removeCallbacksAndMessages(null);
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 Radio_SimpleSave instance = Radio_SimpleSave.getInstance();
-                // 城市改变更新列表
-                if (instance != null) {
-                    instance.PutString("PROVINCE_NAME", province_name);
-                    instance.PutString("CITY_NAME", city_name);
-                }
                 instance.getCurCityStationNameList();
             }
         }, 1000);
