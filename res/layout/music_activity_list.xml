@@ -1,22 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="538px"
-    android:layout_marginTop="@dimen/pub_statusbar_height"
+    android:layout_height="720px"
     android:orientation="vertical" >
 
-    <include
-        android:id="@+id/music_activity_list"
-        layout="@layout/music_list_fragment"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="538px"
+        android:layout_marginTop="@dimen/pub_statusbar_height" >
 
-    <include 
-        android:id="@+id/music_list_layout_tip"
-        android:visibility="gone"
-        layout="@layout/media_tip_fragment"/>
+        <include
+            android:id="@+id/music_activity_list"
+            layout="@layout/music_list_fragment" />
 
-    <include 
-        android:id="@+id/music_list_layout_loading"
-        android:visibility="gone"
-        layout="@layout/media_loading_fragment"/>
-    
+        <include
+            android:id="@+id/music_list_layout_tip"
+            layout="@layout/media_tip_fragment"
+            android:visibility="gone" />
+
+        <include
+            android:id="@+id/music_list_layout_loading"
+            layout="@layout/media_loading_fragment"
+            android:visibility="gone" />
+    </RelativeLayout>
+
 </RelativeLayout>
