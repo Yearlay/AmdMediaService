@@ -194,60 +194,6 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 		}
 	}
 	
-	public void showCoverDialog(Context context, ArrayList<FileNode> dataList) {
-	    CloseDialog();
-		mContext = context;
-		mDialog = new MyDialog(context, R.style.pub_dialog);
-		//mDialog.setContentObserver(mContentObserver);
-		mDialog.setSkinListener(mSkinListener);
-		mDialog.setOnDismissListener(this);
-		mDialog.setContentView(R.layout.custom_dialog_two_cover);
-		// 初始化界面
-		mRootView = mDialog.findViewById(R.id.pub_dialog_layout);
-		mOkButton = (Button) mDialog.findViewById(R.id.pub_dialog_ok);
-		mCancelButton = (Button) mDialog.findViewById(R.id.pub_dialog_cancel);
-		refreshSkin(true);
-		refreshSkin(false);
-		setDialogClickListener(mDialog.findViewById(R.id.pub_dialog_ok), this);
-		setDialogClickListener(mDialog.findViewById(R.id.pub_dialog_cancel), this);
-		mDialog.findViewById(R.id.pub_dialog_layout)
-				.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
-		mTitleTextView = (TextView) mDialog.findViewById(R.id.pub_dialog_title);
-		mTitleTextView.setText(R.string.cover_dialog_title);
-		
-		mLinearLayout = (LinearLayout) mDialog.findViewById(R.id.cover_linearlayout);
-        for (final FileNode fileNode : dataList) {
-            String destFilePath = MediaUtil.LOCAL_COPY_DIR + "/" +
-                    fileNode.getFilePath().substring(fileNode.getFilePath().lastIndexOf('/') + 1);
-            File destFile = new File(destFilePath);
-            if (destFile.exists() && fileNode.isSelected()) {
-                AmdCheckBox checkBox = new AmdCheckBox(context);
-                checkBox.setText(fileNode.getFileName());
-                checkBox.setChecked(true);
-                checkBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-                    @Override
-                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                        fileNode.setSelected(isChecked);
-                    }
-                });
-                mLinearLayout.addView(checkBox);
-            }
-        }
-        
-		// 显示对话框
-		try {
-			if (mLinearLayout.getChildCount() > 0) {
-				mDialog.setCanceledOnTouchOutside(true);
-				mDialog.show();
-			} else {
-				if (mDialogListener != null) {
-					mDialogListener.OnDialogEvent(R.id.pub_dialog_ok);
-				}
-			}
-		} catch (Exception e) {
-		}
-	}
-	
 	private void setDialogClickListener(View view, OnClickListener listener) {
 		if (view != null && view instanceof Button) {
 			((Button) view).setOnClickListener(listener);

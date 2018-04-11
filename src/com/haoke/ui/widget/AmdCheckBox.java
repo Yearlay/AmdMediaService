@@ -1,11 +1,11 @@
 package com.haoke.ui.widget;
 
 import com.amd.util.SkinManager;
+import com.haoke.bean.FileNode;
 import com.haoke.mediaservice.R;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -36,10 +36,6 @@ public class AmdCheckBox extends RelativeLayout implements View.OnClickListener 
         
     }
     
-    public void setText(String text) {
-        mCheckBoxTextView.setText(text);
-    }
-    
     public void setChecked(boolean check) {
         mIsChecked = check;
         updateImageView();
@@ -52,15 +48,16 @@ public class AmdCheckBox extends RelativeLayout implements View.OnClickListener 
     @Override
     public void onClick(View arg0) {
         mIsChecked = !mIsChecked;
-        if (onCheckedChangeListener != null) {
-            onCheckedChangeListener.onCheckedChanged(null, mIsChecked);
+        if (mFileNode != null) {
+            mFileNode.setSelected(mIsChecked);
         }
         updateImageView();
     }
     
-    OnCheckedChangeListener onCheckedChangeListener;
-    public void setOnCheckedChangeListener(OnCheckedChangeListener listener) {
-        onCheckedChangeListener = listener;
+    FileNode mFileNode;
+    public void setFileNode(FileNode fileNode) {
+        mFileNode = fileNode;
+        mCheckBoxTextView.setText(mFileNode.getFileName());
+        setChecked(mFileNode.isSelected());
     }
-
 }

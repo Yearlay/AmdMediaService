@@ -2,35 +2,29 @@ package com.haoke.ui.widget;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
-
-import com.amd.util.SkinManager;
-import com.amd.util.SkinManager.SkinListener;
-import com.amd.util.Source;
-import com.haoke.bean.FileNode;
-import com.haoke.constant.MediaUtil;
-import com.haoke.mediaservice.R;
-import com.haoke.util.DebugLog;
-import com.haoke.util.Media_IF;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
-import android.content.DialogInterface.OnDismissListener;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.CompoundButton.OnCheckedChangeListener;
+
+import com.amd.util.SkinManager;
+import com.amd.util.SkinManager.SkinListener;
+import com.haoke.bean.FileNode;
+import com.haoke.constant.MediaUtil;
+import com.haoke.mediaservice.R;
+import com.haoke.util.DebugLog;
 
 public class CopyDialog implements OnClickListener {
     private static final String TAG = "CopyDialog";
@@ -51,7 +45,8 @@ public class CopyDialog implements OnClickListener {
     private Drawable mOkButtonDrawable;
     private Drawable mCancelButtonDrawable;
     
-    private ArrayList<FileNode> mDataList = new ArrayList<>();
+    private ArrayList<FileNode> mCopyDataList = new ArrayList<>();
+    private ArrayList<FileNode> mCoverDataList = new ArrayList<>();
     
     public interface OnDialogListener {
         abstract void OnDialogEvent(int id);
@@ -84,15 +79,15 @@ public class CopyDialog implements OnClickListener {
         mCoverLayout = (LinearLayout) mDialog.findViewById(R.id.cover_layout);
         mCoverList = (ListView) mDialog.findViewById(R.id.cover_list);
         
-        mDataList.clear();
+        mCopyDataList.clear();
         if (dataList != null) {
             for (FileNode fileNode : dataList) {
                 if (fileNode.isSelected()) {
-                    mDataList.add(fileNode);
+                    mCopyDataList.add(fileNode);
                 }
             }
         }
-        DebugLog.v(TAG, "showCopyDialog --> mDataList.size() = "+ mDataList.size());
+        DebugLog.v(TAG, "showCopyDialog --> mDataList.size() = "+ mCopyDataList.size());
 //        mDataList = dataList;
         
         mOkButton = (Button) mDialog.findViewById(R.id.copy_ok);
@@ -170,26 +165,22 @@ public class CopyDialog implements OnClickListener {
         mCheckThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                //modify bug 21351 begin
-                List<FileNode> list = new ArrayList<>();
-                //modify bug 21351 end
-                for (FileNode fileNode : mDataList) {
+                mCoverDataList.clear();
+                for (FileNode fileNode : mCopyDataList) {
                     if (mCheckThread.isInterrupted()) {
                         break;
                     }
                     String destFilePath = MediaUtil.LOCAL_COPY_DIR + "/" +
                             fileNode.getFilePath().substring(fileNode.getFilePath().lastIndexOf('/') + 1);
                     File destFile = new File(destFilePath);
-                    //modify bug 21351 begin
                     if (destFile.exists() && fileNode.isSelected()) {
-                        list.add(fileNode);
+                        mCoverDataList.add(fileNode);
                     }
-                    //modify bug 21351 end
                     fileNode.setCopyDestExist(destFile.exists());
                 }
                 //modify bug 21351 begin
-                DebugLog.v(TAG, "checkShow --> list.size() = "+ list.size());
-                if (list.size() > 0) {
+                DebugLog.v(TAG, "checkShow --> list.size() = "+ mCoverDataList.size());
+                if (mCoverDataList.size() > 0) {
                     mHandler.sendEmptyMessage(CHECK_RESULT);
                 } else {
                     mHandler.sendEmptyMessage(PROGRESS_SHOW_WITHOUT_COVER);
@@ -349,12 +340,12 @@ public class CopyDialog implements OnClickListener {
 
         @Override
         public int getCount() {
-            return mDataList == null ? 0 : mDataList.size();
+            return mCoverDataList == null ? 0 : mCoverDataList.size();
         }
 
         @Override
         public FileNode getItem(int position) {
-            return mDataList == null ? null : mDataList.get(position);
+            return mCoverDataList == null ? null : mCoverDataList.get(position);
         }
 
         @Override
@@ -370,22 +361,9 @@ public class CopyDialog implements OnClickListener {
             } else {
                 amdCheckBox = new AmdCheckBox(mContext);
             }
-            final FileNode fileNode = getItem(position);
-            amdCheckBox.setText(fileNode.getFileName());
-            //modify bug 21358/21356 begin
-//            amdCheckBox.setChecked(true);
-            if (fileNode.isSelected()) {
-                amdCheckBox.setChecked(true);
-            } else {
-                amdCheckBox.setChecked(false);
-            }
-            //modify bug 21358/21356 end
-            amdCheckBox.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    fileNode.setSelected(isChecked);
-                }
-            });
+            final FileNode fileNode = mCoverDataList.get(position);
+            amdCheckBox.setFileNode(fileNode);
+            Log.e(TAG, "getView fileNode : " + fileNode.isSelected());
             return amdCheckBox;
         }
         
