@@ -253,6 +253,7 @@ public class Media_IF extends CarService_IF {
             DebugLog.d(TAG, "setCurSource from: " + lastSource + " && to: " + source + "; success=" + success);
         } else {
             try {
+                ModeSwitch.setCurSourceMode(source);
                 int mcu_source = getInstance().mServiceIF.mcu_getCurSource();
                 if (mcu_source != exSource && exSource != com.haoke.define.ModeDef.NULL) {
                     getInstance().mServiceIF.mcu_setCurSourceEx(exSource, exType);

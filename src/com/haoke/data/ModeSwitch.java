@@ -53,6 +53,7 @@ public class ModeSwitch {
         for (int index = 0; index < sModeList.length; index++) {
             if (source == sModeList[index]) {
                 sCurSourceMode = source;
+                break;
             }
         }
       //modify bug 20470/20493 end
