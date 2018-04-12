@@ -81,7 +81,7 @@ public class MediaReceiver extends BroadcastReceiver {
         }
     }
     
-    private static void startFileService(Context context,
+    public static void startFileService(Context context,
             int scanType, String storagePath) {
         if (storagePath != null) {
             Intent intents = new Intent(context, MediaService.class);
