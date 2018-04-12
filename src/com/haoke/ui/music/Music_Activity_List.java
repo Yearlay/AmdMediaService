@@ -295,6 +295,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     protected void onDestroy() {
         DebugLog.d(TAG, "onDestroy");
         mHandler.removeCallbacksAndMessages(null);
+        mShowHandler.removeCallbacksAndMessages(null);
         super.onDestroy();
     }
     
@@ -706,12 +707,19 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         }
     }
     
+    private Handler mShowHandler = new Handler();
+    
     private void showEmptyList() {
-        mTipLayout.setVisibility(View.VISIBLE);
-        mTipTextView.setText(R.string.media_no_file);
-        mListLayout.setVisibility(View.GONE);
-        mLoadingLayout.setVisibility(View.GONE);
-        backToList();
+        mShowHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mTipLayout.setVisibility(View.VISIBLE);
+                mTipTextView.setText(R.string.media_no_file);
+                mListLayout.setVisibility(View.GONE);
+                mLoadingLayout.setVisibility(View.GONE);
+                backToList();
+            }
+        }, 500);
     }
     
     private void showLoadingLayout() {
@@ -735,6 +743,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     }
     
     private void showListLayout() {
+        mShowHandler.removeCallbacksAndMessages(null);
         mListLayout.setVisibility(View.VISIBLE);
         mTipLayout.setVisibility(View.GONE);
         mLoadingLayout.setVisibility(View.GONE);

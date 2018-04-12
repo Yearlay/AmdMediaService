@@ -20,7 +20,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.haoke.application.MediaApplication;
 import com.haoke.bean.FileNode;
@@ -31,6 +30,8 @@ import com.haoke.constant.DBConfig.UriAddress;
 import com.haoke.constant.DBConfig.UriType;
 import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.FileType;
+import com.haoke.constant.MediaUtil.ScanType;
+import com.haoke.receiver.MediaReceiver;
 import com.haoke.scanner.MediaDbHelper;
 import com.haoke.scanner.MediaDbHelper.TransactionTask;
 import com.haoke.service.MediaService;
@@ -453,6 +454,7 @@ public class AllMediaList {
         if (MediaUtil.DEVICE_PATH_COLLECT.equals(devicePath)) {
              storageBean.update(StorageBean.ID3_PARSE_COMPLETED);
         }
+        
         return storageBean;
     }
 
@@ -1023,8 +1025,19 @@ public class AllMediaList {
     }
     
     public static void launcherTocheckAllStorageScanState(Context context) {
-        /*Intent intents = new Intent(context, MediaService.class);
-        intents.putExtra(MediaService.KEY_COMMAND_FROM, MediaService.VALUE_FROM_CHECK_ALL_SRORAGE_SCAN_STATE);
-        context.startService(intents);*/
+        for (int deviceType : DBConfig.sScan3zaDefaultList) {
+            // 检测状态是否匹配。
+            String devicePath = MediaUtil.getDevicePath(deviceType);
+            boolean isMountedOfFileCheck = MediaUtil.checkMounted(context, devicePath);
+            boolean isMountedOfScanState = AllMediaList.instance(context).getStoragBean(devicePath).isMounted();
+            if (isMountedOfFileCheck != isMountedOfScanState) {
+                DebugLog.e(TAG, "Error check, we will fix the error --> scan device: " + devicePath);
+                if (isMountedOfFileCheck == true) {
+                    MediaReceiver.startFileService(context, ScanType.SCAN_STORAGE, devicePath);
+                } else {
+                    MediaReceiver.startFileService(context, ScanType.REMOVE_STORAGE, devicePath);
+                }
+            }
+        }
     }
 }

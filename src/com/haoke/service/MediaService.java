@@ -171,6 +171,8 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
                 StorageBean storageBean = AllMediaList.instance(getApplicationContext()).getStoragBean(rootPath);
                 if (storageBean.isScanIdle()) {
                     mScanner.beginScanningStorage(rootPath);
+                } else {
+                    DebugLog.e(TAG, "Ignore SCAN_STORAGE --> Storage is not scan idle : " + rootPath);
                 }
                 break;
             case ScanType.REMOVE_STORAGE:{ // 磁盘拔出的处理过程。
