@@ -758,10 +758,15 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             if (index == mIF.getPlayIndex() 
                     && mIF.getPlayingDevice() == mDeviceType
                     && mIF.getPlayingFileType() == FileType.AUDIO
-                    && Source.isAudioSource()) {
+                    && Source.isAudioSource()
+                    && mIF.isPlayState()) {
                 mIF.setInterface(1);//回播放界面
             } else {
-                mIF.play(position);
+                boolean play = mIF.play(position);
+                if (!play) {
+                    DebugLog.e(TAG, "onItemClick position="+position+" play error!");
+                    return;
+                }
             }
             Intent musicIntent = new Intent();
             musicIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
