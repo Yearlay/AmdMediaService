@@ -312,14 +312,14 @@ public class Radio_SimpleSave {
         if (city == null) {
             city = "";
         }
-        if (city != null && city.length() > 0) {
+        /*if (city != null && city.length() > 0) {
             String[] citys = city.split("市");
             if (citys != null && citys.length > 0) {
                 city = citys[0];
             }
         } else {
             city = "";
-        }
+        }*/
         if (province.equals(province_name) && city.equals(city_name)) {
             DebugLog.e(TAG, "setCityFromSettingsProvider all is equal!");
             return;
