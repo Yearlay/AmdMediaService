@@ -87,9 +87,11 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
         if (mGridView == null || mPhotoAdapter == null) {
             return;
         }
-        mGridView.requestFocusFromTouch();
-        mGridView.setSelection(0);
-        mPhotoAdapter.notifyDataSetChanged();
+        if (mPhotoList.size() > 0) {
+            mGridView.requestFocusFromTouch();
+            mGridView.setSelection(0);
+            mPhotoAdapter.notifyDataSetChanged();
+        }
         if (storageBean.isMounted()) {
             DebugLog.e(Image_Activity_Main.TAG,"refreshView  isMounted");
             if (storageBean.isId3ParseCompleted()) {
@@ -428,6 +430,9 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
     class PhotoAdapter extends BaseAdapter {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+            if (mPhotoList.size() <= 0) {
+                return convertView;
+            }
             ViewHolder mHolder = null;
             if (convertView != null) {
                 mHolder = (ViewHolder) convertView.getTag();
