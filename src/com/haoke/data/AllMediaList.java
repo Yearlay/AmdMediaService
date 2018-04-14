@@ -558,6 +558,7 @@ public class AllMediaList {
      * 主要用于取消复制的操作。
      */
     public void stopOperateThread() {
+        mLocalHandler.removeMessages(BEGIN_OPERATE_THREAD);
         if (mOperateThread != null) {
             mOperateThread.interrupt();
         }
