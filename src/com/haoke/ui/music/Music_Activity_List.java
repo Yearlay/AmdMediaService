@@ -169,7 +169,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         }
         
         mAdapter.updateDeviceType(mDeviceType, false);
-        setCurPlaySelection();
+        setCurPlaySelection(false);
         showListLayout();
         
         if (mErrorDialog != null) {
@@ -231,7 +231,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             //setIntent(null);
         }
         mIF.registerLocalCallBack(this); // 注册服务监听
-        updateStatus();
+        updateStatus(false, true);
         
         int labelRes = R.string.pub_media;
         int curSource = mDeviceType;
@@ -405,7 +405,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             case MediaUtil.MediaFunc.MEDIA_LIST_UPDATE: //列表有更新
                 if (data1 == mDeviceType && data2 == FileType.AUDIO && mIF.getScanState()==ScanState.COMPLETED_ALL) {
                     DebugLog.d(TAG, "onDataChange MEDIA_LIST_UPDATE data1="+data1+"; data2="+data2);
-                    refreshList();
+                    refreshList(true, false);
                     playDefault();
                 }
                 break;
@@ -417,7 +417,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     }
     
     // 更新状态
-    private void updateStatus() {
+    private void updateStatus(boolean postFlag, boolean smoothScroll) {
         int scanState = mIF.getScanState();
         DebugLog.v(TAG, "HMI------------updateStatus scanState=" + scanState);
         if (scanState == ScanState.SCANNING || scanState == ScanState.IDLE) { // 扫描中
@@ -428,7 +428,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
                 showNodeviceLayout();
             } else if (scanState == ScanState.COMPLETED_ALL) { // 扫描完成
                 showListLayout();
-                refreshList();
+                refreshList(postFlag, smoothScroll);
             }
         } 
     }
@@ -453,7 +453,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     }
 
     private void scanStateChanged(int scanState) {
-        updateStatus();
+        updateStatus(true, false);
     }
 
     private void scanId3Over_Single(int index) {
@@ -480,7 +480,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             }
             if (isVisibility(mListLayout)) {
                 updateListWithoutSelection();
-                setCurPlaySelection();
+                setCurPlaySelection(true);
             }
         }
     }
@@ -678,7 +678,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     private void updateListWithoutSelection() {
         int total = mIF.getListTotal();
         if (total <= 0) {
-            showEmptyList();
+            showEmptyList(false);
             return;
         }
         mAdapter.resetLastPlayItem();
@@ -709,8 +709,8 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     
     private Handler mShowHandler = new Handler();
     
-    private void showEmptyList() {
-        mShowHandler.postDelayed(new Runnable() {
+    private void showEmptyList(boolean postFlag) {
+        Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 mTipLayout.setVisibility(View.VISIBLE);
@@ -719,7 +719,13 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
                 mLoadingLayout.setVisibility(View.GONE);
                 backToList();
             }
-        }, 500);
+        };
+        mShowHandler.removeCallbacksAndMessages(null);
+        if (postFlag) {
+            mShowHandler.postDelayed(runnable, 500);
+        } else {
+            runnable.run();
+        }
     }
     
     private void showLoadingLayout() {
@@ -813,10 +819,10 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         return all;
     }
     
-    private void refreshList() {
+    private void refreshList(boolean postFlag, boolean smoothScroll) {
         int total = mIF.getListTotal();
         if (total <= 0) {
-            showEmptyList();
+            showEmptyList(postFlag);
         } else {
             showListLayout();
         }
@@ -827,16 +833,16 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
 //                SystemClock.uptimeMillis(), SystemClock.uptimeMillis(),
 //                MotionEvent.ACTION_CANCEL, 0, 0, 0));
         
-        setCurPlaySelection();
+        setCurPlaySelection(smoothScroll);
     }
     
-    private void setCurPlaySelection() {
+    private void setCurPlaySelection(boolean smoothScroll) {
         if (mIF.getPlayingDevice() == mDeviceType && mIF.getPlayingFileType() == FileType.AUDIO) {
             int pos = mIF.getPlayPos();
-            if (pos == -1) {
+            if (pos == -1) {                                           
                 pos = mIF.getLastPlayItem(mDeviceType, FileType.AUDIO);
             }
-            setSelection(pos);
+            setSelection(pos, smoothScroll);
         } else {
 //            if (mPlayDefault) {
 //                int index = mIF.getPlayDefaultIndex(mDeviceType, FileType.AUDIO);
@@ -846,18 +852,20 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
 //            }
             //modify bug 20648 begin
             int index = mIF.getPlayDefaultIndex(mDeviceType, FileType.AUDIO);
-            setSelection(index);
+            setSelection(index, smoothScroll);
             //modify bug 20648 end
         }
     }
     
-    private void setSelection(int index) {
-        mListView.requestFocusFromTouch();
-        if (index < 0) {
-            index = 0;
+    private void setSelection(int index, boolean smoothScroll) {
+        if (smoothScroll) {
+            if (index < 0) {
+                index = 0;
+            }
+            mListView.requestFocusFromTouch();
+            mListView.setSelection(index);
+            mListView.smoothScrollToPosition(index);
         }
-        mListView.setSelection(index);
-        mListView.smoothScrollToPosition(index);
         notifyDataSetChanged();
     }
     
