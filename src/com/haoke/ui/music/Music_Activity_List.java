@@ -231,7 +231,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             //setIntent(null);
         }
         mIF.registerLocalCallBack(this); // 注册服务监听
-        updateStatus();
+        updateStatus(false);
         
         int labelRes = R.string.pub_media;
         int curSource = mDeviceType;
@@ -405,7 +405,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             case MediaUtil.MediaFunc.MEDIA_LIST_UPDATE: //列表有更新
                 if (data1 == mDeviceType && data2 == FileType.AUDIO && mIF.getScanState()==ScanState.COMPLETED_ALL) {
                     DebugLog.d(TAG, "onDataChange MEDIA_LIST_UPDATE data1="+data1+"; data2="+data2);
-                    refreshList();
+                    refreshList(true);
                     playDefault();
                 }
                 break;
@@ -417,7 +417,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     }
     
     // 更新状态
-    private void updateStatus() {
+    private void updateStatus(boolean postFlag) {
         int scanState = mIF.getScanState();
         DebugLog.v(TAG, "HMI------------updateStatus scanState=" + scanState);
         if (scanState == ScanState.SCANNING || scanState == ScanState.IDLE) { // 扫描中
@@ -428,7 +428,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
                 showNodeviceLayout();
             } else if (scanState == ScanState.COMPLETED_ALL) { // 扫描完成
                 showListLayout();
-                refreshList();
+                refreshList(postFlag);
             }
         } 
     }
@@ -453,7 +453,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     }
 
     private void scanStateChanged(int scanState) {
-        updateStatus();
+        updateStatus(true);
     }
 
     private void scanId3Over_Single(int index) {
@@ -678,7 +678,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     private void updateListWithoutSelection() {
         int total = mIF.getListTotal();
         if (total <= 0) {
-            showEmptyList();
+            showEmptyList(false);
             return;
         }
         mAdapter.resetLastPlayItem();
@@ -709,8 +709,8 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     
     private Handler mShowHandler = new Handler();
     
-    private void showEmptyList() {
-        mShowHandler.postDelayed(new Runnable() {
+    private void showEmptyList(boolean postFlag) {
+        Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 mTipLayout.setVisibility(View.VISIBLE);
@@ -719,7 +719,13 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
                 mLoadingLayout.setVisibility(View.GONE);
                 backToList();
             }
-        }, 500);
+        };
+        mShowHandler.removeCallbacksAndMessages(null);
+        if (postFlag) {
+            mShowHandler.postDelayed(runnable, 500);
+        } else {
+            runnable.run();
+        }
     }
     
     private void showLoadingLayout() {
@@ -813,10 +819,10 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         return all;
     }
     
-    private void refreshList() {
+    private void refreshList(boolean postFlag) {
         int total = mIF.getListTotal();
         if (total <= 0) {
-            showEmptyList();
+            showEmptyList(postFlag);
         } else {
             showListLayout();
         }
