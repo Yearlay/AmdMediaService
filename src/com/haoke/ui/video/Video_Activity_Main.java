@@ -147,7 +147,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 			}
 			int deviceType = MediaUtil.getDeviceType(filePath);
 			int position = 0;
-			updateDevice(deviceType);
+			updateDevice(deviceType, false);
 			for (int index = 0; index < mVideoList.size(); index++) {
 				if (filePath.equals(mVideoList.get(index).getFilePath())) {
 					position = index;
@@ -166,20 +166,20 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 			DebugLog.e("luke", "onNewInten VR");
 			FileNode temp = mPlayLayout.playDefault();
 			if (temp == null || temp.getFilePath().length() == 0) {
-				updateDevice(DeviceType.FLASH);
+				updateDevice(DeviceType.FLASH, false);
 			} else {
-				updateDevice(temp.getDeviceType());
+				updateDevice(temp.getDeviceType(), false);
 				onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
 			}
 		} else if (intent != null && "modeSwitch".equals(intent.getStringExtra("isfrom"))) { // 没有视频文件入口
 			DebugLog.e("luke", "onNewInten modeSwitch");
 			int deviceType = intent.getIntExtra("deviceType", DeviceType.FLASH);
-			updateDevice(deviceType);
+			updateDevice(deviceType, false);
 		}
 		DebugLog.e("luke", "BeforePlaystate: " + mPlayLayout.getBeforePlaystate());
 	}
 
-	public void updateDevice(final int deviceType) {
+	public void updateDevice(final int deviceType, boolean toHead) {
 		int checkId = R.id.video_device_flash;
 		if (deviceType == DeviceType.USB1) {
 			checkId = R.id.video_device_usb1;
@@ -205,7 +205,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 
 		mVideoList.clear();
 		mVideoList.addAll(AllMediaList.instance(getApplicationContext()).getMediaList(deviceType, FileType.VIDEO));
-		mListLayout.updataList(mVideoList, storageBean);
+		mListLayout.updataList(mVideoList, storageBean, toHead);
 		if (mVideoList.size() == 0 && mListLayout.isEditMode()) {
 			cancelEdit();
 		}
@@ -222,7 +222,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 		}*/
 		DebugLog.v(TAG, "HMI------------onStart sCarSpeed: " + AllMediaList.sCarSpeed);
 		Media_IF.getInstance().registerModeCallBack(this);
-		updateDevice(getCurrentDeviceType());
+		updateDevice(getCurrentDeviceType(), false);
 	}
 
 	@Override
@@ -389,7 +389,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 
 	private void touchEvent(int deviceType) {
 		mPreferences.saveVideoDeviceType(deviceType);
-		updateDevice(deviceType);
+		updateDevice(deviceType, true);
 	}
 
 	@Override
@@ -427,7 +427,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 		// 处理数据加载完成的事件: 主要是处理数据。
 		DebugLog.e(TAG, "onLoadCompleted deviceType: " + deviceType + "  ,fileType: " + fileType);
 		if (deviceType == getCurrentDeviceType() && fileType == FileType.VIDEO /*&& mPlayLayout.getVisibility() != View.VISIBLE*/) {
-			updateDevice(deviceType);
+			updateDevice(deviceType, false);
 		}
 	}
 
@@ -436,7 +436,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 		// 处理磁盘状态 和 扫描状态发生改变的状态： 主要是更新UI的显示效果。
 		DebugLog.e(TAG, "onScanStateChange storageBean: " + storageBean.toString());
 		if (storageBean.getDeviceType() == getCurrentDeviceType()) {
-			updateDevice(getCurrentDeviceType());
+			updateDevice(getCurrentDeviceType(), false);
 			onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
 			if (!storageBean.isMounted()) {
 				if (mListLayout != null) {

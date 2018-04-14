@@ -155,13 +155,13 @@ public class Image_Activity_Main extends Activity implements
 			}
 			if(imageList.size() > 0){
 				DebugLog.e(TAG,"initIntent deviceType: " + deviceType);
-				updateDevice(deviceType, mListLayout.getPhotoListSize() == 0);
+				updateDevice(deviceType, mListLayout.getPhotoListSize() == 0, false);
                 mPlayLayout.setPlayState(PlayState.PLAY);
                 mPlayLayout.setCurrentPosition(0);;
                 onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
 			} else {
 				DebugLog.e(TAG, "initIntent device have no images!!!!");
-				updateDevice(DeviceType.FLASH, false);
+				updateDevice(DeviceType.FLASH, false, false);
 				onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
 			}
 			
@@ -175,7 +175,7 @@ public class Image_Activity_Main extends Activity implements
         initIntent(intent);
     }
 
-    public void updateDevice(final int deviceType, boolean forceUpdate) {
+    public void updateDevice(final int deviceType, boolean forceUpdate, boolean toHead) {
         DebugLog.d(TAG,"updateDevice: " + deviceType);
         int oldDeviceType = mPlayPreferences.getImageDeviceType();
         if (oldDeviceType != deviceType) {
@@ -198,7 +198,7 @@ public class Image_Activity_Main extends Activity implements
             mPlayLayout.updateList(mImageList, deviceType);
         }
         // refreshView函数中有更新加载框和是否显示无媒体的逻辑。
-        mListLayout.refreshView(storageBean);
+        mListLayout.refreshView(storageBean, toHead);
         if (mImageList.size() == 0 && mListLayout.isEditMode()) {
             cancelEdit();
         }
@@ -214,7 +214,7 @@ public class Image_Activity_Main extends Activity implements
             int deviceType = MediaUtil.getDeviceType(mFilePathFromSearch);
             int position = 0;
             mPlayPreferences.saveImageDeviceType(deviceType);
-            updateDevice(deviceType, mListLayout.getPhotoListSize() == 0);
+            updateDevice(deviceType, mListLayout.getPhotoListSize() == 0, false);
             for (int index = 0; index < mImageList.size(); index++) {
                 if (mFilePathFromSearch.equals(mImageList.get(index).getFilePath())) {
                     position = index;
@@ -226,7 +226,7 @@ public class Image_Activity_Main extends Activity implements
             onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
             mFilePathFromSearch = null;
         } else {
-            updateDevice(mPlayPreferences.getImageDeviceType(), mListLayout.getPhotoListSize() == 0);
+            updateDevice(mPlayPreferences.getImageDeviceType(), mListLayout.getPhotoListSize() == 0, false);
             mPlayLayout.setPlayState(mPlayLayout.mRecordPlayState);
         }
         mRadioGroup.setOnCheckedChangeListener(this);
@@ -343,7 +343,7 @@ public class Image_Activity_Main extends Activity implements
         // 处理数据加载完成的事件: 主要是处理数据。
     	DebugLog.e(TAG,"-----onLoadCompleted deviceType: " + deviceType + " fileType: " + fileType);
         if (deviceType == getCurrentDeviceType() && fileType == FileType.IMAGE) {
-            updateDevice(deviceType, true);
+            updateDevice(deviceType, true, false);
         }
     }
 
@@ -352,7 +352,7 @@ public class Image_Activity_Main extends Activity implements
         // 处理磁盘状态 和 扫描状态发生改变的状态： 主要是更新UI的显示效果。
     	DebugLog.e(TAG, "onScanStateChange storageBean: " + storageBean.toString());
         if (storageBean.getDeviceType() == getCurrentDeviceType()) {
-            updateDevice(getCurrentDeviceType(), true);
+            updateDevice(getCurrentDeviceType(), true, false);
             onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
             if (!storageBean.isMounted()) {
                 if (mListLayout != null) {
@@ -417,7 +417,7 @@ public class Image_Activity_Main extends Activity implements
         if (mPlayPreferences.getImageShowFragment() != SWITCH_TO_LIST_FRAGMENT) {
             onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
         }
-        updateDevice(deviceType, true);
+        updateDevice(deviceType, true, true);
     }
     
     @Override

@@ -109,12 +109,16 @@ public class VideoListLayout extends RelativeLayout implements
         mLoadingImageView.setImageDrawable(null); // 需要这个操作，解决mLoadingImageView在界面销毁之后不回收的问题。
     }
     
-    public void updataList(ArrayList<FileNode> dataList, StorageBean storageBean) {
+    public void updataList(ArrayList<FileNode> dataList, StorageBean storageBean, boolean toHead) {
         mCurrentStorageBean = storageBean;
         mVideoList.clear();
         mVideoList.addAll(dataList);
-        mGridView.requestFocusFromTouch();
-        mGridView.setSelection(0);
+        if (mVideoList.size() > 0) {
+            mGridView.requestFocusFromTouch();
+            if (toHead) {
+                mGridView.setSelection(0);
+            }
+        }
         mVideoAdapter.notifyDataSetChanged();
         if (storageBean.isMounted()) {
             if (storageBean.isId3ParseCompleted()) {

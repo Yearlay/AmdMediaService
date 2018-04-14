@@ -81,16 +81,18 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
         mCurrentStorageBean = storageBean;
         mPhotoList.clear();
         mPhotoList.addAll(dataList);
+        mPhotoAdapter.notifyDataSetChanged();
     }
 
-    public void refreshView(StorageBean storageBean) {
+    public void refreshView(StorageBean storageBean, boolean toHead) {
         if (mGridView == null || mPhotoAdapter == null) {
             return;
         }
         if (mPhotoList.size() > 0) {
             mGridView.requestFocusFromTouch();
-            mGridView.setSelection(0);
-            mPhotoAdapter.notifyDataSetChanged();
+            if (toHead) {
+                mGridView.setSelection(0);
+            }
         }
         if (storageBean.isMounted()) {
             DebugLog.e(Image_Activity_Main.TAG,"refreshView  isMounted");
@@ -145,7 +147,7 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
         mGridView.setAdapter(mPhotoAdapter);
         
         if (mCurrentStorageBean != null) {
-            refreshView(mCurrentStorageBean);
+            refreshView(mCurrentStorageBean, true);
         }
         skinManager = SkinManager.instance(getContext());
     }
