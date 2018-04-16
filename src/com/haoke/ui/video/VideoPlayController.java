@@ -392,14 +392,14 @@ public class VideoPlayController implements AudioFocusListener {
 	/**
 	 * 如果 fileNode为null，则pos生效
 	 */
-	private boolean playOther(FileNode fileNode, int index) {
+	private boolean playOther(FileNode fileNode, int index, boolean preOrNextFlag) {
 		if (MediaInterfaceUtil.mediaCannotPlay()) {
 			return false;
 		}
 		FileNode node = null;
 
+		ArrayList<FileNode> lists = mAllMediaList.getMediaList(mPlayingDeviceType, mPlayingFileType);
 		if (fileNode == null) {
-			ArrayList<FileNode> lists = mAllMediaList.getMediaList(mPlayingDeviceType, mPlayingFileType);
 			if (lists.size() <= index || index < 0) {
 				return false;
 			}
@@ -413,8 +413,12 @@ public class VideoPlayController implements AudioFocusListener {
 		isVideoPlaying = true;
 		
 		int playTime = node.getPlayTime();
-		if(mPlayDefaultVideo || (mCurFileNode != null && mCurFileNode.isSamePathAndFrom(node))){
-			node.setPlayTime(playTime);
+		if (mPlayDefaultVideo || (mCurFileNode != null && mCurFileNode.isSamePathAndFrom(node))) {
+		    if (preOrNextFlag && lists.size() == 1) {
+		        node.setPlayTime(0); //从头开始播放
+		    } else {
+		        node.setPlayTime(playTime);
+		    }
 		} else {
 			node.setPlayTime(0); //从头开始播放
 		}
@@ -456,7 +460,7 @@ public class VideoPlayController implements AudioFocusListener {
 	public boolean play(int index) {
 		DebugLog.v(TAG, "play Video index=" + index);
 		setPlayingData(mDeviceType, mFileType, true);
-		return playOther(null, index);
+		return playOther(null, index, false);
 	}
 
 	public boolean play(String filePath) {
@@ -468,7 +472,7 @@ public class VideoPlayController implements AudioFocusListener {
 				FileNode fileNode = getFileNodeByFilePath(filePath);
 				if (fileNode != null) {
 					setPlayingData(deviceType, fileType, true);
-					return playOther(fileNode, -1);
+					return playOther(fileNode, -1, false);
 				}
 			}
 		}
@@ -483,7 +487,7 @@ public class VideoPlayController implements AudioFocusListener {
 		if (deviceType == DeviceType.USB1 || deviceType == DeviceType.USB2 || deviceType == DeviceType.FLASH || deviceType == DeviceType.COLLECT) {
 			if (fileType == FileType.VIDEO) {
 				setPlayingData(deviceType, fileType, true);
-				return playOther(fileNode, -1);
+				return playOther(fileNode, -1, false);
 			}
 		}
 		DebugLog.e(TAG, "play ERROR! deviceType=" + deviceType + "; fileType=" + fileType);
@@ -523,7 +527,7 @@ public class VideoPlayController implements AudioFocusListener {
 			pos = mPlayingListSize - 1;
 		}
 
-		return playOther(null, pos);
+		return playOther(null, pos, true);
 	}
 
 	// 下一曲
@@ -535,7 +539,7 @@ public class VideoPlayController implements AudioFocusListener {
 		if (pos > mPlayingListSize - 1) {
 			pos = 0;
 		}
-		return playOther(null, pos);
+		return playOther(null, pos, true);
 	}
 
 	// 获取是否播放状态
