@@ -110,6 +110,8 @@ public class ID3ParseThread extends Thread {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            } else {
+                DebugLog.e(TAG, "parseId3InfoOfAudio error. device not mounted : " + devicetype);
             }
         }
         debugClock.calculateTime(TAG, "parseId3InfoOfAudio over!");

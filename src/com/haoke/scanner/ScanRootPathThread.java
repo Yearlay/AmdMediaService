@@ -73,15 +73,8 @@ public class ScanRootPathThread extends Thread {
             mCurrentDeviceTask = mDeviceTaskList.get(0);
             DebugLog.i(TAG, "Begin doDeviceTasks# mTaskType: " + mCurrentDeviceTask.mTaskType
                     + " && mFilePath: " + mCurrentDeviceTask.mFilePath);
-            switch (mCurrentDeviceTask.mTaskType) {
-                case ScanTaskType.MOUNTED:
-                    scanStorage(mCurrentDeviceTask);
-                    break;
-                case ScanTaskType.UNMOUNTED:
-                    removeStorage(mCurrentDeviceTask);
-                    break;
-                default:
-                    break;
+            if (mCurrentDeviceTask.mTaskType == ScanTaskType.MOUNTED) {
+                scanStorage(mCurrentDeviceTask);
             }
             DebugLog.i(TAG, "End doDeviceTasks# mTaskType: " + mCurrentDeviceTask.mTaskType
                     + " && mFilePath: " + mCurrentDeviceTask.mFilePath);
@@ -125,25 +118,6 @@ public class ScanRootPathThread extends Thread {
             AllMediaList.instance(mMediaDbHelper.getContext()).updateStorageBean(scanTask.mFilePath, StorageBean.EJECT);
         }
         changeScanState(scanState, scanTask.mDeviceType);
-    }
-
-    private void removeStorage(ScanTask scanTask) {
-        AllMediaList.instance(mMediaDbHelper.getContext()).updateStorageBean(scanTask.mFilePath, StorageBean.EJECT);
-    }
-
-    public void interruptTask(String storagePath) {
-        if (mCurrentDeviceTask != null && mCurrentDeviceTask.mFilePath.equals(storagePath)) {
-            mCurrentDeviceTask.mIsInterrupted = true;
-        }
-        if (mDeviceTaskList.size() > 0) {
-            for (int i = 0; i < mDeviceTaskList.size(); i++) {
-                ScanTask scanTask = mDeviceTaskList.get(i);
-                if (scanTask.mFilePath.equals(storagePath)) {
-                    mDeviceTaskList.remove(scanTask);
-                    i--;
-                }
-            }
-        }
     }
 
     private int jniScanRootPath(String filePath, int onlyGetMediaSizeFlag) {

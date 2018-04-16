@@ -78,14 +78,12 @@ public class MediaScanner {
     }
     
     /**
-     * 设备拔出的时候，调用这个函数清空该设备的数据库记录。
+     * 设备拔出的时候，只需要修改。
      * @param devicePath
      */
     public void removeStorage(String devicePath) {
         DebugLog.i(TAG, "MediaScanner#removeStorage devicePath: " + devicePath);
-        interruptID3ParseThread();
-        getScanRootPathThread().interruptTask(devicePath);
-        getScanRootPathThread().addDeviceTask(ScanTaskType.UNMOUNTED, devicePath);
+        AllMediaList.instance(mContext).updateStorageBean(devicePath, StorageBean.EJECT);
         if (mScannerListner != null) {
             mScannerListner.scanPath(ScanState.REMOVE_STORAGE, MediaUtil.getDeviceType(devicePath));
         }
