@@ -2,7 +2,6 @@ package com.haoke.receiver;
 
 import com.amd.media.UsbAutoPlay;
 import com.haoke.constant.MediaUtil;
-import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.ScanType;
 import com.haoke.service.MediaService;
 import com.haoke.util.DebugLog;

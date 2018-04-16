@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 import com.file.server.scan.ScanJni;
 import com.haoke.bean.StorageBean;
-import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.constant.MediaUtil.ScanState;
 import com.haoke.constant.MediaUtil.ScanTask;
@@ -85,7 +84,10 @@ public class ScanRootPathThread extends Thread {
     
     private void scanStorage(ScanTask scanTask) {
         DebugLog.i(TAG, "scanStorage Path: " + scanTask.mFilePath);
-        AllMediaList.instance(mMediaDbHelper.getContext()).updateStorageBean(scanTask.mFilePath, StorageBean.FILE_SCANNING);
+        AllMediaList allMediaList = AllMediaList.instance(mMediaDbHelper.getContext());
+        if (allMediaList.getStoragBean(scanTask.mFilePath).isMounted()) {
+            allMediaList.updateStorageBean(scanTask.mFilePath, StorageBean.FILE_SCANNING);
+        }
         changeScanState(ScanState.SCANNING, scanTask.mDeviceType);
         int mediaCount = 0;
         int scanState = ScanState.IDLE;
@@ -111,11 +113,11 @@ public class ScanRootPathThread extends Thread {
             e.printStackTrace();
         }
         scanState = (scanState == ScanState.IDLE) ? ScanState.COMPLETED : scanState;
-        if (scanState == ScanState.COMPLETED) {
-            AllMediaList.instance(mMediaDbHelper.getContext()).updateStorageBean(scanTask.mFilePath, StorageBean.SCAN_COMPLETED);
+        if (scanState == ScanState.COMPLETED && allMediaList.getStoragBean(scanTask.mFilePath).isMounted()) {
+            allMediaList.updateStorageBean(scanTask.mFilePath, StorageBean.SCAN_COMPLETED);
         } else {
             DebugLog.e(TAG, "Exception scanStorage error !!!!!!!! filePath: " + scanTask.mFilePath);
-            AllMediaList.instance(mMediaDbHelper.getContext()).updateStorageBean(scanTask.mFilePath, StorageBean.EJECT);
+            allMediaList.updateStorageBean(scanTask.mFilePath, StorageBean.EJECT);
         }
         changeScanState(scanState, scanTask.mDeviceType);
     }

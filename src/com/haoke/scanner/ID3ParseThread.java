@@ -4,7 +4,6 @@ package com.haoke.scanner;
 import java.util.ArrayList;
 
 import android.content.Intent;
-import android.text.TextUtils;
 
 import com.amd.util.AmdConfig;
 import com.haoke.bean.FileNode;
@@ -57,7 +56,7 @@ public class ID3ParseThread extends Thread {
         for (int deviceType : DBConfig.sScan3zaDefaultList) {
             String devicePath = MediaUtil.getDevicePath(deviceType);
             StorageBean storageBean = allMediaList.getStoragBean(devicePath);
-            if (checkMounted(devicePath) && !storageBean.isId3ParseCompleted()) {
+            if (storageBean.isMounted()) {
                 allMediaList.updateStorageBean(devicePath, StorageBean.ID3_PARSE_COMPLETED);
             }
         }

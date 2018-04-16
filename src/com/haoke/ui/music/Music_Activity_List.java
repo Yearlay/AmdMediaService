@@ -453,7 +453,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     }
 
     private void scanStateChanged(int scanState) {
-        updateStatus(true, false);
+        updateStatus(false, false);
     }
 
     private void scanId3Over_Single(int index) {

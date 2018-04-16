@@ -68,7 +68,6 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
     private static final String TAG = "MediaService";
     private static MediaService mSelf = null;
     private MediaServiceBinder mBinder = null;
-    private boolean ret;
     
     private Media_IF mMediaIF = null;
     private BT_IF mBTIF = null;
@@ -173,6 +172,7 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
                     mScanner.beginScanningStorage(rootPath);
                 } else {
                     DebugLog.e(TAG, "Ignore SCAN_STORAGE --> Storage is not scan idle : " + rootPath);
+                    DebugLog.e(TAG, "Ignore SCAN_STORAGE --> Storage scan state : " + storageBean.getState());
                 }
                 break;
             case ScanType.REMOVE_STORAGE:{ // 磁盘拔出的处理过程。

@@ -459,6 +459,7 @@ public class AllMediaList {
     }
 
     public void updateStorageBean(String devicePath, int state) {
+        DebugLog.i(TAG, "updateStorageBean devicePath" + devicePath + " && state: " + state);
         StorageBean storageBean = new StorageBean(devicePath, state);
         mScanStateHash.put(devicePath, storageBean);
         mLocalHandler.sendMessage(mLocalHandler.obtainMessage(SCAN_STATE_CHANGE, storageBean));
