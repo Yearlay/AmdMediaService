@@ -330,26 +330,22 @@ public class MediaDbHelper extends SQLiteOpenHelper {
     
     public ArrayList<FileNode> query(String tableName, String selection, String[] selectionArgs, boolean allFlag) {
         ArrayList<FileNode> fileNodeList = new ArrayList<FileNode>();
-        boolean isCollect = tableName.equals(DBConfig.TableName.COLLECT_AUDIO_TABLE_NAME) ||
-                tableName.equals(DBConfig.TableName.COLLECT_VIDEO_TABLE_NAME) ||
-                tableName.equals(DBConfig.TableName.COLLECT_IMAGE_TABLE_NAME);
+        int deviceType = DBConfig.getDeviceType(tableName);
         Cursor cursor = null;
         try {
-            cursor = getReadableDatabase().query(tableName,
-                    null, selection, selectionArgs, null, null, null);
+            cursor = getReadableDatabase().query(tableName, null, selection, selectionArgs, null, null, null);
+            StorageBean storageBean = AllMediaList.instance(mContext).getStoragBean(deviceType);
             if (cursor != null && cursor.moveToFirst()) {
                 do {
                     FileNode fileNode = new FileNode(cursor);
-                    if (isCollect) {
+                    if (deviceType == DeviceType.COLLECT) {
                         fileNode.setFromCollectTable(true);
                     }
                     if (allFlag) {
                         fileNodeList.add(fileNode);
                     } else {
                         if (fileNode.getFile().exists()) {
-                            if (isCollect) { // 如果是收藏表中的数据。还需要判断磁盘是否挂载。
-                                StorageBean storageBean = AllMediaList.instance(mContext)
-                                        .getStoragBean(fileNode.getDeviceType());
+                            if (deviceType == DeviceType.COLLECT) { // 如果是收藏表中的数据。还需要判断磁盘是否挂载。
                                 if (storageBean.isMounted()) {
                                     fileNodeList.add(fileNode);
                                 }
@@ -361,12 +357,12 @@ public class MediaDbHelper extends SQLiteOpenHelper {
                 } while (cursor.moveToNext());
             }
             if (fileNodeList.size() == 0) {
-                DebugLog.e(TAG, "tableName: + " + tableName +
-                        "数据库中没有记录 selection: " + selection + " selectionArgs: " + selectionArgs);
+                DebugLog.e(TAG, "query deviceType: + " + deviceType + " && allFlag: " + allFlag +
+                        " && no datas selection: " + selection + " selectionArgs: " + selectionArgs);
             } else {
                 FileNode.sortMediaFileBeanList(fileNodeList);
-                DebugLog.d(TAG, "tableName: + " + tableName +
-                        "数据库中数据总数： " + fileNodeList.size());
+                DebugLog.d(TAG, "query deviceType: + " + deviceType + " && allFlag: " + allFlag +
+                        " && media size： " + fileNodeList.size());
             }
         } catch (Exception e) {
             e.printStackTrace();

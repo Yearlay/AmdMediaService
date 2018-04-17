@@ -766,7 +766,7 @@ public class AllMediaList {
             currentprogress++;
         }
         mMediaDbHelper.setStartFlag(false);
-        DebugLog.a(TAG, "deleteMediaFiles", "End --> delte files resultCode:" + resultCode);
+        DebugLog.a(TAG, "deleteMediaFiles", "End --> delete files resultCode:" + resultCode);
     }
     
     private void collectMediaFiles(ArrayList<FileNode> list, OperateData operateData) {

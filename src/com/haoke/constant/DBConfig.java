@@ -408,6 +408,22 @@ public class DBConfig {
         return table;
     }
     
+    public static int getDeviceType(String tableName) {
+        int deviceType = -1;
+        if (tableName != null) {
+            if (tableName.contains("19")) {
+                deviceType = DeviceType.COLLECT;
+            } else if (tableName.contains("13")) {
+                deviceType = DeviceType.FLASH;
+            } else if (tableName.contains("4")) {
+                deviceType = DeviceType.USB2;
+            } else if (tableName.contains("3")) {
+                deviceType = DeviceType.USB1;
+            }
+        }
+        return deviceType;
+    }
+    
     public static boolean isMediaType(int fileType) {
         return fileType == FileType.AUDIO || fileType == FileType.VIDEO || fileType == FileType.IMAGE;
     }
