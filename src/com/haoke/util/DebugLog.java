@@ -15,11 +15,7 @@ public class DebugLog {
     }
     
     public static void e(String tags, String str) {
-        if (DEBUG) {
-            android.util.Log.e(tags, str);
-        } else {
-            LogUtil.e(tags, str);
-        }
+        android.util.Log.e(tags, str);
     }
     
     public static void v(String tags, String str) {

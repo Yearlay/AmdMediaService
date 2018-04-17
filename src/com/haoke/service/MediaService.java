@@ -167,8 +167,10 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
         switch (intent.getIntExtra(ScanType.SCAN_TYPE_KEY, 0)) {
             case ScanType.SCAN_STORAGE: // 指定磁盘进行扫描。
                 String rootPath = intent.getStringExtra(ScanType.SCAN_FILE_PATH);
-                StorageBean storageBean = AllMediaList.instance(getApplicationContext()).getStoragBean(rootPath);
+                AllMediaList allMediaList = AllMediaList.instance(getApplicationContext());
+                StorageBean storageBean = allMediaList.getStoragBean(rootPath);
                 if (storageBean.isScanIdle()) {
+                    allMediaList.updateStorageBean(rootPath, StorageBean.MOUNTED);
                     mScanner.beginScanningStorage(rootPath);
                 } else {
                     DebugLog.e(TAG, "Ignore SCAN_STORAGE --> Storage is not scan idle : " + rootPath);
