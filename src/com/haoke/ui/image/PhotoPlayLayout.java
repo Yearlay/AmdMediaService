@@ -79,6 +79,8 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     private ProgressDialog mProgressDialog;
     
     public static int mPlayState;
+    
+    private boolean isOnResume;
     public int mRecordPlayState = PlayState.PLAY;
     
     private SkinManager skinManager;
@@ -157,6 +159,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     }
 
     public void onResume() {
+        isOnResume = true;
         DebugLog.d(Image_Activity_Main.TAG, "onResume mCurPosition: " + mCurPosition + "  , mErrorCount: " + mErrorCount);
         if (mPhotoList.size() > 0) {
             mCurPosition = mCurPosition < 0 ? 0 : mCurPosition;
@@ -219,6 +222,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     }
 
     public void onPause() {
+        isOnResume = false;
         mHandler.removeMessages(NEXT_PLAY);
         if (mActivityHandler != null) {
             mActivityHandler.sendEmptyMessage(Image_Activity_Main.SHOW_BOTTOM);
@@ -394,7 +398,9 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     	//DebugLog.d("luke",Log.getStackTraceString(new Throwable()));
         if (mPlayState == PlayState.PLAY) {
             mHandler.removeMessages(NEXT_PLAY);
-            mHandler.sendEmptyMessageDelayed(NEXT_PLAY, DELAY_TIME);
+            if (isOnResume) {
+                mHandler.sendEmptyMessageDelayed(NEXT_PLAY, DELAY_TIME);
+            }
         } else {
             mHandler.removeMessages(NEXT_PLAY);
         }
