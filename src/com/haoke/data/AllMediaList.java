@@ -84,20 +84,22 @@ public class AllMediaList {
     }
     
     public ArrayList<FileNode> getMediaList(int deviceType, int fileType) {
-        ArrayList<FileNode> mediaList = null;
-        String tableName = DBConfig.getTableName(deviceType, fileType);
-        mediaList = mAllMediaHash.get(tableName);
-        if (mediaList == null) {
-            // 如果找不到数据，就发起数据查询操作。 
-            StorageBean storageBean = getStoragBean(deviceType);
-            if (storageBean.isId3ParseCompleted()) {
-                mLocalHandler.obtainMessage(BEGIN_LOAD_THREAD, deviceType, fileType, null).sendToTarget();
+        synchronized (mLoadLock) {
+            ArrayList<FileNode> mediaList = null;
+            String tableName = DBConfig.getTableName(deviceType, fileType);
+            mediaList = mAllMediaHash.get(tableName);
+            if (mediaList == null) {
+                // 如果找不到数据，就发起数据查询操作。 
+                StorageBean storageBean = getStoragBean(deviceType);
+                if (storageBean.isId3ParseCompleted()) {
+                    mLocalHandler.obtainMessage(BEGIN_LOAD_THREAD, deviceType, fileType, null).sendToTarget();
+                }
+                mediaList = new ArrayList<FileNode>();
             }
-            mediaList = new ArrayList<FileNode>();
+            DebugLog.i(TAG, "getMediaList --> deviceType: " +deviceType + " && fileType: " + fileType
+                    + " the size if list: " + mediaList.size());
+            return mediaList;
         }
-        DebugLog.i(TAG, "getMediaList --> deviceType: " +deviceType + " && fileType: " + fileType
-                + " the size if list: " + mediaList.size());
-        return mediaList;
     }
     
     /**
