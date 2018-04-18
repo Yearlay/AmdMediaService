@@ -20,6 +20,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.widget.Toast;
 
 import com.haoke.application.MediaApplication;
 import com.haoke.bean.FileNode;
@@ -31,6 +32,7 @@ import com.haoke.constant.DBConfig.UriType;
 import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.constant.MediaUtil.ScanType;
+import com.haoke.mediaservice.R;
 import com.haoke.receiver.MediaReceiver;
 import com.haoke.scanner.MediaDbHelper;
 import com.haoke.scanner.MediaDbHelper.TransactionTask;
@@ -556,11 +558,14 @@ public class AllMediaList {
     }
     
     /**
-     * 主要用于取消复制的操作。
+     * 主要用于取消删除文件或复制的操作。
      */
     public void stopOperateThread() {
         mLocalHandler.removeMessages(BEGIN_OPERATE_THREAD);
         if (mOperateThread != null) {
+            if (mOperateThread.isAlive()) {
+                Toast.makeText(mContext, R.string.file_operate_cancel, Toast.LENGTH_SHORT).show();
+            }
             mOperateThread.interrupt();
         }
     }

@@ -157,15 +157,10 @@ public class VideoListLayout extends RelativeLayout implements
         if (mErrorDialog != null) {
             mErrorDialog.CloseDialog();
         }
-        if (mProgressDialog != null && mProgressDialog.getDialog() != null &&
-                mProgressDialog.getDialog().isShowing()) {
+        if (mProgressDialog != null) {
             mProgressDialog.CloseDialog();
-            Toast.makeText(mContext, R.string.file_operate_cancel, Toast.LENGTH_SHORT).show();
         }
         if (mCopyDialog != null) {
-            if (mCopyDialog.isCopying()) {
-                Toast.makeText(mContext, R.string.file_operate_cancel, Toast.LENGTH_SHORT).show();
-            }
             mCopyDialog.closeCopyDialog();
         }
     }
@@ -238,6 +233,8 @@ public class VideoListLayout extends RelativeLayout implements
                 }
                 @Override
                 public void OnDialogDismiss() {
+                    AllMediaList.instance(mContext).stopOperateThread();
+                    mVideoAdapter.notifyDataSetChanged();
                 }
             });
         } else {

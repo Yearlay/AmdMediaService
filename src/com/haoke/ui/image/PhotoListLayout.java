@@ -170,15 +170,10 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
         if (mErrorDialog != null) {
             mErrorDialog.CloseDialog();
         }
-        if (mProgressDialog != null && mProgressDialog.getDialog() != null &&
-                mProgressDialog.getDialog().isShowing()) {
+        if (mProgressDialog != null) {
             mProgressDialog.CloseDialog();
-            Toast.makeText(mContext, R.string.file_operate_cancel, Toast.LENGTH_SHORT).show();
         }
         if (mCopyDialog != null) {
-            if (mCopyDialog.isCopying()) {
-                Toast.makeText(mContext, R.string.file_operate_cancel, Toast.LENGTH_SHORT).show();
-            }
             mCopyDialog.closeCopyDialog();
         }
     }
@@ -248,6 +243,8 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
                 }
                 @Override
                 public void OnDialogDismiss() {
+                    AllMediaList.instance(mContext).stopOperateThread();
+                    mPhotoAdapter.notifyDataSetChanged();
                 }
             });
         } else {

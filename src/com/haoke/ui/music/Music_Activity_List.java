@@ -273,15 +273,10 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         isShow = false;
         mPlayDefault = false;
         mIF.unregisterLocalCallBack(this); // 注销服务监听
-        if (mProgressDialog != null && mProgressDialog.getDialog() != null &&
-                mProgressDialog.getDialog().isShowing()) {
+        if (mProgressDialog != null) {
             mProgressDialog.CloseDialog();
-            Toast.makeText(this, R.string.file_operate_cancel, Toast.LENGTH_SHORT).show();
         }
         if (mCopyDialog != null) {
-            if (mCopyDialog.isCopying()) {
-                Toast.makeText(this, R.string.file_operate_cancel, Toast.LENGTH_SHORT).show();
-            }
             mCopyDialog.closeCopyDialog();
         }
         SkinManager.unregisterSkin(mSkinListener);
@@ -582,6 +577,8 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
                 }
                 @Override
                 public void OnDialogDismiss() {
+                    AllMediaList.instance(Music_Activity_List.this).stopOperateThread();
+                    notifyDataSetChanged();
                 }
             });
         } else {
