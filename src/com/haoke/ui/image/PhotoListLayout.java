@@ -39,6 +39,7 @@ import com.haoke.ui.widget.CopyDialog;
 import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
 import com.haoke.ui.widget.CustomDialog.OnDialogListener;
+import com.haoke.ui.widget.DeleteProgressDialog;
 import com.haoke.ui.widget.HKTextView;
 import com.haoke.util.DebugLog;
 
@@ -64,7 +65,7 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
     private PhotoAdapter mPhotoAdapter;
     private Handler mActivityHandler;
     private boolean isEditMode;
-    private CustomDialog mProgressDialog;
+    private DeleteProgressDialog mProgressDialog;
     private CustomDialog mErrorDialog;
     
     private StorageBean mCurrentStorageBean;
@@ -171,7 +172,7 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
             mErrorDialog.CloseDialog();
         }
         if (mProgressDialog != null) {
-            mProgressDialog.CloseDialog();
+            mProgressDialog.closeDialog();
         }
         if (mCopyDialog != null) {
             mCopyDialog.closeCopyDialog();
@@ -257,10 +258,11 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
             }
         }
         if (selectList.size() > 0) {
-            if (mProgressDialog == null) {
-                mProgressDialog = new CustomDialog();
+            if (mProgressDialog != null) {
+                mProgressDialog.closeDialog();
             }
-            mProgressDialog.showProgressDialog(mContext, R.string.delete_image_progress_title, this);
+            mProgressDialog = new DeleteProgressDialog();
+            mProgressDialog.showProgressDialog(mContext, R.string.delete_image_progress_title);
             if (isCollect) {
                 AllMediaList.instance(mContext).uncollectMediaFiles(selectList, this);
             } else {
@@ -358,7 +360,7 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
         }
         if (progress == 100) {
             if (mProgressDialog != null) {
-                mProgressDialog.CloseDialog();
+                mProgressDialog.closeDialog();
                 if (mActivityHandler != null) {
                     mActivityHandler.sendEmptyMessage(Video_Activity_Main.CANCEL_EDIT);
                 }
@@ -386,7 +388,7 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
         }
         if (progress == 100) {
             if (mProgressDialog != null) {
-                mProgressDialog.CloseDialog();
+                mProgressDialog.closeDialog();
                 if (mActivityHandler != null) {
                     mActivityHandler.sendEmptyMessage(Video_Activity_Main.CANCEL_EDIT);
                 }

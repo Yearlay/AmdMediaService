@@ -39,6 +39,7 @@ import com.haoke.ui.widget.CopyDialog;
 import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
 import com.haoke.ui.widget.CustomDialog.OnDialogListener;
+import com.haoke.ui.widget.DeleteProgressDialog;
 import com.haoke.ui.widget.HKTextView;
 import com.haoke.util.DebugLog;
 
@@ -53,7 +54,7 @@ public class VideoListLayout extends RelativeLayout implements
     private Handler mActivityHandler;
     private boolean isEditMode;
     private CopyDialog mCopyDialog;
-    private CustomDialog mProgressDialog;
+    private DeleteProgressDialog mProgressDialog;
     private CustomDialog mErrorDialog;
     private StorageBean mCurrentStorageBean;
     
@@ -158,7 +159,7 @@ public class VideoListLayout extends RelativeLayout implements
             mErrorDialog.CloseDialog();
         }
         if (mProgressDialog != null) {
-            mProgressDialog.CloseDialog();
+            mProgressDialog.closeDialog();
         }
         if (mCopyDialog != null) {
             mCopyDialog.closeCopyDialog();
@@ -247,10 +248,11 @@ public class VideoListLayout extends RelativeLayout implements
             }
         }
         if (selectList.size() > 0) {
-            if (mProgressDialog == null) {
-                mProgressDialog = new CustomDialog();
+            if (mProgressDialog != null) {
+                mProgressDialog.closeDialog();
             }
-            mProgressDialog.showProgressDialog(mContext, R.string.delete_video_progress_title, this);
+            mProgressDialog = new DeleteProgressDialog();
+            mProgressDialog.showProgressDialog(mContext, R.string.delete_video_progress_title);
             if (isCollect) {
                 AllMediaList.instance(mContext).uncollectMediaFiles(selectList, this);
             } else {
@@ -330,7 +332,7 @@ public class VideoListLayout extends RelativeLayout implements
         }
         if (progress == 100) {
             if (mProgressDialog != null) {
-                mProgressDialog.CloseDialog();
+                mProgressDialog.closeDialog();
                 if (mActivityHandler != null) {
                     mActivityHandler.sendEmptyMessage(Video_Activity_Main.CANCEL_EDIT);
                 }
@@ -361,7 +363,7 @@ public class VideoListLayout extends RelativeLayout implements
         }
         if (progress == 100) {
             if (mProgressDialog != null) {
-                mProgressDialog.CloseDialog();
+                mProgressDialog.closeDialog();
                 if (mActivityHandler != null) {
                     mActivityHandler.sendEmptyMessage(Video_Activity_Main.CANCEL_EDIT);
                 }

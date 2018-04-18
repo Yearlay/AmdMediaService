@@ -563,7 +563,7 @@ public class AllMediaList {
     public void stopOperateThread() {
         mLocalHandler.removeMessages(BEGIN_OPERATE_THREAD);
         if (mOperateThread != null) {
-            if (mOperateThread.isAlive()) {
+            if (mOperateThread.mCurrentprogress < 100) {
                 Toast.makeText(mContext, R.string.file_operate_cancel, Toast.LENGTH_SHORT).show();
             }
             mOperateThread.interrupt();
@@ -683,6 +683,7 @@ public class AllMediaList {
     class OperateThread extends Thread {
         List<OperateData> mOperateList = Collections.synchronizedList(new ArrayList<OperateData>());
         volatile boolean isRunning;
+        int mCurrentprogress;
         
         public void addToListAndStart(OperateData operateData) {
             mOperateList.add(operateData);
@@ -699,6 +700,7 @@ public class AllMediaList {
             while (mOperateList.size() > 0) {
                 OperateData operateData = mOperateList.remove(0);
                 //1删除文件； 2收藏文件； 3取消收藏文件； 可查看OperateListener中的常量说明。
+                mCurrentprogress = 0;
                 switch (operateData.operateValue) {
                     case OperateListener.OPERATE_DELETE:
                         deleteMediaFiles(operateData.dataList, operateData, this);
@@ -719,249 +721,253 @@ public class AllMediaList {
                     default:
                         break;
                 }
+                mCurrentprogress = 100;
                 mLocalHandler.sendMessage(mLocalHandler.obtainMessage(ITEM_OPERATE_COMPLETED,
-                        100, OperateListener.OPERATE_SUCEESS, operateData));
+                        mCurrentprogress, OperateListener.OPERATE_SUCEESS, operateData));
             }
             isRunning = false;
             mLocalHandler.sendEmptyMessage(RELEASE_OPERATE_THREAD);
         }
-    }
-    
-    private void deleteMediaFiles(ArrayList<FileNode> list, OperateData operateData, Thread thread) {
-        DebugLog.a(TAG, "deleteMediaFiles", "Begin --> delte files && size:" + list.size());
-        int resultCode = OperateListener.OPERATE_SUCEESS;
-        int currentprogress = 0;
-        mMediaDbHelper.setStartFlag(true);
-        for (FileNode fileNode : list) {
-            if (thread.isInterrupted()) {
-                DebugLog.e(TAG, "Interrupte deleteMediaFiles break for!");
-                break;
-            }
-            File file = fileNode.getFile();
-            if (file.exists()) {
-                if (file.canWrite()) {
-                    if (file.delete()) {
-                        resultCode = OperateListener.OPERATE_SUCEESS;
+
+        private void deleteMediaFiles(ArrayList<FileNode> list, OperateData operateData, Thread thread) {
+            DebugLog.a(TAG, "deleteMediaFiles", "Begin --> delte files && size:" + list.size());
+            int resultCode = OperateListener.OPERATE_SUCEESS;
+            int fileIndex = 0;
+            mMediaDbHelper.setStartFlag(true);
+            for (FileNode fileNode : list) {
+                if (thread.isInterrupted()) {
+                    DebugLog.e(TAG, "Interrupte deleteMediaFiles break for!");
+                    break;
+                }
+                File file = fileNode.getFile();
+                if (file.exists()) {
+                    if (file.canWrite()) {
+                        if (file.delete()) {
+                            resultCode = OperateListener.OPERATE_SUCEESS;
+                        } else {
+                            resultCode = OperateListener.OPERATE_DELETE_ERROR;
+                            DebugLog.e(TAG, "deleteMediaFiles exception OPERATE_DELETE_ERROR： " + resultCode);
+                        }
                     } else {
-                        resultCode = OperateListener.OPERATE_DELETE_ERROR;
-                        DebugLog.e(TAG, "deleteMediaFiles exception OPERATE_DELETE_ERROR： " + resultCode);
+                        resultCode = OperateListener.OPERATE_DELETE_READ_ONLY;
+                        DebugLog.e(TAG, "deleteMediaFiles exception OPERATE_DELETE_READ_ONLY： " + resultCode);
                     }
                 } else {
-                    resultCode = OperateListener.OPERATE_DELETE_READ_ONLY;
-                    DebugLog.e(TAG, "deleteMediaFiles exception OPERATE_DELETE_READ_ONLY： " + resultCode);
+                    resultCode = OperateListener.OPERATE_DELETE_NOT_EXIST;
+                    DebugLog.e(TAG, "deleteMediaFiles exception OPERATE_DELETE_NOT_EXIST： " + resultCode);
                 }
-            } else {
-                resultCode = OperateListener.OPERATE_DELETE_NOT_EXIST;
-                DebugLog.e(TAG, "deleteMediaFiles exception OPERATE_DELETE_NOT_EXIST： " + resultCode);
+                if (resultCode == OperateListener.OPERATE_SUCEESS ||
+                        resultCode == OperateListener.OPERATE_DELETE_NOT_EXIST) {
+                    // 如果这条记录已经收藏，删除对应的收藏表的数据。
+                    if (fileNode.getCollect() == 1) {
+                        FileNode collectFileNode = new FileNode(fileNode);
+                        collectFileNode.setDeviceType(DeviceType.COLLECT);
+                        mMediaDbHelper.addToNeedToInsertList(new TransactionTask(collectFileNode, TransactionTask.DELETE_TASK));
+                    }
+                    // 删除媒体表中的数据。
+                    mMediaDbHelper.addToNeedToInsertList(new TransactionTask(fileNode, TransactionTask.DELETE_TASK));
+                    mLocalHandler.obtainMessage(DELETE_FILENODE_FROM_LIST, fileNode).sendToTarget();
+                }
+                mCurrentprogress = (fileIndex * 100) / list.size();
+                mLocalHandler.sendMessage(mLocalHandler.obtainMessage(NOTIFY_LIST_ITEM_PROGRESS,
+                        mCurrentprogress, resultCode, operateData));
+                fileIndex++;
             }
-            if (resultCode == OperateListener.OPERATE_SUCEESS ||
-                    resultCode == OperateListener.OPERATE_DELETE_NOT_EXIST) {
-                // 如果这条记录已经收藏，删除对应的收藏表的数据。
-                if (fileNode.getCollect() == 1) {
+            mMediaDbHelper.setStartFlag(false);
+            DebugLog.a(TAG, "deleteMediaFiles", "End --> delete files resultCode:" + resultCode);
+        }
+        
+        private void collectMediaFiles(ArrayList<FileNode> list, OperateData operateData) {
+            DebugLog.a(TAG, "collectMediaFiles", "Begin --> collect media files && size:" + list.size());
+            int resultCode = OperateListener.OPERATE_SUCEESS;
+            int fileIndex = 0;
+            mMediaDbHelper.setStartFlag(true);
+            for (FileNode fileNode : list) {
+                //modify bug 20315 begin 
+                if(fileNode.getCollect()==1){
+                    break;
+                }
+                //modify bug 20315 end
+                fileNode.setCollect(1);
+                fileNode.setCollectPath(fileNode.getFilePath());
+                mMediaDbHelper.addToNeedToInsertList(new TransactionTask(fileNode, TransactionTask.UPDATE_TASK)); // 先更新 对应的媒体表中的数据。
+                
+                FileNode collectFileNode = new FileNode(fileNode);
+                collectFileNode.setDeviceType(DeviceType.COLLECT); // 更新收藏对应的DeviceType
+                mMediaDbHelper.addToNeedToInsertList(new TransactionTask(collectFileNode, TransactionTask.INSERT_TASK)); // 后更新 到对应的收藏表中
+                fileIndex++;
+                mCurrentprogress = (fileIndex * 100) / list.size();
+                mLocalHandler.sendMessage(mLocalHandler.obtainMessage(NOTIFY_LIST_ITEM_PROGRESS,
+                        mCurrentprogress, resultCode, operateData));
+            }
+            mMediaDbHelper.setStartFlag(false);
+            DebugLog.a(TAG, "collectMediaFiles", "End --> collect media files resultCode:" + resultCode);
+        }
+        
+        private void unCollectMediaFiles(ArrayList<FileNode> list, OperateData operateData) {
+            DebugLog.a(TAG, "unCollectMediaFiles", "Begin --> uncollect media files && size:" + list.size());
+            int resultCode = OperateListener.OPERATE_SUCEESS;
+            int fileIndex = 0;
+            mMediaDbHelper.setStartFlag(true);
+            for (FileNode fileNode : list) {
+                if (!fileNode.isFromCollectTable()) { // 来自媒体表。
+                    fileNode.setUnCollect();
+                    mMediaDbHelper.addToNeedToInsertList(new TransactionTask(fileNode, TransactionTask.UPDATE_TASK));
+                    // 然后再删除收藏表中的数据
                     FileNode collectFileNode = new FileNode(fileNode);
                     collectFileNode.setDeviceType(DeviceType.COLLECT);
                     mMediaDbHelper.addToNeedToInsertList(new TransactionTask(collectFileNode, TransactionTask.DELETE_TASK));
+                } else { // 来自收藏表。
+                    mMediaDbHelper.addToNeedToInsertList(new TransactionTask(fileNode, TransactionTask.DELETE_TASK));
+                    FileNode srcFileNode = new FileNode(fileNode);
+                    srcFileNode.setUnCollect();
+                    srcFileNode.setDeviceType(MediaUtil.getDeviceType(fileNode.getFilePath()));
+                    mMediaDbHelper.addToNeedToInsertList(new TransactionTask(srcFileNode, TransactionTask.UPDATE_TASK));
                 }
-                // 删除媒体表中的数据。
-                mMediaDbHelper.addToNeedToInsertList(new TransactionTask(fileNode, TransactionTask.DELETE_TASK));
-                mLocalHandler.obtainMessage(DELETE_FILENODE_FROM_LIST, fileNode).sendToTarget();
+                
+                fileIndex++;
+                mCurrentprogress = (fileIndex * 100) / list.size();
+                mLocalHandler.sendMessage(mLocalHandler.obtainMessage(NOTIFY_LIST_ITEM_PROGRESS,
+                        mCurrentprogress, resultCode, operateData));
             }
-            
-            mLocalHandler.sendMessage(mLocalHandler.obtainMessage(NOTIFY_LIST_ITEM_PROGRESS,
-                    (currentprogress * 100) / list.size(), resultCode, operateData));
-            currentprogress++;
+            mMediaDbHelper.setStartFlag(false);
+            DebugLog.a(TAG, "unCollectMediaFiles", "End --> uncollect media files resultCode:" + resultCode);
         }
-        mMediaDbHelper.setStartFlag(false);
-        DebugLog.a(TAG, "deleteMediaFiles", "End --> delete files resultCode:" + resultCode);
-    }
-    
-    private void collectMediaFiles(ArrayList<FileNode> list, OperateData operateData) {
-        DebugLog.a(TAG, "collectMediaFiles", "Begin --> collect media files && size:" + list.size());
-        int resultCode = OperateListener.OPERATE_SUCEESS;
-        int currentprogress = 0;
-        mMediaDbHelper.setStartFlag(true);
-        for (FileNode fileNode : list) {
-          //modify bug 20315 begin 
-            if(fileNode.getCollect()==1){
-                break;
-            }
-          //modify bug 20315 end
-            fileNode.setCollect(1);
-            fileNode.setCollectPath(fileNode.getFilePath());
-            mMediaDbHelper.addToNeedToInsertList(new TransactionTask(fileNode, TransactionTask.UPDATE_TASK)); // 先更新 对应的媒体表中的数据。
-            
-            FileNode collectFileNode = new FileNode(fileNode);
-            collectFileNode.setDeviceType(DeviceType.COLLECT); // 更新收藏对应的DeviceType
-            mMediaDbHelper.addToNeedToInsertList(new TransactionTask(collectFileNode, TransactionTask.INSERT_TASK)); // 后更新 到对应的收藏表中
-            currentprogress++;
-            mLocalHandler.sendMessage(mLocalHandler.obtainMessage(NOTIFY_LIST_ITEM_PROGRESS,
-                    (currentprogress * 100) / list.size(), resultCode, operateData));
-        }
-        mMediaDbHelper.setStartFlag(false);
-        DebugLog.a(TAG, "collectMediaFiles", "End --> collect media files resultCode:" + resultCode);
-    }
-    
-    private void unCollectMediaFiles(ArrayList<FileNode> list, OperateData operateData) {
-        DebugLog.a(TAG, "unCollectMediaFiles", "Begin --> uncollect media files && size:" + list.size());
-        int resultCode = OperateListener.OPERATE_SUCEESS;
-        int currentprogress = 0;
-        mMediaDbHelper.setStartFlag(true);
-        for (FileNode fileNode : list) {
-            if (!fileNode.isFromCollectTable()) { // 来自媒体表。
-                fileNode.setUnCollect();
-                mMediaDbHelper.addToNeedToInsertList(new TransactionTask(fileNode, TransactionTask.UPDATE_TASK));
-                // 然后再删除收藏表中的数据
-                FileNode collectFileNode = new FileNode(fileNode);
-                collectFileNode.setDeviceType(DeviceType.COLLECT);
-                mMediaDbHelper.addToNeedToInsertList(new TransactionTask(collectFileNode, TransactionTask.DELETE_TASK));
-            } else { // 来自收藏表。
-                mMediaDbHelper.addToNeedToInsertList(new TransactionTask(fileNode, TransactionTask.DELETE_TASK));
-                FileNode srcFileNode = new FileNode(fileNode);
-                srcFileNode.setUnCollect();
-                srcFileNode.setDeviceType(MediaUtil.getDeviceType(fileNode.getFilePath()));
-                mMediaDbHelper.addToNeedToInsertList(new TransactionTask(srcFileNode, TransactionTask.UPDATE_TASK));
-            }
-            
-            currentprogress++;
-            mLocalHandler.sendMessage(mLocalHandler.obtainMessage(NOTIFY_LIST_ITEM_PROGRESS,
-                    (currentprogress * 100) / list.size(), resultCode, operateData));
-        }
-        mMediaDbHelper.setStartFlag(false);
-        DebugLog.a(TAG, "unCollectMediaFiles", "End --> uncollect media files resultCode:" + resultCode);
-    }
-    
-    private void copyToLocal(ArrayList<FileNode> list, OperateData operateData, Thread thread) {
-        DebugLog.a(TAG, "copyToLocal", "Begin --> copy media files && size:" + list.size());
-        int resultCode = OperateListener.OPERATE_SUCEESS;
-        int currentprogress = 0;
-        mMediaDbHelper.setStartFlag(true);
-        for (FileNode fileNode : list) {
-            if (thread.isInterrupted()) {
-                DebugLog.e(TAG, "Interrupte deleteMediaFiles break for!");
-                break;
-            }
-            String destFilePath = MediaUtil.LOCAL_COPY_DIR + "/" +
-                    fileNode.getFilePath().substring(fileNode.getFilePath().lastIndexOf('/') + 1);
-            if (MediaUtil.pasteFileByte(thread, fileNode.getFile(), new File(destFilePath),
-                    MediaUtil.LOCAL_COPY_DIR)) { // 文件拷贝成功。
-                mMediaDbHelper.addToNeedToInsertList(new TransactionTask(new FileNode(destFilePath),
-                        TransactionTask.DELETE_TASK));
-                mMediaDbHelper.addToNeedToInsertList(new TransactionTask(new FileNode(destFilePath),
-                        TransactionTask.INSERT_TASK)); // 后更新 到对应的收藏表中
-            } else { // 文件拷贝失败。
-                resultCode = OperateListener.OPERATE_COLLECT_COPY_FILE_FAILED;
-                DebugLog.e(TAG, "copyToLocal exception OPERATE_COLLECT_COPY_FILE_FAILED");
+
+        private void copyToLocal(ArrayList<FileNode> list, OperateData operateData, Thread thread) {
+            DebugLog.a(TAG, "copyToLocal", "Begin --> copy media files && size:" + list.size());
+            int resultCode = OperateListener.OPERATE_SUCEESS;
+            int fileIndex = 0;
+            mMediaDbHelper.setStartFlag(true);
+            for (FileNode fileNode : list) {
                 if (thread.isInterrupted()) {
-                    resultCode = OperateListener.OPERATE_SUCEESS;
-                    DebugLog.e(TAG, "Interrupte deleteMediaFiles resultCode: " + resultCode);
+                    DebugLog.e(TAG, "Interrupte deleteMediaFiles break for!");
+                    break;
                 }
-            }
-            currentprogress++;
-            mLocalHandler.sendMessage(mLocalHandler.obtainMessage(NOTIFY_LIST_ITEM_PROGRESS,
-                    (currentprogress * 100) / list.size(), resultCode, operateData));
-            if (resultCode != OperateListener.OPERATE_SUCEESS) {
-                break;
-            }
-        }
-        mMediaDbHelper.setStartFlag(false);
-        DebugLog.a(TAG, "copyToLocal", "End --> copy media files resultCode:" + resultCode);
-    }
-    
-    private void copyToLocalForFileSize(ArrayList<FileNode> list, OperateData operateData, Thread thread) {
-        DebugLog.a(TAG, "copyToLocalForFileSize", "Begin --> copy media files && size:" + list.size());
-        int resultCode = OperateListener.OPERATE_SUCEESS;
-        int currentprogress = 0;
-        mMediaDbHelper.setStartFlag(true);
-        long totalSize = 0;
-        long docopySize = 0;
-        for (FileNode fileNode : list) {
-            totalSize += fileNode.getFile().length();
-        }
-        for (FileNode fileNode : list) {
-            if (thread.isInterrupted()) {
-                DebugLog.e(TAG, "Interrupte copyToLocalForFileSize break for!");
-                break;
-            }
-            String destFilePath = MediaUtil.LOCAL_COPY_DIR + "/" + fileNode.getFileName();
-            boolean ret = true;
-            File file = new File(MediaUtil.LOCAL_COPY_DIR);
-            if (file != null && !file.exists()) {
-                if (!file.mkdirs()) {
-                    DebugLog.w("Yearlay", "mkdir collect path failed");
-                }
-            }
-            File srcfile = fileNode.getFile();
-            File tarFile = new File(destFilePath);
-            // 是文件,读取文件字节流,同时记录进度
-            InputStream inputStream = null;
-            OutputStream outputStream = null;
-            try {
-                inputStream = new FileInputStream(srcfile);// 读取源文件
-                outputStream = new FileOutputStream(tarFile);// 要写入的目标文件
-                System.gc();
-                byte[] buffer = new byte[(int) Math.pow(2, 20)];// 每次最大读取的长度，字节，2的10次方=1MB。
-                int length = -1;
-                while ((length = inputStream.read(buffer)) != -1 && !thread.isInterrupted()) {
-                    // 累计每次读取的大小
-                    outputStream.write(buffer, 0, length);
-                    docopySize += length;
-                    
-                    int progress = (int) (docopySize  * 100 / totalSize);
-                    if (progress != currentprogress && progress < 100) {
-                        currentprogress = progress;
-                        mLocalHandler.sendMessage(mLocalHandler.obtainMessage(NOTIFY_LIST_ITEM_PROGRESS,
-                                currentprogress, resultCode, operateData));
+                String destFilePath = MediaUtil.LOCAL_COPY_DIR + "/" +
+                        fileNode.getFilePath().substring(fileNode.getFilePath().lastIndexOf('/') + 1);
+                if (MediaUtil.pasteFileByte(thread, fileNode.getFile(), new File(destFilePath),
+                        MediaUtil.LOCAL_COPY_DIR)) { // 文件拷贝成功。
+                    mMediaDbHelper.addToNeedToInsertList(new TransactionTask(new FileNode(destFilePath),
+                            TransactionTask.DELETE_TASK));
+                    mMediaDbHelper.addToNeedToInsertList(new TransactionTask(new FileNode(destFilePath),
+                            TransactionTask.INSERT_TASK)); // 后更新 到对应的收藏表中
+                } else { // 文件拷贝失败。
+                    resultCode = OperateListener.OPERATE_COLLECT_COPY_FILE_FAILED;
+                    DebugLog.e(TAG, "copyToLocal exception OPERATE_COLLECT_COPY_FILE_FAILED");
+                    if (thread.isInterrupted()) {
+                        resultCode = OperateListener.OPERATE_SUCEESS;
+                        DebugLog.e(TAG, "Interrupte deleteMediaFiles resultCode: " + resultCode);
                     }
                 }
-            } catch (Exception e) {
-                try {
-                    if (outputStream != null) outputStream.close();
-                } catch (IOException ioe) {
-                    ioe.printStackTrace();
-                }
-                tarFile.delete();
-                e.printStackTrace();
-                ret = false;
-            } finally {
-                try {
-                    if (inputStream != null) inputStream.close();
-                    if (outputStream != null) outputStream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                fileIndex++;
+                mCurrentprogress = (fileIndex * 100) / list.size();
+                mLocalHandler.sendMessage(mLocalHandler.obtainMessage(NOTIFY_LIST_ITEM_PROGRESS,
+                        mCurrentprogress, resultCode, operateData));
+                if (resultCode != OperateListener.OPERATE_SUCEESS) {
+                    break;
                 }
             }
-            if (thread.isInterrupted()) {
-                DebugLog.e(TAG, "Interrupte copyToLocalForFileSize delete tarFile!");
-                try {
-                    if (outputStream != null) outputStream.close();
-                    tarFile.delete();
-                } catch (IOException ioe) {
-                    ioe.printStackTrace();
-                }
-                ret = false;
-            }
-            if (ret) { // 文件拷贝成功。
-                mMediaDbHelper.addToNeedToInsertList(new TransactionTask(new FileNode(destFilePath),
-                        TransactionTask.DELETE_TASK));
-                mMediaDbHelper.addToNeedToInsertList(new TransactionTask(new FileNode(destFilePath),
-                        TransactionTask.INSERT_TASK)); // 后更新 到对应的收藏表中
-            } else { // 文件拷贝失败。
-                resultCode = OperateListener.OPERATE_COLLECT_COPY_FILE_FAILED;
-                DebugLog.e(TAG, "copyToLocalForFileSize exception OPERATE_COLLECT_COPY_FILE_FAILED");
-                if (thread.isInterrupted()) {
-                    resultCode = OperateListener.OPERATE_SUCEESS;
-                    DebugLog.e(TAG, "Interrupte copyToLocalForFileSize resultCode:" + resultCode);
-                }
-            }
-            if (resultCode != OperateListener.OPERATE_SUCEESS) {
-                break;
-            }
+            mMediaDbHelper.setStartFlag(false);
+            DebugLog.a(TAG, "copyToLocal", "End --> copy media files resultCode:" + resultCode);
         }
-        currentprogress = 100;
-        mLocalHandler.sendMessage(mLocalHandler.obtainMessage(NOTIFY_LIST_ITEM_PROGRESS,
-                currentprogress, resultCode, operateData));
-        mMediaDbHelper.setStartFlag(false);
-        DebugLog.a(TAG, "copyToLocalForFileSize", "End --> copy media files resultCode:" + resultCode);
+        
+        private void copyToLocalForFileSize(ArrayList<FileNode> list, OperateData operateData, Thread thread) {
+            DebugLog.a(TAG, "copyToLocalForFileSize", "Begin --> copy media files && size:" + list.size());
+            int resultCode = OperateListener.OPERATE_SUCEESS;
+            mCurrentprogress = 0;
+            mMediaDbHelper.setStartFlag(true);
+            long totalSize = 0;
+            long docopySize = 0;
+            for (FileNode fileNode : list) {
+                totalSize += fileNode.getFile().length();
+            }
+            for (FileNode fileNode : list) {
+                if (thread.isInterrupted()) {
+                    DebugLog.e(TAG, "Interrupte copyToLocalForFileSize break for!");
+                    break;
+                }
+                String destFilePath = MediaUtil.LOCAL_COPY_DIR + "/" + fileNode.getFileName();
+                boolean ret = true;
+                File file = new File(MediaUtil.LOCAL_COPY_DIR);
+                if (file != null && !file.exists()) {
+                    if (!file.mkdirs()) {
+                        DebugLog.w("Yearlay", "mkdir collect path failed");
+                    }
+                }
+                File srcfile = fileNode.getFile();
+                File tarFile = new File(destFilePath);
+                // 是文件,读取文件字节流,同时记录进度
+                InputStream inputStream = null;
+                OutputStream outputStream = null;
+                try {
+                    inputStream = new FileInputStream(srcfile);// 读取源文件
+                    outputStream = new FileOutputStream(tarFile);// 要写入的目标文件
+                    System.gc();
+                    byte[] buffer = new byte[(int) Math.pow(2, 20)];// 每次最大读取的长度，字节，2的10次方=1MB。
+                    int length = -1;
+                    while ((length = inputStream.read(buffer)) != -1 && !thread.isInterrupted()) {
+                        // 累计每次读取的大小
+                        outputStream.write(buffer, 0, length);
+                        docopySize += length;
+                        
+                        int progress = (int) (docopySize  * 100 / totalSize);
+                        if (progress != mCurrentprogress && progress < 100) {
+                            mCurrentprogress = progress;
+                            mLocalHandler.sendMessage(mLocalHandler.obtainMessage(NOTIFY_LIST_ITEM_PROGRESS,
+                                    mCurrentprogress, resultCode, operateData));
+                        }
+                    }
+                } catch (Exception e) {
+                    try {
+                        if (outputStream != null) outputStream.close();
+                    } catch (IOException ioe) {
+                        ioe.printStackTrace();
+                    }
+                    tarFile.delete();
+                    e.printStackTrace();
+                    ret = false;
+                } finally {
+                    try {
+                        if (inputStream != null) inputStream.close();
+                        if (outputStream != null) outputStream.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (thread.isInterrupted()) {
+                    DebugLog.e(TAG, "Interrupte copyToLocalForFileSize delete tarFile!");
+                    try {
+                        if (outputStream != null) outputStream.close();
+                        tarFile.delete();
+                    } catch (IOException ioe) {
+                        ioe.printStackTrace();
+                    }
+                    ret = false;
+                }
+                if (ret) { // 文件拷贝成功。
+                    mMediaDbHelper.addToNeedToInsertList(new TransactionTask(new FileNode(destFilePath),
+                            TransactionTask.DELETE_TASK));
+                    mMediaDbHelper.addToNeedToInsertList(new TransactionTask(new FileNode(destFilePath),
+                            TransactionTask.INSERT_TASK)); // 后更新 到对应的收藏表中
+                } else { // 文件拷贝失败。
+                    resultCode = OperateListener.OPERATE_COLLECT_COPY_FILE_FAILED;
+                    DebugLog.e(TAG, "copyToLocalForFileSize exception OPERATE_COLLECT_COPY_FILE_FAILED");
+                    if (thread.isInterrupted()) {
+                        resultCode = OperateListener.OPERATE_SUCEESS;
+                        DebugLog.e(TAG, "Interrupte copyToLocalForFileSize resultCode:" + resultCode);
+                    }
+                }
+                if (resultCode != OperateListener.OPERATE_SUCEESS) {
+                    break;
+                }
+            }
+            mCurrentprogress = 100;
+            mLocalHandler.sendMessage(mLocalHandler.obtainMessage(NOTIFY_LIST_ITEM_PROGRESS,
+                    mCurrentprogress, resultCode, operateData));
+            mMediaDbHelper.setStartFlag(false);
+            DebugLog.a(TAG, "copyToLocalForFileSize", "End --> copy media files resultCode:" + resultCode);
+        }
     }
     
     public static void notifyAllLabelChange(Context context, int res) {
