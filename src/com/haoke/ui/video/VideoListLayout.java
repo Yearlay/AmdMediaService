@@ -281,7 +281,7 @@ public class VideoListLayout extends RelativeLayout implements
                 
                 @Override
                 public void OnDialogDismiss() {
-                    AllMediaList.instance(mContext).stopOperateThread();
+                    stopFileOperate();
                     mVideoAdapter.notifyDataSetChanged();
                 }
             });
@@ -518,7 +518,7 @@ public class VideoListLayout extends RelativeLayout implements
 
     @Override
     public void onDismiss(DialogInterface dialog) {
-        AllMediaList.instance(mContext).stopOperateThread();
+        stopFileOperate();
     }
 
     @Override
@@ -526,9 +526,13 @@ public class VideoListLayout extends RelativeLayout implements
         if (mCopyDialog != null) {
             mCopyDialog.interruptCheckOperator();
         }
-        AllMediaList.instance(mContext).stopOperateThread();
+        stopFileOperate();
         if (mActivityHandler != null) {
             mActivityHandler.sendEmptyMessage(Video_Activity_Main.CANCEL_EDIT);
         }
+    }
+    
+    private void stopFileOperate() {
+        AllMediaList.instance(mContext).stopOperateThread();
     }
 }

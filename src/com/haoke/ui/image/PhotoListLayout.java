@@ -291,7 +291,7 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
                 }
                 @Override
                 public void OnDialogDismiss() {
-                    AllMediaList.instance(mContext).stopOperateThread();
+                    stopFileOperate();
                     mPhotoAdapter.notifyDataSetChanged();
                 }
             });
@@ -515,7 +515,7 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
 
     @Override
     public void onDismiss(DialogInterface dialog) {
-        AllMediaList.instance(mContext).stopOperateThread();
+        stopFileOperate();
     }
 
     @Override
@@ -523,9 +523,13 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
         if (mCopyDialog != null) {
             mCopyDialog.interruptCheckOperator();
         }
-        AllMediaList.instance(mContext).stopOperateThread();
+        stopFileOperate();
         if (mActivityHandler != null) {
             mActivityHandler.sendEmptyMessage(Image_Activity_Main.CANCEL_EDIT);
         }
+    }
+    
+    private void stopFileOperate() {
+        AllMediaList.instance(mContext).stopOperateThread();
     }
 }

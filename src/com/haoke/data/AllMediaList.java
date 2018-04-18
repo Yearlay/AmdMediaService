@@ -734,6 +734,7 @@ public class AllMediaList {
         mMediaDbHelper.setStartFlag(true);
         for (FileNode fileNode : list) {
             if (thread.isInterrupted()) {
+                DebugLog.e(TAG, "Interrupte deleteMediaFiles break for!");
                 break;
             }
             File file = fileNode.getFile();
@@ -836,6 +837,7 @@ public class AllMediaList {
         mMediaDbHelper.setStartFlag(true);
         for (FileNode fileNode : list) {
             if (thread.isInterrupted()) {
+                DebugLog.e(TAG, "Interrupte deleteMediaFiles break for!");
                 break;
             }
             String destFilePath = MediaUtil.LOCAL_COPY_DIR + "/" +
@@ -851,6 +853,7 @@ public class AllMediaList {
                 DebugLog.e(TAG, "copyToLocal exception OPERATE_COLLECT_COPY_FILE_FAILED");
                 if (thread.isInterrupted()) {
                     resultCode = OperateListener.OPERATE_SUCEESS;
+                    DebugLog.e(TAG, "Interrupte deleteMediaFiles resultCode: " + resultCode);
                 }
             }
             currentprogress++;
@@ -876,6 +879,7 @@ public class AllMediaList {
         }
         for (FileNode fileNode : list) {
             if (thread.isInterrupted()) {
+                DebugLog.e(TAG, "Interrupte copyToLocalForFileSize break for!");
                 break;
             }
             String destFilePath = MediaUtil.LOCAL_COPY_DIR + "/" + fileNode.getFileName();
@@ -927,6 +931,7 @@ public class AllMediaList {
                 }
             }
             if (thread.isInterrupted()) {
+                DebugLog.e(TAG, "Interrupte copyToLocalForFileSize delete tarFile!");
                 try {
                     if (outputStream != null) outputStream.close();
                     tarFile.delete();
@@ -945,6 +950,7 @@ public class AllMediaList {
                 DebugLog.e(TAG, "copyToLocalForFileSize exception OPERATE_COLLECT_COPY_FILE_FAILED");
                 if (thread.isInterrupted()) {
                     resultCode = OperateListener.OPERATE_SUCEESS;
+                    DebugLog.e(TAG, "Interrupte copyToLocalForFileSize resultCode:" + resultCode);
                 }
             }
             if (resultCode != OperateListener.OPERATE_SUCEESS) {

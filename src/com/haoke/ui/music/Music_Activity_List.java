@@ -638,7 +638,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
                 }
                 @Override
                 public void OnDialogDismiss() {
-                    AllMediaList.instance(Music_Activity_List.this).stopOperateThread();
+                    stopFileOperate();
                     notifyDataSetChanged();
                 }
             });
@@ -869,7 +869,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
 
     @Override
     public void onDismiss(DialogInterface dialog) {
-        AllMediaList.instance(this).stopOperateThread();
+        stopFileOperate();
     }
     
     private SkinListener mSkinListener = new SkinListener(new Handler()) {
@@ -890,7 +890,11 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         if (mCopyDialog != null) {
             mCopyDialog.interruptCheckOperator();
         }
-        AllMediaList.instance(this).stopOperateThread();
+        stopFileOperate();
         exitEditMode();
+    }
+    
+    private void stopFileOperate() {
+        AllMediaList.instance(getApplicationContext()).stopOperateThread();
     }
 }
