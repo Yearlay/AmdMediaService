@@ -242,10 +242,7 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
                     }
                 }
                 @Override
-                public void OnDialogDismiss() {
-                    AllMediaList.instance(mContext).stopOperateThread();
-                    mPhotoAdapter.notifyDataSetChanged();
-                }
+                public void OnDialogDismiss() {}
             });
         } else {
             mErrorDialog.ShowDialog(mContext, DIALOG_TYPE.ONE_BTN, R.string.image_delete_empty);

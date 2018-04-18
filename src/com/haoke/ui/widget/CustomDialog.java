@@ -164,7 +164,6 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 	}
 	
 	public void showProgressDialog(Context context, int titleID, OnDismissListener listener) {
-	    CloseDialog();
 		mContext = context;
 		mDialog = new MyDialog(context, R.style.pub_dialog);
 		//mDialog.setContentObserver(mContentObserver);

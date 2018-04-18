@@ -232,10 +232,7 @@ public class VideoListLayout extends RelativeLayout implements
                     }
                 }
                 @Override
-                public void OnDialogDismiss() {
-                    AllMediaList.instance(mContext).stopOperateThread();
-                    mVideoAdapter.notifyDataSetChanged();
-                }
+                public void OnDialogDismiss() {}
             });
         } else {
             mErrorDialog.ShowDialog(mContext, DIALOG_TYPE.ONE_BTN, R.string.video_delete_empty);

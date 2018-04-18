@@ -576,10 +576,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
                     }
                 }
                 @Override
-                public void OnDialogDismiss() {
-                    AllMediaList.instance(Music_Activity_List.this).stopOperateThread();
-                    notifyDataSetChanged();
-                }
+                public void OnDialogDismiss() {}
             });
         } else {
             mErrorDialog.ShowDialog(this, DIALOG_TYPE.ONE_BTN, R.string.music_delect_empty);
