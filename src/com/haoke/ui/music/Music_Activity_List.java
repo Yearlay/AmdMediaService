@@ -704,6 +704,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     private Handler mShowHandler = new Handler();
     
     private void showEmptyList(boolean postFlag) {
+        postFlag = false;
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
