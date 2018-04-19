@@ -487,24 +487,6 @@ public class MediaUtil {
         return false;
     }
     
-    /**
-     * 检查挂载的所有的设备是否扫描完成。
-     * @param context
-     * @return true表示全部扫描完成，false表示有Mount的设备没有扫描。
-     */
-    public static boolean checkAllStorageScanOver(Context context) {
-        boolean retFlag = true;
-        for (int deviceType : DBConfig.sScan3zaDefaultList) {
-            if (MediaUtil.checkMounted(context, MediaUtil.getDevicePath(deviceType))) { // 系统检查是否Mounted上了。
-                if (AllMediaList.instance(context).getStoragBean(deviceType).isScanIdle()) { // AllMediaList检查是否已经扫描。
-                    retFlag = false;
-                    break;
-                }
-            }
-        }
-        return retFlag;
-    }
-    
     public static boolean pasteFileByte(Thread thread, File srcfile, File tarFile, String checkDir) {
         boolean ret = true;
         checkCollectDir(checkDir);

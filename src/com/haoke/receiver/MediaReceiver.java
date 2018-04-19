@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 
 public class MediaReceiver extends BroadcastReceiver {
+    private static final String TAG = "MediaReceiver";
     public static boolean isDynamicFlag = false;
     
     private static String getDataPath(Intent intent) {
@@ -34,20 +35,20 @@ public class MediaReceiver extends BroadcastReceiver {
     
     @Override
     public void onReceive(Context context, Intent intent) {
-        DebugLog.i("Yearlay", "onReceive isDynamicFlag : " + isDynamicFlag + "; action="+intent.getAction());
+        DebugLog.i(TAG, "onReceive isDynamicFlag : " + isDynamicFlag + "; action="+intent.getAction());
         if (!isDynamicFlag) {
             onReceiveEx(context, intent);
         }
     }
     
-    private static boolean sUsb1Mounted = true;
-    private static boolean sUsb2Mounted = true;
+    public static boolean sUsb1Mounted = true;
+    public static boolean sUsb2Mounted = true;
     public static void onReceiveEx(Context context, Intent intent) {
         String action = intent.getAction();
-        DebugLog.i("Yearlay", "onReceiveEx isDynamicFlag : " + isDynamicFlag);
+        DebugLog.i(TAG, "onReceiveEx isDynamicFlag : " + isDynamicFlag);
         String devicePath = getDataPath(intent);
         if (action.equals(Intent.ACTION_MEDIA_MOUNTED)) {
-            DebugLog.d("Yearlay", "MediaReceiver Intent.ACTION_MEDIA_MOUNTED: " + devicePath);
+            DebugLog.d(TAG, "MediaReceiver Intent.ACTION_MEDIA_MOUNTED: " + devicePath);
             if (MediaUtil.DEVICE_PATH_USB_1.equals(devicePath)) {
                 sUsb1Mounted = true;
             } else if (MediaUtil.DEVICE_PATH_USB_2.equals(devicePath)) {
@@ -55,28 +56,21 @@ public class MediaReceiver extends BroadcastReceiver {
             }
             startFileService(context, ScanType.SCAN_STORAGE, devicePath);
         } else if (action.equals(Intent.ACTION_MEDIA_EJECT) || action.equals(Intent.ACTION_MEDIA_UNMOUNTED)) {
-            DebugLog.d("Yearlay", "MediaReceiver Intent.ACTION_MEDIA_EJECT or ACTION_MEDIA_UNMOUNTED: " + devicePath);
-            boolean isUsb1 = false;
-            boolean isUsb2 = false;
+            DebugLog.d(TAG, "MediaReceiver Eject or Unmounted: " + devicePath);
             if (MediaUtil.DEVICE_PATH_USB_1.equals(devicePath)) {
-                isUsb1 = true;
                 UsbAutoPlay.resetUsbAutoPlay(true, false);
                 if (!sUsb1Mounted) {
                     return;
                 }
+                sUsb1Mounted = false;
             } else if (MediaUtil.DEVICE_PATH_USB_2.equals(devicePath)) {
-                isUsb2 = true;
                 UsbAutoPlay.resetUsbAutoPlay(false, true);
                 if (!sUsb2Mounted) {
                     return;
                 }
-            }
-            startFileService(context, ScanType.REMOVE_STORAGE, devicePath);
-            if (isUsb1) {
-                sUsb1Mounted = false;
-            } else if (isUsb2) {
                 sUsb2Mounted = false;
             }
+            startFileService(context, ScanType.REMOVE_STORAGE, devicePath);
         }
     }
     

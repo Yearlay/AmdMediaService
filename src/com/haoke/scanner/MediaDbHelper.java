@@ -417,9 +417,7 @@ public class MediaDbHelper extends SQLiteOpenHelper {
         }
         if (mediaList != null) {
             for (int deviceType : mediaList) {
-                String devicePath = MediaUtil.getDevicePath(deviceType);
-                if (MediaUtil.checkMounted(mContext, devicePath) &&
-                        AllMediaList.instance(getContext()).getStoragBean(deviceType).isMounted()) {
+                if (AllMediaList.instance(getContext()).getStoragBean(deviceType).isMounted()) {
                     ArrayList<FileNode> list = queryMedia(deviceType, fileType, null, null);
                     searchList.addAll(FileNode.matchOperator(list, searchStr));
                 }
