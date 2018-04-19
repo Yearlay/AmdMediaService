@@ -474,8 +474,8 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
             case MediaFunc.PREPARED:
                 needToSend = mMediaIF.getMediaState() == MediaState.PREPARED;
                 break;
-            case MediaFunc.ERROR://104
-            case MediaFunc.PLAY_OVER:
+            //case MediaFunc.ERROR://104
+            //case MediaFunc.PLAY_OVER:
             case MediaFunc.PLAY_STATE:
                 needToSend = mMediaIF.getPlayState() == PlayState.PLAY;
                 break;
