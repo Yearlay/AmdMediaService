@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface.OnCancelListener;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Message;
@@ -34,6 +35,7 @@ public class CopyDialog implements OnClickListener {
     
     private LinearLayout mCoverLayout; // 拷贝覆盖layout
     private ListView mCoverList;
+    private CheckAdapter mCheckAdapter;
     private Button mOkButton;
     private Button mCancelButton;
     
@@ -43,6 +45,7 @@ public class CopyDialog implements OnClickListener {
     private Drawable mRootViewDrawable;
     private Drawable mOkButtonDrawable;
     private Drawable mCancelButtonDrawable;
+    private ColorStateList mTextColorStateList;
     
     private ArrayList<FileNode> mCopyDataList = new ArrayList<>();
     private ArrayList<FileNode> mCoverDataList = new ArrayList<>();
@@ -199,10 +202,10 @@ public class CopyDialog implements OnClickListener {
     
     private void checkResult() {
         mCopyState = CHECK_RESULT;
-        CheckAdapter checkAdapter = new CheckAdapter();
-        mCoverList.setAdapter(checkAdapter);
-        DebugLog.v(TAG, "checkResult --> checkAdapter.getCount() = "+ checkAdapter.getCount());
-        if (checkAdapter.getCount() > 0) {
+        mCheckAdapter = new CheckAdapter();
+        mCoverList.setAdapter(mCheckAdapter);
+        DebugLog.v(TAG, "checkResult --> checkAdapter.getCount() = "+ mCheckAdapter.getCount());
+        if (mCheckAdapter.getCount() > 0) {
             mHandler.sendEmptyMessage(COVER_SHOW);
         } else {
             if (mDialogListener != null) {
@@ -272,6 +275,7 @@ public class CopyDialog implements OnClickListener {
                 mRootViewDrawable = skinManager.getDrawable(R.drawable.pub_msgbox_bg1);
                 mOkButtonDrawable = skinManager.getDrawable(R.drawable.bd_dialog_button);
                 mCancelButtonDrawable = skinManager.getDrawable(R.drawable.bd_dialog_button);
+                mTextColorStateList = skinManager.getColorStateList(R.drawable.text_color_selector);
             }
             if (!loading) {
                 if (mRootView != null) {
@@ -283,14 +287,8 @@ public class CopyDialog implements OnClickListener {
                 if (mCancelButton != null) {
                     mCancelButton.setBackgroundDrawable(mCancelButtonDrawable);
                 }
-                if (mCoverList != null && mCoverList.getChildCount() > 0) {
-                    for (int index = 0; index < mCoverList.getChildCount(); index++) {
-                        View view = mCoverList.getChildAt(index);
-                        if (view instanceof AmdCheckBox) {
-                            AmdCheckBox amdCheckBox = ((AmdCheckBox) view);
-                            amdCheckBox.setChecked(amdCheckBox.isChecked());
-                        }
-                    }
+                if (mCheckAdapter != null) {
+                    mCheckAdapter.notifyDataSetChanged();
                 }
             }
         }
@@ -360,6 +358,7 @@ public class CopyDialog implements OnClickListener {
             } else {
                 amdCheckBox = new AmdCheckBox(mContext);
             }
+            amdCheckBox.setTextColor(mTextColorStateList);
             final FileNode fileNode = mCoverDataList.get(position);
             amdCheckBox.setFileNode(fileNode);
             return amdCheckBox;

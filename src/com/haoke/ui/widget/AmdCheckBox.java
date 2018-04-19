@@ -5,6 +5,7 @@ import com.haoke.bean.FileNode;
 import com.haoke.mediaservice.R;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -59,5 +60,9 @@ public class AmdCheckBox extends RelativeLayout implements View.OnClickListener 
         mFileNode = fileNode;
         mCheckBoxTextView.setText(mFileNode.getFileName());
         setChecked(mFileNode.isSelected());
+    }
+    
+    public void setTextColor(ColorStateList colors) {
+        mCheckBoxTextView.setTextColor(colors);
     }
 }
