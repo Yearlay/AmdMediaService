@@ -19,6 +19,7 @@ import com.haoke.bean.UserBean;
 import com.haoke.bean.UserInfoBean;
 import com.haoke.constant.MediaUtil;
 import com.haoke.data.AllMediaList;
+import com.haoke.receiver.MediaReceiver;
 import com.haoke.util.DebugLog;
 import com.haoke.util.GsonUtil;
 
@@ -472,7 +473,34 @@ public class MediaUtil {
      * @param storagePath 磁盘路径
      * @return
      */
-    public static boolean checkMounted(Context context, String storagePath) {
+    public static boolean checkMounted(Context context, String storagePath, boolean fixFlag) {
+        boolean isMounted = intentCheckMounted(storagePath);
+        boolean isFileCheck = fileCheckMounted(storagePath);
+        // 下面，我们将Check上面两个检查方法的准确性。
+        if (isFileCheck != isMounted) {
+            DebugLog.e("MediaUtil", "Error checkMounted, isFileCheck: " + isFileCheck + " && isFileCheck: " + isFileCheck);
+            if (isFileCheck) { // 那么isMounted为false。
+                // 只有在磁盘拔出，Eject消息已经到来。那么应该以isMounted为准。
+                isFileCheck = isMounted;
+                DebugLog.e("MediaUtil", "We will believe the intent of Eject!");
+            } else { // 那么isMounted为true。
+                // 只有在磁盘已经挂载，但是Mounted的intent消息还没有到来的时候发生。那么应该以isFileCheck为准。
+                isMounted = isFileCheck;
+                DebugLog.e("MediaUtil", "We will believe the method of fileCheckMounted!");
+            }
+            if (fixFlag) {
+                DebugLog.e("MediaUtil", "We will fix the error storagePath: " + storagePath);
+                MediaReceiver.startFileService(context, 
+                        isMounted ? ScanType.SCAN_STORAGE : ScanType.REMOVE_STORAGE, storagePath);
+            }
+        }
+        return isMounted;
+    }
+    
+    /**
+     *  此方法不可靠：U盘拔出一段时间之后，可能返回true;
+     */
+    public static boolean fileCheckMounted(String storagePath) {
         if (storagePath == null) {
             return false;
         }
@@ -482,6 +510,22 @@ public class MediaUtil {
         File file = new File(storagePath);
         if (file.exists() && file.isDirectory() && file.canRead()
                 && file.canExecute()) {
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     *  此方法不可靠：有可能Intent事件丢失，或者Intent到来的延时较大。
+     *  但是此方法比{@link fileCheckMounted}可靠一些。
+     */
+    
+    public static boolean intentCheckMounted(String storagePath) {
+        if (storagePath.equals(DEVICE_PATH_USB_1)) {
+            return MediaReceiver.sUsb1Mounted;
+        } else if (storagePath.equals(DEVICE_PATH_USB_2)) {
+            return MediaReceiver.sUsb2Mounted;
+        } else if (storagePath.startsWith(DEVICE_PATH_FLASH)) {
             return true;
         }
         return false;

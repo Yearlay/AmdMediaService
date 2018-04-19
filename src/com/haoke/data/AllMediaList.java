@@ -1047,20 +1047,7 @@ public class AllMediaList {
     
     public static void launcherTocheckAllStorageScanState(Context context) {
         for (int deviceType : DBConfig.sScan3zaDefaultList) {
-            // 检测状态是否匹配。
-            String devicePath = MediaUtil.getDevicePath(deviceType);
-            boolean isMountedOfFileCheck = MediaUtil.checkMounted(context, devicePath);
-            boolean isMountedOfScanState = AllMediaList.instance(context).getStoragBean(devicePath).isMounted();
-            if (isMountedOfFileCheck != isMountedOfScanState) {
-                DebugLog.e(TAG, "Error check, checkMounted isMountedOfFileCheck: " + isMountedOfFileCheck);
-                DebugLog.e(TAG, "Error check, isMounted isMountedOfScanState: " + isMountedOfScanState);
-                if (devicePath.endsWith(MediaUtil.DEVICE_PATH_USB_1)) {
-                    DebugLog.e(TAG, "Error check, MediaReceiver sUsb1Mounted:" + MediaReceiver.sUsb1Mounted);
-                } else if (devicePath.endsWith(MediaUtil.DEVICE_PATH_USB_2)) {
-                    DebugLog.e(TAG, "Error check, MediaReceiver sUsb2Mounted:" + MediaReceiver.sUsb2Mounted);
-                }
-                MediaReceiver.startFileService(context, ScanType.REMOVE_STORAGE, devicePath);
-            }
+            MediaUtil.checkMounted(context, MediaUtil.getDevicePath(deviceType), true);
         }
     }
 }

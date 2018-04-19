@@ -46,7 +46,7 @@ public class MediaScanner {
     public void beginScanningAllStorage() {
         for (int deviceType : DBConfig.sScan3zaDefaultList) {
             String devicePath = MediaUtil.getDevicePath(deviceType);
-            if (MediaUtil.checkMounted(mContext, devicePath)) { // 系统检查是否Mounted上了。
+            if (MediaUtil.checkMounted(mContext, devicePath, false)) { // 系统检查是否Mounted上了。
                 if (AllMediaList.instance(mContext).getStoragBean(deviceType).isScanIdle()) { // AllMediaList检查是否已经扫描。
                     DebugLog.d(TAG, "Begin scaning deviceType : " + deviceType);
                     AllMediaList.instance(mContext).updateStorageBean(devicePath, StorageBean.MOUNTED);
