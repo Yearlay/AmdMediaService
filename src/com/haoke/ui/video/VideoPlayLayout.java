@@ -120,22 +120,27 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
         DebugLog.i(TAG, "setUnsupportViewShow showFlag: " + showFlag);
         if (mUnsupportView != null) {
             mUnsupportView.setVisibility(showFlag ? View.VISIBLE : View.GONE);
-        }
-        if (mFileNode != null) {
-            String devicePath = mFileNode.getDevicePath();
-            File file = new File(devicePath);
-            File[] listFiles = file.listFiles();
-            if (listFiles.length == 0) {
-                // 提示磁盘拔出
-                mUnsupportView.setText(R.string.disks_pull_out);
-            } else if (!mFileNode.getFile().exists()) {
-                // 提示文件已删除
-                mUnsupportView.setText(R.string.Video_file_delete);
-            } else {
-                mUnsupportView.setText(R.string.media_play_nosupport);
+            if (mFileNode != null) {
+                if (mFileNode.isFromCollectTable()) {
+                    mUnsupportView.setText(R.string.media_play_nosupport);
+                } else {
+                    String devicePath = mFileNode.isFromCollectTable() ? 
+                            MediaUtil.getDevicePath(mFileNode.getFromDeviceType()) :
+                            mFileNode.getDevicePath();
+                    boolean isMouned = MediaUtil.checkMounted(mContext, devicePath, false);
+                    if (!isMouned) { // 磁盘不在挂载的状态。
+                        DebugLog.e(TAG, "setUnsupportViewShow Error --> no storage: " + devicePath);
+                        mUnsupportView.setText(R.string.disks_pull_out);
+                    } else if (!mFileNode.getFile().exists()) { // 提示文件已删除
+                        DebugLog.e(TAG, "setUnsupportViewShow Error --> no file: " + mFileNode.getFilePath());
+                        mUnsupportView.setText(R.string.Video_file_delete);
+                    } else {
+                        mUnsupportView.setText(R.string.media_play_nosupport);
+                    }
+                }
             }
         }
-        if (!showFlag) {
+        if (!showFlag && mVideoController != null) {
             if (mNextPlay) {
                 mVideoController.playNext();
             } else {
