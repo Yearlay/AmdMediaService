@@ -84,6 +84,7 @@ public class MediaScanner {
     public void removeStorage(String devicePath) {
         DebugLog.i(TAG, "MediaScanner#removeStorage devicePath: " + devicePath);
         AllMediaList.instance(mContext).updateStorageBean(devicePath, StorageBean.EJECT);
+        MediaDbHelper.instance(mContext).notifyCollectChange();
         if (mScannerListner != null) {
             mScannerListner.scanPath(ScanState.REMOVE_STORAGE, MediaUtil.getDeviceType(devicePath));
         }
