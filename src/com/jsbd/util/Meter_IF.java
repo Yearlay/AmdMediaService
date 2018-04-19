@@ -57,7 +57,7 @@ public class Meter_IF {
 	 */
 	public static void sendRadioInfo(int band, int freq){
 	    boolean isRadioSource = Source.isRadioSource();
-		DebugLog.d(TAG, "sendRadioInfo: band="+band+"; freq="+freq+"; isRadioSource="+isRadioSource);
+		DebugLog.e(TAG, "sendRadioInfo: band="+band+"; freq="+freq+"; isRadioSource="+isRadioSource);
 		if (!isRadioSource) {
 		    return;
 		}
@@ -94,7 +94,7 @@ public class Meter_IF {
 	public static void sendMusicInfo(String musicNmae, String musicSinger, String musicAlbum){
 		try {
 		    int source = Media_IF.getCurSource();
-			DebugLog.d(TAG, "sendMusicInfo: musicNmae="+musicNmae+"; musicSinger="+musicSinger+"; musicAlbum="+musicAlbum+"; source="+source);
+			DebugLog.e(TAG, "sendMusicInfo: musicNmae="+musicNmae+"; musicSinger="+musicSinger+"; musicAlbum="+musicAlbum+"; source="+source);
 			if(musicNmae==null){
 				musicNmae="";
 			}

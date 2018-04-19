@@ -774,7 +774,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
                 boolean play = mIF.play(position);
                 if (!play) {
                     DebugLog.e(TAG, "onItemClick position="+position+" play error!");
-                    return;
+                    //return;
                 }
             }
             Intent musicIntent = new Intent();
