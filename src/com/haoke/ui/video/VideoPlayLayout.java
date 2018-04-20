@@ -239,6 +239,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
             @Override
             public boolean onError(MediaPlayer arg0, int arg1, int arg2) {
                 DebugLog.e(TAG, "play onError");
+                mVideoController.getVideoView().setVideoURI(null);
                 showUnsupportView();
                 if (mFileNode != null && mTitleTextView != null) {
                     mTitleTextView.setText(mFileNode.getFileName());
