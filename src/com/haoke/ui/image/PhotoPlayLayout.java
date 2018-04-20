@@ -507,7 +507,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
                         mActivityHandler.sendEmptyMessage(Image_Activity_Main.SWITCH_TO_LIST_FRAGMENT);
                     }
             	}
-                if (mPreFlag) {
+                if (mPreFlag && mPlayState != PlayState.PLAY) {
                     preImage();
                 } else {
                     nextImage();
