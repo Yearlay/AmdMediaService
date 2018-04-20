@@ -115,32 +115,39 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
             mHandler.sendEmptyMessageDelayed(HIDE_CTRL, DELAY_TIME);
         }
     }
-
-    public void setUnsupportViewShow(boolean showFlag) {
-        DebugLog.i(TAG, "setUnsupportViewShow showFlag: " + showFlag);
-        if (mUnsupportView != null) {
-            mUnsupportView.setVisibility(showFlag ? View.VISIBLE : View.GONE);
-            if (mFileNode != null) {
-                if (mFileNode.isFromCollectTable()) {
-                    mUnsupportView.setText(R.string.media_play_nosupport);
+    
+    public void showUnsupportView() {
+        if (mUnsupportView == null) {
+            return;
+        }
+        mUnsupportView.setVisibility(View.VISIBLE);
+        if (mFileNode != null) {
+            if (mFileNode.isFromCollectTable()) {
+                mUnsupportView.setText(R.string.media_play_nosupport);
+            } else {
+                String devicePath = mFileNode.isFromCollectTable() ? 
+                        MediaUtil.getDevicePath(mFileNode.getFromDeviceType()) :
+                        mFileNode.getDevicePath();
+                boolean isMouned = MediaUtil.checkMounted(mContext, devicePath, false);
+                if (!isMouned) { // 磁盘不在挂载的状态。
+                    DebugLog.e(TAG, "setUnsupportViewShow Error --> no storage: " + devicePath);
+                    mUnsupportView.setText(R.string.disks_pull_out);
+                } else if (!mFileNode.getFile().exists()) { // 提示文件已删除
+                    DebugLog.e(TAG, "setUnsupportViewShow Error --> no file: " + mFileNode.getFilePath());
+                    mUnsupportView.setText(R.string.Video_file_delete);
                 } else {
-                    String devicePath = mFileNode.isFromCollectTable() ? 
-                            MediaUtil.getDevicePath(mFileNode.getFromDeviceType()) :
-                            mFileNode.getDevicePath();
-                    boolean isMouned = MediaUtil.checkMounted(mContext, devicePath, false);
-                    if (!isMouned) { // 磁盘不在挂载的状态。
-                        DebugLog.e(TAG, "setUnsupportViewShow Error --> no storage: " + devicePath);
-                        mUnsupportView.setText(R.string.disks_pull_out);
-                    } else if (!mFileNode.getFile().exists()) { // 提示文件已删除
-                        DebugLog.e(TAG, "setUnsupportViewShow Error --> no file: " + mFileNode.getFilePath());
-                        mUnsupportView.setText(R.string.Video_file_delete);
-                    } else {
-                        mUnsupportView.setText(R.string.media_play_nosupport);
-                    }
+                    mUnsupportView.setText(R.string.media_play_nosupport);
                 }
             }
         }
-        if (!showFlag && mVideoController != null) {
+    }
+    
+    public void hideUnsupportView(boolean notPlayNext) {
+        if (mUnsupportView == null) {
+            return;
+        }
+        mUnsupportView.setVisibility(View.GONE);
+        if (mVideoController != null && !notPlayNext) {
             if (mNextPlay) {
                 mVideoController.playNext();
             } else {
@@ -232,7 +239,11 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
             @Override
             public boolean onError(MediaPlayer arg0, int arg1, int arg2) {
                 DebugLog.e(TAG, "play onError");
-                setUnsupportViewShow(true);
+                showUnsupportView();
+                if (mFileNode != null && mTitleTextView != null) {
+                    mTitleTextView.setText(mFileNode.getFileName());
+                }
+                updateCollectView();
                 mActivityHandler.removeMessages(Video_Activity_Main.HIDE_UNSUPPORT_VIEW);
                 mActivityHandler.sendEmptyMessageDelayed(Video_Activity_Main.HIDE_UNSUPPORT_VIEW, 1000);
                 mLoading.setVisibility(View.GONE);

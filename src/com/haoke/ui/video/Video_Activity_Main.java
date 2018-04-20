@@ -50,7 +50,7 @@ import com.haoke.window.HKWindowManager;
 
 public class Video_Activity_Main extends Activity implements OnClickListener, LoadListener, OnCheckedChangeListener, Media_CarListener {
 
-	private final String TAG = "luke";
+	private final String TAG = "Video_Activity_Main";
 	private int mLayoutProps = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
 	private VideoListLayout mListLayout;
 	private VideoPlayLayout mPlayLayout;
@@ -610,15 +610,15 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 				break;
 			case HIDE_UNSUPPORT_VIEW:
 				mErrorCount++;
-				DebugLog.d(TAG, "HIDE_UNSUPPORT_VIEW mErrorCount: " + mErrorCount);
+				boolean notPlayNext = (mErrorCount >= 5 || mVideoList.size() <= 1);
+				DebugLog.d(TAG, "HIDE_UNSUPPORT_VIEW mErrorCount: " + mErrorCount + " && notPlayNext: " + notPlayNext);
 				if (mPlayLayout != null) {
-					mPlayLayout.setUnsupportViewShow(false);
+					mPlayLayout.hideUnsupportView(notPlayNext);
 				}
-				if (mErrorCount >= 5) {
+				if (notPlayNext) {
 					mErrorCount = 0;
 					onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
 				}
-				// mPlayLayout.updateVideoLayout(true);
 				break;
 			case DISMISS_COPY_DIALOG:
 				if (mListLayout.isEditMode()) {
