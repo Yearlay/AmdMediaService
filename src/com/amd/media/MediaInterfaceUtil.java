@@ -199,6 +199,20 @@ public class MediaInterfaceUtil {
     }
     
     /**
+     * 启动收音界面。
+     */
+    public static void launchRadioActivity(Context context, boolean autoPlay) {
+        Intent intent = new Intent();
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setClassName("com.haoke.mediaservice", "com.haoke.ui.media.Media_Activity_Main");
+        intent.putExtra("Mode_To_Music", "radio_intent");
+        if (autoPlay) {
+            intent.putExtra("autoPlay", true);
+        }
+        context.startActivity(intent);
+    }
+    
+    /**
      * 启动音乐播放界面。
      */
     public static void launchMusicPlayActivity(Context context) {
@@ -206,6 +220,20 @@ public class MediaInterfaceUtil {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setClassName("com.haoke.mediaservice", "com.haoke.ui.media.Media_Activity_Main");
         intent.putExtra("Mode_To_Music", "music_play_intent");
+        context.startActivity(intent);
+    }
+    
+    /**
+     * 启动蓝牙音乐播放界面。
+     */
+    public static void launchBtMusicPlayActivity(Context context, boolean autoPlay) {
+        Intent intent = new Intent();
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setClassName("com.haoke.mediaservice", "com.haoke.ui.media.Media_Activity_Main");
+        intent.putExtra("Mode_To_Music", "btMusic_intent");
+        if (autoPlay) {
+            intent.putExtra("autoPlay", true);
+        }
         context.startActivity(intent);
     }
     
@@ -222,7 +250,7 @@ public class MediaInterfaceUtil {
     }
     
     /**
-     * 启动相关界面。
+     * 启动相关界面。注意：按back键会回到桌面。
      * @param mode为相关模式，autoPlay为自动播放
      */
     public static void launchSourceActivity(int mode, boolean autoPlay) {

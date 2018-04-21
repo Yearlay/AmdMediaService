@@ -95,6 +95,10 @@ public class VRInterfaceUtil {
         MediaInterfaceUtil.launchMusicPlayActivity(MediaApplication.getInstance());
     }
     
+    private void launchBtMusicPlayActivity(boolean autoPlay) {
+        MediaInterfaceUtil.launchBtMusicPlayActivity(MediaApplication.getInstance(), autoPlay);
+    }
+    
     private void sendBroadcast(Intent intent) {
         MediaApplication.getInstance().sendBroadcast(intent);
     }
@@ -103,8 +107,8 @@ public class VRInterfaceUtil {
         MediaApplication.getInstance().startActivity(intent);
     }
     
-    private void launchSourceActivity(int mode, boolean autoPlay) {
-        MediaInterfaceUtil.launchSourceActivity(mode, autoPlay);
+    private void launchRadioActivity(boolean autoPlay) {
+        MediaInterfaceUtil.launchRadioActivity(MediaApplication.getInstance(), autoPlay);
     }
 
     private void vrAppOperate(Intent intent) {
@@ -204,7 +208,7 @@ public class VRInterfaceUtil {
         }
         // 蓝牙音乐，播放蓝牙音乐，进入蓝牙音乐界面。
         if (yesOperate) {
-            launchSourceActivity(ModeSwitch.MUSIC_BT_MODE, true);
+            launchBtMusicPlayActivity(true);
         } else {
             if (mBTIF.music_isPlaying()) {
                 mBTIF.music_pause();
@@ -217,7 +221,7 @@ public class VRInterfaceUtil {
     private void operateRadio(boolean yesOperate) {
         // 收音机，播放电台，进入收音机播放界面。
         if (yesOperate) {
-            launchSourceActivity(ModeSwitch.RADIO_MODE, true);
+            launchRadioActivity(true);
         } else {
             if (mRadioIF.isEnable()) {
                 mRadioIF.setEnable(false);
@@ -520,7 +524,7 @@ public class VRInterfaceUtil {
         mRadioIF.setCurBand();
         mRadioIF.setCurFreq(Radio_IF.sfreqToInt(sfreq));
         mRadioIF.setEnable(true);
-        launchSourceActivity(ModeSwitch.RADIO_MODE, true);
+        launchRadioActivity(true);
     }
     
     private void commandPlayAMStationRadio(String sfreq) {
