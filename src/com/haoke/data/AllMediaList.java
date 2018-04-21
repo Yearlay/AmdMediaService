@@ -74,6 +74,10 @@ public class AllMediaList {
         }
         return sAllMediaList;
     }
+    
+    public static AllMediaList instance() {
+        return instance(MediaApplication.getInstance());
+    }
 
     private AllMediaList(Context context) {
         mContext = context;

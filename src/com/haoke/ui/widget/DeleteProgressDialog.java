@@ -17,7 +17,6 @@ import android.widget.TextView;
 
 public class DeleteProgressDialog implements OnDismissListener, OnCancelListener {
     private static final String TAG = "DeleteProgressDialog";
-    private Context mContext;
     private View mRootView;
     private TextView mTextView;
     private TextView mTitleTextView;
@@ -26,7 +25,6 @@ public class DeleteProgressDialog implements OnDismissListener, OnCancelListener
     private MyDialog mDialog;
     
     public void showProgressDialog(Context context, int titleID) {
-        mContext = context;
         mDialog = new MyDialog(context, R.style.pub_dialog);
         mDialog.setSkinListener(mSkinListener);
         mDialog.setCanceledOnTouchOutside(true);
@@ -54,12 +52,12 @@ public class DeleteProgressDialog implements OnDismissListener, OnCancelListener
     
     @Override
     public void onDismiss(DialogInterface dialog) {
-        AllMediaList.instance(mContext).stopOperateThread();
+        AllMediaList.instance().stopOperateThread();
     }
 
     @Override
     public void onCancel(DialogInterface dialog) {
-        AllMediaList.instance(mContext).stopOperateThread();
+        AllMediaList.instance().stopOperateThread();
     }
     
     public void closeDialog() {
@@ -69,15 +67,13 @@ public class DeleteProgressDialog implements OnDismissListener, OnCancelListener
     }
     
     private void refreshSkin(boolean loading) {
-        if (mContext != null) {
-            SkinManager skinManager = SkinManager.instance(mContext);
-            if (loading || mRootViewDrawable==null) {
-                mRootViewDrawable = skinManager.getDrawable(R.drawable.pub_msgbox_bg1);
-            }
-            if (!loading) {
-                if (mRootView != null) {
-                    mRootView.setBackgroundDrawable(mRootViewDrawable);
-                }
+        SkinManager skinManager = SkinManager.instance();
+        if (loading || mRootViewDrawable==null) {
+            mRootViewDrawable = skinManager.getDrawable(R.drawable.pub_msgbox_bg1);
+        }
+        if (!loading) {
+            if (mRootView != null) {
+                mRootView.setBackgroundDrawable(mRootViewDrawable);
             }
         }
     }
