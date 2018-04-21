@@ -212,6 +212,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 		if (mPlayLayout.getVisibility() == View.VISIBLE) {
 			mPlayLayout.checkPlayFileNode(mVideoList);
 		}
+		DebugLog.i(TAG, "updateDevice deviceType: " + deviceType + " && video size: " + mVideoList.size());
 	}
 
 	@Override
@@ -457,6 +458,9 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 					}
 				}
 			}
+		}
+		if (storageBean.getState() == StorageBean.EJECT && mPlayLayout.getVisibility() == View.VISIBLE) {
+		    mPlayLayout.checkRemoveStorageEvent(storageBean);
 		}
 	}
 

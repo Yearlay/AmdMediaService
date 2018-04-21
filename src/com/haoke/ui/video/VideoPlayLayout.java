@@ -34,6 +34,7 @@ import com.amd.media.MediaInterfaceUtil;
 import com.amd.util.AmdConfig;
 import com.amd.util.SkinManager;
 import com.haoke.bean.FileNode;
+import com.haoke.bean.StorageBean;
 import com.haoke.constant.MediaUtil;
 import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.FileType;
@@ -923,5 +924,15 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
         setFileNode(mFileNode);
         mVideoController.playDefaultVideo(true);
         return mFileNode;
+    }
+    
+    public void checkRemoveStorageEvent(StorageBean storageBean) {
+        if (mVideoView != null && mVideoView.getVisibility() == View.VISIBLE && mFileNode != null) {
+            int checkDeviceType = mFileNode.isFromCollectTable() ? mFileNode.getFromDeviceType() : mFileNode.getDeviceType();
+            if (checkDeviceType == storageBean.getDeviceType()) {
+                mVideoView.setVideoURI(null);
+                goVideoList();
+            }
+        }
     }
 }

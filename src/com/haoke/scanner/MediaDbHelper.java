@@ -329,12 +329,13 @@ public class MediaDbHelper extends SQLiteOpenHelper {
     }
     
     public ArrayList<FileNode> query(String tableName, String selection, String[] selectionArgs, boolean allFlag) {
+        AllMediaList allMediaList = AllMediaList.instance(mContext);
         ArrayList<FileNode> fileNodeList = new ArrayList<FileNode>();
         int deviceType = DBConfig.getDeviceType(tableName);
         Cursor cursor = null;
         try {
             cursor = getReadableDatabase().query(tableName, null, selection, selectionArgs, null, null, null);
-            StorageBean storageBean = AllMediaList.instance(mContext).getStoragBean(deviceType);
+            StorageBean storageBean = allMediaList.getStoragBean(deviceType);
             if (cursor != null && cursor.moveToFirst()) {
                 do {
                     FileNode fileNode = new FileNode(cursor);
@@ -344,9 +345,10 @@ public class MediaDbHelper extends SQLiteOpenHelper {
                     if (allFlag) {
                         fileNodeList.add(fileNode);
                     } else {
-                        if (fileNode.getFile().exists()) {
+                        if (storageBean.isMounted() && fileNode.getFile().exists()) {
                             if (deviceType == DeviceType.COLLECT) { // 如果是收藏表中的数据。还需要判断磁盘是否挂载。
-                                if (storageBean.isMounted()) {
+                                StorageBean fromStorageBean = allMediaList.getStoragBean(fileNode.getFromDeviceType());
+                                if (fromStorageBean.isMounted()) {
                                     fileNodeList.add(fileNode);
                                 }
                             } else {
