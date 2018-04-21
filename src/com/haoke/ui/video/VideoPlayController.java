@@ -179,7 +179,7 @@ public class VideoPlayController implements AudioFocusListener {
 	}
 
 	private void onDataChanged(int mode, int func, int data0, int data1) {
-		DebugLog.v(TAG, "onDataChanged mode=" + mode + ", func=" + func + ", data0=" + data0 + ", data1=" + data1);
+		DebugLog.d(TAG, "onDataChanged mode=" + mode + ", func=" + func + ", data0=" + data0 + ", data1=" + data1);
 		dispatchDataToClients(mode, func, data0, data1);
 	}
 
@@ -452,19 +452,19 @@ public class VideoPlayController implements AudioFocusListener {
 		DebugClock debugClock = new DebugClock();
 		mVideView.setVideoPath(path); // 主要的耗时操作
 		debugClock.calculateTime(TAG, "mVideView setVideoPath");
-		DebugLog.v("luke", "Play done ,waiting OnPrepare " + " ,----Time: " + node.getPlayTime() + "  ,filesize: " + node.getFile().length());
+		DebugLog.d("luke", "Play done ,waiting OnPrepare " + " ,----Time: " + node.getPlayTime() + "  ,filesize: " + node.getFile().length());
 		setCurSource(node.getDeviceType());
 		return true;
 	}
 
 	public boolean play(int index) {
-		DebugLog.v(TAG, "play Video index=" + index);
+		DebugLog.d(TAG, "play Video index=" + index);
 		setPlayingData(mDeviceType, mFileType, true);
 		return playOther(null, index, false);
 	}
 
 	public boolean play(String filePath) {
-		DebugLog.v(TAG, "play Video filePath: " + filePath);
+		DebugLog.d(TAG, "play Video filePath: " + filePath);
 		int deviceType = MediaUtil.getDeviceType(filePath);
 		int fileType = MediaUtil.getMediaType(filePath);
 		if (deviceType == DeviceType.USB1 || deviceType == DeviceType.USB2 || deviceType == DeviceType.FLASH || deviceType == DeviceType.COLLECT) {
@@ -481,7 +481,7 @@ public class VideoPlayController implements AudioFocusListener {
 	}
 
 	public boolean play(FileNode fileNode) {
-		DebugLog.v("luke", "play Video fileNode=" + fileNode);
+		DebugLog.d("luke", "play Video fileNode=" + fileNode);
 		int deviceType = fileNode.getDeviceType();
 		int fileType = fileNode.getFileType();
 		if (deviceType == DeviceType.USB1 || deviceType == DeviceType.USB2 || deviceType == DeviceType.FLASH || deviceType == DeviceType.COLLECT) {
@@ -522,7 +522,7 @@ public class VideoPlayController implements AudioFocusListener {
 		int pos = 0;
 		pos = mCurPlayVideoIndex;
 		pos--;
-		DebugLog.v(TAG, "pre pos:" + pos + ", total:" + mPlayingListSize);
+		DebugLog.d(TAG, "pre pos:" + pos + ", total:" + mPlayingListSize);
 		if (pos < 0) {
 			pos = mPlayingListSize - 1;
 		}
@@ -535,7 +535,7 @@ public class VideoPlayController implements AudioFocusListener {
 		int pos = 0;
 		pos = mCurPlayVideoIndex;
 		pos++;
-		DebugLog.v(TAG, "next pos:" + pos + ", total:" + mPlayingListSize);
+		DebugLog.d(TAG, "next pos:" + pos + ", total:" + mPlayingListSize);
 		if (pos > mPlayingListSize - 1) {
 			pos = 0;
 		}
@@ -776,7 +776,7 @@ public class VideoPlayController implements AudioFocusListener {
 	public void audioFocusChanged(int state) {
 		// TODO Auto-generated method stub
 		int playState = getPlayState();
-		DebugLog.v("luke", "audioFocusChanged state=" + state + "; playState=" + playState + "; mPlayStateBeforeLoseFocus=" + mPlayStateBeforeLoseFocus);
+		DebugLog.d("luke", "audioFocusChanged state=" + state + "; playState=" + playState + "; mPlayStateBeforeLoseFocus=" + mPlayStateBeforeLoseFocus);
 		switch (state) {
 		case PlayState.PLAY: // 获得焦点
 			if (mPlayStateBeforeLoseFocus == PlayState.PLAY) {
@@ -788,10 +788,16 @@ public class VideoPlayController implements AudioFocusListener {
 			videoLayout.registerMediaButtonReceiver();
 			break;
 		case PlayState.PAUSE: // 失去短焦点
+		    mPlayStateBeforeLoseFocus = playState;
+            videoLayout.setBeforePlaystate(playStateTransformation(mPlayStateBeforeLoseFocus));
+            DebugLog.d("luke", "audioFocusChanged setBeforePlaystate " + videoLayout.getBeforePlaystate());
+            playOrPause(false);
+            videoLayout.unRegisterMediaButtonReceiver();
+            break;
 		case PlayState.STOP:  // 失去长焦点
-			mPlayStateBeforeLoseFocus = playState;
-			videoLayout.setBeforePlaystate(playStateTransformation(mPlayStateBeforeLoseFocus));
-			DebugLog.v("luke", "audioFocusChanged setBeforePlaystate " + videoLayout.getBeforePlaystate());
+		    mPlayStateBeforeLoseFocus = PlayState.STOP;
+		    videoLayout.setBeforePlaystate(playStateTransformation(mPlayStateBeforeLoseFocus));
+			DebugLog.d("luke", "audioFocusChanged setBeforePlaystate " + videoLayout.getBeforePlaystate());
 			playOrPause(false);
 			videoLayout.unRegisterMediaButtonReceiver();
 			break;
