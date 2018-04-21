@@ -67,10 +67,11 @@ public class ImageLoad {
         .build();
     }
     
-    public void loadBitmap(final ImageView imageView, Drawable defaultDrawable, final FileNode fileNode) {
+    public boolean loadBitmap(final ImageView imageView, Drawable defaultDrawable, final FileNode fileNode) {
+        boolean retFlag = false;
         if (AmdConfig.IMAGELOADER_OFF) {
             imageView.setImageDrawable(defaultDrawable);
-            return;
+            return retFlag;
         }
         if (fileNode.getFileType() == FileType.IMAGE) {
             if (fileNode.getFile().length() > MAX_SIZE) {
@@ -78,6 +79,7 @@ public class ImageLoad {
             } else {
                 ImageLoader.getInstance().displayImage("file://" + fileNode.getFilePath(),
                         imageView, getOptions(defaultDrawable), null);
+                retFlag = true;
             }
         } else {
             if (fileNode.getThumbnailPath() == null) {
@@ -85,8 +87,10 @@ public class ImageLoad {
             } else {
                 ImageLoader.getInstance().displayImage("file://" + fileNode.getThumbnailPath(),
                         imageView, getOptions(defaultDrawable), null);
+                retFlag = true;
             }
         }
+        return retFlag;
     }
     
     public void loadImageBitmap(final ImageView imageView, Drawable defaultDrawable,

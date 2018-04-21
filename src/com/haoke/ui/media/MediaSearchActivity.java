@@ -8,14 +8,12 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -43,7 +41,6 @@ import com.amd.util.SkinManager;
 import com.amd.util.SkinManager.SkinListener;
 import com.amd.util.Source;
 import com.haoke.bean.FileNode;
-import com.haoke.bean.ID3Parse;
 import com.haoke.bean.ImageLoad;
 import com.haoke.bean.StorageBean;
 import com.haoke.constant.MediaUtil.DeviceType;
@@ -285,16 +282,7 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
         finish();
     }
     
-    class SearchAdapter extends BaseAdapter implements ID3Parse.ID3ParseListener {
-        class ViewHolder {
-            ImageView mItemBgView;
-            TextView mDeviceTypeView;
-            ImageView mIconView;
-            TextView mTitleView;
-            TextView mArtistView;
-            TextView mDateView;
-        }
-        
+    class SearchAdapter extends BaseAdapter {
         ArrayList<FileNode> mResultStationList = new ArrayList<FileNode>();
 
         @Override
@@ -315,41 +303,32 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
         @Override
         public View getView(int position, View convertView, ViewGroup parentGroup) {
             DebugLog.d(TAG, "getView position="+position+"; convertView="+convertView);
-            ViewHolder holder = null;
-            if (convertView == null) {
-                holder = new ViewHolder();
-                convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.music_search_listview_item, null);
-                holder.mItemBgView = (ImageView) convertView.findViewById(R.id.search_item_bg);
-                holder.mDeviceTypeView = (TextView) convertView.findViewById(R.id.music_item_device_type);
-                holder.mIconView = (ImageView) convertView.findViewById(R.id.music_item_icon);
-                holder.mTitleView = (TextView) convertView.findViewById(R.id.music_listitem_title);
-                holder.mArtistView = (TextView) convertView.findViewById(R.id.music_item_text);
-                holder.mDateView = (TextView) convertView.findViewById(R.id.music_item_date);
-                convertView.setTag(holder);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
-            }
+            convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.music_search_listview_item, null);
+            ImageView itemBgView = (ImageView) convertView.findViewById(R.id.search_item_bg);
+            TextView deviceTypeView = (TextView) convertView.findViewById(R.id.music_item_device_type);
+            ImageView iconView = (ImageView) convertView.findViewById(R.id.music_item_icon);
+            TextView titleView = (TextView) convertView.findViewById(R.id.music_listitem_title);
+            TextView artistView = (TextView) convertView.findViewById(R.id.music_item_text);
+            TextView dateView = (TextView) convertView.findViewById(R.id.music_item_date);
             
-            holder.mDeviceTypeView.setBackgroundColor(skinManager.getColor(R.color.hk_custom_text_p));
-            //modify bug 21038 begin
-            holder.mItemBgView.setBackgroundDrawable(skinManager.getDrawable(R.drawable.music_list_item_selector));
-            //modify bug 21038 end
+            deviceTypeView.setBackgroundColor(skinManager.getColor(R.color.hk_custom_text_p));
+            itemBgView.setBackgroundDrawable(skinManager.getDrawable(R.drawable.music_list_item_selector));
             
             FileNode fileNode = mResultStationList.get(position);
             // 显示数据来自哪个存储。
             int deviceType = fileNode.getDeviceType();
             if (deviceType == DeviceType.USB1) {
-                holder.mDeviceTypeView.setText(R.string.media_usb1_tab);
+                deviceTypeView.setText(R.string.media_usb1_tab);
             } else if (deviceType == DeviceType.USB2) {
-                holder.mDeviceTypeView.setText(R.string.media_usb2_tab);
+                deviceTypeView.setText(R.string.media_usb2_tab);
             } else if (deviceType == DeviceType.FLASH) {
-                holder.mDeviceTypeView.setText(R.string.media_flash_tab);
+                deviceTypeView.setText(R.string.media_flash_tab);
             } else {
-                holder.mDeviceTypeView.setText(R.string.media_collect_tab);
+                deviceTypeView.setText(R.string.media_collect_tab);
             }
             // 显示title或者文件名
             String title = fileNode.getTitleEx();
-            holder.mTitleView.setText(title);
+            titleView.setText(title);
             // 显示艺术家和专辑名称
             if (mFileType == FileType.AUDIO || mFileType == FileType.VIDEO) {
                 String artist = fileNode.getArtist();
@@ -360,69 +339,28 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
                 if (album == null) {
                     album = unknown;
                 }
-                
-                holder.mArtistView.setText(artist + " - " + album);
+                artistView.setText(artist + " - " + album);
             } else if (mFileType == FileType.IMAGE) {
-                holder.mArtistView.setVisibility(View.GONE);
+                artistView.setVisibility(View.GONE);
             }
             // 显示文件的时间。
-            holder.mDateView.setText(fileNode.getLastDate());
+            dateView.setText(fileNode.getLastDate());
             
-            // 设置图片的显示效果。
-            Bitmap thumb = null;
-            if (fileNode.getFileType() == FileType.AUDIO) {
-                holder.mIconView.setImageResource(R.drawable.media_list_item_music);
-                if (fileNode.getParseId3() == 1) {
-                    ImageLoad.instance(MediaSearchActivity.this).loadBitmap(holder.mIconView,
-                            skinManager.getDrawable(R.drawable.media_list_item_music), fileNode);
-                    //modify bug 20221 begin
-                } else {
-                    ID3Parse.instance().parseID3(position, fileNode, this);
-                    //modify bug 20221 end
+            // 设置图片的显示效果。 禁止去做ID3的解析，解析的动作不应该由MediaSearchActivity来发起。
+            int defaultIcon = fileNode.getFileType() == FileType.AUDIO ?
+                    R.drawable.media_list_item_music : R.drawable.image_icon_default;
+            iconView.setImageDrawable(skinManager.getDrawable(defaultIcon));
+            if (fileNode.getParseId3() == 1) {
+                boolean ret = ImageLoad.instance(MediaSearchActivity.this).loadBitmap(iconView,
+                        skinManager.getDrawable(defaultIcon), fileNode);
+                if (fileNode.getFileType() != FileType.IMAGE && ret) {
+                    DebugLog.d(TAG, "getView mIconView: " + fileNode.getThumbnailPath());
                 }
-            } else if (fileNode.getFileType() == FileType.VIDEO) {
-                holder.mIconView.setImageDrawable(skinManager.getDrawable(R.drawable.image_icon_default));
-                if (fileNode.getParseId3() == 1) {
-                    ImageLoad.instance(MediaSearchActivity.this).loadBitmap(holder.mIconView,
-                            skinManager.getDrawable(R.drawable.image_icon_default), fileNode);
-                }
-            } else if (fileNode.getFileType() == FileType.IMAGE) {
-                holder.mIconView.setImageDrawable(skinManager.getDrawable(R.drawable.image_icon_default));
-                ImageLoad.instance(getApplicationContext()).loadBitmap(holder.mIconView,
-                        skinManager.getDrawable(R.drawable.image_icon_default), fileNode);
+            } else {
+                DebugLog.e(TAG, "getView fileNode.getParseId3: " + fileNode.getParseId3());
             }
+            
             return convertView;
-        }
-
-        @Override
-        public void onID3ParseComplete(Object object, FileNode fileNode) {
-            int position = (Integer) object;
-            int firstVisiblePosition = mResultListView.getFirstVisiblePosition(); //屏幕内当前可以看见的第一条数据
-            if(position-firstVisiblePosition>=0){
-                //1.获取当前点击的条目的view
-                View itemView = mResultListView.getChildAt(position - firstVisiblePosition);
-                //2.查找出相应的控件
-                ViewHolder holder = (itemView == null) ? null : (ViewHolder) itemView.getTag();
-                //3.更新ui
-                if (holder != null && fileNode.getParseId3() == 1) {
-                    ImageLoad.instance(MediaSearchActivity.this).loadBitmap(holder.mIconView,
-                            skinManager.getDrawable(fileNode.getFileType() == FileType.AUDIO ? 
-                                    R.drawable.media_list_item_music : R.drawable.image_icon_default),
-                                    fileNode);
-                    if (mFileType == FileType.AUDIO || mFileType == FileType.VIDEO) {
-                        String artist = fileNode.getArtist();
-                        String album = fileNode.getAlbum();
-                        if (artist == null) {
-                            artist = unknown;
-                        }
-                        if (album == null) {
-                            album = unknown;
-                        }
-                        holder.mArtistView.setText(artist + " - " + album);
-                        holder.mTitleView.setText(fileNode.getTitleEx());
-                    }
-                }
-            }
         }
     }
 
