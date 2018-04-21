@@ -46,6 +46,7 @@ import com.haoke.ui.widget.CopyDialog;
 import com.haoke.ui.widget.CustomDialog;
 import com.haoke.ui.widget.CustomDialog.DIALOG_TYPE;
 import com.haoke.ui.widget.CustomDialog.OnDialogListener;
+import com.haoke.ui.widget.DeleteProgressDialog;
 import com.haoke.util.DebugLog;
 import com.haoke.util.Media_IF;
 import com.haoke.util.Media_Listener;
@@ -59,7 +60,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     private Media_IF mIF;
     
     private CustomDialog mErrorDialog;
-    private CustomDialog mDeleteDialog;
+    private DeleteProgressDialog mDeleteDialog;
     private CustomDialog mDialog;
     private int mDeviceType = DeviceType.NULL;
     
@@ -278,6 +279,9 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         }
         if (mCopyDialog != null) {
             mCopyDialog.closeCopyDialog();
+        }
+        if (mDeleteDialog != null) {
+            mDeleteDialog.closeDialog();
         }
         SkinManager.unregisterSkin(mSkinListener);
         //getContentResolver().unregisterContentObserver(mContentObserver);
@@ -542,18 +546,20 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     
     private void updateDeleteState(int data, int data2) {
         if (mDeleteDialog == null) {
-            mDeleteDialog = new CustomDialog();
+            mDeleteDialog = new DeleteProgressDialog();
         }
         if (data == DeleteState.DELETING) {
             if (data2 == -1) {
-                mDeleteDialog.ShowDialog(this, DIALOG_TYPE.NONE_BTN, R.string.music_delect_wait);
+                mDeleteDialog.showProgressDialog(this, R.string.music_delect_wait);
             } else if (data2 == 100) {
-                mDeleteDialog.CloseDialog();
+                mDeleteDialog.closeDialog();
+            } else {
+                mDeleteDialog.updateProgressValue(data2);
             }
         } else if (data == DeleteState.SUCCESS) {
             mListTab.updateBtndate(false);
         } else if (data == DeleteState.FAIL) {
-            new CustomDialog().ShowDialog(getApplicationContext(), DIALOG_TYPE.NONE_BTN,
+            new CustomDialog().ShowDialog(this, DIALOG_TYPE.NONE_BTN,
                     R.string.music_delect_error);
         }
     }
