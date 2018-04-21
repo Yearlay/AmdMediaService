@@ -295,6 +295,10 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
         }
     }
     
+    public boolean getActResumed() {
+        return mActResume;
+    }
+    
     public void setCurPlayViewState() {
         boolean isRadioFragment = mViewPager.getCurrentItem() == VIEWPAGER_ID_RADIO;
         boolean isAudioMusicPlayFragment = mHomeFragment.isAudioPlayFragment();

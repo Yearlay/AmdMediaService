@@ -301,6 +301,13 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 	}
 	
 	private void onError() {
+	    if (mContext != null && mContext instanceof com.haoke.ui.media.Media_Activity_Main) {
+            boolean resumed = ((com.haoke.ui.media.Media_Activity_Main)mContext).getActResumed();
+            if (!resumed) {
+                DebugLog.e(TAG, "onError but activity is not resumed! return!");
+                return;
+            }
+        }
 	    //modify bug 21124 begin
 	    mErrorCount++;
 	    //modify bug 21124 end
