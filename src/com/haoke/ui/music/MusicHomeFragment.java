@@ -16,7 +16,6 @@ import com.haoke.btjar.main.BTDef.BTFunc;
 import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.MediaFunc;
 import com.haoke.constant.MediaUtil.MediaState;
-import com.haoke.constant.MediaUtil.OperateState;
 import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.mediaservice.R;
 import com.haoke.ui.media.Media_Activity_Main;
@@ -180,6 +179,14 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 	public void replaceBtMusicFragment() {
 		changeShowLayout(ShowLayout.BT_PLAY_LAYOUT);
 	}
+	
+	public void checkErrorDialog() {
+	    if (Media_IF.getInstance().getMediaState() != MediaState.ERROR) {
+	        if (mDialog != null) {
+	            mDialog.CloseDialog();
+	        }
+	    }
+	}
 
 	@Override public void setCurInterface(int data) {}
 	@Override
@@ -301,13 +308,13 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 	}
 	
 	private void onError() {
-	    if (mContext != null && mContext instanceof com.haoke.ui.media.Media_Activity_Main) {
-            boolean resumed = ((com.haoke.ui.media.Media_Activity_Main)mContext).getActResumed();
-            if (!resumed) {
-                DebugLog.e(TAG, "onError but activity is not resumed! return!");
-                return;
-            }
-        }
+//	    if (mContext != null && mContext instanceof com.haoke.ui.media.Media_Activity_Main) {
+//            boolean resumed = ((com.haoke.ui.media.Media_Activity_Main)mContext).getActResumed();
+//            if (!resumed) {
+//                DebugLog.e(TAG, "onError but activity is not resumed! return!");
+//                return;
+//            }
+//        }
 	    //modify bug 21124 begin
 	    mErrorCount++;
 	    //modify bug 21124 end

@@ -4,11 +4,9 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.ContentObserver;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -129,6 +127,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
         super.onResume();
         DebugLog.d(TAG, "onResume ");
         mActResume = true;
+        mHomeFragment.checkErrorDialog();
         if (mMustFresh) {
             refreshSkin(false);
         }
