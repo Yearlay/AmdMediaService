@@ -444,7 +444,6 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
                 convertView.setTag(mHolder);
             }
             mHolder.mPhotoImageView.setBackgroundDrawable(skinManager.getDrawable(R.drawable.image_item_selector));
-            DebugLog.e(Image_Activity_Main.TAG,"getView size: " + mPhotoList.size() + "   ,position: " + position);
             FileNode fileNode = mPhotoList.get(position);
             mHolder.mPhotoName.setText(fileNode.getFileName());
             

@@ -88,16 +88,28 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     public void setPlayState(int playState) {
     	DebugLog.d(Image_Activity_Main.TAG,"setPlayState: " + playState);
         mPlayState = playState;
-        //mPreFlag = false;
         if (mViewPager != null) {
             updatePlayState(mPlayState);
         }
     }
     
     public void setCurrentPosition(int position) {
-    	DebugLog.e(Image_Activity_Main.TAG,"setCurrentPosition position: " + position + "   ,mLastPosition: " + mLastPosition);
-        mLastPosition = mCurPosition;
-        mCurPosition = position;
+        if (mCurPosition != position) {
+            mLastPosition = mCurPosition;
+            mCurPosition = position;
+        }
+        // 校验mPreFlag的值。
+        int endIndex = mPhotoList.size() - 1;
+        int headIndex = 0;
+        if (mCurPosition == endIndex && mLastPosition == headIndex) { // 从头部跳到尾部，相当于是向前滑动。
+            mPreFlag = true;
+        } else if (mCurPosition == headIndex && mLastPosition == endIndex) { // 从尾部跳到头部，相当于向后滑动
+            mPreFlag = false;
+        } else {
+            mPreFlag = (mCurPosition < mLastPosition);
+        }
+        DebugLog.d(Image_Activity_Main.TAG,"setCurrentPosition position: " + mCurPosition +
+                " && mLastPosition: " + mLastPosition + " && mPreFlag: " + mPreFlag);
     }
     
     private ArrayList<FileNode> mPhotoList = new ArrayList<FileNode>();
@@ -160,7 +172,6 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
 
     public void onResume() {
         isOnResume = true;
-        DebugLog.d(Image_Activity_Main.TAG, "onResume mCurPosition: " + mCurPosition + "  , mErrorCount: " + mErrorCount);
         if (mPhotoList.size() > 0) {
             mCurPosition = mCurPosition < 0 ? 0 : mCurPosition;
             mCurPosition = mCurPosition >= mPhotoList.size() ? mPhotoList.size() - 1 : mCurPosition; 
@@ -238,7 +249,6 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     @Override
     public void onClick(View view) {
         stopHideTimer();
-        DebugLog.e(Image_Activity_Main.TAG,"onClick!!!");
         switch (view.getId()) {
         case R.id.image_ctrlbar_list:
             if (mActivityHandler != null) { // 回列表
@@ -277,11 +287,11 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     }
     
     public void preImage() {
-    	mPreFlag = true;
         mHandler.removeMessages(PLAY_ERROR);
-        DebugLog.e(Image_Activity_Main.TAG,"preImage Image Loading");
+        DebugLog.d(Image_Activity_Main.TAG,"preImage Image Loading");
         if (mViewPager != null) {
             if (getCurPhotoView() != null) {
+                mLastPosition = mCurPosition;
                 mCurPosition--;
                 mCurPosition = mCurPosition < 0 ? mPhotoList.size() - 1 : mCurPosition;
                 if (mCurPosition == (mPhotoList.size() - 1)) {
@@ -295,11 +305,11 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     }
     
     public void nextImage() {
-    	mPreFlag = false;
-    	DebugLog.e(Image_Activity_Main.TAG,"nextImage Image Loading");
+    	DebugLog.d(Image_Activity_Main.TAG,"nextImage Image Loading");
         mHandler.removeMessages(PLAY_ERROR);
         if (mViewPager != null) {
             if (getCurPhotoView() != null) {
+                mLastPosition = mCurPosition;
                 mCurPosition++;
                 mCurPosition = mCurPosition >= mPhotoList.size() ? 0 : mCurPosition;
                 if (mCurPosition == 0) {
@@ -395,7 +405,6 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     
     // 重置自动播放计时器
     private void checkPlayStatus() {
-    	//DebugLog.d("luke",Log.getStackTraceString(new Throwable()));
         if (mPlayState == PlayState.PLAY) {
             mHandler.removeMessages(NEXT_PLAY);
             if (isOnResume) {
@@ -455,13 +464,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
     // 图片缩放回调 OnMatrixChangedListener
     @Override
     public void onMatrixChanged(RectF rect) {
-    	//DebugLog.d("Yearlay","onMatrixChanged: " + rect.toString());
         checkPlayStatus(); // 重新计时
-/*        if(rect.top != 0){
-        	setPlayState(PlayState.PAUSE);
-        } else {
-        	setPlayState(PlayState.PLAY);
-        }*/
     }
 
     // 图片点击回调 OnPhotoTapListener
@@ -482,8 +485,8 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
         public void handleMessage(Message msg) {
             switch (msg.what) {
             case NEXT_PLAY:
-            	DebugLog.e(Image_Activity_Main.TAG,"NEXT_PLAY Image Loading");
-                mPreFlag = false;
+            	DebugLog.d(Image_Activity_Main.TAG,"NEXT_PLAY Image Loading");
+                mLastPosition = mCurPosition;
                 mCurPosition++;
                 if (mCurPosition >= mPhotoList.size()) {
                     mCurPosition = 0; // 循环播放
@@ -535,7 +538,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             FileNode fileNode = mPhotoList.get(position);
-            DebugLog.e(Image_Activity_Main.TAG,"instantiateItem");
+            DebugLog.d(Image_Activity_Main.TAG,"instantiateItem");
             View view = LayoutInflater.from(mContext).inflate(R.layout.image_photopager_item, null);
             Media_Photo_View photoView = (Media_Photo_View) view.findViewById(R.id.photopager_imageview);
             photoView.setOnMatrixChangeListener(PhotoPlayLayout.this);
@@ -622,19 +625,16 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
             checkPlayStatus(); // 重新计时
-            DebugLog.d(Image_Activity_Main.TAG,"onPageScrolled  mLastPosition: " + mLastPosition + "   , mCurPosition: " + mCurPosition);
             
             if (position == mPhotoList.size() - 1 && isDragPage) {
                 isEndToHead = positionOffsetPixels == 0;
                 isHeadToEnd = false;
-                mPreFlag = true;
                 DebugLog.d(Image_Activity_Main.TAG, " ....End.... and sroll offset: " + positionOffsetPixels +
                         " && isEndToHead: " + isEndToHead);
             }
             if (position == 0 && isDragPage) {
                 isHeadToEnd = positionOffsetPixels == 0;
                 isEndToHead = false;
-                mPreFlag = false;
                 DebugLog.d(Image_Activity_Main.TAG, " ....HEAD... and sroll offset: " + positionOffsetPixels +
                         " && isHeadToEnd: " + isHeadToEnd);
             }
@@ -642,11 +642,10 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
 
         @Override
         public void onPageSelected(int position) {
-        	DebugLog.e(Image_Activity_Main.TAG,"onPageSelected mErrorCount: " + mErrorCount);
+        	DebugLog.d(Image_Activity_Main.TAG,"onPageSelected mErrorCount: " + mErrorCount);
             checkPlayStatus(); // 重新计时
             restorePhotoView();
             FileNode fileNode = mPhotoList.get(position);
-            //mPreFlag = mLastPosition > position;
             mCollectView.setImageDrawable(skinManager.getDrawable(fileNode.getCollect() == 1 ?
                     R.drawable.media_collect : R.drawable.media_uncollect));
             if (mDeviceType != DeviceType.COLLECT && mCtrlBar.getVisibility() == View.VISIBLE) {
@@ -664,7 +663,7 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
                 mHandler.removeMessages(PLAY_ERROR);
                 mHandler.sendEmptyMessageDelayed(PLAY_ERROR, 1000);
             } else {
-            	DebugLog.e(Image_Activity_Main.TAG,"onPageSelected Image Loading complete");
+            	DebugLog.d(Image_Activity_Main.TAG,"onPageSelected Image Loading complete");
             	mErrorCount = 0;
                 mUnsupportView.setVisibility(View.GONE);
             }
@@ -677,7 +676,6 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
         		//return;
         	}
             
-            //mPreFlag = mLastPosition > position;
             setCurrentPosition(position);
             DebugLog.d(Image_Activity_Main.TAG, "onPageSelected mCurPosition: " + mCurPosition);
         }
@@ -708,12 +706,10 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
                 case MotionEvent.ACTION_DOWN:
                     break;
                 case MotionEvent.ACTION_UP:
-                	mPreFlag = mLastPosition > mCurPosition;
                     if (mCurPosition == 0 && isDragPage) {
                         if (isHeadToEnd) {
                             DebugLog.d(Image_Activity_Main.TAG, " ...HEAD to END...");
                             isHeadToEnd = false;
-                            mPreFlag = true;
                             mViewPager.setCurrentItem(mPhotoList.size() - 1, false);
                             return true;
                         }
@@ -722,7 +718,6 @@ public class PhotoPlayLayout extends RelativeLayout implements OnClickListener,
                         if (isEndToHead) {
                             DebugLog.d(Image_Activity_Main.TAG, " ...END to HEAD...");
                             isEndToHead = false;
-                            mPreFlag = false;
                             // nextImage();
                             mViewPager.setCurrentItem(0, false);
                             return true;
