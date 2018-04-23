@@ -67,6 +67,13 @@ public class ImageLoad {
         .build();
     }
     
+    /**
+     * TODO: 有一个BUG，就是ImageView可能会被Adapter复用然后出现混乱。
+     * @param imageView
+     * @param defaultDrawable
+     * @param fileNode
+     * @return
+     */
     public boolean loadBitmap(final ImageView imageView, Drawable defaultDrawable, final FileNode fileNode) {
         boolean retFlag = false;
         if (AmdConfig.IMAGELOADER_OFF) {
@@ -107,6 +114,21 @@ public class ImageLoad {
                         imageView, getOptions(defaultDrawable), listener);
             }
         }
+    }
+    
+    public boolean displayImage(ImageView imageView, Drawable defaultDrawable,
+            FileNode fileNode, ImageLoadingListener listener) {
+        boolean retFlag = false;
+        String showFilePath = fileNode.getFileType() == FileType.IMAGE ?
+                fileNode.getFilePath() : fileNode.getThumbnailPath();
+        if (showFilePath == null || (new File(showFilePath)).length() > MAX_SIZE) {
+            imageView.setImageDrawable(defaultDrawable);
+        } else {
+            ImageLoader.getInstance().displayImage("file://" + fileNode.getFilePath(),
+                    imageView, getOptions(defaultDrawable), listener);
+            retFlag = true;
+        }
+        return retFlag;
     }
 
 }

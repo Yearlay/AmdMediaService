@@ -8,6 +8,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -51,8 +52,11 @@ import com.haoke.data.SearchListener;
 import com.haoke.mediaservice.R;
 import com.haoke.ui.image.Image_Activity_Main;
 import com.haoke.ui.video.Video_Activity_Main;
+import com.haoke.ui.widget.HKTextView;
 import com.haoke.util.DebugLog;
 import com.haoke.util.Media_IF;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 public class MediaSearchActivity extends Activity implements OnClickListener, LoadListener,
         OnItemClickListener, TextView.OnEditorActionListener, SearchListener, TextWatcher {
@@ -282,7 +286,7 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
         finish();
     }
     
-    class SearchAdapter extends BaseAdapter {
+    class SearchAdapter extends BaseAdapter implements ImageLoadingListener {
         ArrayList<FileNode> mResultStationList = new ArrayList<FileNode>();
 
         @Override
@@ -300,35 +304,51 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
             return position;
         }
         
+        class ViewHolder {
+            private ImageView itemBgView;
+            private TextView deviceTypeView;
+            private ImageView iconView;
+            private TextView titleView;
+            private TextView artistView;
+            private TextView dateView;
+        }
+        
         @Override
         public View getView(int position, View convertView, ViewGroup parentGroup) {
             DebugLog.d(TAG, "getView position="+position+"; convertView="+convertView);
-            convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.music_search_listview_item, null);
-            ImageView itemBgView = (ImageView) convertView.findViewById(R.id.search_item_bg);
-            TextView deviceTypeView = (TextView) convertView.findViewById(R.id.music_item_device_type);
-            ImageView iconView = (ImageView) convertView.findViewById(R.id.music_item_icon);
-            TextView titleView = (TextView) convertView.findViewById(R.id.music_listitem_title);
-            TextView artistView = (TextView) convertView.findViewById(R.id.music_item_text);
-            TextView dateView = (TextView) convertView.findViewById(R.id.music_item_date);
+            ViewHolder mHolder = null;
+            if (judgeNewForHolder(convertView)) {
+                mHolder = new ViewHolder();
+                convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.music_search_listview_item, null);
+                mHolder.itemBgView = (ImageView) convertView.findViewById(R.id.search_item_bg);
+                mHolder.deviceTypeView = (TextView) convertView.findViewById(R.id.music_item_device_type);
+                mHolder.iconView = (ImageView) convertView.findViewById(R.id.music_item_icon);
+                mHolder.titleView = (TextView) convertView.findViewById(R.id.music_listitem_title);
+                mHolder.artistView = (TextView) convertView.findViewById(R.id.music_item_text);
+                mHolder.dateView = (TextView) convertView.findViewById(R.id.music_item_date);
+                convertView.setTag(mHolder);
+            } else {
+                mHolder = (ViewHolder) convertView.getTag();
+            }
             
-            deviceTypeView.setBackgroundColor(skinManager.getColor(R.color.hk_custom_text_p));
-            itemBgView.setBackgroundDrawable(skinManager.getDrawable(R.drawable.music_list_item_selector));
+            mHolder.deviceTypeView.setBackgroundColor(skinManager.getColor(R.color.hk_custom_text_p));
+            mHolder.itemBgView.setBackgroundDrawable(skinManager.getDrawable(R.drawable.music_list_item_selector));
             
             FileNode fileNode = mResultStationList.get(position);
             // 显示数据来自哪个存储。
             int deviceType = fileNode.getDeviceType();
             if (deviceType == DeviceType.USB1) {
-                deviceTypeView.setText(R.string.media_usb1_tab);
+                mHolder.deviceTypeView.setText(R.string.media_usb1_tab);
             } else if (deviceType == DeviceType.USB2) {
-                deviceTypeView.setText(R.string.media_usb2_tab);
+                mHolder.deviceTypeView.setText(R.string.media_usb2_tab);
             } else if (deviceType == DeviceType.FLASH) {
-                deviceTypeView.setText(R.string.media_flash_tab);
+                mHolder.deviceTypeView.setText(R.string.media_flash_tab);
             } else {
-                deviceTypeView.setText(R.string.media_collect_tab);
+                mHolder.deviceTypeView.setText(R.string.media_collect_tab);
             }
             // 显示title或者文件名
             String title = fileNode.getTitleEx();
-            titleView.setText(title);
+            mHolder.titleView.setText(title);
             // 显示艺术家和专辑名称
             if (mFileType == FileType.AUDIO || mFileType == FileType.VIDEO) {
                 String artist = fileNode.getArtist();
@@ -339,20 +359,21 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
                 if (album == null) {
                     album = unknown;
                 }
-                artistView.setText(artist + " - " + album);
+                mHolder.artistView.setText(artist + " - " + album);
             } else if (mFileType == FileType.IMAGE) {
-                artistView.setVisibility(View.GONE);
+                mHolder.artistView.setVisibility(View.GONE);
             }
             // 显示文件的时间。
-            dateView.setText(fileNode.getLastDate());
+            mHolder.dateView.setText(fileNode.getLastDate());
             
             // 设置图片的显示效果。 禁止去做ID3的解析，解析的动作不应该由MediaSearchActivity来发起。
             int defaultIcon = fileNode.getFileType() == FileType.AUDIO ?
                     R.drawable.media_list_item_music : R.drawable.image_icon_default;
-            iconView.setImageDrawable(skinManager.getDrawable(defaultIcon));
+            mHolder.iconView.setImageDrawable(skinManager.getDrawable(defaultIcon));
             if (fileNode.getParseId3() == 1) {
-                boolean ret = ImageLoad.instance(MediaSearchActivity.this).loadBitmap(iconView,
-                        skinManager.getDrawable(defaultIcon), fileNode);
+                mHolder.iconView.setTag(fileNode);
+                boolean ret = ImageLoad.instance(MediaSearchActivity.this).displayImage(mHolder.iconView,
+                        skinManager.getDrawable(defaultIcon), fileNode, this);
                 if (fileNode.getFileType() != FileType.IMAGE && ret) {
                     DebugLog.d(TAG, "getView mIconView: " + fileNode.getThumbnailPath());
                 }
@@ -361,6 +382,38 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
             }
             
             return convertView;
+        }
+        
+        public boolean judgeNewForHolder(View convertView) {
+            boolean needNew = false;
+            if (convertView == null) {
+                needNew = true;
+            } else {
+                ViewHolder holder = (ViewHolder) convertView.getTag();
+                if (holder.iconView.getTag() != null) {
+                    DebugLog.e(TAG, "iconView is used! ...... error. We will fix it.");
+                    needNew = true;
+                }
+            }
+            return needNew;
+        }
+        
+        @Override
+        public void onLoadingStarted(String imageUri, View view) {}
+
+        @Override
+        public void onLoadingCancelled(String imageUri, View view) {
+            view.setTag(null);
+        }
+
+        @Override
+        public void onLoadingComplete(String imageUri, View view, Bitmap bitmap) {
+            view.setTag(null);
+        }
+
+        @Override
+        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+            view.setTag(null);
         }
     }
 
