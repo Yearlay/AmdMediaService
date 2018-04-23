@@ -371,7 +371,6 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
                     R.drawable.media_list_item_music : R.drawable.image_icon_default;
             mHolder.iconView.setImageDrawable(skinManager.getDrawable(defaultIcon));
             if (fileNode.getParseId3() == 1) {
-                mHolder.iconView.setTag(fileNode);
                 boolean ret = ImageLoad.instance(MediaSearchActivity.this).displayImage(mHolder.iconView,
                         skinManager.getDrawable(defaultIcon), fileNode, this);
                 if (fileNode.getFileType() != FileType.IMAGE && ret) {
@@ -403,17 +402,17 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
 
         @Override
         public void onLoadingCancelled(String imageUri, View view) {
-            view.setTag(null);
+            if (view != null) view.setTag(null);
         }
 
         @Override
         public void onLoadingComplete(String imageUri, View view, Bitmap bitmap) {
-            view.setTag(null);
+            if (view != null) view.setTag(null);
         }
 
         @Override
         public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-            view.setTag(null);
+            if (view != null) view.setTag(null);
         }
     }
 

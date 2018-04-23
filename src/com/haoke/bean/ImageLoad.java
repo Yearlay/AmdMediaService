@@ -4,7 +4,6 @@ import java.io.File;
 
 import com.amd.util.AmdConfig;
 import com.haoke.constant.MediaUtil.FileType;
-import com.haoke.mediaservice.R;
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiskCache;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
@@ -124,7 +123,8 @@ public class ImageLoad {
         if (showFilePath == null || (new File(showFilePath)).length() > MAX_SIZE) {
             imageView.setImageDrawable(defaultDrawable);
         } else {
-            ImageLoader.getInstance().displayImage("file://" + fileNode.getFilePath(),
+            imageView.setTag(fileNode);
+            ImageLoader.getInstance().displayImage("file://" + showFilePath,
                     imageView, getOptions(defaultDrawable), listener);
             retFlag = true;
         }
