@@ -8,7 +8,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -52,11 +51,8 @@ import com.haoke.data.SearchListener;
 import com.haoke.mediaservice.R;
 import com.haoke.ui.image.Image_Activity_Main;
 import com.haoke.ui.video.Video_Activity_Main;
-import com.haoke.ui.widget.HKTextView;
 import com.haoke.util.DebugLog;
 import com.haoke.util.Media_IF;
-import com.nostra13.universalimageloader.core.assist.FailReason;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 public class MediaSearchActivity extends Activity implements OnClickListener, LoadListener,
         OnItemClickListener, TextView.OnEditorActionListener, SearchListener, TextWatcher {
@@ -286,7 +282,7 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
         finish();
     }
     
-    class SearchAdapter extends BaseAdapter implements ImageLoadingListener {
+    class SearchAdapter extends BaseAdapter {
         ArrayList<FileNode> mResultStationList = new ArrayList<FileNode>();
 
         @Override
@@ -369,16 +365,8 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
             // 设置图片的显示效果。 禁止去做ID3的解析，解析的动作不应该由MediaSearchActivity来发起。
             int defaultIcon = fileNode.getFileType() == FileType.AUDIO ?
                     R.drawable.media_list_item_music : R.drawable.image_icon_default;
-            mHolder.iconView.setImageDrawable(skinManager.getDrawable(defaultIcon));
-            if (fileNode.getParseId3() == 1) {
-                boolean ret = ImageLoad.instance(MediaSearchActivity.this).displayImage(mHolder.iconView,
-                        skinManager.getDrawable(defaultIcon), fileNode, this);
-                if (fileNode.getFileType() != FileType.IMAGE && ret) {
-                    DebugLog.d(TAG, "getView mIconView: " + fileNode.getThumbnailPath());
-                }
-            } else {
-                DebugLog.e(TAG, "getView fileNode.getParseId3: " + fileNode.getParseId3());
-            }
+            ImageLoad.instance(MediaSearchActivity.this).displayImage(mHolder.iconView,
+                    skinManager.getDrawable(defaultIcon), fileNode);
             
             return convertView;
         }
@@ -395,24 +383,6 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
                 }
             }
             return needNew;
-        }
-        
-        @Override
-        public void onLoadingStarted(String imageUri, View view) {}
-
-        @Override
-        public void onLoadingCancelled(String imageUri, View view) {
-            if (view != null) view.setTag(null);
-        }
-
-        @Override
-        public void onLoadingComplete(String imageUri, View view, Bitmap bitmap) {
-            if (view != null) view.setTag(null);
-        }
-
-        @Override
-        public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
-            if (view != null) view.setTag(null);
         }
     }
 

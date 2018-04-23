@@ -1,6 +1,8 @@
 package com.haoke.bean;
 
 import java.io.File;
+import java.lang.ref.SoftReference;
+import java.util.HashMap;
 
 import com.amd.util.AmdConfig;
 import com.haoke.constant.MediaUtil.FileType;
@@ -10,12 +12,15 @@ import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.view.View;
 import android.widget.ImageView;
 
 public class ImageLoad {
@@ -115,20 +120,47 @@ public class ImageLoad {
         }
     }
     
-    public boolean displayImage(ImageView imageView, Drawable defaultDrawable,
-            FileNode fileNode, ImageLoadingListener listener) {
-        boolean retFlag = false;
+    HashMap<String, SoftReference<Bitmap>> bitmapHashMap = new HashMap<String, SoftReference<Bitmap>>();
+    
+    public void displayImage(ImageView imageView, Drawable defaultDrawable, FileNode fileNode) {
+        ImageLoadingListener listener = new ImageLoadingListener() {
+            @Override
+            public void onLoadingStarted(String imageUri, View view) {}
+            @Override
+            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+                if (view != null) view.setTag(null);
+            }
+            @Override
+            public void onLoadingCancelled(String imageUri, View view) {
+                if (view != null) view.setTag(null);
+            }
+            @Override
+            public void onLoadingComplete(String imageUri, View view, Bitmap bitmap) {
+                if (view != null) view.setTag(null);
+                bitmapHashMap.put(imageUri, new SoftReference<Bitmap>(bitmap));
+            }
+        };
         String showFilePath = fileNode.getFileType() == FileType.IMAGE ?
                 fileNode.getFilePath() : fileNode.getThumbnailPath();
+        String imageUri = "file://" + showFilePath;
+        
         if (showFilePath == null || (new File(showFilePath)).length() > MAX_SIZE) {
             imageView.setImageDrawable(defaultDrawable);
-        } else {
-            imageView.setTag(fileNode);
-            ImageLoader.getInstance().displayImage("file://" + showFilePath,
-                    imageView, getOptions(defaultDrawable), listener);
-            retFlag = true;
+            return;
         }
-        return retFlag;
+        
+        SoftReference<Bitmap> softReference = bitmapHashMap.get(imageUri);
+        if (softReference != null) {
+            Bitmap bitmap = softReference.get();
+            if (bitmap != null && !bitmap.isRecycled()) {
+                imageView.setImageBitmap(softReference.get());
+                return;
+            }
+        }
+        
+        imageView.setImageDrawable(defaultDrawable);
+        imageView.setTag(fileNode);
+        ImageLoader.getInstance().displayImage(imageUri, imageView, getOptions(defaultDrawable), listener);
     }
 
 }

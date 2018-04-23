@@ -432,9 +432,7 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
                 return convertView;
             }
             ViewHolder mHolder = null;
-            if (convertView != null) {
-                mHolder = (ViewHolder) convertView.getTag();
-            } else {
+            if (judgeNewForHolder(convertView)) {
                 mHolder = new ViewHolder();
                 convertView = LayoutInflater.from(mContext).inflate(R.layout.photo_list_item, null);
                 mHolder.mPhotoImageView = (ImageView) convertView.findViewById(R.id.item_photo);
@@ -442,6 +440,8 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
                 mHolder.mPhotoName = (HKTextView) convertView.findViewById(R.id.item_filename);
                 mHolder.mFromTextView = (TextView) convertView.findViewById(R.id.image_from_text);
                 convertView.setTag(mHolder);
+            } else {
+                mHolder = (ViewHolder) convertView.getTag();
             }
             mHolder.mPhotoImageView.setBackgroundDrawable(skinManager.getDrawable(R.drawable.image_item_selector));
             FileNode fileNode = mPhotoList.get(position);
@@ -473,9 +473,23 @@ public class PhotoListLayout extends RelativeLayout implements OnItemClickListen
                 }
             }
             Drawable defaultDrawable = skinManager.getDrawable(R.drawable.image_icon_default);
-            mHolder.mPhotoImageView.setImageDrawable(defaultDrawable);
-            ImageLoad.instance(mContext).loadBitmap(mHolder.mPhotoImageView, defaultDrawable, fileNode);
+//            mHolder.mPhotoImageView.setImageDrawable(defaultDrawable);
+            ImageLoad.instance(mContext).displayImage(mHolder.mPhotoImageView, defaultDrawable, fileNode);
             return convertView;
+        }
+        
+        public boolean judgeNewForHolder(View convertView) {
+            boolean needNew = false;
+            if (convertView == null) {
+                needNew = true;
+            } else {
+                ViewHolder holder = (ViewHolder) convertView.getTag();
+                if (holder.mPhotoImageView.getTag() != null) {
+                    DebugLog.e(TAG, "iconView is used! ...... error. We will fix it.");
+                    needNew = true;
+                }
+            }
+            return needNew;
         }
 
         @Override
