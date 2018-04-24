@@ -457,7 +457,9 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
 
     @Override
     public void onScanStateChange(StorageBean storageBean) {
-        //doSearch();
+        if (!storageBean.isMounted()) { // U盘拔出事件。
+            doSearch();
+        }
     }
 
     private SkinListener mSkinListener = new SkinListener(new Handler()) {

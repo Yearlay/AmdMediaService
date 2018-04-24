@@ -31,6 +31,7 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 	private Drawable mRootViewDrawable;
 	private Drawable mOkButtonDrawable;
 	private Drawable mCancelButtonDrawable;
+	private int mButtonColor;
 	
 	// 对话框类型枚举
 	public enum DIALOG_TYPE {
@@ -63,6 +64,7 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
                 mRootViewDrawable = skinManager.getDrawable(R.drawable.pub_msgbox_bg1);
                 mOkButtonDrawable = skinManager.getDrawable(R.drawable.bd_dialog_button);
                 mCancelButtonDrawable = skinManager.getDrawable(R.drawable.bd_dialog_button);
+                mButtonColor = skinManager.getColor(R.color.bd_text_down);
 	        }
 	        if (!loading) {
 	            if (mRootView != null) {
@@ -70,9 +72,11 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 	            }
 	            if (mOkButton != null) {
 	                mOkButton.setBackgroundDrawable(mOkButtonDrawable);
+	                mOkButton.setTextColor(mButtonColor);
 	            }
 	            if (mCancelButton != null) {
 	                mCancelButton.setBackgroundDrawable(mCancelButtonDrawable);
+	                mCancelButton.setTextColor(mButtonColor);
 	            }
 	            if (mLinearLayout != null && mLinearLayout.getChildCount() > 0) {
 	                for (int index = 0; index < mLinearLayout.getChildCount(); index++) {

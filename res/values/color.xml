@@ -6,4 +6,6 @@
     <color name="hk_custom_text_p">#FF0CB8FF</color>  <!-- 通用字体颜色（按下） -->
     <color name="hk_custom_text_d">#FFBABABD</color>  <!-- 通用字体颜色（无效） -->
     <color name="hk_backgroup_view">#60000000</color>  <!-- 通用字体颜色 -->
+    
+    <color name="bd_text_down">#FF55AFFF</color> <!-- 蓝色主题 -->
 </resources>

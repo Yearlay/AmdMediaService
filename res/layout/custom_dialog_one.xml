@@ -68,7 +68,7 @@
                 android:paddingBottom="18px"
                 android:background="@drawable/bd_dialog_button"
                 android:text="@string/music_dialog_btn_ok"
-                android:textColor="@color/hk_custom_text"
+                android:textColor="@color/bd_text_down"
                 android:textSize="22dp" />
         </LinearLayout>
     </LinearLayout>

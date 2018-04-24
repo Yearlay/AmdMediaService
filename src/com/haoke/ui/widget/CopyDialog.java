@@ -46,6 +46,7 @@ public class CopyDialog implements OnClickListener {
     private Drawable mOkButtonDrawable;
     private Drawable mCancelButtonDrawable;
     private ColorStateList mTextColorStateList;
+    private int mButtonColor;
     
     private ArrayList<FileNode> mCopyDataList = new ArrayList<>();
     private ArrayList<FileNode> mCoverDataList = new ArrayList<>();
@@ -276,6 +277,7 @@ public class CopyDialog implements OnClickListener {
                 mOkButtonDrawable = skinManager.getDrawable(R.drawable.bd_dialog_button);
                 mCancelButtonDrawable = skinManager.getDrawable(R.drawable.bd_dialog_button);
                 mTextColorStateList = skinManager.getColorStateList(R.drawable.text_color_selector);
+                mButtonColor = skinManager.getColor(R.color.bd_text_down);
             }
             if (!loading) {
                 if (mRootView != null) {
@@ -283,9 +285,11 @@ public class CopyDialog implements OnClickListener {
                 }
                 if (mOkButton != null) {
                     mOkButton.setBackgroundDrawable(mOkButtonDrawable);
+                    mOkButton.setTextColor(mButtonColor);
                 }
                 if (mCancelButton != null) {
                     mCancelButton.setBackgroundDrawable(mCancelButtonDrawable);
+                    mCancelButton.setTextColor(mButtonColor);
                 }
                 if (mCheckAdapter != null) {
                     mCheckAdapter.notifyDataSetChanged();
