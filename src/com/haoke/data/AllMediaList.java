@@ -226,6 +226,7 @@ public class AllMediaList {
                 }
                 break;
             case BEGIN_LOAD_ALL_THREAD:
+                DebugLog.i(TAG, "** BEGIN_LOAD_ALL_THREAD deviceType: " + msg.arg1);
                 synchronized (mLoadLock) {
                     if (mLoadThread == null) {
                         mLoadThread = new LoadThread();
@@ -237,6 +238,12 @@ public class AllMediaList {
                         mLoadThread.start();
                     }
                 }
+                break;
+            case END_LOAD_ALL_THREAD:
+                StorageBean storageBean = (StorageBean)msg.obj;
+                DebugLog.i(TAG, "** END_LOAD_ALL_THREAD deviceType: " + storageBean.getDeviceType());
+                storageBean.setLoadCompleted(true);
+                callOnScanStateChange(storageBean);
                 break;
             case ITEM_LOAD_COMPLETED:
                 notifyLoadComplete(msg.arg1, msg.arg2);
@@ -272,11 +279,6 @@ public class AllMediaList {
                 if (searchData.listener != null) {
                     searchData.listener.onSearchCompleted(searchData.dataList);
                 }
-                break;
-            case END_LOAD_ALL_THREAD:
-                StorageBean storageBean = (StorageBean)msg.obj;
-                storageBean.setLoadCompleted(true);
-                callOnScanStateChange(storageBean);
                 break;
             case UPDATE_COLLECT_INFO_FOR_MEDIAS:
                 // TODO
@@ -480,7 +482,7 @@ public class AllMediaList {
         } else {
             DebugLog.i(TAG, "notifyScanStateChange(no callback!) devicePath: " + storageBean.getStoragePath()
                     + " && state: " + storageBean.getState()
-                    + " && isLoadCompleted" + storageBean.isLoadCompleted());
+                    + " && isLoadCompleted: " + storageBean.isLoadCompleted());
         }
     }
 
