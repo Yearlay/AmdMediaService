@@ -69,6 +69,8 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
     public boolean mNextPlay = true;
     private FileNode mFileNode;
     private boolean mPlayStateBefore = false;
+    
+    boolean isErrorShow;
 
     private SkinManager skinManager;
     private Toast mToEndToast;
@@ -241,6 +243,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
             public boolean onError(MediaPlayer arg0, int arg1, int arg2) {
                 DebugLog.e(TAG, "play onError");
                 mVideoController.getVideoView().setVideoURI(null);
+                isErrorShow = true;
                 showUnsupportView();
                 if (mFileNode != null && mTitleTextView != null) {
                     mTitleTextView.setText(mFileNode.getFileName());
@@ -417,6 +420,17 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
         if (mFileNode != null) {
             mVideoController.playOrPause(getBeforePlaystate());
             startHideTimer();
+        }
+        
+        if (isErrorShow) {
+            showUnsupportView();
+            if (mFileNode != null && mTitleTextView != null) {
+                mTitleTextView.setText(mFileNode.getFileName());
+            }
+            updateCollectView();
+            mActivityHandler.removeMessages(Video_Activity_Main.HIDE_UNSUPPORT_VIEW);
+            mActivityHandler.sendEmptyMessageDelayed(Video_Activity_Main.HIDE_UNSUPPORT_VIEW, 1000);
+            mLoading.setVisibility(View.GONE);
         }
     }
 

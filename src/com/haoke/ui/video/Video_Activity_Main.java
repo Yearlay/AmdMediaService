@@ -63,7 +63,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 	private TextView mCancelView;
 	private TextView mCopyTextView;
 	private boolean mPlaying;
-	private boolean isShow;
+	private boolean isFront;
 
 	public PlayStateSharedPreferences mPreferences;
 	private ArrayList<FileNode> mVideoList = new ArrayList<FileNode>();
@@ -229,7 +229,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 	@Override
 	protected void onResume() {
 		DebugLog.v(TAG, "HMI------------onResume");
-		isShow = true;
+		isFront = true;
 		AllMediaList.notifyAllLabelChange(getApplicationContext(), R.string.pub_video);
 		if (mPlaying) {
 			onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
@@ -299,7 +299,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 	@Override
 	protected void onPause() {
 		super.onPause();
-		isShow = false;
+		isFront = false;
 		DebugLog.v("luke", "HMI------------onPause BeforePlaystate: " + mPlayLayout.getBeforePlaystate());
 		mRadioGroup.setVisibility(View.GONE);
 		mSearchButton.setVisibility(View.GONE);
@@ -443,7 +443,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 				if (mListLayout != null) {
 					mListLayout.dismissDialog();
 				}
-				if (isShow) {
+				if (isFront) {
 					new CustomDialog().ShowDialog(Video_Activity_Main.this, DIALOG_TYPE.NONE_BTN, R.string.music_device_pullout_usb);
 				}
 			}
@@ -453,7 +453,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 					if (mListLayout != null) {
 						mListLayout.dismissDialog();
 					}
-					if (isShow) {
+					if (isFront) {
 						new CustomDialog().ShowDialog(Video_Activity_Main.this, DIALOG_TYPE.NONE_BTN, R.string.music_device_pullout_usb);
 					}
 				}
@@ -623,6 +623,7 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 					mErrorCount = 0;
 					onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
 				}
+				mPlayLayout.isErrorShow = false;
 				break;
 			case DISMISS_COPY_DIALOG:
 				if (mListLayout.isEditMode()) {
