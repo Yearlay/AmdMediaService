@@ -440,7 +440,7 @@ public class MediaInterfaceUtil {
         StorageBean storage1 = allMediaList.getStoragBean(DeviceType.USB1);
         if (sWaitUsb1Mounted == -1) {
         } else if (storage1.isMounted()) {
-            if (!storage1.isLoadCompleted()) {
+            if (!storage1.isAllOver()) {
                 DebugLog.d(TAG, "checkSourceFromBoot collect must wait usb1 load completed!");
                 return 1000;
             }
@@ -459,7 +459,7 @@ public class MediaInterfaceUtil {
         StorageBean storage2 = allMediaList.getStoragBean(DeviceType.USB2);
         if (sWaitUsb2Mounted == -1) {
         } else if (storage2.isMounted()) {
-            if (!storage2.isLoadCompleted()) {
+            if (!storage2.isAllOver()) {
                 DebugLog.d(TAG, "checkSourceFromBoot collect must wait usb2 load completed!");
                 return 1000;
             }
@@ -613,7 +613,7 @@ public class MediaInterfaceUtil {
                 }
                 StorageBean storage = allMediaList.getStoragBean(runDeviceType);
                 DebugLog.d(TAG, "checkModeRecordInternalEx storage="+storage);
-                if (runDeviceType == DeviceType.COLLECT || storage.isLoadCompleted()) {
+                if (runDeviceType == DeviceType.COLLECT || storage.isAllOver()) {
                     ArrayList<FileNode> lists = allMediaList.getMediaList(runDeviceType, fileType);
                     int size = lists.size();
                     if (size > 0) {

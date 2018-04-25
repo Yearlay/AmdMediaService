@@ -31,9 +31,7 @@ import com.haoke.constant.DBConfig.UriAddress;
 import com.haoke.constant.DBConfig.UriType;
 import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.FileType;
-import com.haoke.constant.MediaUtil.ScanType;
 import com.haoke.mediaservice.R;
-import com.haoke.receiver.MediaReceiver;
 import com.haoke.scanner.MediaDbHelper;
 import com.haoke.scanner.MediaDbHelper.TransactionTask;
 import com.haoke.service.MediaService;
@@ -196,43 +194,17 @@ public class AllMediaList {
         }
     }
     
-    private void notifyScanStateChange(StorageBean storageBean) {
-        int deviceType = storageBean.getDeviceType();
-        if (!storageBean.isMounted()) {
-            // 设备被移除，需要清空数据，并通知监听者：设备移除。
-            clearMediaList(deviceType, FileType.IMAGE);
-            clearMediaList(deviceType, FileType.AUDIO);
-            clearMediaList(deviceType, FileType.VIDEO);
-            callOnScanStateChange(storageBean);
-        } else {
-            if (storageBean.isId3ParseCompleted()) {
-                mLocalHandler.obtainMessage(BEGIN_LOAD_ALL_THREAD, deviceType, 0, storageBean).sendToTarget();
-            } else if (storageBean.getState() == StorageBean.FILE_SCANNING) {
-                callOnScanStateChange(storageBean);
-            }
-        }
-    }
-
-    private void callOnScanStateChange(StorageBean storageBean) {
-        for (LoadListener listener : mLoadListenerList) {
-            listener.onScanStateChange(storageBean);
-        }
-        notifyUpdateAppWidgetByAudio();
-        if (storageBean.isId3ParseCompleted() || !storageBean.isMounted()) {
-            storageBean.setLoadCompleted(true);
-        }
-    }
+    
     
     private static final int BEGIN_LOAD_THREAD = 1;
     private static final int ITEM_LOAD_COMPLETED = 2;
-    private static final int SCAN_STATE_CHANGE = 3;
     private static final int BEGIN_OPERATE_THREAD = 4;
     private static final int ITEM_OPERATE_COMPLETED = 5;
     private static final int NOTIFY_LIST_ITEM_PROGRESS = 6;
     private static final int RELEASE_OPERATE_THREAD = 7;
     private static final int DELETE_FILENODE_FROM_LIST = 8;
     private static final int NOTIFY_SEARCH_BACKCALL = 9;
-    private static final int NOTIFY_SCAN_LISTENER = 10;
+    private static final int END_LOAD_ALL_THREAD = 10;
     private static final int BEGIN_LOAD_ALL_THREAD = 11;
     private static final int UPDATE_COLLECT_INFO_FOR_MEDIAS = 12;
     
@@ -269,10 +241,6 @@ public class AllMediaList {
             case ITEM_LOAD_COMPLETED:
                 notifyLoadComplete(msg.arg1, msg.arg2);
                 break;
-            case SCAN_STATE_CHANGE:
-                StorageBean storageBean = (StorageBean) msg.obj;
-                notifyScanStateChange(storageBean);
-                break;
             case BEGIN_OPERATE_THREAD:
                 if (mOperateThread == null) {
                     mOperateThread = new OperateThread();
@@ -305,8 +273,10 @@ public class AllMediaList {
                     searchData.listener.onSearchCompleted(searchData.dataList);
                 }
                 break;
-            case NOTIFY_SCAN_LISTENER:
-                callOnScanStateChange((StorageBean)msg.obj);
+            case END_LOAD_ALL_THREAD:
+                StorageBean storageBean = (StorageBean)msg.obj;
+                storageBean.setLoadCompleted(true);
+                callOnScanStateChange(storageBean);
                 break;
             case UPDATE_COLLECT_INFO_FOR_MEDIAS:
                 // TODO
@@ -375,7 +345,7 @@ public class AllMediaList {
                     }
                     // 如果notifyFlag为true, 就发起notify操作。
                     if (data.storageBean != null) {
-                        mLocalHandler.obtainMessage(NOTIFY_SCAN_LISTENER, deviceType, fileType, data.storageBean).sendToTarget();
+                        mLocalHandler.obtainMessage(END_LOAD_ALL_THREAD, deviceType, fileType, data.storageBean).sendToTarget();
                     }
                 }
                 mLoadThread = null;
@@ -467,10 +437,60 @@ public class AllMediaList {
     }
 
     public void updateStorageBean(String devicePath, int state) {
-        DebugLog.i(TAG, "updateStorageBean devicePath" + devicePath + " && state: " + state);
-        StorageBean storageBean = new StorageBean(devicePath, state);
-        mScanStateHash.put(devicePath, storageBean);
-        mLocalHandler.sendMessage(mLocalHandler.obtainMessage(SCAN_STATE_CHANGE, storageBean));
+        StorageBean storageBean = mScanStateHash.get(devicePath);
+        if (storageBean == null) {
+            storageBean = new StorageBean(devicePath, state);
+            mScanStateHash.put(devicePath, storageBean);
+        }
+        storageBean.update(state);
+        
+        notifyScanStateChange(storageBean);
+    }
+    
+    private void notifyScanStateChange(StorageBean storageBean) {
+        int deviceType = storageBean.getDeviceType();
+        // 其他的状态：挂载，扫描中，扫描完成，ID3解析中，ID3解析完成； 分别对应（1，2，3，4，5）
+        if (storageBean.isUnmounted()) {
+            DebugLog.i(TAG, "notifyScanStateChange **Eject** devicePath: " +
+                    storageBean.getStoragePath());
+            // 需要清空AllMediaList#mAllMediaHash缓存中的数据。
+            clearMediaList(deviceType, FileType.IMAGE);
+            clearMediaList(deviceType, FileType.AUDIO);
+            clearMediaList(deviceType, FileType.VIDEO);
+            // 并将isLoadCompleted才会被置为false;
+            storageBean.setLoadCompleted(false);
+            // 并通知监听者：设备移除。
+            callOnScanStateChange(storageBean);
+        } else if (storageBean.getState() == StorageBean.FILE_SCANNING) {
+            // 并通知监听者：设备正在扫描中。
+            DebugLog.i(TAG, "notifyScanStateChange **FILE_SCANNING** devicePath: " +
+                    storageBean.getStoragePath());
+            callOnScanStateChange(storageBean);
+        } else if (storageBean.isId3ParseCompleted() && !storageBean.isLoadCompleted()) {
+            /**
+             * ID3解析完成：发起数据加载操作。更新图片，视频，音乐的列表。
+             *    所有的媒体列表更新完成之后，将isLoadCompleted置为true(在END_LOAD_ALL_THREAD消息中处理)。
+             *    之后不再发起BEGIN_LOAD_ALL_THREAD。
+             *    只有当设备被移除，isLoadCompleted才会被置为false;
+             *    在END_LOAD_ALL_THREAD消息的处理中，通知监听者：设备ID3解析完成(其实加载数据的操作已经完成)。
+             */
+            DebugLog.i(TAG, "notifyScanStateChange **Id3ParseCompleted** And **NotLoadData** devicePath: " +
+                    storageBean.getStoragePath());
+            mLocalHandler.obtainMessage(BEGIN_LOAD_ALL_THREAD, deviceType, 0, storageBean).sendToTarget();
+        } else {
+            DebugLog.i(TAG, "notifyScanStateChange(no callback!) devicePath: " + storageBean.getStoragePath()
+                    + " && state: " + storageBean.getState()
+                    + " && isLoadCompleted" + storageBean.isLoadCompleted());
+        }
+    }
+
+    private void callOnScanStateChange(StorageBean storageBean) {
+        DebugLog.i(TAG, "callOnScanStateChange devicePath: " +
+                storageBean.getStoragePath() + " && state: " + storageBean.getState());
+        for (LoadListener listener : mLoadListenerList) {
+            listener.onScanStateChange(storageBean);
+        }
+        notifyUpdateAppWidgetByAudio();
     }
     
     public int getLastDeviceType() {

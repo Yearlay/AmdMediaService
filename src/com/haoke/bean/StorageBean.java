@@ -85,13 +85,17 @@ public class StorageBean {
         return "StorageBean: deviceType=" + deviceType + "; mState=" + mState;
     }
     
+    public boolean isAllOver() {
+        return (isId3ParseCompleted() && isLoadCompleted) || !isMounted();
+    }
+    
     boolean isLoadCompleted;
 
 	public boolean isLoadCompleted() {
-		return isLoadCompleted;
-	}
+        return isLoadCompleted;
+    }
 
-	public void setLoadCompleted(boolean isLoadCompleted) {
+    public void setLoadCompleted(boolean isLoadCompleted) {
 		this.isLoadCompleted = isLoadCompleted;
 	}
 }

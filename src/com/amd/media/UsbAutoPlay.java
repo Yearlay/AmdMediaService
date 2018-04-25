@@ -93,7 +93,7 @@ public class UsbAutoPlay {
         AllMediaList allMediaList = AllMediaList.instance(context);
         StorageBean storage = allMediaList.getStoragBean(deviceType);
         if (storage.isMounted()) {
-            if (!storage.isLoadCompleted()) {
+            if (!storage.isAllOver()) {
                 DebugLog.d(TAG, "playDefaultMusic must wait device load completed!");
                 return 1000;
             }
