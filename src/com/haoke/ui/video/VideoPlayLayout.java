@@ -423,6 +423,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
         }
         
         if (isErrorShow) {
+            slaverShow(true);
             showUnsupportView();
             if (mFileNode != null && mTitleTextView != null) {
                 mTitleTextView.setText(mFileNode.getFileName());
