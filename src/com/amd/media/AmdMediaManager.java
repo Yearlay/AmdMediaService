@@ -1271,6 +1271,12 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	public boolean deleteCollectedMusic(FileNode fileNode) {
 		boolean returnVal = true;
 		if (fileNode != null) {
+		    if (fileNode.getDeviceType()==DeviceType.COLLECT
+		            && fileNode.isSamePathAndFrom(mPlayingFileNode)) {
+                mPlayMusicFileNode = null;
+                setPlayState(PlayState.PAUSE);
+                setPlayState(PlayState.STOP);
+            }
 			onDataChanged(mMediaMode, MediaFunc.UNCOLLECT_FILE, OperateState.OPERATING, 0);
 			mAllMediaList.uncollectMediaFile(fileNode, new OperateListener() {
 				@Override
