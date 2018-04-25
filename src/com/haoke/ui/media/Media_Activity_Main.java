@@ -23,6 +23,7 @@ import com.haoke.ui.music.MusicHomeFragment;
 import com.amd.bt.BT_IF;
 import com.amd.media.AmdMediaButtonReceiver;
 import com.amd.media.MediaInterfaceUtil;
+import com.amd.media.MediaTools;
 import com.amd.radio.Radio_Activity_Main;
 import com.amd.radio.SearchRadioActivity;
 import com.amd.util.SkinManager;
@@ -54,6 +55,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
     private boolean pressBackToHome = false;
     private boolean mActResume = false;
     private boolean mMustFresh = false;
+    private boolean mShowMusicErrorDialog = false;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,7 +129,8 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
         super.onResume();
         DebugLog.d(TAG, "onResume ");
         mActResume = true;
-        mHomeFragment.checkErrorDialog();
+        mHomeFragment.checkErrorDialog(mShowMusicErrorDialog);
+        mShowMusicErrorDialog = false;
         if (mMustFresh) {
             refreshSkin(false);
         }
@@ -212,6 +215,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
             String musicMode = intent.getStringExtra("Mode_To_Music");
             boolean hasAutoPlay = intent.hasExtra("autoPlay");
             boolean autoPlay = hasAutoPlay ? intent.getBooleanExtra("autoPlay", false) : false;
+            mShowMusicErrorDialog = intent.getBooleanExtra(MediaTools.INTENT_SHOW_ERROR_DIALOG, false);
             DebugLog.d(TAG, "initCurSource musicMode="+musicMode+"; autoPlay="+autoPlay);
             if ("radio_intent".equals(musicMode)) {
                 mode = MODE_RADIO;

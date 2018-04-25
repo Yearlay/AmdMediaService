@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.amd.media.AmdMediaButtonReceiver;
 import com.amd.media.MediaInterfaceUtil;
+import com.amd.media.MediaTools;
 import com.amd.util.Source;
 import com.amd.util.SkinManager;
 import com.amd.util.SkinManager.SkinListener;
@@ -497,7 +498,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
     }
 
     private void onPlayOver() {
-        if (isVisibility(mListLayout) && mIF.getPlayingDevice() == mDeviceType) {
+        if (isVisibility(mListLayout)/* && mIF.getPlayingDevice() == mDeviceType*/) { //fix bug 21751
             updateListWithoutSelection();
         }
     }
@@ -771,6 +772,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             if (mIF.getRepeatMode() == RepeatMode.OFF) {                    
                 mIF.setRepeatMode(RepeatMode.CIRCLE);
             }
+            boolean playError = false;
             if (index == mIF.getPlayIndex() 
                     && mIF.getPlayingDevice() == mDeviceType
                     && mIF.getPlayingFileType() == FileType.AUDIO
@@ -778,8 +780,8 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
                     && mIF.isPlayState()) {
                 mIF.setInterface(1);//回播放界面
             } else {
-                boolean play = mIF.play(position);
-                if (!play) {
+                playError = !mIF.play(position);
+                if (playError) {
                     DebugLog.e(TAG, "onItemClick position="+position+" play error!");
                     //return;
                 }
@@ -788,6 +790,9 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             musicIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             musicIntent.setClassName("com.haoke.mediaservice", "com.haoke.ui.media.Media_Activity_Main");
             musicIntent.putExtra("Mode_To_Music", "music_play_intent");
+            if (playError) {
+                musicIntent.putExtra(MediaTools.INTENT_SHOW_ERROR_DIALOG, playError);
+            }
             startActivity(musicIntent);
         } else if (mEditMode){//编辑列表
             if (mIF.isCurItemSelected(position)) {

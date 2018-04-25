@@ -751,7 +751,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		mIsPlayDefault = false;
 		if (!mScanMode) {
 			if (getPlayingFileType() != FileType.VIDEO && mPlayState == PlayState.PLAY) {
-				if (mErrorCount < 5) {
+				if (mPlayingListSize > (mErrorCount+1) && mErrorCount < 5) {
 					mErrorCount++;
 					if (mPrevFlag) {
 						pre(true); // 自动播放上一曲						
@@ -776,10 +776,10 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		mIsPlayDefault = false;
 		if (!mScanMode) {
 			if (getPlayingFileType() != FileType.VIDEO && mPlayState == PlayState.PLAY) {
-				if (mErrorCount < 5) {
+				if (mPlayingListSize > (mErrorCount+1) && mErrorCount < 5) {
 					mErrorCount++;
 					if (mPrevFlag) {
-						pre(true); // 自动播放上一曲						
+						pre(true); // 自动播放上一曲
 					} else {
 						next(true); // 自动播放下一曲
 					}

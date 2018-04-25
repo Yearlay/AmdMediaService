@@ -1,5 +1,6 @@
 package com.haoke.ui.music;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
@@ -180,12 +181,23 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 		changeShowLayout(ShowLayout.BT_PLAY_LAYOUT);
 	}
 	
-	public void checkErrorDialog() {
-	    if (Media_IF.getInstance().getMediaState() != MediaState.ERROR) {
+	public void checkErrorDialog(boolean showErrorDialog) {
+	    if (showErrorDialog) {
 	        if (mDialog != null) {
-	            mDialog.CloseDialog();
+	            mDialog.ShowDialog(mContext, DIALOG_TYPE.NONE_BTN, R.string.media_play_nosupport);
 	        }
+	    } else {
+	        if (mDialog != null) {
+	            mDialog.CloseDialogEx();
+            }
 	    }
+//	    int state = Media_IF.getInstance().getMediaState();
+//	    if (state == MediaState.PREPARING
+//	            || state == MediaState.PREPARED) {
+//	        if (mDialog != null) {
+//	            mDialog.CloseDialog();
+//	        }
+//	    }
 	}
 
 	@Override public void setCurInterface(int data) {}
@@ -308,13 +320,13 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 	}
 	
 	private void onError() {
-//	    if (mContext != null && mContext instanceof com.haoke.ui.media.Media_Activity_Main) {
-//            boolean resumed = ((com.haoke.ui.media.Media_Activity_Main)mContext).getActResumed();
-//            if (!resumed) {
-//                DebugLog.e(TAG, "onError but activity is not resumed! return!");
-//                return;
-//            }
-//        }
+	    if (mContext != null && mContext instanceof com.haoke.ui.media.Media_Activity_Main) {
+            boolean resumed = ((com.haoke.ui.media.Media_Activity_Main)mContext).getActResumed();
+            if (!resumed) {
+                DebugLog.e(TAG, "onError but activity is not resumed! return!");
+                return;
+            }
+        }
 	    //modify bug 21124 begin
 	    mErrorCount++;
 	    //modify bug 21124 end

@@ -187,6 +187,12 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 		}
 	}
 	
+	public void CloseDialogEx() {
+        if (mDialog != null && mDialog.isShowing()) {
+            mDialog.dismiss();
+        }
+    }
+	
 	private SkinListener mSkinListener = new SkinListener(new Handler()) {
         @Override
         public void loadingSkinData() {
