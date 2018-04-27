@@ -39,7 +39,6 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 		NONE_BTN,      // 无按钮：过1秒的时间，自动隐藏。
 		ONE_BTN,       // 单按钮：Message提示，确认按钮。
 		TWO_BTN_MSG,   // 双按钮：Message提示，确认按钮，取消按钮。
-		TWO_BTN_COVER  // 双按钮：覆盖列表展示，确认按钮，取消按钮。
 	}
 	
 	public interface OnDialogListener {

@@ -12,7 +12,7 @@
         android:orientation="vertical" >
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="68px"
+            android:layout_height="80px"
             android:gravity="center" >
             <TextView
                 android:layout_width="wrap_content"
@@ -20,11 +20,11 @@
                 android:gravity="center"
                 android:text="@string/copy_dialog_title"
                 android:textColor="#FFFFFF"
-                android:textSize="22dp" />
+                android:textSize="30px" />
         </LinearLayout>
 
         <View
-            android:layout_width="645px"
+            android:layout_width="630px"
             android:layout_height="2px"
             android:layout_marginLeft="15px"
             android:layout_marginRight="20px"
@@ -46,7 +46,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:ellipsize="end"
-                    android:textSize="22sp"
+                    android:textSize="30px"
                     android:textColor="#FFFFFF"
                     android:text="@string/copy_dialog_check_prompt">
                 </TextView>
@@ -69,7 +69,7 @@
                 </ListView>
         
                 <View
-                    android:layout_width="645px"
+                    android:layout_width="630px"
                     android:layout_height="2px"
                     android:layout_marginLeft="15px"
                     android:layout_marginRight="20px"
@@ -95,7 +95,7 @@
                             android:background="@drawable/bd_dialog_button"
                             android:text="@string/music_dialog_btn_ok"
                             android:textColor="@color/bd_text_down"
-                            android:textSize="22dp" />
+                            android:textSize="32px" />
                     </LinearLayout>
 
                     <View
@@ -119,7 +119,7 @@
                             android:background="@drawable/bd_dialog_button"
                             android:text="@string/music_dialog_btn_cancle"
                             android:textColor="@color/bd_text_down"
-                            android:textSize="22dp" />
+                            android:textSize="32px" />
                     </LinearLayout>
                 </LinearLayout>
            </LinearLayout>
@@ -144,7 +144,7 @@
                     android:layout_below="@id/progress_view"
                     android:layout_gravity="center_horizontal"
                     android:textColor="#FFFFFF"
-                    android:textSize="22dp" />
+                    android:textSize="30px" />
             </LinearLayout>
         </FrameLayout>
     </LinearLayout>
