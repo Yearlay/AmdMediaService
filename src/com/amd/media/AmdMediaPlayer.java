@@ -192,6 +192,10 @@ public class AmdMediaPlayer {
 
 				switch (what) {
 				case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
+                    renew();
+                    if (mListener != null)
+                        mListener.onServerDied();
+                    return true;
 				case MediaPlayer.MEDIA_ERROR_UNKNOWN:
 					renew();
 					if (mListener != null)

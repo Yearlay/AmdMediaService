@@ -9,6 +9,7 @@ public interface AmdMediaPlayerListener {
 	public void onPrepared();
 	public void onCompletion();
 	public void onSeekCompletion();
+	public void onServerDied();
 	public void onError();
 	public void onIOException();
 	public void onSurfaceCreated();

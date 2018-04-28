@@ -56,6 +56,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
     private boolean mActResume = false;
     private boolean mMustFresh = false;
     private boolean mShowMusicErrorDialog = false;
+    private Handler mHandler = new Handler();
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,9 +128,9 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
     @Override
     protected void onResume() {
         super.onResume();
-        DebugLog.d(TAG, "onResume ");
+        DebugLog.d(TAG, "onResume mShowMusicErrorDialog="+mShowMusicErrorDialog);
         mActResume = true;
-        mHomeFragment.checkErrorDialog(mShowMusicErrorDialog);
+        mHomeFragment.checkErrorDialog(mHandler, mShowMusicErrorDialog);
         mShowMusicErrorDialog = false;
         if (mMustFresh) {
             refreshSkin(false);
@@ -153,6 +154,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
     @Override
     public void onDestroy() {
         DebugLog.d(TAG, "onDestroy");
+        mHandler.removeCallbacksAndMessages(null);
         mRadioFragment.onDestroy();
         mHomeFragment.onDestroy();
         super.onDestroy();
