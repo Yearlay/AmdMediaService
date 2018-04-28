@@ -169,7 +169,8 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
     		switch (msg.what) {
 			case MSG_SAVE_PLAYTIME:
 				int time = getPosition();
-				savePlayTime(getPlayItem(), time);
+				//savePlayTime(getPlayItem(), time);
+				savePlayTime(mPlayingFileNode, time);
 				DebugLog.d(TAG, "mHandler MSG_SAVE_PLAYTIME time="+time+"; mPlayingPos="+mPlayingPos+"; mPlayingListSize="+mPlayingListSize);
 				removeMessages(MSG_SAVE_PLAYTIME);
 //				mHandler.sendEmptyMessageDelayed(MSG_SAVE_PLAYTIME, MSG_DELAY_PLAYTIME);
