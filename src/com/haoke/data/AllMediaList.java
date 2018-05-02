@@ -207,6 +207,7 @@ public class AllMediaList {
     private static final int END_LOAD_ALL_THREAD = 10;
     private static final int BEGIN_LOAD_ALL_THREAD = 11;
     private static final int UPDATE_COLLECT_INFO_FOR_MEDIAS = 12;
+    private static final int NOTIFY_SCAN_STATE_CHANGE =13;
     
     @SuppressLint("HandlerLeak")
     class LocalHandler extends Handler {
@@ -283,6 +284,9 @@ public class AllMediaList {
             case UPDATE_COLLECT_INFO_FOR_MEDIAS:
                 // TODO
                 mMediaDbHelper.updateCollectDataOfMediaTableFromCollectTable(msg.arg1, msg.arg2);
+                break;
+            case NOTIFY_SCAN_STATE_CHANGE:
+                notifyScanStateChange((StorageBean)msg.obj);
                 break;
             default:
                 break;
@@ -446,7 +450,7 @@ public class AllMediaList {
         }
         storageBean.update(state);
         
-        notifyScanStateChange(storageBean);
+        mLocalHandler.obtainMessage(NOTIFY_SCAN_STATE_CHANGE, storageBean).sendToTarget();
     }
     
     private void notifyScanStateChange(StorageBean storageBean) {
