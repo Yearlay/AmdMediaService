@@ -2,6 +2,7 @@ package com.haoke.ui.music;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewStub;
@@ -181,11 +182,21 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 		changeShowLayout(ShowLayout.BT_PLAY_LAYOUT);
 	}
 	
-	public void checkErrorDialog(boolean showErrorDialog) {
+	public void checkErrorDialog(Handler handler, boolean showErrorDialog) {
 	    if (showErrorDialog) {
-	        if (mDialog != null) {
-	            mDialog.ShowDialog(mContext, DIALOG_TYPE.NONE_BTN, R.string.media_play_nosupport);
-	        }
+	        Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    if (mDialog != null) {
+                        mDialog.ShowDialog(mContext, DIALOG_TYPE.NONE_BTN, R.string.media_play_nosupport);
+                    }
+                }
+            };
+            if (handler != null) {
+                handler.postDelayed(runnable, 100);
+            } else {
+                runnable.run();
+            }
 	    } else {
 	        if (mDialog != null) {
 	            mDialog.CloseDialogEx();
@@ -336,7 +347,7 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 			//modify bug 21124 begin
 			int totalSize = mPlayLayout.getTotalSize();
 			DebugLog.v(TAG, "totalSize ="+ totalSize+",mErrorCount ="+ mErrorCount);
-			if (totalSize == mErrorCount || mErrorCount >= 5) {
+			if (totalSize <= mErrorCount/* || mErrorCount >= 5*/) {
 			    mErrorCount = 0;
 	            goHome();
 	        }

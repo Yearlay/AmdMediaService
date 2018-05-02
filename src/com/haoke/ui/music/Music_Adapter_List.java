@@ -139,12 +139,15 @@ public class Music_Adapter_List extends BaseAdapter implements ID3ParseListener 
                 boolean isSelectedItem = mIF.isCurItemSelected(position);
                 boolean isLastPlayItem = isLastPlayItem(position);
                 // 控制焦点项显示
-                if (isPlayingItem || isLastPlayItem) {
+                if (isPlayingItem) {
                     if (isPlaying(fileNode)) {
                         holder.mPlayStateImage.setImageDrawable(skinManager.getDrawable(R.drawable.music_play_anim));
                     } else {
                         holder.mPlayStateImage.setImageDrawable(skinManager.getDrawable(R.drawable.music_play_anim_1));
                     }
+                    holder.mPlayStateImage.setVisibility(View.VISIBLE);
+                } else if (isLastPlayItem) {
+                    holder.mPlayStateImage.setImageDrawable(skinManager.getDrawable(R.drawable.music_play_anim_1));
                     holder.mPlayStateImage.setVisibility(View.VISIBLE);
                 } else {
                     holder.mPlayStateImage.setVisibility(View.GONE);
