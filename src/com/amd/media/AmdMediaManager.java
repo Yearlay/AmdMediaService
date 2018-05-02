@@ -84,6 +84,8 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	private int mRandomListPos = 0; // 当前随机列表焦点位置
 	private FileNode mPlayingFileNode = null;
 	private FileNode mPlayMusicFileNode;
+	//当前媒体框中的歌曲对应的设备
+	private int mWidgetDeviceType = DeviceType.NULL;
 	//------------------end----------------/
 	
 	private AudioManager mAudioManager;
@@ -894,7 +896,8 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 				setPlayingData(deviceType, fileType, false);
 			}
 			if (mMediaMode == MEDIA_MODE_AUDIO && fileType == FileType.AUDIO
-			        && deviceType == mAllMediaList.getLastDeviceType()) {
+			        && (deviceType == mAllMediaList.getLastDeviceType()
+			        || mWidgetDeviceType == deviceType)) {
 			    mPlayMusicFileNode = null;
 			    AllMediaList.notifyUpdateAppWidgetByAudio();
 			}
@@ -1198,7 +1201,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 			if (lists.size() > 0) {
 				return 0;
 			}
-			DebugLog.v(TAG, "playDefault no song!");
+			DebugLog.v(TAG, "getPlayDefaultIndex no song!");
 			return -1;
 		}
 		int index = -1;
@@ -1215,7 +1218,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	public FileNode getDefaultItem() {
 		boolean loadFlag = true;
 		if (mPlayMusicFileNode != null && mPlayMusicFileNode.isExist(mContext)) {
-			return mPlayMusicFileNode;
+			loadFlag = false;
 		} else {
 			mPlayMusicFileNode = null;
 		}
@@ -1246,18 +1249,23 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 						}
 						if (playFileNode != null && playFileNode.isExist(mContext)) {
 							mPlayMusicFileNode = playFileNode;
-							return mPlayMusicFileNode;
+							break;
 						}
 						for (FileNode fileNode : lists) {
 							if (fileNode != null && fileNode.isExist(mContext)) {
 								mPlayMusicFileNode = fileNode;
-								return mPlayMusicFileNode;
+								break;
 							}
 						}
 						break;
 					}
 				}
 			}
+		}
+		if (mPlayMusicFileNode != null) {
+	        mWidgetDeviceType = mPlayMusicFileNode.getDeviceType();
+		} else {
+		    mWidgetDeviceType = DeviceType.NULL;
 		}
 		return mPlayMusicFileNode;
 	}
