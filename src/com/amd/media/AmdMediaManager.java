@@ -162,7 +162,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
         return mPlayingFileType;
     }
     
-    private static final int MSG_DELAY_PLAYTIME = 3000;
+    private static final int MSG_DELAY_PLAYTIME = 1000;
     private static final int MSG_SAVE_PLAYTIME = 1;
     private static final int MSG_SAVE_PLAYSTATE = 2;
     private static final int MSG_PARSE_ID3_INFO = 3;
@@ -175,10 +175,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 				savePlayTime(mPlayingFileNode, time);
 				DebugLog.d(TAG, "mHandler MSG_SAVE_PLAYTIME time="+time+"; mPlayingPos="+mPlayingPos+"; mPlayingListSize="+mPlayingListSize);
 				removeMessages(MSG_SAVE_PLAYTIME);
-//				mHandler.sendEmptyMessageDelayed(MSG_SAVE_PLAYTIME, MSG_DELAY_PLAYTIME);
-				//modify bug 20798 begin
-				sendEmptyMessageDelayed(MSG_SAVE_PLAYTIME, 200);
-				//modify bug 20798 end
+				mHandler.sendEmptyMessageDelayed(MSG_SAVE_PLAYTIME, MSG_DELAY_PLAYTIME);
 				break;
 			case MSG_SAVE_PLAYSTATE:
 				if (!hasMessages(msg.what)) {
@@ -215,10 +212,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	// 开始播放时间记录
 	private void startRecordTimer() {
 		mHandler.removeMessages(MSG_SAVE_PLAYTIME);
-//		mHandler.sendEmptyMessageDelayed(MSG_SAVE_PLAYTIME, MSG_DELAY_PLAYTIME);
-		//modify bug 20798 begin
-		mHandler.sendEmptyMessageDelayed(MSG_SAVE_PLAYTIME, 200);
-		//modify bug 20798 end
+		mHandler.sendEmptyMessageDelayed(MSG_SAVE_PLAYTIME, MSG_DELAY_PLAYTIME);
 	}
 
 	// 停止播放时间记录
@@ -354,6 +348,8 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 					savePlayTime(node, 0);
 				}
 			}
+		} else {
+		    stopRecordTimer();
 		}
 		
 		mPlayingFileNode = node;
