@@ -531,14 +531,14 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 						onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
 					}
 					mPlayLayout.mNextPlay = false;
-					mPlayLayout.getVideoController().playPre();
+					mPlayLayout.getVideoController().playPre(true);
 					break;
 				case VRIntent.NEXT_VIDEO:
 					if (!mPlaying) {
 						onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
 					}
 					mPlayLayout.mNextPlay = true;
-					mPlayLayout.getVideoController().playNext();
+					mPlayLayout.getVideoController().playNext(true);
 					break;
 				default:
 					break;

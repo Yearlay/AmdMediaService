@@ -152,9 +152,9 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
         mUnsupportView.setVisibility(View.GONE);
         if (mVideoController != null && !notPlayNext) {
             if (mNextPlay) {
-                mVideoController.playNext();
+                mVideoController.playNext(true);
             } else {
-                mVideoController.playPre();
+                mVideoController.playPre(true);
             }
         }
     }
@@ -264,7 +264,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
                 DebugLog.d(TAG, "onCompletion setBeforePlaystate " + getBeforePlaystate());
                 updateTimeBar();
                 mVideoController.getPlayFileNode().setPlayTime(0);
-                mVideoController.playNext();
+                mVideoController.playNext(true);
             }
         });
 
@@ -358,7 +358,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
         case KeyEvent.KEYCODE_MEDIA_PREVIOUS: // 88
             if (mVideoController != null) {
                 if (mVideoController.getVideoView().getVisibility() == View.VISIBLE) {
-                    mVideoController.playPre();
+                    mVideoController.playPre(true);
                     mNextPlay = false;
                 }
             }
@@ -366,7 +366,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
         case KeyEvent.KEYCODE_MEDIA_NEXT: // 87
             if (mVideoController != null) {
                 if (mVideoController.getVideoView().getVisibility() == View.VISIBLE) {
-                    mVideoController.playNext();
+                    mVideoController.playNext(true);
                     mNextPlay = true;
                 }
             }
@@ -482,8 +482,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
                 break;
             }
             mNextPlay = false;
-            setBeforePlaystate(true);
-            mVideoController.playPre();
+            mVideoController.playPre(true);
             updateCollectView();
             break;
         case R.id.video_ctrlbar_fastpre: // 快退
@@ -511,8 +510,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
                 break;
             }
             mNextPlay = true;
-            setBeforePlaystate(true);
-            mVideoController.playNext();
+            mVideoController.playNext(true);
             updateCollectView();
             break;
         case R.id.collect_video:

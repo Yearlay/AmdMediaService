@@ -518,7 +518,8 @@ public class VideoPlayController implements AudioFocusListener {
 	}
 
 	// 上一曲
-	public boolean playPre() {
+	public boolean playPre(boolean playState) {
+	    videoLayout.setBeforePlaystate(playState);
 		int pos = 0;
 		pos = mCurPlayVideoIndex;
 		pos--;
@@ -531,7 +532,8 @@ public class VideoPlayController implements AudioFocusListener {
 	}
 
 	// 下一曲
-	public boolean playNext() {
+	public boolean playNext(boolean playState) {
+	    videoLayout.setBeforePlaystate(playState);
 		int pos = 0;
 		pos = mCurPlayVideoIndex;
 		pos++;
@@ -656,13 +658,13 @@ public class VideoPlayController implements AudioFocusListener {
 			case MSG_PREPLAY:
 				DebugLog.d(TAG, "mHandler MSG_PREPLAY");
 				if (mVideView != null) {
-					playPre();
+					playPre(true);
 				}
 				break;
 			case MSG_NEXTPLAY:
 				DebugLog.d(TAG, "mHandler MSG_NEXTPLAY");
 				if (mVideView != null) {
-					playNext();
+					playNext(true);
 				}
 				break;
 			case MSG_SAVE_PLAYTIME:
