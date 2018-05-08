@@ -447,6 +447,10 @@ public class AllMediaList {
         if (storageBean == null) {
             storageBean = new StorageBean(devicePath, state);
             mScanStateHash.put(devicePath, storageBean);
+        } else {
+            if (storageBean.getState() == state) {
+                return;
+            }
         }
         storageBean.update(state);
         
