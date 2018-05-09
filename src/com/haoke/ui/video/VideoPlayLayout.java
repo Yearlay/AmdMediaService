@@ -332,6 +332,9 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
     };
 
     public void mediaKeyHandle(Context context, int key) {
+        if (MediaInterfaceUtil.isButtonClickTooFast()) {
+            return;
+        }
         switch (key) {
         case KeyEvent.KEYCODE_MEDIA_PLAY: // 126
             if (!Image_Activity_Main.isPlayImage(context) && mVideoController != null) {
@@ -471,6 +474,9 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
     }
     @Override
     public void onClick(View view) {
+        if (MediaInterfaceUtil.isButtonClickTooFast()) {
+            return;
+        }
         stopHideTimer();
         setBeforePlaystate(mVideoController.isVideoPlaying);
         switch (view.getId()) {

@@ -764,4 +764,9 @@ public class MediaInterfaceUtil {
             RecordDevicePlay.instance().checkUsbPlay(deviceType);
         }
     }
+    
+    public static boolean isMediaKeyCode(int keyCode) {
+        return keyCode == KeyEvent.KEYCODE_MEDIA_PLAY || keyCode == KeyEvent.KEYCODE_MEDIA_PAUSE
+                || keyCode == KeyEvent.KEYCODE_MEDIA_PREVIOUS || keyCode == KeyEvent.KEYCODE_MEDIA_NEXT;
+    }
 }
