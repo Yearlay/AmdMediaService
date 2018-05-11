@@ -238,6 +238,9 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 			case MediaFunc.ERROR://104
 				onError();
 				break;
+			case MediaFunc.PLAY_OVER:
+			    onPlayOver();
+			    break;
 			case MediaFunc.COMPLETION:
 				onCompletion();
 				break;
@@ -354,6 +357,12 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 			//modify bug 21124 end
 		}
 		
+	}
+	
+	private void onPlayOver() {
+	    if (mPlayLayout != null && mPlayLayout.getVisibility() == View.VISIBLE) {
+	        goHome();
+        }
 	}
 	
 	private void onCompletion() {
