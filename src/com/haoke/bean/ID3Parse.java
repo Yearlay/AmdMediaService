@@ -81,14 +81,17 @@ public class ID3Parse {
     }
     
     public class LoadThread extends Thread {
+        private Object mLock;
         List<LoadData> mLoadMsgList = Collections.synchronizedList(new ArrayList<LoadData>());
         volatile boolean isRunning;
         
         public void addToListAndStart(LoadData data) {
-            if (mLoadMsgList.size() > 1) {
-                mLoadMsgList.add(1, data);
-            } else {
-                mLoadMsgList.add(data);
+            synchronized (mLock) {
+                if (mLoadMsgList.size() > 1) {
+                    mLoadMsgList.add(1, data);
+                } else {
+                    mLoadMsgList.add(data);
+                }
             }
             if (!isRunning) {
                 isRunning = true; // 防止非常快速地调用两次addToListAndStart（来不及调用run方法）。
@@ -103,7 +106,10 @@ public class ID3Parse {
         public void run() {
             try {
                 while (mLoadMsgList.size() > 0) {
-                    LoadData loaddata = mLoadMsgList.remove(0);
+                    LoadData loaddata = null;
+                    synchronized (mLock) {
+                        loaddata = mLoadMsgList.remove(0);
+                    }
                     FileNode fileNode = loaddata.fileNode;
                     if (fileNode.getParseId3() == 0) {
                         fileNode.parseID3Info();
