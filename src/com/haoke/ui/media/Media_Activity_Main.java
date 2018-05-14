@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -82,7 +83,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
         mViewPager.disableScroll(true);
         mSearchButton = findViewById(R.id.search_button);
 
-        registerReceiver(mReceiver, new IntentFilter(VRConstant.VRIntent.ACTION_FINISH_MUSIC_RADIO));
+        registerReceiver(mReceiver, new IntentFilter(VRConstant.VRIntent.ACTION_FINISH_MEDIA_ACTIVITY));
         initCurSource();
         SkinManager.registerSkin(mSkinListener);
         //getContentResolver().registerContentObserver(MediaInterfaceUtil.URI_SKIN, false, mContentObserver);
@@ -369,8 +370,26 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         public void onReceive(android.content.Context context, Intent intent) {
             String action = intent.getAction();
-            if (VRConstant.VRIntent.ACTION_FINISH_MUSIC_RADIO.equals(action)) {
-                Media_Activity_Main.this.finish();
+            if (VRConstant.VRIntent.ACTION_FINISH_MEDIA_ACTIVITY.equals(action)) {
+                String which = intent.getStringExtra(VRConstant.VRIntent.KEY_CLOSE);
+                if (TextUtils.isEmpty(which)) {
+                    DebugLog.e(TAG, "mReceiver which[KEY_CLOSE] is empty! return");
+                    return;
+                }
+                boolean willFinish = false;
+                if (VRConstant.VRIntent.KEY_RADIO.equals(which)) {
+                    if (isShowRadioLayout()) {
+                        willFinish = true;
+                    }
+                } else if (VRConstant.VRIntent.KEY_BTMUSIC.equals(which)
+                        || VRConstant.VRIntent.KEY_MUSIC.equals(which)) {
+                    if (!isShowRadioLayout()) {
+                        willFinish = true;
+                    }
+                }
+                if (willFinish) {
+                    Media_Activity_Main.this.finish();
+                }
             }
         };
     };

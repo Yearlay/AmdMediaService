@@ -84,7 +84,12 @@ public class VRConstant {
 		public static final int PRE_VIDEO = 213;
 		public static final int NEXT_VIDEO = 214;
 		
-		public static final String ACTION_FINISH_MUSIC_RADIO = "com.jsbd.vr.finish.music_radio";
+		public static final String ACTION_FINISH_MEDIA_ACTIVITY = "com.jsbd.vr.finish.media.activity";
+		public static final String KEY_CLOSE = "close";
+		public static final String KEY_RADIO = "radio";
+		public static final String KEY_MUSIC = "music";
+		public static final String KEY_BTMUSIC = "bt_music";
+		//public static final String ACTION_FINISH_MUSIC_RADIO = "com.jsbd.vr.finish.music_radio";
 	}
 	
 }

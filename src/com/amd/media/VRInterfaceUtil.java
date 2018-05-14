@@ -167,7 +167,8 @@ public class VRInterfaceUtil {
                 mMediaIF.setPlayState(PlayState.PAUSE);
             }
             mMediaIF.setRecordPlayState(PlayState.PAUSE);
-            sendBroadcast(new Intent(VRIntent.ACTION_FINISH_MUSIC_RADIO));
+            sendBroadcast(new Intent(VRIntent.ACTION_FINISH_MEDIA_ACTIVITY)
+                .putExtra(VRIntent.KEY_CLOSE, VRIntent.KEY_MUSIC));
         }
     }
     
@@ -214,7 +215,8 @@ public class VRInterfaceUtil {
                 mBTIF.music_pause();
             }
 //            mBTIF.setRecordPlayState(PlayState.PAUSE);
-            sendBroadcast(new Intent(VRIntent.ACTION_FINISH_MUSIC_RADIO));
+            sendBroadcast(new Intent(VRIntent.ACTION_FINISH_MEDIA_ACTIVITY)
+                .putExtra(VRIntent.KEY_CLOSE, VRIntent.KEY_BTMUSIC));
         }
     }
     
@@ -227,7 +229,8 @@ public class VRInterfaceUtil {
                 mRadioIF.setEnable(false);
             }
             mRadioIF.setRecordRadioOnOff(false);
-            sendBroadcast(new Intent(VRIntent.ACTION_FINISH_MUSIC_RADIO));
+            sendBroadcast(new Intent(VRIntent.ACTION_FINISH_MEDIA_ACTIVITY)
+                .putExtra(VRIntent.KEY_CLOSE, VRIntent.KEY_RADIO));
         }
     }
     
@@ -284,7 +287,8 @@ public class VRInterfaceUtil {
                 if (playState) {
                     mMediaIF.setPlayState(PlayState.PAUSE);
                 }
-                sendBroadcast(new Intent(VRIntent.ACTION_FINISH_MUSIC_RADIO));
+                sendBroadcast(new Intent(VRIntent.ACTION_FINISH_MEDIA_ACTIVITY)
+                    .putExtra(VRIntent.KEY_CLOSE, VRIntent.KEY_MUSIC));
             }
         }
     }
