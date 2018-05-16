@@ -81,7 +81,7 @@ public class ID3Parse {
     }
     
     public class LoadThread extends Thread {
-        private Object mLock;
+        private Object mLock = new Object();
         List<LoadData> mLoadMsgList = Collections.synchronizedList(new ArrayList<LoadData>());
         volatile boolean isRunning;
         
