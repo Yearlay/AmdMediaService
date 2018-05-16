@@ -47,7 +47,7 @@
 	        android:layout_marginLeft="10px"
 	        android:background="@drawable/search_cancel_bg"
 	        android:text="取消"
-	        android:textColor="@drawable/text_color_selector"
+	        android:textColor="@color/hk_custom_text_p"
 	        android:textSize="30px" />
     </LinearLayout>
     

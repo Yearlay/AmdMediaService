@@ -72,7 +72,8 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
     private Drawable mSearchIconDrawable;
     private Drawable mClearButtonDrawable;
     private Drawable mCancelButtonDrawable;
-    private ColorStateList mCancelButtonColorStateList;
+//    private ColorStateList mCancelButtonColorStateList;
+    private int mSearchCancelTextColor;
     private ProgressDialog mProgressDialog;
 
     
@@ -179,14 +180,16 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
             mSearchIconDrawable = skinManager.getDrawable(R.drawable.search_icon);
             mClearButtonDrawable = skinManager.getDrawable(R.drawable.search_num_clear);
             mCancelButtonDrawable = skinManager.getDrawable(R.drawable.search_cancel_bg);
-            mCancelButtonColorStateList = skinManager.getColorStateList(R.drawable.text_color_selector);
+//            mCancelButtonColorStateList = skinManager.getColorStateList(R.drawable.text_color_selector);
+            mSearchCancelTextColor = skinManager.getColor(R.color.hk_custom_text_p);
         }
         if (!loading) {
             mInputEditText.setBackgroundDrawable(mInputEditTextDrawable);
             mSearchIcon.setBackgroundDrawable(mSearchIconDrawable);
             mClearButton.setBackgroundDrawable(mClearButtonDrawable);
             mCancelButton.setBackgroundDrawable(mCancelButtonDrawable);
-            mCancelButton.setTextColor(mCancelButtonColorStateList);
+//            mCancelButton.setTextColor(mCancelButtonColorStateList);
+            mCancelButton.setTextColor(mSearchCancelTextColor);
             mSearchAdapter.notifyDataSetChanged();
         }
     }

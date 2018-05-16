@@ -398,7 +398,8 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 		} else {
 			playState = Media_IF.getInstance().getPlayState() == PlayState.PLAY;
 			updateCollectIcon();
-			if (playState) {
+			boolean resumed = ((com.haoke.ui.media.Media_Activity_Main)getContext()).getActResumed();
+			if (playState && resumed) {
 				mTimeHandler.sendEmptyMessageDelayed(MSG_UPDATE_TIME, 200);
 			}
 		}
@@ -441,9 +442,8 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 	private Handler mTimeHandler = new Handler() {
 		public void handleMessage(Message msg) {
 			int what = msg.what;
-			DebugLog.d(TAG, "mTimeHandler what="+what);
 			removeMessages(what);
-			switch (msg.what) {
+			switch (what) {
 			case MSG_UPDATE_TIME:
 				mFileNode = mIF.getPlayItem();
 				int curr = mIF.getPosition();
@@ -456,14 +456,17 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
 				}
 				break;
 			case MSG_SEEKBAR_CHANGE:
+	            DebugLog.d(TAG, "mTimeHandler what="+what);
 				int progress = mTimeSeekBar.getProgress();
 				mIF.setPosition(progress);
 				setCurrTime(progress);
 				break;
 			case MSG_SCAN_MUSIC_CHANGE:
+	            DebugLog.d(TAG, "mTimeHandler what="+what);
 				checkScanModeAndGoOn();
 				break;
 			case MSG_MAYBE_PLAY_BT:
+	            DebugLog.d(TAG, "mTimeHandler what="+what);
 				refreshFromViewPagerMaybePlayBTEx(msg.arg1 == 1 ? true : false);
 				break;
 			}

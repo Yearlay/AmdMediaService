@@ -74,7 +74,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	//当前设置的设备信息
 	private int mDeviceType = DeviceType.NULL;
 	private int mFileType = FileType.NULL;
-	private int mListSize = -1;
+	//private int mListSize = -1;
 	//播放器播放的设备信息
 	private int mPlayingDeviceType = DeviceType.NULL;
 	private int mPlayingFileType = FileType.NULL;
@@ -935,8 +935,8 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	};
 	
 	private void loadData() {
-		ArrayList<FileNode> lists = mAllMediaList.getMediaList(mDeviceType, mFileType);
-		mListSize = lists.size();
+		//ArrayList<FileNode> lists = mAllMediaList.getMediaList(mDeviceType, mFileType);
+		//mListSize = lists.size();
 	}
 	
 	private void setPlayingData(int deviceType, int fileType, boolean force) {
@@ -982,7 +982,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 			if (size != mPlayingListSize) {
 				resetRandomNum(size);
 			}
-			mPlayingListSize = mListSize = size;
+			mPlayingListSize = size;
 			//FileNode fileNode = mAllMediaList.getPlayState(mPlayingDeviceType, mPlayingFileType);
 			mPlayingPos = -1;//changeFileNodeToIndex(fileNode);
 			mRandomListPos = 0;//changeIndexToRandomPos(mPlayingPos);
@@ -1158,7 +1158,11 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	}
 	
 	public int getCurListTotal() {
-		return mListSize == -1 ? 0 : mListSize;
+	    if (mDeviceType == DeviceType.NULL) {
+	        return 0;
+	    }
+	    return mAllMediaList.getMediaList(mDeviceType, mFileType).size();
+		//return mListSize == -1 ? 0 : mListSize;
 	}
 	
 	public int getPlayingPos() {

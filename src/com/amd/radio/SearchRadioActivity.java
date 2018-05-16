@@ -64,7 +64,7 @@ public class SearchRadioActivity extends Activity implements OnClickListener,
 	private Drawable mSearchIconDrawable;
 	private Drawable mSearchClearDrawable;
 	private Drawable mSearchcancelDrawable;
-	private ColorStateList mSearchcancelColorStateList;
+//	private ColorStateList mSearchcancelColorStateList;
 	private Drawable mButton0Drawable;
 	private Drawable mButton1Drawable;
     private Drawable mButton2Drawable;
@@ -81,6 +81,7 @@ public class SearchRadioActivity extends Activity implements OnClickListener,
     private Drawable mSearchNumBackDrawable;
     private Drawable mSearchNumHideDrawable;
     private Drawable mSearchNumOkDrawable;
+    private int mSearchCancelTextColor;
     
 	private Button mButton0;
 	private Button mButton1;
@@ -114,7 +115,7 @@ public class SearchRadioActivity extends Activity implements OnClickListener,
 	        mSearchIconDrawable = mSkinManager.getDrawable(R.drawable.search_icon);
 	        mSearchClearDrawable = mSkinManager.getDrawable(R.drawable.search_num_clear);
 	        mSearchcancelDrawable = mSkinManager.getDrawable(R.drawable.search_cancel_bg);
-	        mSearchcancelColorStateList = mSkinManager.getColorStateList(R.drawable.text_color_selector);
+//	        mSearchcancelColorStateList = mSkinManager.getColorStateList(R.drawable.text_color_selector);
 	        mButton0Drawable = mSkinManager.getDrawable(R.drawable.search_num_bg);
 	        mButton1Drawable = mSkinManager.getDrawable(R.drawable.search_num_bg);
 	        mButton2Drawable = mSkinManager.getDrawable(R.drawable.search_num_bg);
@@ -132,6 +133,8 @@ public class SearchRadioActivity extends Activity implements OnClickListener,
 	        mSearchNumBackDrawable = mSkinManager.getDrawable(R.drawable.search_num_back);
 	        mSearchNumHideDrawable = mSkinManager.getDrawable(R.drawable.search_num_hide);
 	        mSearchNumOkDrawable = mSkinManager.getDrawable(R.drawable.search_num_ok);
+	        
+	        mSearchCancelTextColor = mSkinManager.getColor(R.color.hk_custom_text_p);
 	    }
         if (!loading) {
             mInputEditText.setBackground(mInputEditTextDrawable);
@@ -140,7 +143,7 @@ public class SearchRadioActivity extends Activity implements OnClickListener,
             mSearchClear.setBackgroundDrawable(mSearchClearDrawable);
             
             mSearchcancel.setBackgroundDrawable(mSearchcancelDrawable);
-            mSearchcancel.setTextColor(mSearchcancelColorStateList);
+            mSearchcancel.setTextColor(mSearchCancelTextColor);
             
             mButton0.setBackground(mButton0Drawable);
             mButton1.setBackground(mButton1Drawable);
