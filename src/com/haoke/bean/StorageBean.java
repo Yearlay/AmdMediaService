@@ -1,6 +1,7 @@
 package com.haoke.bean;
 
 import com.haoke.constant.MediaUtil;
+import com.haoke.constant.MediaUtil.DeviceType;
 
 public class StorageBean {
     public static final int EJECT = 0;
@@ -92,6 +93,9 @@ public class StorageBean {
     boolean isLoadCompleted;
 
 	public boolean isLoadCompleted() {
+	    if (deviceType == DeviceType.COLLECT) {
+	        return true;
+	    }
         return isLoadCompleted;
     }
 

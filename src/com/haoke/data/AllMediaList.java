@@ -20,6 +20,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.haoke.application.MediaApplication;
@@ -98,9 +99,31 @@ public class AllMediaList {
                 }
                 mediaList = new ArrayList<FileNode>();
             }
-            DebugLog.i(TAG, "getMediaList --> deviceType: " +deviceType + " && fileType: " + fileType
-                    + " the size if list: " + mediaList.size());
+            if (mediaList.size() == 0) {
+                printMediaListSizeIsZero(deviceType, fileType);
+            } else {
+                DebugLog.i(TAG, "getMediaList --> deviceType: " +deviceType + " && fileType: " + fileType
+                        + " the size if list: " + mediaList.size());
+            }
             return mediaList;
+        }
+    }
+    
+    private void printMediaListSizeIsZero(int deviceType, int fileType) {
+        DebugLog.i(TAG, "printMediaListSizeIsZero --> deviceType: " +deviceType + " && fileType: " + fileType
+                + " the size if list: 0");
+        StorageBean storageBean = getStoragBean(deviceType);
+        if (storageBean.isUnmounted()) { // U盘是拔出的状态。
+            DebugLog.d(TAG, "printMediaListSizeIsZero --> Reason: Eject status!");
+        } else if (storageBean.getState() == StorageBean.MOUNTED ||
+                storageBean.getState() == StorageBean.FILE_SCANNING) { // U盘刚刚挂载上或还在扫描中。
+            Log.e(TAG, "printMediaListSizeIsZero --> Reason: Mounted but not scanning Over!", new Throwable());
+        } else if (storageBean.isScanCompleted()) { // U盘已经扫描完成。
+            if (storageBean.isLoadCompleted()) { // U盘扫描完成，且数据库查询完成。
+                DebugLog.d(TAG, "printMediaListSizeIsZero --> Reason: no medias!");
+            } else { // U盘扫描完成，但数据库查询未完成。
+                Log.e(TAG, "printMediaListSizeIsZero --> Reason: scan over but not load over!", new Throwable());
+            }
         }
     }
     
