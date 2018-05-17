@@ -1123,4 +1123,18 @@ public class Media_IF extends CarService_IF {
 		}
 	}
 	//-------------------------------仪表接口结束-----------------------------
+	//-------------------------------发送数据给mcu 开始-----------------------------
+	public void sendDataToMcu(byte addr, int cmd, byte[] data) {
+       try {
+            if (mServiceIF != null) {
+                DebugLog.d(TAG, "sendDataToMcu addr:"+addr+" cmd:"+cmd);
+                mServiceIF.mcu_sendDataToMcu(addr, cmd, data);
+            } else {
+                DebugLog.e(TAG, "mServiceIF==null");
+            }
+        } catch (Exception e) {
+            DebugLog.e(TAG, "sendDataToMcu" + e);
+        }
+	}
+	//-------------------------------发送数据给mcu 结束-----------------------------
 }

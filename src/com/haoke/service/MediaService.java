@@ -14,6 +14,7 @@ import android.view.KeyEvent;
 import com.amd.bt.BTMusicManager;
 import com.amd.bt.BT_IF;
 import com.amd.bt.BT_Listener;
+import com.amd.media.DiagnoseMode;
 import com.amd.media.MediaInterfaceUtil;
 import com.amd.media.VRInterfaceUtil;
 import com.amd.radio.RadioCityListener;
@@ -269,6 +270,10 @@ public class MediaService extends Service implements Media_CarListener, MediaSca
                      handleModeKey();
                 } else if (keyCode == McuDef.KeyCode.POWER2) {
                     
+                } else if (keyCode == McuDef.KeyCode.INTRO // 全部循环（诊断模式下）
+                    || keyCode == McuDef.KeyCode.RANDOM    // 随机播放（诊断模式下）
+                    || keyCode == McuDef.KeyCode.REPEAT) { // 单曲循环（诊断模式下）
+                    DiagnoseMode.handleMusicPlayMode(keyCode);
                 }
             }
         }
