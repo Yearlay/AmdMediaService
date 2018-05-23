@@ -69,7 +69,6 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
     private FileNode mFileNode;
     private boolean mPlayStateBefore = false;
     
-    boolean isErrorShow;
     boolean isResume;
 
     private SkinManager skinManager;
@@ -243,8 +242,10 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
             public boolean onError(MediaPlayer arg0, int arg1, int arg2) {
                 DebugLog.e(TAG, "play onError");
                 mVideoController.getVideoView().setVideoURI(null);
+                if (mFileNode != null) {
+                    mFileNode.setUnSupportFlag(true);
+                }
                 if (isResume) {
-                    isErrorShow = true;
                     showUnsupportView();
                     if (mFileNode != null && mTitleTextView != null) {
                         mTitleTextView.setText(mFileNode.getFileName());
@@ -428,7 +429,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
             startHideTimer();
         }
         
-        if (isErrorShow) {
+        if (mFileNode.isUnSupportFlag()) {
             slaverShow(true);
             showUnsupportView();
             if (mFileNode != null && mTitleTextView != null) {
