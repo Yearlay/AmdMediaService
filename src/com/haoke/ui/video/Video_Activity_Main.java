@@ -626,7 +626,6 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 					mErrorCount = 0;
 					onChangeFragment(SWITCH_TO_LIST_FRAGMENT);
 				}
-				mPlayLayout.isErrorShow = false;
 				break;
 			case DISMISS_COPY_DIALOG:
 				if (mListLayout.isEditMode()) {

@@ -1,6 +1,5 @@
 package com.haoke.ui.video;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import android.app.AlertDialog;
@@ -70,7 +69,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
     private FileNode mFileNode;
     private boolean mPlayStateBefore = false;
     
-    boolean isErrorShow;
+    boolean isResume;
 
     private SkinManager skinManager;
     private Toast mToEndToast;
@@ -243,15 +242,19 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
             public boolean onError(MediaPlayer arg0, int arg1, int arg2) {
                 DebugLog.e(TAG, "play onError");
                 mVideoController.getVideoView().setVideoURI(null);
-                isErrorShow = true;
-                showUnsupportView();
-                if (mFileNode != null && mTitleTextView != null) {
-                    mTitleTextView.setText(mFileNode.getFileName());
+                if (mFileNode != null) {
+                    mFileNode.setUnSupportFlag(true);
                 }
-                updateCollectView();
-                mActivityHandler.removeMessages(Video_Activity_Main.HIDE_UNSUPPORT_VIEW);
-                mActivityHandler.sendEmptyMessageDelayed(Video_Activity_Main.HIDE_UNSUPPORT_VIEW, 1000);
-                mLoading.setVisibility(View.GONE);
+                if (isResume) {
+                    showUnsupportView();
+                    if (mFileNode != null && mTitleTextView != null) {
+                        mTitleTextView.setText(mFileNode.getFileName());
+                    }
+                    updateCollectView();
+                    mActivityHandler.removeMessages(Video_Activity_Main.HIDE_UNSUPPORT_VIEW);
+                    mActivityHandler.sendEmptyMessageDelayed(Video_Activity_Main.HIDE_UNSUPPORT_VIEW, 1000);
+                    mLoading.setVisibility(View.GONE);
+                }
                 return true;
             }
         });
@@ -409,6 +412,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 
     public void onResume() {
         DebugLog.d(TAG, "-- onResume " + getBeforePlaystate() + "  ,version: " + AmdConfig.APP_VERSION_DATE + " : " + AmdConfig.APP_VERSION_TIME);
+        isResume = true;
         if (mFileNode != null) {
             mTitleTextView.setText(mFileNode.getFileName());
         }
@@ -425,7 +429,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
             startHideTimer();
         }
         
-        if (isErrorShow) {
+        if (mFileNode.isUnSupportFlag()) {
             slaverShow(true);
             showUnsupportView();
             if (mFileNode != null && mTitleTextView != null) {
@@ -443,6 +447,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
         if (mContext == null) {
             return;
         }
+        isResume = false;
         mVideoController.stopRecordTimer();
         mVideoController.getVideoView().setVisibility(View.INVISIBLE);
 
