@@ -35,10 +35,10 @@ public class UsbAutoPlay {
             isBootInsertUsb2 = MediaInterfaceUtil.isUsbOn(DeviceType.USB2);
             Log.e(TAG, "setServiceStartTime 1 isBootInsertUsb1="+isBootInsertUsb1+"; isBootInsertUsb2="+isBootInsertUsb2);
             if (!isBootInsertUsb1) {
-                isBootInsertUsb1 = MediaInterfaceUtil.isUsbOnEx(DeviceType.USB1);
+                isBootInsertUsb1 = com.jsbd.util.BDDeviceManager.isUsbOn(DeviceType.USB1);
             }
             if (!isBootInsertUsb2) {
-                isBootInsertUsb2 = MediaInterfaceUtil.isUsbOnEx(DeviceType.USB2);
+                isBootInsertUsb2 = com.jsbd.util.BDDeviceManager.isUsbOn(DeviceType.USB2);
             }
             Log.e(TAG, "setServiceStartTime 2 isBootInsertUsb1="+isBootInsertUsb1+"; isBootInsertUsb2="+isBootInsertUsb2);
         }
