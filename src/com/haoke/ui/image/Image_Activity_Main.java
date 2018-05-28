@@ -62,6 +62,7 @@ public class Image_Activity_Main extends Activity implements
     private TextView mCancelView;
     private TextView mCopyTextView;
     private String mFilePathFromSearch;
+    private boolean mAutoPlayFlag = true;
     private boolean isShow;
     
     private ArrayList<FileNode> mImageList = new ArrayList<FileNode>();
@@ -138,6 +139,7 @@ public class Image_Activity_Main extends Activity implements
         if("MediaSearchActivity".equals(intent.getStringExtra("isfrom"))){ //search入口
         	DebugLog.e(TAG, "onNewIntent MediaSearchActivity");
         	mFilePathFromSearch = intent.getStringExtra("filepath");
+        	mAutoPlayFlag = intent.getBooleanExtra("autoplay", true);
         } else if(intent != null && intent.getIntExtra(MediaService.KEY_COMMAND_FROM, 100) == MediaService.VALUE_FROM_VR_APP) { // VR打开图片
         	DebugLog.e(TAG, "initIntent VALUE_FROM_VR_APP");
         	ArrayList<FileNode> imageList = null;
@@ -221,10 +223,11 @@ public class Image_Activity_Main extends Activity implements
                     break;
                 }
             }
-            mPlayLayout.setPlayState(PlayState.PLAY);
+            mPlayLayout.setPlayState(mAutoPlayFlag ? PlayState.PLAY : PlayState.PAUSE);
             mPlayLayout.setCurrentPosition(position);
             onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
             mFilePathFromSearch = null;
+            mAutoPlayFlag = true;
         } else {
             updateDevice(mPlayPreferences.getImageDeviceType(), mListLayout.getPhotoListSize() == 0, false);
             mPlayLayout.setPlayState(mPlayLayout.mRecordPlayState);
