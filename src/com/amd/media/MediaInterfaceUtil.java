@@ -1,6 +1,8 @@
 package com.amd.media;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.util.ArrayList;
 
 import android.app.ActivityManager;
@@ -397,6 +399,41 @@ public class MediaInterfaceUtil {
             return true;
         }
         return false;
+    }
+    
+    public static boolean isUsbOnEx(int deviceType) {
+        String str = null;
+        if (deviceType == DeviceType.USB1) {
+            str = DEVICE_PATH_USB_1 + " ";
+        } else if (deviceType == DeviceType.USB2) {
+            str = DEVICE_PATH_USB_2 + " ";
+        } else {
+            return true;
+        }
+        boolean exist = false;
+        BufferedReader reader = null;
+        String stringline = null;
+        try {
+            reader = new BufferedReader(new FileReader("/proc/mounts"));
+            while ((stringline = reader.readLine()) != null) {
+                if (stringline.contains(str)) {
+                    exist = true;
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "1 "+e, e);
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (Exception e2) {
+                    Log.e(TAG, "2 "+e2, e2);
+                }
+                reader = null;
+            }
+        }
+        return exist;
     }
     
     private static long start = -1;
