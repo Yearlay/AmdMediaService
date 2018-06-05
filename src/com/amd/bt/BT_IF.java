@@ -2,6 +2,7 @@ package com.amd.bt;
 
 import android.content.Context;
 import android.os.RemoteException;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.amd.media.MediaInterfaceUtil;
@@ -17,6 +18,7 @@ import com.haoke.service.MediaService;
 import com.haoke.serviceif.BTService_IF;
 import com.haoke.serviceif.BTService_Listener;
 import com.haoke.util.DebugLog;
+import com.jsbd.util.Meter_IF;
 
 public class BT_IF extends BTService_IF {
 
@@ -120,6 +122,7 @@ public class BT_IF extends BTService_IF {
 			if (MediaInterfaceUtil.mediaCannotPlay()) {
 				return;
 			}
+			checkSendBtMusicInfoToMeter();
 			boolean focus = BTMusic_IF.getInstance().requestAudioFocus(true);
 			DebugLog.v(TAG, "music_play() focus="+focus);
 			if (focus) {
@@ -648,5 +651,24 @@ public class BT_IF extends BTService_IF {
 	    if (Source.isBTMusicSource()) {
 	        getInstance().music_close();
 	    }
+	}
+	
+	// 播放蓝牙音乐，播放收音机，手机端播放蓝牙音乐，然后进入蓝牙音乐界面（或者点击媒体框）。仪表没有收到蓝牙音乐的消息
+	private void checkSendBtMusicInfoToMeter() {
+	    boolean focus = BTMusic_IF.getInstance().hasAudioFocus();
+	    boolean isBtMusicSource = Source.isBTMusicSource();
+	    boolean isPlaying = false;
+	    if (!focus && !isBtMusicSource) {
+	        isPlaying = music_isPlaying();
+	        if (isPlaying) {
+	            String title = music_getTitle();
+	            String artist = music_getArtist();
+	            String album = music_getAlbum();
+	            if (!TextUtils.isEmpty(title)) {
+	                Meter_IF.sendMusicInfo(title, artist, album);
+	            }
+	        }
+	    }
+	    DebugLog.e(TAG, "checkSendBtMusicInfoToMeter focus="+focus+"; isBtMusicSource="+isBtMusicSource+"; isPlaying="+isPlaying);
 	}
 }
