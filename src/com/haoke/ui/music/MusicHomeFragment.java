@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.amd.bt.BTMusic_IF;
 import com.amd.bt.BT_IF;
 import com.amd.bt.BT_Listener;
+import com.amd.media.MediaInterfaceUtil;
 import com.amd.util.Source;
 import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.btjar.main.BTDef.BTFunc;
@@ -440,7 +441,8 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 		} else {
 		    DebugLog.e(TAG, "goPlay no song playing!");
 			if (toast) {
-				Toast.makeText(mContext, R.string.no_song_is_playing, Toast.LENGTH_SHORT).show();
+				// Toast.makeText(mContext, R.string.no_song_is_playing, Toast.LENGTH_SHORT).show();
+			    MediaInterfaceUtil.showToast(R.string.no_song_is_playing, Toast.LENGTH_SHORT);
 			}
 			if (noPlayGoHome) {
 				goHome();
