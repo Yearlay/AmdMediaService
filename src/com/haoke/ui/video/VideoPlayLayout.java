@@ -345,6 +345,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
                     if (mVideoController.hasAudioFocus()) {
                         mVideoController.playOrPause(true);
                     } else {
+                        DebugLog.d(TAG, "mediaKeyHandle KEYCODE_MEDIA_PLAY hasAudioFocus false");
                         mVideoController.getControllerHandler().sendEmptyMessage(VideoPlayController.VR_PLAY_STATE);
                     }
                 }
@@ -356,6 +357,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
                     if (mVideoController.hasAudioFocus()) {
                         mVideoController.playOrPause(false);
                     } else {
+                        DebugLog.d(TAG, "mediaKeyHandle KEYCODE_MEDIA_PAUSE hasAudioFocus false");
                         mVideoController.getControllerHandler().sendEmptyMessage(VideoPlayController.VR_PAUSE_STATE);
                     }
                 }

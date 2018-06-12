@@ -382,9 +382,9 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
-		// TODO Auto-generated method stub
-		DebugLog.e("luke", "onKeyUp!! keyCode: " + keyCode);
-		if (MediaInterfaceUtil.isMediaKeyCode(keyCode) && mPlayLayout.getVideoController().hasAudioFocus()) {
+		boolean hasAudioFocusEx = mPlayLayout.getVideoController().hasAudioFocusEx();
+		DebugLog.d("luke", "onKeyUp!! keyCode: " + keyCode + " && hasAudioFocusEx: " + hasAudioFocusEx);
+		if (MediaInterfaceUtil.isMediaKeyCode(keyCode) && hasAudioFocusEx) {
 		    mPlayLayout.mediaKeyHandle(getApplicationContext(), keyCode);
 		    return true;
 		}

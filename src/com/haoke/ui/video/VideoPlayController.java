@@ -502,6 +502,10 @@ public class VideoPlayController implements AudioFocusListener {
 
 		return ret;
 	}
+	
+	public boolean hasAudioFocusEx() {
+        return mAudioFocus.hasAudioFocus();
+    }
 
 	// 设置当前音频焦点
 	public boolean requestAudioFocus(boolean request) {
