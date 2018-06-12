@@ -1011,7 +1011,10 @@ public class Media_IF extends CarService_IF {
 	
 	public boolean isCollected(int pos) {
 		try {
-			return mMediaManager.getItem(pos).getCollect() == 0 ? false : true;
+		    FileNode node = mMediaManager.getItem(pos);
+		    if (node != null) {
+	            return node.getCollect() == 0 ? false : true;
+		    }
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

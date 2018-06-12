@@ -1,0 +1,1 @@
+adb shell am startservice -n com.iflytek.cutefly.speechclient/com.iflytek.autofly.SpeechClientService --es fromservice ""
