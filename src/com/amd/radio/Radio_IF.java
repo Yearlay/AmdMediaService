@@ -347,7 +347,7 @@ public class Radio_IF extends CarService_IF {
 		}
 	}
 
-	// 扫描
+	// 扫描, 播放5秒，再搜索下一个
 	public void setScan() {
 		try {
 			//if (!isEnable()) { //ENABLE_RADIO_MUTEX_LOGIC
@@ -589,6 +589,7 @@ public class Radio_IF extends CarService_IF {
 			if (focus) {
 				setRadioSource();
 				mServiceIF.radio_setPreChannel();
+				mServiceIF.radio_setEnable(true);
 			}
 		} catch (Exception e) {
 			DebugLog.e(TAG, "HMI------------setPreChannel e=" + e.getMessage());
@@ -603,6 +604,7 @@ public class Radio_IF extends CarService_IF {
 			if (focus) {
 				setRadioSource();
 				mServiceIF.radio_setNextChannel();
+				mServiceIF.radio_setEnable(true);
 			}
 		} catch (Exception e) {
 			DebugLog.e(TAG, "HMI------------setNextChannel e=" + e.getMessage());
