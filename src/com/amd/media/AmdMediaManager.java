@@ -480,13 +480,15 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		
 		if (mPlayState != PlayState.STOP) {
 		    mPlayState = PlayState.STOP;
-		    onDataChanged(mMediaMode, MediaFunc.PLAY_STATE, getPlayState(), 0);
+		    onDataChanged(mMediaMode, MediaFunc.PLAY_STATE, PlayState.STOP, 0);
 		}
+		setRecordPlayState(PlayState.STOP);
 	}
 	
 	// 设置播放状态
 	public void setPlayState(int state) {
-		DebugLog.v(TAG, "setPlayState state=" + state);
+	    int curState = getPlayState();
+		DebugLog.e(TAG, "setPlayState state=" + state + "; curState="+curState);
 		if (state == PlayState.PLAY) {
 			if (mPlayingFileNode != null) {
                 if (mMediaPlayer.getMediaState() == MediaState.PREPARED) {
@@ -522,9 +524,13 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 	    	}
     		return;
 		} else if (state == PlayState.PAUSE) {
-			mMediaPlayer.pause();
-			mPlayState = PlayState.PAUSE;
-			mHandler.obtainMessage(MSG_SAVE_PLAYSTATE, mPlayingFileType, 0).sendToTarget();
+		    if (curState == PlayState.STOP) {
+		        
+		    } else {
+	            mMediaPlayer.pause();
+	            mPlayState = PlayState.PAUSE;
+	            mHandler.obtainMessage(MSG_SAVE_PLAYSTATE, mPlayingFileType, 0).sendToTarget();
+		    }
 		} else if (state == PlayState.STOP) {
 		    setRecordPlayState(PlayState.STOP);
 			mMediaPlayer.stop();
