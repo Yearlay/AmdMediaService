@@ -525,7 +525,7 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
     		return;
 		} else if (state == PlayState.PAUSE) {
 		    if (curState == PlayState.STOP) {
-		        
+		        return;
 		    } else {
 	            mMediaPlayer.pause();
 	            mPlayState = PlayState.PAUSE;
