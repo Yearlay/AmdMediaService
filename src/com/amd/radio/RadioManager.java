@@ -109,10 +109,10 @@ public class RadioManager implements Radio_CarListener, CarService_Listener,
 		boolean focus = hasAudioFocus();
 		DebugLog.d(TAG, "requestAudioFocus request="+request+"; focus="+focus);
 		if (!focus || !Source.isRadioSource()) {
-            if (getRecordRadioOn()) {
-                DebugLog.e(TAG, "requestAudioFocus reset RecordPlayState!");
-                setRecordRadioOnOff(false);
-            }
+//            if (getRecordRadioOn()) {
+//                DebugLog.e(TAG, "requestAudioFocus reset RecordPlayState!");
+//                setRecordRadioOnOff(false);
+//            }
 			return mAudioFocus.requestAudioFocus(request);
 		}
 		return true;

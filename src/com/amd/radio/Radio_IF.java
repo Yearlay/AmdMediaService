@@ -218,6 +218,7 @@ public class Radio_IF extends CarService_IF {
 	            if (MediaInterfaceUtil.mediaCannotPlay()) {
 	                return;
 	            }
+	            setRecordRadioOnOff(false);
 				focus = getRadioManager().requestAudioFocus(true);
 				DebugLog.d(TAG, "setEnable enable="+enable+"; focus="+focus);
 				if (focus) {
@@ -589,7 +590,7 @@ public class Radio_IF extends CarService_IF {
 			if (focus) {
 				setRadioSource();
 				mServiceIF.radio_setPreChannel();
-				mServiceIF.radio_setEnable(true);
+				//mServiceIF.radio_setEnable(true);
 			}
 		} catch (Exception e) {
 			DebugLog.e(TAG, "HMI------------setPreChannel e=" + e.getMessage());
@@ -604,7 +605,7 @@ public class Radio_IF extends CarService_IF {
 			if (focus) {
 				setRadioSource();
 				mServiceIF.radio_setNextChannel();
-				mServiceIF.radio_setEnable(true);
+				//mServiceIF.radio_setEnable(true);
 			}
 		} catch (Exception e) {
 			DebugLog.e(TAG, "HMI------------setNextChannel e=" + e.getMessage());
