@@ -297,7 +297,7 @@ public class MusicHomeLayout extends LinearLayout implements OnClickListener,
         }
     }
 
-    private void startListActivity(int type) {
+    public void startListActivity(int type) {
         Media_IF.getInstance().setAudioDevice(type);
         Intent intent = new Intent();
         intent.setClass(getContext(), Music_Activity_List.class);

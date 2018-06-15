@@ -113,14 +113,6 @@ public class UsbAutoPlay {
         if (!TextUtils.isEmpty(filePath)) {
             File file = new File(filePath);
             if (file.exists() && file.canRead()) {
-                if (Media_IF.getInstance().play(filePath)) {
-                    Media_IF.setScreenOn();
-                    if (!Media_IF.isCarReversing()) {
-                        MediaInterfaceUtil.launchMusicPlayActivity(context);
-                    }
-                } else {
-                    filePath = null;
-                }
             } else {
                 filePath = null;
             }
@@ -130,18 +122,22 @@ public class UsbAutoPlay {
         if (filePath == null) {
             ArrayList<FileNode> lists = allMediaList.getMediaList(deviceType, FileType.AUDIO);
             if (lists.size() > 0) {
-                if (Media_IF.getInstance().play(lists.get(0))) {
-                    Media_IF.setScreenOn();
-                    if (!Media_IF.isCarReversing()) {
-                        MediaInterfaceUtil.launchMusicPlayActivity(context);
-                    }
-                }
+                FileNode node = lists.get(0);
+                filePath = node.getFilePath();
+            }
+        }
+        if (filePath != null) {
+            Media_IF.setScreenOn();
+            if (!Media_IF.isCarReversing()) {
+                MediaInterfaceUtil.launchMusicPlayActivity(context, filePath);
             } else {
-                if (deviceType == DeviceType.USB1) {
-                    MediaInterfaceUtil.showToast(R.string.usb1_no_music, Toast.LENGTH_SHORT);
-                } else if (deviceType == DeviceType.USB2) {
-                    MediaInterfaceUtil.showToast(R.string.usb2_no_music, Toast.LENGTH_SHORT);
-                }
+                Media_IF.getInstance().play(filePath);
+            }
+        } else {
+            if (deviceType == DeviceType.USB1) {
+                MediaInterfaceUtil.showToast(R.string.usb1_no_music, Toast.LENGTH_SHORT);
+            } else if (deviceType == DeviceType.USB2) {
+                MediaInterfaceUtil.showToast(R.string.usb2_no_music, Toast.LENGTH_SHORT);
             }
         }
         return -1;

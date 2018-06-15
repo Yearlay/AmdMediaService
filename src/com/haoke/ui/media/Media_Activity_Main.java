@@ -56,7 +56,6 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
     private boolean pressBackToHome = false;
     private boolean mActResume = false;
     private boolean mMustFresh = false;
-    private boolean mShowMusicErrorDialog = false;
     private Handler mHandler = new Handler();
     
     @Override
@@ -129,10 +128,9 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
     @Override
     protected void onResume() {
         super.onResume();
-        DebugLog.d(TAG, "onResume mShowMusicErrorDialog="+mShowMusicErrorDialog);
+        DebugLog.d(TAG, "onResume");
         mActResume = true;
-        mHomeFragment.checkErrorDialog(mHandler, mShowMusicErrorDialog);
-        mShowMusicErrorDialog = false;
+        //mHomeFragment.checkErrorDialog(mHandler, mShowMusicErrorDialog);
         if (mMustFresh) {
             refreshSkin(false);
         }
@@ -218,7 +216,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
             String musicMode = intent.getStringExtra("Mode_To_Music");
             boolean hasAutoPlay = intent.hasExtra("autoPlay");
             boolean autoPlay = hasAutoPlay ? intent.getBooleanExtra("autoPlay", false) : false;
-            mShowMusicErrorDialog = intent.getBooleanExtra(MediaTools.INTENT_SHOW_ERROR_DIALOG, false);
+            String filePathFromIntent = null;
             DebugLog.d(TAG, "initCurSource musicMode="+musicMode+"; autoPlay="+autoPlay);
             if ("radio_intent".equals(musicMode)) {
                 mode = MODE_RADIO;
@@ -229,6 +227,12 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
             } else if ("music_play_intent".equals(musicMode)) {
                 mode = MODE_MUSIC;
                 fromIntent = true;
+                filePathFromIntent = intent.getStringExtra(MediaTools.INTENT_FILE_PATH);
+                if (TextUtils.isEmpty(filePathFromIntent)) {
+                    filePathFromIntent = null;
+                } else {
+                    mHomeFragment.playFilePath(filePathFromIntent);
+                }
             } else if ("music_main_home".equals(musicMode)) {
                 mode = MODE_AUDIO;
                 fromIntent = true;
@@ -244,7 +248,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
                 if (mode == MODE_BTMUSIC) {
                     replaceBtMusicFragment();
                 } else if (mode == MODE_MUSIC) {
-                    goPlay(false, false);
+                    goPlay(false, false, filePathFromIntent!=null);
                 } else if (mode == MODE_AUDIO) {
                     goHome();
                 } else {
@@ -252,7 +256,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
                 }
             } else {
                 if (mode == MODE_AUDIO || mode == MODE_MUSIC || mode == MODE_BTMUSIC) {
-                    goPlay(false, false);
+                    goPlay(false, false, false);
                 } else {
                     goRadio();
                 }
@@ -281,13 +285,13 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
         mHomeFragment.goHome();
     }
     
-    private void goPlay(boolean toast, boolean noPlayGoHome) {
+    private void goPlay(boolean toast, boolean noPlayGoHome, boolean force) {
         if (isShowRadioLayout()) {
             mViewPager.setCurrentItem(VIEWPAGER_ID_MUSIC, false);
             mHomeFragment.onResume();
             mRadioFragment.onPause();
         }
-        mHomeFragment.goPlay(toast, noPlayGoHome);
+        mHomeFragment.goPlay(toast, noPlayGoHome, force);
     }
     
     public void replaceBtMusicFragment() {
@@ -447,7 +451,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
             }
         } else if (id == R.id.media_tab_layout) {
             if (mViewPager.getCurrentItem() == VIEWPAGER_ID_MUSIC) {
-                goPlay(true, false);
+                goPlay(true, false, false);
             }
         }
     }

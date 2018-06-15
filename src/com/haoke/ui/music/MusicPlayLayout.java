@@ -556,8 +556,11 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
             return;
         }
     	if (!mIF.getScanMode()) {
+            mScanStartPos = mIF.getPlayPos();
+            if (mScanStartPos == -1) {
+                return;
+            }
         	mIF.setScanMode(true);
-        	mScanStartPos = mIF.getPlayPos();
         	if (mIF.getPlayState() != PlayState.PLAY) {
         	    if (mIF.getPosition() > 10) {
         	        mTimeHandler.sendEmptyMessage(MSG_SCAN_MUSIC_CHANGE);
@@ -599,6 +602,8 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
     
     public void onError() {
     	checkScanModeAndGoOn();
+    	updateId3Info();
+    	updateTimeBar();
     }
     
     public void onCompletion() {

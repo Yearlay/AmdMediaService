@@ -284,6 +284,9 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
         if (mDeleteDialog != null) {
             mDeleteDialog.closeDialog();
         }
+        if (mDialog != null) {
+            mDialog.CloseDialog();
+        }
         SkinManager.unregisterSkin(mSkinListener);
         //getContentResolver().unregisterContentObserver(mContentObserver);
         //modify but 21127 begin
@@ -772,7 +775,7 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             if (mIF.getRepeatMode() == RepeatMode.OFF) {                    
                 mIF.setRepeatMode(RepeatMode.CIRCLE);
             }
-            boolean playError = false;
+            Intent musicIntent = new Intent();
             if (index == mIF.getPlayIndex() 
                     && mIF.getPlayingDevice() == mDeviceType
                     && mIF.getPlayingFileType() == FileType.AUDIO
@@ -780,19 +783,15 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
                     && mIF.isPlayState()) {
                 mIF.setInterface(1);//回播放界面
             } else {
-                playError = !mIF.play(position);
-                if (playError) {
-                    DebugLog.e(TAG, "onItemClick position="+position+" play error!");
-                    //return;
+                FileNode node = mIF.getItem(position);
+                if (node != null) {
+                    String filePath = node.getFilePath();
+                    musicIntent.putExtra(MediaTools.INTENT_FILE_PATH, filePath);
                 }
             }
-            Intent musicIntent = new Intent();
             musicIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             musicIntent.setClassName("com.haoke.mediaservice", "com.haoke.ui.media.Media_Activity_Main");
             musicIntent.putExtra("Mode_To_Music", "music_play_intent");
-            if (playError) {
-                musicIntent.putExtra(MediaTools.INTENT_SHOW_ERROR_DIALOG, playError);
-            }
             startActivity(musicIntent);
         } else if (mEditMode){//编辑列表
             if (mIF.isCurItemSelected(position)) {

@@ -1,8 +1,6 @@
 package com.haoke.ui.music;
 
-import android.app.Dialog;
 import android.content.Context;
-import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewStub;
@@ -16,6 +14,7 @@ import com.amd.media.MediaInterfaceUtil;
 import com.amd.util.Source;
 import com.haoke.btjar.main.BTDef.BTConnState;
 import com.haoke.btjar.main.BTDef.BTFunc;
+import com.haoke.constant.MediaUtil;
 import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.MediaFunc;
 import com.haoke.constant.MediaUtil.MediaState;
@@ -40,7 +39,7 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 	private CustomDialog mDialog;
 	protected static boolean isShow = false;
 	private boolean mBtConnected =false;
-	private int mErrorCount = 0;
+//	private int mErrorCount = 0;
 	
 	public MusicHomeFragment(Context context) {
     	super(context);
@@ -162,6 +161,15 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
     public boolean isMusicHomeFragment() {
         return mShowLayout == ShowLayout.HOME_LAYOUT;
     }
+    
+    public void playFilePath(String filePath) {
+        if (MediaInterfaceUtil.mediaCannotPlay()) {
+            return;
+        }
+        int deviceType = MediaUtil.getDeviceType(filePath);
+        mIF.setAudioDevice(deviceType);
+        mIF.play(filePath);
+    }
 	
 	public void refreshSkin(boolean loading) {
 		mHomeLayout.refreshSkin(loading);
@@ -183,7 +191,8 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 		changeShowLayout(ShowLayout.BT_PLAY_LAYOUT);
 	}
 	
-	public void checkErrorDialog(Handler handler, boolean showErrorDialog) {
+    // 废弃
+	/*public void checkErrorDialog(Handler handler, boolean showErrorDialog) {
 	    if (showErrorDialog) {
 	        Runnable runnable = new Runnable() {
                 @Override
@@ -210,7 +219,7 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 //	            mDialog.CloseDialog();
 //	        }
 //	    }
-	}
+	}*/
 
 	@Override public void setCurInterface(int data) {}
 	@Override
@@ -220,7 +229,7 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 			switch (func) {
 			case MediaFunc.DEVICE_CHANGED://8 data1=deviceType, data2=isExist ? 1 : 0
 			    //modify bug 21124 begin
-			    mErrorCount = 0;
+//			    mErrorCount = 0;
 			    //modify bug 21124 begin
 				deviceChanged(data1, data2);
 				break;
@@ -232,7 +241,7 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 				break;
 			case MediaFunc.PREPARED:
 			    //modify bug 21124 begin
-			    mErrorCount = 0;
+//			    mErrorCount = 0;
 			    //modify bug 21124 begin
 				onPrepared(); // play-101
 				break;
@@ -343,27 +352,36 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
             }
         }
 	    //modify bug 21124 begin
-	    mErrorCount++;
+//	    mErrorCount++;
 	    //modify bug 21124 end
 		mDialog.ShowDialog(mContext, DIALOG_TYPE.NONE_BTN, R.string.media_play_nosupport);
 		if (mPlayLayout != null) {
 			mPlayLayout.onError();
 			//modify bug 21124 begin
-			int totalSize = mPlayLayout.getTotalSize();
+			/*int totalSize = mPlayLayout.getTotalSize();
 			DebugLog.v(TAG, "totalSize ="+ totalSize+",mErrorCount ="+ mErrorCount);
-			if (totalSize <= mErrorCount/* || mErrorCount >= 5*/) {
+			if (totalSize <= mErrorCount) {
 			    mErrorCount = 0;
 	            goHome();
-	        }
+	        }*/
 			//modify bug 21124 end
 		}
 		
 	}
 	
 	private void onPlayOver() {
-	    if (mPlayLayout != null && mPlayLayout.getVisibility() == View.VISIBLE) {
-	        goHome();
+	    if (mContext != null && mContext instanceof com.haoke.ui.media.Media_Activity_Main) {
+            boolean resumed = ((com.haoke.ui.media.Media_Activity_Main)mContext).getActResumed();
+            if (!resumed) {
+                DebugLog.e(TAG, "onPlayOver but activity is not resumed! return!");
+                return;
+            }
         }
+        goListAct();
+	    /*if (mPlayLayout != null && mPlayLayout.getVisibility() == View.VISIBLE) {
+	        //goHome();
+	        goListAct();
+        }*/
 	}
 	
 	private void onCompletion() {
@@ -426,12 +444,12 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 	}
 	
 	// 跳转到播放界面
-	public void goPlay(boolean toast, boolean noPlayGoHome) {
+	public void goPlay(boolean toast, boolean noPlayGoHome, boolean force) {
 		int playState = mIF.getPlayState();
 		boolean btPlaying = mBTIF.music_isPlaying();
 		int curSource = Media_IF.getCurSource();
 		// 更新界面状态
-		if (Source.isAudioSource(curSource) && playState != PlayState.STOP) {
+		if (force || (Source.isAudioSource(curSource) && playState != PlayState.STOP)) {
 			changeShowLayout(ShowLayout.AUDIO_PLAY_LAYOUT);
 //		} else if (Source.isBTMusicSource(curSource) && btPlaying) {
 			//modify bug 20830 begin
@@ -448,6 +466,10 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 				goHome();
 			}
 		}
+	}
+	
+	private void goListAct() {
+	    mHomeLayout.startListActivity(mIF.getPlayingDevice());
 	}
 
 	@Override

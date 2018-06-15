@@ -91,8 +91,8 @@ public class VRInterfaceUtil {
         }
     }
     
-    private void launchMusicPlayActivity() {
-        MediaInterfaceUtil.launchMusicPlayActivity(MediaApplication.getInstance());
+    private void launchMusicPlayActivity(String filePath) {
+        MediaInterfaceUtil.launchMusicPlayActivity(MediaApplication.getInstance(), filePath);
     }
     
     private void launchBtMusicPlayActivity(boolean autoPlay) {
@@ -157,10 +157,15 @@ public class VRInterfaceUtil {
         int playState = Media_IF.getInstance().getPlayState();
         DebugLog.d(TAG, "operateMusic yesOperate="+yesOperate+"; playState="+playState);
         if (yesOperate) {
+            String filePath = null;
             if (playState != PlayState.PLAY) {
-                mMediaIF.setPlayState(PlayState.PLAY);
+                //mMediaIF.setPlayState(PlayState.PLAY);
+                FileNode node = mMediaIF.getDefaultItem();
+                if (node != null) {
+                    filePath = node.getFilePath();
+                }
             }
-            launchMusicPlayActivity();
+            launchMusicPlayActivity(filePath);
         } else {
             if (playState == PlayState.PLAY) {
                 DebugLog.d(TAG, "operateMusic playState="+playState);
@@ -272,14 +277,17 @@ public class VRInterfaceUtil {
         if (yesOperate) {
             int size = mMediaIF.getMediaListSize(deviceType, fileType);
             if (size != 0) {
+                String filePath = null;
                 if (mMediaIF.getPlayingDevice() != deviceType
-                        || mMediaIF.getPlayingFileType() != fileType) {
+                        || mMediaIF.getPlayingFileType() != fileType
+                        || !playState) {
                     mMediaIF.setCurScanner(deviceType, fileType);
-                    mMediaIF.playDefault(deviceType, fileType);
-                } else if (!playState) {
-                    mMediaIF.setPlayState(PlayState.PLAY);
+                    FileNode node = mMediaIF.getPlayDefaultFileNode(deviceType, fileType);
+                    if (node != null) {
+                        filePath = node.getFilePath();
+                    }
                 }
-                launchMusicPlayActivity();
+                launchMusicPlayActivity(filePath);
             }
         } else {
             if (mMediaIF.getPlayingDevice() == deviceType
@@ -374,13 +382,12 @@ public class VRInterfaceUtil {
             int playState = mMediaIF.getPlayState();
             FileNode fileNode = mMediaIF.getPlayItem();
             if (fileNode != null && filePath.equals(fileNode.getFilePath())) {
-                if (playState != PlayState.PLAY) {
-                    mMediaIF.setPlayState(PlayState.PLAY);
+                if (playState == PlayState.PLAY) {
+                    //mMediaIF.setPlayState(PlayState.PLAY);
+                    filePath = null;
                 }
-            } else {
-                mMediaIF.play(filePath);
             }
-            launchMusicPlayActivity();
+            launchMusicPlayActivity(filePath);
         }
     }
     

@@ -255,7 +255,6 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
         FileNode fileNode = mSearchAdapter.mResultStationList.get(position);
         if (mFileType == FileType.AUDIO) {
             boolean isPlayClick = false;
-            boolean playError = false;
             if (fileNode != null && Source.isAudioSource() 
                     && Media_IF.getInstance().getPlayingDevice() == fileNode.getDeviceType()) {
                 if (Media_IF.getInstance().isPlayState()) {
@@ -265,15 +264,12 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
                     }
                 }
             }
-            if (!isPlayClick) {
-                playError = !Media_IF.getInstance().play(fileNode);
-            }
             Intent musicIntent = new Intent();
             musicIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             musicIntent.setClassName("com.haoke.mediaservice", "com.haoke.ui.media.Media_Activity_Main");
             musicIntent.putExtra("Mode_To_Music", "music_play_intent");
-            if (playError) {
-                musicIntent.putExtra(MediaTools.INTENT_SHOW_ERROR_DIALOG, playError);
+            if (!isPlayClick) {
+                musicIntent.putExtra(MediaTools.INTENT_FILE_PATH, fileNode.getFilePath());
             }
             startActivity(musicIntent);
         } else if (mFileType == FileType.IMAGE) {

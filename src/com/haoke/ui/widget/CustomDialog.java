@@ -144,7 +144,13 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 				@Override
 				public void handleMessage(Message msg) {
 				    try {
-	                    CloseDialog();
+				        Object obj = msg.obj;
+				        if (obj instanceof MyDialog) {
+				            MyDialog dialog = (MyDialog)obj;
+				            if (mDialog.equals(dialog)) {
+		                        CloseDialog();
+				            }
+				        }
                     } catch (Exception e) {
                         DebugLog.e(TAG, "NONE_BTN DISMISS" + e.toString());
                     }
@@ -152,7 +158,9 @@ public class CustomDialog implements OnClickListener, OnDismissListener {
 				}
 				
 			};
-			handler.sendEmptyMessageDelayed(0, 1000);
+			Message msg = handler.obtainMessage(0, mDialog);
+            handler.sendMessageDelayed(msg, 1000);
+			//handler.sendEmptyMessageDelayed(0, 1000);
 		}
 	}
 	

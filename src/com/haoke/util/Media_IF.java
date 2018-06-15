@@ -1069,6 +1069,16 @@ public class Media_IF extends CarService_IF {
 		return -1;
 	}
 	
+	// 获得指定设备默认歌曲信息, 与playDefault对应
+    public FileNode getPlayDefaultFileNode(int deviceType, int fileType) {
+        try {
+            return mMediaManager.getPlayDefaultFileNode(deviceType, fileType);
+        } catch (Exception e) {
+            DebugLog.e(TAG, "getPlayDefaultFileNode e=" + e);
+        }
+        return null;
+    }
+	
 	public FileNode getDefaultItem() {
 		return mMediaManager.getDefaultItem();
 	}
