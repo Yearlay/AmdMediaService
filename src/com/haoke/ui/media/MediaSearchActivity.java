@@ -276,11 +276,13 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
             Intent intent = new Intent(getApplicationContext(), Image_Activity_Main.class);
             intent.putExtra("isfrom", "MediaSearchActivity");
             intent.putExtra("filepath", fileNode.getFilePath());
+            intent.putExtra("devicetype", fileNode.getDeviceType());
             startActivity(intent);
         } else if (mFileType == FileType.VIDEO) {
             Intent intent = new Intent(getApplicationContext(), Video_Activity_Main.class);
             intent.putExtra("isfrom", "MediaSearchActivity");
             intent.putExtra("filepath", fileNode.getFilePath());
+            intent.putExtra("devicetype", fileNode.getDeviceType());
             startActivity(intent);
         }
         finish();

@@ -145,7 +145,11 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 			if (flag != null && flag.equals("bootStartPlay")) {
 				mPlayLayout.getVideoController().playDefaultVideo(true);
 			}
-			int deviceType = MediaUtil.getDeviceType(filePath);
+			int deviceType = DeviceType.NULL;
+			deviceType = intent.getIntExtra("devicetype", DeviceType.NULL);
+			if (deviceType == DeviceType.NULL) {
+			    deviceType = MediaUtil.getDeviceType(filePath);
+			}
 			int position = 0;
 			updateDevice(deviceType, false);
 			for (int index = 0; index < mVideoList.size(); index++) {

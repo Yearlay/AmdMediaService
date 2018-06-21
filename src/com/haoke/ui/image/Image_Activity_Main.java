@@ -62,6 +62,7 @@ public class Image_Activity_Main extends Activity implements
     private TextView mCancelView;
     private TextView mCopyTextView;
     private String mFilePathFromSearch;
+    private int mDeviceTypeFromSearch;
     private boolean mAutoPlayFlag = true;
     private boolean isShow;
     
@@ -139,6 +140,7 @@ public class Image_Activity_Main extends Activity implements
         if("MediaSearchActivity".equals(intent.getStringExtra("isfrom"))){ //search入口
         	DebugLog.e(TAG, "onNewIntent MediaSearchActivity");
         	mFilePathFromSearch = intent.getStringExtra("filepath");
+        	mDeviceTypeFromSearch = intent.getIntExtra("devicetype", DeviceType.NULL);
         	mAutoPlayFlag = intent.getBooleanExtra("autoplay", true);
         } else if(intent != null && intent.getIntExtra(MediaService.KEY_COMMAND_FROM, 100) == MediaService.VALUE_FROM_VR_APP) { // VR打开图片
         	DebugLog.e(TAG, "initIntent VALUE_FROM_VR_APP");
@@ -213,10 +215,12 @@ public class Image_Activity_Main extends Activity implements
         isShow = true;
         AllMediaList.notifyAllLabelChange(getApplicationContext(), R.string.pub_image);
         if (mFilePathFromSearch != null) {
-            int deviceType = MediaUtil.getDeviceType(mFilePathFromSearch);
+            if (mDeviceTypeFromSearch == DeviceType.NULL) {
+                mDeviceTypeFromSearch = MediaUtil.getDeviceType(mFilePathFromSearch);
+            }
             int position = 0;
-            mPlayPreferences.saveImageDeviceType(deviceType);
-            updateDevice(deviceType, mListLayout.getPhotoListSize() == 0, false);
+            mPlayPreferences.saveImageDeviceType(mDeviceTypeFromSearch);
+            updateDevice(mDeviceTypeFromSearch, mListLayout.getPhotoListSize() == 0, false);
             for (int index = 0; index < mImageList.size(); index++) {
                 if (mFilePathFromSearch.equals(mImageList.get(index).getFilePath())) {
                     position = index;
@@ -227,6 +231,7 @@ public class Image_Activity_Main extends Activity implements
             mPlayLayout.setCurrentPosition(position);
             onChangeFragment(SWITCH_TO_PLAY_FRAGMENT);
             mFilePathFromSearch = null;
+            mDeviceTypeFromSearch = DeviceType.NULL;
             mAutoPlayFlag = true;
         } else {
             updateDevice(mPlayPreferences.getImageDeviceType(), mListLayout.getPhotoListSize() == 0, false);
