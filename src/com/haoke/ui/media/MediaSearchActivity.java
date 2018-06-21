@@ -269,6 +269,7 @@ public class MediaSearchActivity extends Activity implements OnClickListener, Lo
             musicIntent.setClassName("com.haoke.mediaservice", "com.haoke.ui.media.Media_Activity_Main");
             musicIntent.putExtra("Mode_To_Music", "music_play_intent");
             if (!isPlayClick) {
+                musicIntent.putExtra(MediaTools.INTENT_FILE_DEVICETYPE, fileNode.getDeviceType());
                 musicIntent.putExtra(MediaTools.INTENT_FILE_PATH, fileNode.getFilePath());
             }
             startActivity(musicIntent);

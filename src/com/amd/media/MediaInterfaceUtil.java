@@ -217,11 +217,12 @@ public class MediaInterfaceUtil {
     /**
      * 启动音乐播放界面。
      */
-    public static void launchMusicPlayActivity(Context context, String filePath) {
+    public static void launchMusicPlayActivity(Context context, int deviceType, String filePath) {
         Intent intent = new Intent();
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setClassName("com.haoke.mediaservice", "com.haoke.ui.media.Media_Activity_Main");
         intent.putExtra("Mode_To_Music", "music_play_intent");
+        intent.putExtra(MediaTools.INTENT_FILE_DEVICETYPE, deviceType);
         intent.putExtra(MediaTools.INTENT_FILE_PATH, filePath);
         context.startActivity(intent);
     }
@@ -660,7 +661,7 @@ public class MediaInterfaceUtil {
                             success = checkAndPlayDeviceType(runDeviceType, fileType);
                             if (success) {
                                 if (display == DISPLAY_ON) {
-                                    launchMusicPlayActivity(service, null);
+                                    launchMusicPlayActivity(service, DeviceType.NULL, null);
                                 }
                             } else {
                                 DebugLog.d(TAG, "checkModeRecordInternalEx song not exist!");
@@ -769,7 +770,7 @@ public class MediaInterfaceUtil {
                         if (fileType == FileType.AUDIO) {
                             checkAndPlayDeviceType(deviceType, fileType);
                             if (display == DISPLAY_ON) {
-                                launchMusicPlayActivity(service, null);
+                                launchMusicPlayActivity(service, DeviceType.NULL, null);
                             }
                         } else {
                             launchVideoPlayActivity(service, playFileNode);

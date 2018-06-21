@@ -785,8 +785,8 @@ public class Music_Activity_List extends Activity implements Media_Listener, OnI
             } else {
                 FileNode node = mIF.getItem(position);
                 if (node != null) {
-                    String filePath = node.getFilePath();
-                    musicIntent.putExtra(MediaTools.INTENT_FILE_PATH, filePath);
+                    musicIntent.putExtra(MediaTools.INTENT_FILE_DEVICETYPE, node.getDeviceType());
+                    musicIntent.putExtra(MediaTools.INTENT_FILE_PATH, node.getFilePath());
                 }
             }
             musicIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

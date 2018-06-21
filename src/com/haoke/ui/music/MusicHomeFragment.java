@@ -162,13 +162,15 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
         return mShowLayout == ShowLayout.HOME_LAYOUT;
     }
     
-    public void playFilePath(String filePath) {
+    public void playFilePath(int deviceType, String filePath) {
         if (MediaInterfaceUtil.mediaCannotPlay()) {
             return;
         }
-        int deviceType = MediaUtil.getDeviceType(filePath);
+        if (deviceType == DeviceType.NULL) {
+            deviceType = MediaUtil.getDeviceType(filePath);
+        }
         mIF.setAudioDevice(deviceType);
-        mIF.play(filePath);
+        mIF.play(deviceType, filePath);
     }
 	
 	public void refreshSkin(boolean loading) {

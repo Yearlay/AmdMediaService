@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
+import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.FileType;
 import com.haoke.constant.VRConstant;
 import com.haoke.data.AllMediaList;
@@ -217,6 +218,7 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
             boolean hasAutoPlay = intent.hasExtra("autoPlay");
             boolean autoPlay = hasAutoPlay ? intent.getBooleanExtra("autoPlay", false) : false;
             String filePathFromIntent = null;
+            int deviceType = DeviceType.NULL;
             DebugLog.d(TAG, "initCurSource musicMode="+musicMode+"; autoPlay="+autoPlay);
             if ("radio_intent".equals(musicMode)) {
                 mode = MODE_RADIO;
@@ -228,10 +230,11 @@ public class Media_Activity_Main extends Activity implements OnClickListener {
                 mode = MODE_MUSIC;
                 fromIntent = true;
                 filePathFromIntent = intent.getStringExtra(MediaTools.INTENT_FILE_PATH);
+                deviceType = intent.getIntExtra(MediaTools.INTENT_FILE_DEVICETYPE, DeviceType.NULL);
                 if (TextUtils.isEmpty(filePathFromIntent)) {
                     filePathFromIntent = null;
                 } else {
-                    mHomeFragment.playFilePath(filePathFromIntent);
+                    mHomeFragment.playFilePath(deviceType, filePathFromIntent);
                 }
             } else if ("music_main_home".equals(musicMode)) {
                 mode = MODE_AUDIO;

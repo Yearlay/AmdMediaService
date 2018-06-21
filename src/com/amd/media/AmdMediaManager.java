@@ -275,25 +275,35 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		return playOther(null, pos);
 	}
 	
-	public boolean play(String filePath) {
-		DebugLog.v(TAG, "play filePath=" + filePath);
-		mPrevOrNextFlag = 2;
+	private boolean playDeviceTypeWithPath(int deviceType, String filePath) {
+	    mPrevOrNextFlag = 2;
         mErrorCount = 0;
-		int deviceType = MediaUtil.getDeviceType(filePath);
-		int fileType = MediaUtil.getMediaType(filePath);
-		if (deviceType == DeviceType.USB1 || deviceType == DeviceType.USB2 ||
-				deviceType == DeviceType.FLASH || deviceType == DeviceType.COLLECT) {
-			if (fileType == FileType.AUDIO || fileType == FileType.VIDEO) {
-				FileNode fileNode = getFileNodeByFilePath(filePath);
-				if (fileNode != null) {
-					setPlayingData(deviceType, fileType, true);
-					return playOther(fileNode, -1);
-				}
-			}
-		}
-		DebugLog.e(TAG, "play ERROR! deviceType="+deviceType+"; fileType="+fileType);
-		return false;
+        if (deviceType == DeviceType.NULL) {
+            deviceType = MediaUtil.getDeviceType(filePath);
+        }
+        boolean val = false;
+        int fileType = FileType.AUDIO;
+        if (deviceType == DeviceType.USB1 || deviceType == DeviceType.USB2 ||
+                deviceType == DeviceType.FLASH || deviceType == DeviceType.COLLECT) {
+            if (fileType == FileType.AUDIO || fileType == FileType.VIDEO) {
+                FileNode fileNode = getFileNodeByFilePath(deviceType, filePath);
+                if (fileNode != null) {
+                    setPlayingData(deviceType, fileType, true);
+                    val = playOther(fileNode, -1);
+                }
+            }
+        }
+        DebugLog.e(TAG, "playDeviceTypeWithPath val="+val+"! deviceType="+deviceType+"; fileType="+fileType);
+        return val;
 	}
+	
+	public boolean play(String filePath) {
+		return playDeviceTypeWithPath(DeviceType.NULL, filePath);
+	}
+	
+    public boolean play(int deviceType, String filePath) {
+        return playDeviceTypeWithPath(deviceType, filePath);
+    }
 	
 	public boolean play(FileNode fileNode) {
 		DebugLog.v(TAG, "play fileNode=" + fileNode);
@@ -312,11 +322,12 @@ public class AmdMediaManager implements AmdMediaPlayerListener, AudioFocusListen
 		return false;
 	}
 	
-	private FileNode getFileNodeByFilePath(String filePath) {
+	private FileNode getFileNodeByFilePath(int deviceType, String filePath) {
 		FileNode fileNode = null;
-		int deviceType = MediaUtil.getDeviceType(filePath);
-		int fileType = MediaUtil.getMediaType(filePath);
-		ArrayList<FileNode> lists = mAllMediaList.getMediaList(deviceType, fileType);
+		if (deviceType == DeviceType.NULL) {
+		    deviceType = MediaUtil.getDeviceType(filePath);
+		}
+		ArrayList<FileNode> lists = mAllMediaList.getMediaList(deviceType, FileType.AUDIO);
 		for (int i=0; i<lists.size(); i++) {
 			FileNode node = lists.get(i);
 			if (node.getFilePath().equals(filePath)) {

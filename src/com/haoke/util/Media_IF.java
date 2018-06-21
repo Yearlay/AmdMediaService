@@ -763,6 +763,20 @@ public class Media_IF extends CarService_IF {
 		return false;
 	}
 	
+	// 播放(设备名【可能为收藏】，文件路径)
+    public boolean play(int deviceType, String filePath) {
+        try {
+            DebugLog.d(TAG, "play deviceType="+deviceType+"; filePath="+filePath);
+            if (MediaInterfaceUtil.mediaCannotPlay()) {
+                return false;
+            }
+            return mMediaManager.play(deviceType, filePath);
+        } catch (Exception e) {
+            DebugLog.e(TAG, "play filePath="+filePath + e);
+        }
+        return false;
+    }
+	
 	// 播放(FileNode)
 	public boolean play(FileNode fileNode) {
 		try {

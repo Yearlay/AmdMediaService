@@ -129,7 +129,7 @@ public class UsbAutoPlay {
         if (filePath != null) {
             Media_IF.setScreenOn();
             if (!Media_IF.isCarReversing()) {
-                MediaInterfaceUtil.launchMusicPlayActivity(context, filePath);
+                MediaInterfaceUtil.launchMusicPlayActivity(context, DeviceType.NULL, filePath);
             } else {
                 Media_IF.getInstance().play(filePath);
             }
