@@ -220,7 +220,7 @@ public class Image_Activity_Main extends Activity implements
             }
             int position = 0;
             mPlayPreferences.saveImageDeviceType(mDeviceTypeFromSearch);
-            updateDevice(mDeviceTypeFromSearch, mListLayout.getPhotoListSize() == 0, false);
+            updateDevice(mDeviceTypeFromSearch, true, false);
             for (int index = 0; index < mImageList.size(); index++) {
                 if (mFilePathFromSearch.equals(mImageList.get(index).getFilePath())) {
                     position = index;
