@@ -604,6 +604,7 @@ public class MusicPlayLayout extends RelativeLayout implements OnClickListener {
     	checkScanModeAndGoOn();
     	updateId3Info();
     	updateTimeBar();
+    	updateCollectIcon();
     }
     
     public void onCompletion() {
