@@ -142,6 +142,9 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
                 }
             }
         }
+        
+        mActivityHandler.removeMessages(Video_Activity_Main.HIDE_UNSUPPORT_VIEW);
+        mActivityHandler.sendEmptyMessageDelayed(Video_Activity_Main.HIDE_UNSUPPORT_VIEW, 1000);
     }
     
     public void hideUnsupportView(boolean notPlayNext) {
@@ -246,14 +249,12 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
                     mFileNode.setUnSupportFlag(true);
                 }
                 if (isResume) {
-                    showUnsupportView();
                     if (mFileNode != null && mTitleTextView != null) {
                         mTitleTextView.setText(mFileNode.getFileName());
                     }
                     updateCollectView();
-                    mActivityHandler.removeMessages(Video_Activity_Main.HIDE_UNSUPPORT_VIEW);
-                    mActivityHandler.sendEmptyMessageDelayed(Video_Activity_Main.HIDE_UNSUPPORT_VIEW, 1000);
                     mLoading.setVisibility(View.GONE);
+                    showUnsupportView();
                 }
                 return true;
             }
@@ -433,14 +434,12 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
         
         if (mFileNode.isUnSupportFlag()) {
             slaverShow(true);
-            showUnsupportView();
             if (mFileNode != null && mTitleTextView != null) {
                 mTitleTextView.setText(mFileNode.getFileName());
             }
             updateCollectView();
-            mActivityHandler.removeMessages(Video_Activity_Main.HIDE_UNSUPPORT_VIEW);
-            mActivityHandler.sendEmptyMessageDelayed(Video_Activity_Main.HIDE_UNSUPPORT_VIEW, 1000);
             mLoading.setVisibility(View.GONE);
+            showUnsupportView();
         }
     }
 
@@ -476,6 +475,8 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 
     public void goVideoList(){
         if (mActivityHandler != null) {
+            // 如果显示不支持的格式的视频，需要去掉隐藏不支持的格式的弹框的Message消息。
+            mActivityHandler.removeMessages(Video_Activity_Main.HIDE_UNSUPPORT_VIEW);
             mActivityHandler.sendEmptyMessage(Video_Activity_Main.SWITCH_TO_LIST_FRAGMENT);
         }
     }
@@ -495,6 +496,8 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
                 break;
             }
             mNextPlay = false;
+            // 如果显示不支持的格式的视频，需要去掉隐藏不支持的格式的弹框的Message消息。
+            mActivityHandler.removeMessages(Video_Activity_Main.HIDE_UNSUPPORT_VIEW);
             mVideoController.playPre(true);
             updateCollectView();
             break;
@@ -523,6 +526,8 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
                 break;
             }
             mNextPlay = true;
+            // 如果显示不支持的格式的视频，需要去掉隐藏不支持的格式的弹框的Message消息。
+            mActivityHandler.removeMessages(Video_Activity_Main.HIDE_UNSUPPORT_VIEW);
             mVideoController.playNext(true);
             updateCollectView();
             break;
