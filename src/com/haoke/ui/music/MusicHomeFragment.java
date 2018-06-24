@@ -379,7 +379,9 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
                 return;
             }
         }
-        goListAct();
+	    if (Source.isAudioSource() && Media_IF.hasAudioOrBtFocus()) {
+	        goListAct();
+	    }
 	    /*if (mPlayLayout != null && mPlayLayout.getVisibility() == View.VISIBLE) {
 	        //goHome();
 	        goListAct();
