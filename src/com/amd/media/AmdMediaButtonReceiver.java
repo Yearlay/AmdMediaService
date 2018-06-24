@@ -4,6 +4,7 @@ import com.amd.bt.BT_IF;
 import com.amd.radio.Radio_IF;
 import com.amd.util.AmdConfig;
 import com.amd.util.Source;
+import com.haoke.constant.MediaUtil.MediaState;
 import com.haoke.constant.MediaUtil.PlayState;
 import com.haoke.ui.image.Image_Activity_Main;
 import com.haoke.util.DebugLog;
@@ -182,8 +183,11 @@ public class AmdMediaButtonReceiver extends BroadcastReceiver {
             Media_IF.getInstance().setRecordPlayState(PlayState.STOP);
             Media_IF.getInstance().setScanMode(false);
             if (!Media_IF.getInstance().playPre()) {
-                DebugLog.d(TAG, "prev mIF.playPre is false");
-                Media_IF.getInstance().setPlayState(PlayState.PLAY);
+                int state = Media_IF.getInstance().getMediaState();
+                DebugLog.e(TAG, "prev mIF.playPre is false; state="+state);
+                if (state != MediaState.ERROR) {
+                    Media_IF.getInstance().setPlayState(PlayState.PLAY);
+                }
             }
             return true;
         }  else if (Source.isBTMusicSource(source)) {
@@ -216,7 +220,11 @@ public class AmdMediaButtonReceiver extends BroadcastReceiver {
             Media_IF.getInstance().setRecordPlayState(PlayState.STOP);
             Media_IF.getInstance().setScanMode(false);
             if (!Media_IF.getInstance().playNext()) {
-                Media_IF.getInstance().setPlayState(PlayState.PLAY);
+                int state = Media_IF.getInstance().getMediaState();
+                DebugLog.e(TAG, "next mIF.playNext is false; state="+state);
+                if (state != MediaState.ERROR) {
+                    Media_IF.getInstance().setPlayState(PlayState.PLAY);
+                }
             }
             return true;
         }  else if (Source.isBTMusicSource(source)) {
