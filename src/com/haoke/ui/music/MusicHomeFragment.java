@@ -399,7 +399,9 @@ public class MusicHomeFragment extends FrameLayout implements Media_Listener, BT
 			mPlayLayout.updateCtrlBar();
 		}
 		if (state == PlayState.STOP) {
-			goHome();
+		    if (!mPlayLayout.isBTPlay()) {
+	            goHome();
+		    }
 		}
 		setCurPlayViewState();
 	}

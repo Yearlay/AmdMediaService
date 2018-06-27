@@ -169,6 +169,7 @@ public class VideoPlayLayout extends RelativeLayout implements View.OnClickListe
 
     public void setCurFileNode(FileNode filenode) {
         mFileNode = filenode;
+        if (mFileNode!=null) mFileNode.setUnSupportFlag(false);
     }
 
     public FileNode getCurFileNode() {
