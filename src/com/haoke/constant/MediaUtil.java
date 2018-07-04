@@ -308,12 +308,13 @@ public class MediaUtil {
             "aac", "amr", "mid",
             "midi", "oga", "ra",
             "mka", "dts", "m4a",
-            "ogg" };
+            "ogg", "wma", "ape"
+            };
 
     public static final String[] VIDEO_EXTENSIONS = {
             "mp4", "3gp", "3gpp",
             "3g2", "3gpp2", "mpeg",
-            "mkv", "mov", 
+            "mkv", "mov", "mpg",
             "flv", "f4v", "avi",
             "vob", "ts", "m2ts",
             "m4v", "divx", "asx"

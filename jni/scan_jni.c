@@ -35,7 +35,7 @@ int judgeMediaType(char *fileName) {
     }
     if (strcasecmp(endStr, "mp4") == 0 || strcasecmp(endStr, "3gp") == 0 || strcasecmp(endStr, "3gpp") == 0 ||
             strcasecmp(endStr, "3g2") == 0 || strcasecmp(endStr, "3gpp2") == 0 || strcasecmp(endStr, "mpeg") == 0 ||
-            strcasecmp(endStr, "mkv") == 0 || strcasecmp(endStr, "mov") == 0 ||
+            strcasecmp(endStr, "mkv") == 0 || strcasecmp(endStr, "mov") == 0 || strcasecmp(endStr, "mpg") == 0 ||
             strcasecmp(endStr, "flv") == 0 || strcasecmp(endStr, "f4v") == 0 || strcasecmp(endStr, "avi") == 0 ||
             strcasecmp(endStr, "vob") == 0 || strcasecmp(endStr, "ts") == 0 || strcasecmp(endStr, "m2ts") == 0 ||
             strcasecmp(endStr, "m4v") == 0 || strcasecmp(endStr, "divx") == 0 || strcasecmp(endStr, "asx") == 0) {
@@ -45,7 +45,7 @@ int judgeMediaType(char *fileName) {
             strcasecmp(endStr, "aac") == 0 || strcasecmp(endStr, "amr") == 0 || strcasecmp(endStr, "mid") == 0 ||
             strcasecmp(endStr, "midi") == 0 || strcasecmp(endStr, "oga") == 0 || strcasecmp(endStr, "ra") == 0 ||
             strcasecmp(endStr, "mka") == 0 || strcasecmp(endStr, "dts") == 0 || strcasecmp(endStr, "m4a") == 0 ||
-            strcasecmp(endStr, "ogg") == 0) {
+            strcasecmp(endStr, "ogg") == 0 || strcasecmp(endStr, "wma") == 0 || strcasecmp(endStr, "ape") == 0) {
         return TYPE_AUDIO;
     } else if (strcasecmp(endStr, "png") == 0 || strcasecmp(endStr, "jpg") == 0 || strcasecmp(endStr, "bmp") == 0 ||
             strcasecmp(endStr, "jpeg") == 0 || strcasecmp(endStr, "gif") == 0 || strcasecmp(endStr, "ico") == 0 ||
