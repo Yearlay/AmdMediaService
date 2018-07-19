@@ -544,7 +544,7 @@ public class MediaInterfaceUtil {
         int type = intent.getIntExtra(KEY_MODE_RECORD_TYPE, MediaType.AUDIO);
         int display = intent.getIntExtra(KEY_MODE_RECORD_DISPLAY, DISPLAY_OFF);
         int ourSource = Source.changeToOurSource(source, type);
-        DebugLog.d(TAG, "checkModeRecord source="+source+"; type="+type+"; display="+display+"; ourSource="+ourSource);
+        DebugLog.e(TAG, "checkModeRecord source="+source+"; type="+type+"; display="+display+"; ourSource="+ourSource);
         UsbAutoPlay.setServiceStartTime();
         checkModeRecordInternal(service, username, ourSource, display);
     }
@@ -642,7 +642,7 @@ public class MediaInterfaceUtil {
             int fileType = (Source.isAudioSource(ourSource) ? FileType.AUDIO : FileType.VIDEO);
             boolean currPlaying = false; //Media_IF.getInstance().isPlayState() || VideoPlayController.isVideoPlaying;
             boolean lastPlaying = true;//allMediaList.getPlayState(fileType);
-            DebugLog.d(TAG, "checkModeRecordInternalEx runDeviceType="+runDeviceType+"; lastPlaying="+lastPlaying+"; currPlaying="+currPlaying);
+            DebugLog.e(TAG, "checkModeRecordInternalEx runDeviceType="+runDeviceType+"; lastPlaying="+lastPlaying+"; currPlaying="+currPlaying);
             if (!currPlaying && lastPlaying && runDeviceType != DeviceType.NULL) {
                 if (runDeviceType == DeviceType.COLLECT) {
                     int waitMs = waitUsbMounted(service);
@@ -652,7 +652,7 @@ public class MediaInterfaceUtil {
                 }
                 StorageBean storage = allMediaList.getStoragBean(runDeviceType);
                 DebugLog.d(TAG, "checkModeRecordInternalEx storage="+storage);
-                if (runDeviceType == DeviceType.COLLECT || storage.isAllOver()) {
+                if (runDeviceType == DeviceType.COLLECT || (storage.isMounted() && storage.isAllOver())) {
                     ArrayList<FileNode> lists = allMediaList.getMediaList(runDeviceType, fileType);
                     int size = lists.size();
                     if (size > 0) {
