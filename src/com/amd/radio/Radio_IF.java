@@ -649,6 +649,8 @@ public class Radio_IF extends CarService_IF {
 			if (freq != -1) {
 				setCurFreq(freq);
 				setEnable(true);
+			} else {
+			    DebugLog.e(TAG, "setPreStation error. stationList size is 0 !!");
 			}
 		} catch (Exception e) {
 			DebugLog.e(TAG, "HMI------------setPreStation e=" + e.getMessage());
@@ -663,7 +665,9 @@ public class Radio_IF extends CarService_IF {
 			if (freq != -1) {
 				setCurFreq(freq);
 				setEnable(true);
-			}
+			} else {
+                DebugLog.e(TAG, "setNextStation error. stationList size is 0 !!");
+            }
 		} catch (Exception e) {
 			DebugLog.e(TAG, "HMI------------setNextStation e=" + e.getMessage());
 		}

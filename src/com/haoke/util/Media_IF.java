@@ -29,6 +29,7 @@ import com.haoke.define.CMSStatusDef.VehicleStatus;
 import com.haoke.define.McuDef;
 import com.haoke.define.McuDef.McuFunc;
 import com.haoke.define.McuDef.PowerState;
+import com.haoke.define.SystemDef;
 import com.haoke.define.SystemDef.ScreenState;
 import com.haoke.constant.MediaUtil.DeviceType;
 import com.haoke.constant.MediaUtil.FileType;
@@ -1164,4 +1165,19 @@ public class Media_IF extends CarService_IF {
         }
 	}
 	//-------------------------------发送数据给mcu 结束-----------------------------
+	
+    public boolean is3HPsystem() {
+        boolean is3HP = false;
+        try {
+            if (mServiceIF != null) {
+                is3HP = (mServiceIF.sys_getProjectID() == SystemDef.ProjectID.CAR_FE_3HP);
+            } else {
+                DebugLog.e(TAG, "mServiceIF==null");
+            }
+        } catch  (Exception e) {
+            DebugLog.e(TAG, "is3HPsystem" + e);
+        }
+        DebugLog.d(TAG, "is3HPsystem is3HP: " + is3HP);
+        return is3HP;
+    }
 }
