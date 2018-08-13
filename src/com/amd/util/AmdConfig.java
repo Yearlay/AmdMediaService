@@ -6,11 +6,11 @@ public class AmdConfig {
      * 1.会与Media_IF合并成一个TAG，方便log打印<p>
      * 2.会与ID3专辑图的暗码合并成Toast输出
      */
-    public static final String APP_VERSION_DATE = "0806";
+    public static final String APP_VERSION_DATE = "0813";
     /**
      * app的时间,会与ID3专辑图的暗码合并成Toast输出
      */
-    public static final String APP_VERSION_TIME = "16:00";
+    public static final String APP_VERSION_TIME = "15:40";
     /**
      * 激活所有日志log，debug状态
      */

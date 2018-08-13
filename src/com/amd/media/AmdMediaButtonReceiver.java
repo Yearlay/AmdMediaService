@@ -200,7 +200,7 @@ public class AmdMediaButtonReceiver extends BroadcastReceiver {
             //Radio_IF.getInstance().setRecordRadioOnOff(false);
             //modify bug 21198 end
             if (Media_IF.getInstance().is3HPsystem()) {
-                Radio_IF.getInstance().setPreStation();
+                Radio_IF.getInstance().setPreChannel();
             } else {
                 Radio_IF.getInstance().setPreStep();
             }
@@ -240,7 +240,7 @@ public class AmdMediaButtonReceiver extends BroadcastReceiver {
             //Radio_IF.getInstance().setRecordRadioOnOff(false);
             //modify bug 21198 end
             if (Media_IF.getInstance().is3HPsystem()) {
-                Radio_IF.getInstance().setNextStation();
+                Radio_IF.getInstance().setNextChannel();
             } else {
                 Radio_IF.getInstance().setNextStep();
             }
