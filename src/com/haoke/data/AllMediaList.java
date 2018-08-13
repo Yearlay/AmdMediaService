@@ -427,7 +427,7 @@ public class AllMediaList {
         
         @Override
         public void onChange(boolean selfChange) {
-            DebugLog.d(TAG, "onChange personal_user_info");
+            DebugLog.e(TAG, "onChange personal_user_info");
             if (!MediaUtil.isLogin()) {
                 MediaUtil.updateUserName();
                 mMediaDbHelper.updateCollectDataFromChangeUseList();

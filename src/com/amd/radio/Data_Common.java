@@ -16,22 +16,22 @@ public class Data_Common {
 	public static int reminder = 0 ;
 	
 	/*static {
-		stationList.add(new RadioStation(10250, "102.50", "宿迁人民广播电台综合广播"));
-		stationList.add(new RadioStation(10110, "101.10", "江苏人民广播电台交通广播网"));
-		stationList.add(new RadioStation(9850, "98.50", "沭阳县广播电视台广播节目"));
-		stationList.add(new RadioStation(10310, "103.10", "泗洪县广播电视台广播节目"));
+        stationList.add(new RadioStation(8800, "88.00", "江苏人民广播电台健康广播11"));
+        stationList.add(new RadioStation(8820, "88.20", "江苏人民广播电台健康广播"));
+        stationList.add(new RadioStation(9360, "93.60", "江苏人民广播电台新闻广播"));
+        stationList.add(new RadioStation(9380, "93.80", "江苏人民广播电台新闻广播"));
+        stationList.add(new RadioStation(9800, "98.00", "沭阳县广播电视台广播节目"));
+        stationList.add(new RadioStation(9850, "98.50", "沭阳县广播电视台广播节目"));
+        stationList.add(new RadioStation(10100, "101.00", "江苏人民广播电台交通广播网"));
+        stationList.add(new RadioStation(10130, "101.30", "江苏人民广播电台交通广播网"));
+        stationList.add(new RadioStation(10150, "101.50", "中央人民广播电台中国之声"));
+        stationList.add(new RadioStation(10170, "101.70", "中央人民广播电台中国之声"));
+		stationList.add(new RadioStation(10200, "102.00", "宿迁人民广播电台综合广播"));
+        stationList.add(new RadioStation(10250, "102.50", "宿迁人民广播电台综合广播"));
+        stationList.add(new RadioStation(10310, "103.10", "泗洪县广播电视台广播节目"));
+		stationList.add(new RadioStation(10340, "103.40", "泗洪县广播电视台广播节目"));
 		stationList.add(new RadioStation(10770, "107.70", "宿迁人民广播电台综合广播"));
-		stationList.add(new RadioStation(10170, "101.70", "中央人民广播电台中国之声"));
-		stationList.add(new RadioStation(9380, "93.80", "江苏人民广播电台新闻广播"));
-		stationList.add(new RadioStation(8820, "88.20", "江苏人民广播电台健康广播"));
-		stationList.add(new RadioStation(10250, "102.50", "宿迁人民广播电台综合广播"));
-		stationList.add(new RadioStation(10110, "101.10", "江苏人民广播电台交通广播网"));
-		stationList.add(new RadioStation(9850, "98.50", "沭阳县广播电视台广播节目"));
-		stationList.add(new RadioStation(10310, "103.10", "泗洪县广播电视台广播节目"));
-		stationList.add(new RadioStation(10770, "107.70", "宿迁人民广播电台综合广播"));
-		stationList.add(new RadioStation(10170, "101.70", "中央人民广播电台中国之声"));
-		stationList.add(new RadioStation(9380, "93.80", "江苏人民广播电台新闻广播"));
-		stationList.add(new RadioStation(8820, "88.20", "江苏人民广播电台健康广播"));
+		stationList.add(new RadioStation(10790, "107.90", "宿迁人民广播电台综合广播"));
 	}*/
 	
 //	/****

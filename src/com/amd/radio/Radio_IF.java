@@ -624,7 +624,26 @@ public class Radio_IF extends CarService_IF {
 					break;
 				}
 			}
-			if (index != -1) {
+            if (index == -1) {
+                index = size;
+                for (int i=0; i<size; i++) {
+                    RadioStation station = Data_Common.stationList.get(i);
+                    int tempFreq = station.getFreq();
+                    if (tempFreq > freq) {
+                        if (pre) {
+                            index = i;
+                        } else {
+                            if (i == 0) {
+                                index = size - 1;
+                            } else {
+                                index = i - 1;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+            if (index != -1) {
 				if (pre) {
 					index --;
 				} else {
