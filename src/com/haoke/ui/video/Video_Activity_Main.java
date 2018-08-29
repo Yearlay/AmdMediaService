@@ -152,6 +152,10 @@ public class Video_Activity_Main extends Activity implements OnClickListener, Lo
 			}
 			int position = 0;
 			updateDevice(deviceType, false);
+			if (mVideoList.size() == 0) {
+			    DebugLog.e("luke", "initIntent size is 0! return!");
+			    return;
+			}
 			for (int index = 0; index < mVideoList.size(); index++) {
 				if (filePath.equals(mVideoList.get(index).getFilePath())) {
 					position = index;
