@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.amd.util.AmdConfig;
 import com.file.server.scan.ScanJni;
 import com.haoke.application.MediaApplication;
 import com.haoke.constant.DBConfig;
@@ -269,7 +270,12 @@ public class FileNode {
     }
 
     public void setTitle(String title) {
-        this.title = title;
+        if (title != null && title.length() > AmdConfig.MAX_ID3_STRING_LEN) {
+            this.title = title.substring(0, AmdConfig.MAX_ID3_STRING_LEN - 3);
+            this.title += "...";
+        } else {
+            this.title = title;
+        }
     }
 
     public String getArtist() {
@@ -277,7 +283,12 @@ public class FileNode {
     }
 
     public void setArtist(String artist) {
-        this.artist = artist;
+        if (artist != null && artist.length() > AmdConfig.MAX_ID3_STRING_LEN) {
+            this.artist = artist.substring(0, AmdConfig.MAX_ID3_STRING_LEN - 3);
+            this.artist += "...";
+        } else {
+            this.artist = artist;
+        }
     }
 
     public String getAlbum() {
@@ -285,7 +296,12 @@ public class FileNode {
     }
 
     public void setAlbum(String album) {
-        this.album = album;
+        if (album != null && album.length() > AmdConfig.MAX_ID3_STRING_LEN) {
+            this.album = album.substring(0, AmdConfig.MAX_ID3_STRING_LEN - 3);
+            this.album += "...";
+        } else {
+            this.album = album;
+        }
     }
 
     public String getComposer() {

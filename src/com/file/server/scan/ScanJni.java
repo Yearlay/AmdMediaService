@@ -2,6 +2,7 @@ package com.file.server.scan;
 
 import android.text.TextUtils;
 
+import com.amd.util.AmdConfig;
 import com.haoke.bean.FileNode;
 import com.haoke.constant.DBConfig;
 import com.haoke.scanner.MediaDbHelper;
@@ -35,8 +36,8 @@ public class ScanJni {
             return "";
         }
         String str = null;
-        if (hz.length() > 300) {
-            str = hz.substring(0, 300);
+        if (hz.length() > AmdConfig.MAX_ID3_STRING_LEN) {
+            str = hz.substring(0, AmdConfig.MAX_ID3_STRING_LEN);
         } else {
             str = hz;
         }

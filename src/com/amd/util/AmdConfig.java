@@ -63,5 +63,8 @@ public class AmdConfig {
      * 车速限制
      */
     public static final float CAR_SPEED_LIMIT = 30.0f;
-    
+    /**
+     * ID3字符长度，不得低于3
+     */
+    public static final int MAX_ID3_STRING_LEN = 40;
 }
