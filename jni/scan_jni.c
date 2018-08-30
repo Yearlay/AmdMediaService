@@ -60,10 +60,10 @@ int judgeMediaType(char *fileName) {
 int addToDb(JNIEnv* env, jobject thiz, char *filePath, char *fileName, long fileSize, int onlyGetMediaSizeFlag) {
     int ret = 0;
     int fileType = judgeMediaType(fileName);
-    char fileNamePY[1024];
+    char fileNamePY[10240];
     memset(fileNamePY, '\0', sizeof(fileNamePY));
     hztpy(fileName, fileNamePY, 1);
-    char fileNamePYSecond[1024];
+    char fileNamePYSecond[10240];
     memset(fileNamePYSecond, '\0', sizeof(fileNamePYSecond));
     hztpy(fileName, fileNamePYSecond, 0);
     strcat(fileNamePY, ";;");
@@ -175,10 +175,10 @@ jstring Java_com_file_server_scan_ScanJni_getPY
     (JNIEnv* env, jobject thiz, jstring jfileName)
 {
     const char *filename = (*env)->GetStringUTFChars(env, jfileName, 0);
-    char fileNamePY[1024];
+    char fileNamePY[10240];
     memset(fileNamePY, '\0', sizeof(fileNamePY));
     hztpy(filename, fileNamePY, 1);
-    char fileNamePYSecond[1024];
+    char fileNamePYSecond[10240];
     memset(fileNamePYSecond, '\0', sizeof(fileNamePYSecond));
     hztpy(filename, fileNamePYSecond, 0);
     strcat(fileNamePY, ";;");

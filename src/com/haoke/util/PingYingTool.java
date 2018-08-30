@@ -17,7 +17,7 @@ public class PingYingTool
         StringBuffer retStr = new StringBuffer();
         String firstStr = getFirstSpell(str);
         if (firstStr.equals(str)) {
-            retStr.append(ScanJni.getPY(str));
+            retStr.append(ScanJni.getPYEx(str));
         } else {
             retStr.append(firstStr);
             if (PINYIN_DEBUG) {

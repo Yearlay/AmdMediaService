@@ -1,5 +1,7 @@
 package com.file.server.scan;
 
+import android.text.TextUtils;
+
 import com.haoke.bean.FileNode;
 import com.haoke.constant.DBConfig;
 import com.haoke.scanner.MediaDbHelper;
@@ -26,5 +28,18 @@ public class ScanJni {
         if (DBConfig.isMediaType(fileNode.getFileType())) {
             mMediaDbHelper.addToNeedToInsertList(new TransactionTask(fileNode, TransactionTask.INSERT_TASK));
         }
+    }
+    
+    public static String getPYEx(String hz) {
+        if (TextUtils.isEmpty(hz)) {
+            return "";
+        }
+        String str = null;
+        if (hz.length() > 300) {
+            str = hz.substring(0, 300);
+        } else {
+            str = hz;
+        }
+        return getPY(str);
     }
 }

@@ -73,7 +73,7 @@ public class FileNode {
         File file = new File(path);
         filePath = file.getAbsolutePath();
         fileName = file.getName();
-        fileNamePY = ScanJni.getPY(fileName);
+        fileNamePY = ScanJni.getPYEx(fileName);
         deviceType = MediaUtil.getDeviceType(path);
         fileType = MediaUtil.getMediaType(path);
         parseId3 = 0;
